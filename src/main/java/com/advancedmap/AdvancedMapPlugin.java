@@ -99,8 +99,8 @@ public class AdvancedMapPlugin extends Plugin
 			thread.setDaemon(true);
 			return thread;
 		});
-		viewports.put(MapArea.SURFACE, new MapViewport());
-		viewports.put(MapArea.UNDERGROUND, new MapViewport());
+		viewports.put(MapArea.SURFACE, MapArea.SURFACE.newViewport());
+		viewports.put(MapArea.UNDERGROUND, MapArea.UNDERGROUND.newViewport());
 		viewports.get(MapArea.SURFACE).centerOn(LUMBRIDGE.getX(), LUMBRIDGE.getY());
 		viewports.get(MapArea.UNDERGROUND).centerOn(EDGEVILLE_DUNGEON.getX(), EDGEVILLE_DUNGEON.getY());
 		area = MapArea.SURFACE;

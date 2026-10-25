@@ -112,8 +112,8 @@ class MapOverlay extends Overlay
 	/** Draws the region pictures there are and asks for the rest. True while some are still being drawn. */
 	private boolean drawRegions(Graphics2D g, MapViewport.View view, MapArea area)
 	{
-		int rx0 = Math.max(0, (int) Math.floor(view.worldX(0) / 64));
-		int rx1 = Math.min(MapArea.MAX_REGION_X, (int) Math.floor(view.worldX(view.width) / 64));
+		int rx0 = Math.max(area.minRegionX, (int) Math.floor(view.worldX(0) / 64));
+		int rx1 = Math.min(area.maxRegionX, (int) Math.floor(view.worldX(view.width) / 64));
 		int ry0 = Math.max(area.minRegionY, (int) Math.floor(view.worldY(view.height) / 64));
 		int ry1 = Math.min(area.maxRegionY, (int) Math.floor(view.worldY(0) / 64));
 

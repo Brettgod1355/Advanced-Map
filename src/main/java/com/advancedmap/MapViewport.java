@@ -56,9 +56,31 @@ final class MapViewport
 		}
 	}
 
+	/** The world square the middle of the screen may move within: the map's edge can reach the middle, no further. */
+	private final double minX;
+	private final double minY;
+	private final double maxX;
+	private final double maxY;
 	private double centerX;
 	private double centerY;
 	private double zoom = 4;
+
+	/** A view free to move over the whole coordinate space. */
+	MapViewport()
+	{
+		this(0, 0, 1 << 14, 1 << 14);
+	}
+
+	/** A view kept within a world square (tiles, the max ends exclusive). */
+	MapViewport(int minX, int minY, int maxX, int maxY)
+	{
+		this.minX = minX;
+		this.minY = minY;
+		this.maxX = maxX;
+		this.maxY = maxY;
+		this.centerX = (minX + maxX) / 2.0;
+		this.centerY = (minY + maxY) / 2.0;
+	}
 
 	synchronized View view(int width, int height)
 	{
@@ -70,6 +92,7 @@ final class MapViewport
 	{
 		centerX = tileX + 0.5;
 		centerY = tileY + 0.5;
+		keepInside();
 	}
 
 	synchronized void setZoom(double zoom)
@@ -82,6 +105,7 @@ final class MapViewport
 	{
 		centerX -= dx / zoom;
 		centerY += dy / zoom;
+		keepInside();
 	}
 
 	/** Zooms by a factor, keeping the world point under the screen point (sx, sy) where it is. */
@@ -93,6 +117,13 @@ final class MapViewport
 		zoom = clamp(zoom * factor);
 		centerX = wx - (sx - width / 2.0) / zoom;
 		centerY = wy + (sy - height / 2.0) / zoom;
+		keepInside();
+	}
+
+	private void keepInside()
+	{
+		centerX = Math.max(minX, Math.min(maxX, centerX));
+		centerY = Math.max(minY, Math.min(maxY, centerY));
 	}
 
 	private static double clamp(double zoom)
