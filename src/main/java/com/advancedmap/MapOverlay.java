@@ -37,11 +37,8 @@ import net.runelite.client.ui.overlay.OverlayPosition;
  */
 class MapOverlay extends Overlay
 {
-	/** Region rows above this hold dungeons and other underground areas, not the surface. */
-	static final int SURFACE_MAX_REGION_Y = 68;
-	/** Region columns the surface map looks at; the game's map lies well inside. */
-	static final int MAX_REGION_X = 100;
 	static final int CLOSE_SIZE = 28;
+	static final int AREA_BUTTON_WIDTH = 110;
 
 	private static final Color BACKGROUND = new Color(0x0B1520);
 	private static final Color LOADING = new Color(0x13202D);
@@ -52,15 +49,13 @@ class MapOverlay extends Overlay
 
 	private final Client client;
 	private final AdvancedMapPlugin plugin;
-	private final MapViewport viewport;
 	private final RegionImages images;
 	private final MapMessages messages;
 
-	MapOverlay(Client client, AdvancedMapPlugin plugin, MapViewport viewport, RegionImages images, MapMessages messages)
+	MapOverlay(Client client, AdvancedMapPlugin plugin, RegionImages images, MapMessages messages)
 	{
 		this.client = client;
 		this.plugin = plugin;
-		this.viewport = viewport;
 		this.images = images;
 		this.messages = messages;
 		setPosition(OverlayPosition.DYNAMIC);
@@ -77,6 +72,13 @@ class MapOverlay extends Overlay
 		return new Rectangle(width - CLOSE_SIZE - 8, 8, CLOSE_SIZE, CLOSE_SIZE);
 	}
 
+	/** Where the button that switches between the surface and underground maps sits. */
+	static Rectangle areaButton(int width)
+	{
+		Rectangle close = closeButton(width);
+		return new Rectangle(close.x - AREA_BUTTON_WIDTH - 8, close.y, AREA_BUTTON_WIDTH, CLOSE_SIZE);
+	}
+
 	@Override
 	public Dimension render(Graphics2D g)
 	{
@@ -86,11 +88,12 @@ class MapOverlay extends Overlay
 		}
 		int width = client.getCanvasWidth();
 		int height = client.getCanvasHeight();
-		MapViewport.View view = viewport.view(width, height);
+		MapArea area = plugin.area();
+		MapViewport.View view = plugin.viewport().view(width, height);
 
 		g.setColor(BACKGROUND);
 		g.fillRect(0, 0, width, height);
-		boolean loading = drawRegions(g, view);
+		boolean loading = drawRegions(g, view, area);
 
 		Object antialiasing = g.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -98,20 +101,21 @@ class MapOverlay extends Overlay
 		{
 			drawLayer(g, view, layer);
 		}
-		drawPlayer(g, view);
+		drawPlayer(g, view, area);
 		drawBar(g, view, loading);
 		drawCloseButton(g, width);
+		drawAreaButton(g, width, area);
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, antialiasing);
 		return new Dimension(width, height);
 	}
 
 	/** Draws the region pictures there are and asks for the rest. True while some are still being drawn. */
-	private boolean drawRegions(Graphics2D g, MapViewport.View view)
+	private boolean drawRegions(Graphics2D g, MapViewport.View view, MapArea area)
 	{
 		int rx0 = Math.max(0, (int) Math.floor(view.worldX(0) / 64));
-		int rx1 = Math.min(MAX_REGION_X, (int) Math.floor(view.worldX(view.width) / 64));
-		int ry0 = Math.max(0, (int) Math.floor(view.worldY(view.height) / 64));
-		int ry1 = Math.min(SURFACE_MAX_REGION_Y, (int) Math.floor(view.worldY(0) / 64));
+		int rx1 = Math.min(MapArea.MAX_REGION_X, (int) Math.floor(view.worldX(view.width) / 64));
+		int ry0 = Math.max(area.minRegionY, (int) Math.floor(view.worldY(view.height) / 64));
+		int ry1 = Math.min(area.maxRegionY, (int) Math.floor(view.worldY(0) / 64));
 
 		List<Integer> visible = new ArrayList<>();
 		for (int rx = rx0; rx <= rx1; rx++)
@@ -248,7 +252,7 @@ class MapOverlay extends Overlay
 		}
 	}
 
-	private void drawPlayer(Graphics2D g, MapViewport.View view)
+	private void drawPlayer(Graphics2D g, MapViewport.View view, MapArea area)
 	{
 		Player player = client.getLocalPlayer();
 		if (player == null)
@@ -256,7 +260,7 @@ class MapOverlay extends Overlay
 			return;
 		}
 		WorldPoint point = WorldPoint.fromLocalInstance(client, player.getLocalLocation());
-		if (point == null)
+		if (point == null || MapArea.of(point.getY()) != area)
 		{
 			return;
 		}
@@ -292,6 +296,19 @@ class MapOverlay extends Overlay
 		g.fillRect(0, view.height - barHeight, metrics.stringWidth(text.toString()) + 16, barHeight);
 		g.setColor(TEXT);
 		g.drawString(text.toString(), 8, view.height - 4 - metrics.getDescent());
+	}
+
+	private static void drawAreaButton(Graphics2D g, int width, MapArea area)
+	{
+		Rectangle button = areaButton(width);
+		g.setColor(BAR);
+		g.fillRoundRect(button.x, button.y, button.width, button.height, 8, 8);
+		g.setFont(FontManager.getRunescapeSmallFont());
+		FontMetrics metrics = g.getFontMetrics();
+		String text = "Show " + area.other().label.toLowerCase(Locale.ROOT);
+		g.setColor(TEXT);
+		g.drawString(text, button.x + (button.width - metrics.stringWidth(text)) / 2,
+			button.y + (button.height + metrics.getAscent() - metrics.getDescent()) / 2);
 	}
 
 	private static void drawCloseButton(Graphics2D g, int width)

@@ -15,9 +15,9 @@ import net.runelite.client.input.MouseListener;
 import net.runelite.client.input.MouseWheelListener;
 
 /**
- * Mouse and keys while the map is open: drag to move, the wheel to zoom about the pointer, Escape or the close
- * button to close. Every event is kept from the game while the map covers it, so a click on the map never walks
- * the player or opens a menu.
+ * Mouse and keys while the map is open: drag to move, the wheel to zoom about the pointer, a button to switch
+ * between the surface and underground maps, Escape or the close button to close. Every event is kept from the game
+ * while the map covers it, so a click on the map never walks the player or opens a menu.
  */
 class MapInput implements MouseListener, MouseWheelListener, KeyListener
 {
@@ -25,17 +25,15 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 	static final double WHEEL_STEP = 1.25;
 
 	private final AdvancedMapPlugin plugin;
-	private final MapViewport viewport;
 	private final IntSupplier width;
 	private final IntSupplier height;
 	private int lastX;
 	private int lastY;
 	private boolean dragging;
 
-	MapInput(AdvancedMapPlugin plugin, MapViewport viewport, IntSupplier width, IntSupplier height)
+	MapInput(AdvancedMapPlugin plugin, IntSupplier width, IntSupplier height)
 	{
 		this.plugin = plugin;
-		this.viewport = viewport;
 		this.width = width;
 		this.height = height;
 	}
@@ -50,6 +48,10 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 		if (SwingUtilities.isLeftMouseButton(e) && MapOverlay.closeButton(width.getAsInt()).contains(e.getPoint()))
 		{
 			plugin.closeMap();
+		}
+		else if (SwingUtilities.isLeftMouseButton(e) && MapOverlay.areaButton(width.getAsInt()).contains(e.getPoint()))
+		{
+			plugin.switchArea();
 		}
 		else
 		{
@@ -70,7 +72,7 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 		}
 		if (dragging)
 		{
-			viewport.drag(e.getX() - lastX, e.getY() - lastY);
+			plugin.viewport().drag(e.getX() - lastX, e.getY() - lastY);
 			lastX = e.getX();
 			lastY = e.getY();
 		}
@@ -123,7 +125,7 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 			return e;
 		}
 		double factor = Math.pow(WHEEL_STEP, -e.getPreciseWheelRotation());
-		viewport.zoomAt(factor, e.getX(), e.getY(), width.getAsInt(), height.getAsInt());
+		plugin.viewport().zoomAt(factor, e.getX(), e.getY(), width.getAsInt(), height.getAsInt());
 		e.consume();
 		return e;
 	}

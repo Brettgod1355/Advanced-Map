@@ -13,7 +13,8 @@ package com.advancedmap;
  */
 final class MapViewport
 {
-	static final double MIN_ZOOM = 0.125;
+	/** Far enough out to see the whole surface on one screen. */
+	static final double MIN_ZOOM = 0.25;
 	static final double MAX_ZOOM = 24;
 
 	/** An unchanging copy, for one frame's drawing. */

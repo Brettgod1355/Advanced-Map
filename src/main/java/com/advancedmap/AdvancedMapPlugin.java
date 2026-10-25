@@ -7,6 +7,8 @@ package com.advancedmap;
 
 import com.google.inject.Provides;
 import java.util.Collections;
+import java.util.EnumMap;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import javax.inject.Inject;
@@ -40,6 +42,8 @@ public class AdvancedMapPlugin extends Plugin
 {
 	/** Where the map opens when there is no player to center on (the login screen). */
 	static final WorldPoint LUMBRIDGE = new WorldPoint(3222, 3218, 0);
+	/** Where the underground map opens when the player is not underground (Edgeville Dungeon). */
+	static final WorldPoint EDGEVILLE_DUNGEON = new WorldPoint(3096, 9867, 0);
 	/** Two render threads: a fixed count, as the Plugin Hub asks. */
 	private static final int RENDER_THREADS = 2;
 
@@ -67,7 +71,9 @@ public class AdvancedMapPlugin extends Plugin
 	@Inject
 	private AdvancedMapConfig config;
 
-	private final MapViewport viewport = new MapViewport();
+	/** One view per map, each remembering where it was left. */
+	private final Map<MapArea, MapViewport> viewports = new EnumMap<>(MapArea.class);
+	private volatile MapArea area = MapArea.SURFACE;
 	private ExecutorService executor;
 	private CacheReader reader;
 	private RegionImages images;
@@ -93,11 +99,16 @@ public class AdvancedMapPlugin extends Plugin
 			thread.setDaemon(true);
 			return thread;
 		});
+		viewports.put(MapArea.SURFACE, new MapViewport());
+		viewports.put(MapArea.UNDERGROUND, new MapViewport());
+		viewports.get(MapArea.SURFACE).centerOn(LUMBRIDGE.getX(), LUMBRIDGE.getY());
+		viewports.get(MapArea.UNDERGROUND).centerOn(EDGEVILLE_DUNGEON.getX(), EDGEVILLE_DUNGEON.getY());
+		area = MapArea.SURFACE;
 		reader = new CacheReader(client);
 		images = new RegionImages(new ClientMapSource(reader), executor);
 		messages = new MapMessages(this::openMap);
-		overlay = new MapOverlay(client, this, viewport, images, messages);
-		input = new MapInput(this, viewport, client::getCanvasWidth, client::getCanvasHeight);
+		overlay = new MapOverlay(client, this, images, messages);
+		input = new MapInput(this, client::getCanvasWidth, client::getCanvasHeight);
 		hotkey = new HotkeyListener(() -> config.toggleKey())
 		{
 			@Override
@@ -187,6 +198,24 @@ public class AdvancedMapPlugin extends Plugin
 		return mapOpen;
 	}
 
+	/** Which map is shown: the surface or underground. */
+	MapArea area()
+	{
+		return area;
+	}
+
+	/** The view of the map that is shown. */
+	MapViewport viewport()
+	{
+		return viewports.get(area);
+	}
+
+	/** Switches between the surface and underground maps; each keeps its own place and zoom. */
+	void switchArea()
+	{
+		area = area.other();
+	}
+
 	void toggleMap()
 	{
 		if (mapOpen)
@@ -209,6 +238,8 @@ public class AdvancedMapPlugin extends Plugin
 				return;
 			}
 			WorldPoint center = at != null ? at : playerLocation();
+			area = MapArea.of(center.getY());
+			MapViewport viewport = viewports.get(area);
 			viewport.centerOn(center.getX(), center.getY());
 			if (zoom != null)
 			{
