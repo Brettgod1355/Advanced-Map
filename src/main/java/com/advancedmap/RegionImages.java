@@ -137,11 +137,10 @@ class RegionImages
 		}
 	}
 
-	/** Lets the big pictures go; the map is closed. */
+	/** Lets the biggest pictures go when the map closes; the smaller ones stay, so it opens again at once. */
 	void trim()
 	{
 		images.get(Level.FULL).clear();
-		images.get(Level.HALF).clear();
 	}
 
 	private void make(int id, Level level, long key)

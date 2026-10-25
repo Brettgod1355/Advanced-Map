@@ -29,6 +29,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
+import net.runelite.api.Client;
 import net.runelite.api.IndexDataBase;
 import net.runelite.api.SpritePixels;
 import net.runelite.api.gameval.SpriteID;
@@ -47,7 +48,9 @@ class ClientMapSource implements MapSource
 	private static final int OBJECTS = 6;
 	private static final int AREAS = 35;
 	/** Regions kept decoded; each is read again for its neighbors' edges. */
-	private static final int REGIONS_KEPT = 96;
+	private static final int REGIONS_KEPT = 160;
+	/** How far around a missing region its neighbors are read with it: 1 is a 3x3 block. */
+	private static final int BLOCK_REACH = 1;
 
 	private final CacheReader reader;
 	private final Map<Integer, Optional<Region>> regions = Collections.synchronizedMap(
@@ -65,6 +68,7 @@ class ClientMapSource implements MapSource
 	private final Map<Integer, Integer> textures = new ConcurrentHashMap<>();
 	private final Map<Integer, Optional<MapSprite>> areaIcons = new ConcurrentHashMap<>();
 	private volatile MapSprite[] mapScenes;
+	private volatile boolean tablesLoaded;
 
 	ClientMapSource(CacheReader reader)
 	{
@@ -78,45 +82,162 @@ class ClientMapSource implements MapSource
 		{
 			return null;
 		}
+		loadTables();
 		int id = regionX << 8 | regionY;
 		Optional<Region> known = regions.get(id);
-		if (known != null)
+		if (known == null)
 		{
-			return known.orElse(null);
+			loadBlock(regionX, regionY);
+			known = regions.get(id);
+			if (known == null)
+			{
+				throw new CacheNotReadyException();
+			}
 		}
+		return known.orElse(null);
+	}
 
-		byte[][] files = reader.read(client ->
+	/**
+	 * Reads a region and the regions around it that are not known yet, in one wait for the client thread: drawing a
+	 * region needs its neighbors' edges, and the next regions drawn are usually next door.
+	 */
+	private void loadBlock(int centerX, int centerY)
+	{
+		List<Integer> ids = new ArrayList<>();
+		for (int dx = -BLOCK_REACH; dx <= BLOCK_REACH; dx++)
+		{
+			for (int dy = -BLOCK_REACH; dy <= BLOCK_REACH; dy++)
+			{
+				int rx = centerX + dx;
+				int ry = centerY + dy;
+				if (rx >= 0 && ry >= 0 && rx <= 255 && ry <= 255 && !regions.containsKey(rx << 8 | ry))
+				{
+					ids.add(rx << 8 | ry);
+				}
+			}
+		}
+		Map<Integer, byte[][]> files = reader.read(client ->
 		{
 			IndexDataBase maps = client.getIndex(MAPS);
+			Map<Integer, byte[][]> out = new HashMap<>();
 			if (maps == null)
 			{
-				return null;
+				return out;
 			}
-			if (maps.getFileIds(id) == null)
+			for (int id : ids)
 			{
-				return new byte[0][];
+				// no such group: no region there; empty arrays say so
+				out.put(id, maps.getFileIds(id) == null ? new byte[0][] : new byte[][]{maps.loadData(id, 0), maps.loadData(id, 1)});
 			}
-			return new byte[][]{maps.loadData(id, 0), maps.loadData(id, 1)};
+			return out;
 		});
-		if (files == null || files.length > 0 && files[0] == null)
+		List<Location> placed = new ArrayList<>();
+		Map<Integer, Region> loaded = new HashMap<>();
+		for (Map.Entry<Integer, byte[][]> entry : files.entrySet())
 		{
-			throw new CacheNotReadyException();
+			int id = entry.getKey();
+			byte[][] data = entry.getValue();
+			if (data.length == 0)
+			{
+				regions.put(id, Optional.empty());
+			}
+			else if (data[0] != null)
+			{
+				// a region whose terrain the client has not got yet stays unknown, to be asked again
+				Region region = new Region(id);
+				region.loadTerrain(new MapLoader().load(id >> 8, id & 0xFF, data[0]));
+				if (data[1] != null)
+				{
+					region.loadLocations(new LocationsLoader().load(id >> 8, id & 0xFF, data[1]));
+					placed.addAll(region.getLocations());
+				}
+				loaded.put(id, region);
+			}
 		}
-		if (files.length == 0)
-		{
-			regions.put(id, Optional.empty());
-			return null;
-		}
+		loadObjects(placed);
+		loaded.forEach((id, region) -> regions.put(id, Optional.of(region)));
+	}
 
-		Region region = new Region(id);
-		region.loadTerrain(new MapLoader().load(regionX, regionY, files[0]));
-		if (files[1] != null)
+	/**
+	 * Reads the small tables the drawing looks up all the time (ground types, overlays, textures, map areas and
+	 * their icons, the map scenery sheet) in two waits for the client thread, before the first region is drawn.
+	 */
+	private void loadTables()
+	{
+		if (tablesLoaded)
 		{
-			region.loadLocations(new LocationsLoader().load(regionX, regionY, files[1]));
-			loadObjects(region.getLocations());
+			return;
 		}
-		regions.put(id, Optional.of(region));
-		return region;
+		synchronized (this)
+		{
+			if (tablesLoaded)
+			{
+				return;
+			}
+			Map<Integer, Map<Integer, byte[]>> tables = reader.read(client ->
+			{
+				Map<Integer, Map<Integer, byte[]>> out = new HashMap<>();
+				for (int group : new int[]{UNDERLAYS, OVERLAYS, AREAS})
+				{
+					out.put(group, files(client.getIndexConfig(), group));
+				}
+				IndexDataBase textureIndex = client.getIndex(TEXTURES);
+				out.put(-TEXTURES, textureIndex == null ? new HashMap<>() : files(textureIndex, 0));
+				return out;
+			});
+			tables.get(UNDERLAYS).forEach((id, bytes) -> underlays.put(id, new UnderlayLoader().load(id, bytes)));
+			tables.get(OVERLAYS).forEach((id, bytes) -> overlays.put(id, new OverlayLoader().load(id, bytes)));
+			tables.get(-TEXTURES).forEach((id, bytes) -> textures.put(id, textureColor(bytes)));
+			Map<Integer, Integer> areaSprites = new HashMap<>();
+			tables.get(AREAS).forEach((id, bytes) ->
+			{
+				AreaDefinition area = new AreaLoader().load(bytes, id);
+				if (area.spriteId < 0)
+				{
+					areaIcons.put(id, Optional.empty());
+				}
+				else
+				{
+					areaSprites.put(id, area.spriteId);
+				}
+			});
+			Map<Integer, MapSprite[]> sprites = reader.read(client ->
+			{
+				Map<Integer, MapSprite[]> out = new HashMap<>();
+				out.put(SpriteID.MAPSCENE, sprites(client, SpriteID.MAPSCENE));
+				for (int sprite : new TreeSet<>(areaSprites.values()))
+				{
+					out.put(sprite, sprites(client, sprite));
+				}
+				return out;
+			});
+			mapScenes = sprites.get(SpriteID.MAPSCENE);
+			areaSprites.forEach((id, sprite) ->
+			{
+				MapSprite[] frames = sprites.get(sprite);
+				areaIcons.put(id, frames == null || frames.length == 0 ? Optional.empty() : Optional.ofNullable(frames[0]));
+			});
+			tablesLoaded = true;
+		}
+	}
+
+	/** Every file of a group, by id. Client thread. */
+	private static Map<Integer, byte[]> files(IndexDataBase index, int group)
+	{
+		Map<Integer, byte[]> out = new HashMap<>();
+		int[] ids = index.getFileIds(group);
+		if (ids != null)
+		{
+			for (int id : ids)
+			{
+				byte[] bytes = index.loadData(group, id);
+				if (bytes != null)
+				{
+					out.put(id, bytes);
+				}
+			}
+		}
+		return out;
 	}
 
 	/** Reads every object a region places that is not known yet, in one go. */
@@ -160,12 +281,14 @@ class ClientMapSource implements MapSource
 	@Override
 	public UnderlayDefinition underlay(int id)
 	{
+		loadTables();
 		return underlays.computeIfAbsent(id, k -> new UnderlayLoader().load(k, config(UNDERLAYS, k)));
 	}
 
 	@Override
 	public OverlayDefinition overlay(int id)
 	{
+		loadTables();
 		return overlays.computeIfAbsent(id, k -> new OverlayLoader().load(k, config(OVERLAYS, k)));
 	}
 
@@ -185,33 +308,32 @@ class ClientMapSource implements MapSource
 	@Override
 	public int textureColor(int textureId)
 	{
-		return textures.computeIfAbsent(textureId, k ->
+		loadTables();
+		return textures.computeIfAbsent(textureId, k -> textureColor(reader.read(client ->
 		{
-			byte[] data = reader.read(client ->
-			{
-				IndexDataBase index = client.getIndex(TEXTURES);
-				return index == null ? null : index.loadData(0, k);
-			});
-			// a texture starts with its sprite's id, then its average color
-			return data == null || data.length < 4 ? 0 : (data[2] & 0xFF) << 8 | data[3] & 0xFF;
-		});
+			IndexDataBase index = client.getIndex(TEXTURES);
+			return index == null ? null : index.loadData(0, k);
+		})));
+	}
+
+	/** A texture's average color: it starts with its sprite's id, then the color. */
+	private static int textureColor(byte[] data)
+	{
+		return data == null || data.length < 4 ? 0 : (data[2] & 0xFF) << 8 | data[3] & 0xFF;
 	}
 
 	@Override
 	public MapSprite mapScene(int index)
 	{
+		loadTables();
 		MapSprite[] scenes = mapScenes;
-		if (scenes == null)
-		{
-			scenes = sprites(SpriteID.MAPSCENE);
-			mapScenes = scenes;
-		}
-		return index >= 0 && index < scenes.length ? scenes[index] : null;
+		return scenes != null && index >= 0 && index < scenes.length ? scenes[index] : null;
 	}
 
 	@Override
 	public MapSprite areaIcon(int areaId)
 	{
+		loadTables();
 		return areaIcons.computeIfAbsent(areaId, k ->
 		{
 			byte[] data = config(AREAS, k);
@@ -224,7 +346,7 @@ class ClientMapSource implements MapSource
 			{
 				return Optional.empty();
 			}
-			MapSprite[] frames = sprites(area.spriteId);
+			MapSprite[] frames = reader.read(client -> sprites(client, area.spriteId));
 			return frames.length == 0 ? Optional.empty() : Optional.ofNullable(frames[0]);
 		}).orElse(null);
 	}
@@ -234,23 +356,21 @@ class ClientMapSource implements MapSource
 		return reader.read(client -> client.getIndexConfig().loadData(group, id));
 	}
 
-	private MapSprite[] sprites(int group)
+	/** The frames of a sprite group, placed on their full canvas. Client thread. */
+	private static MapSprite[] sprites(Client client, int group)
 	{
-		return reader.read(client ->
+		SpritePixels[] frames = client.getSprites(client.getIndexSprites(), group, 0);
+		if (frames == null)
 		{
-			SpritePixels[] frames = client.getSprites(client.getIndexSprites(), group, 0);
-			if (frames == null)
-			{
-				return new MapSprite[0];
-			}
-			List<MapSprite> out = new ArrayList<>(frames.length);
-			for (SpritePixels frame : frames)
-			{
-				out.add(frame == null ? null : MapSprite.of(frame.getMaxWidth(), frame.getMaxHeight(),
-					frame.getOffsetX(), frame.getOffsetY(), frame.getWidth(), frame.getHeight(),
-					frame.getPixels().clone()));
-			}
-			return out.toArray(new MapSprite[0]);
-		});
+			return new MapSprite[0];
+		}
+		List<MapSprite> out = new ArrayList<>(frames.length);
+		for (SpritePixels frame : frames)
+		{
+			out.add(frame == null ? null : MapSprite.of(frame.getMaxWidth(), frame.getMaxHeight(),
+				frame.getOffsetX(), frame.getOffsetY(), frame.getWidth(), frame.getHeight(),
+				frame.getPixels().clone()));
+		}
+		return out.toArray(new MapSprite[0]);
 	}
 }
