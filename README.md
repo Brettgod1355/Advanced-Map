@@ -1,4 +1,4 @@
-# Better Map
+# Advanced Map
 
 A full-screen world map for RuneLite, drawn from the game's own map data with smooth pan and zoom.
 
@@ -11,7 +11,7 @@ A full-screen world map for RuneLite, drawn from the game's own map data with sm
 ## For plugin authors
 
 Other plugins can draw lines and markers on the map through RuneLite's `PluginMessage`, in world coordinates
-(`WorldPoint`). Namespace `betterworldmap`:
+(`WorldPoint`). Namespace `advancedmap`:
 
 | Message | Data | Does |
 |---|---|---|
@@ -29,7 +29,7 @@ line.put("color", Color.CYAN);
 Map<String, Object> layer = new HashMap<>();
 layer.put("id", "myplugin:route");
 layer.put("lines", List.of(line));
-eventBus.post(new PluginMessage("betterworldmap", "layer", layer));
+eventBus.post(new PluginMessage("advancedmap", "layer", layer));
 ```
 
 ## Credits
@@ -37,4 +37,4 @@ eventBus.post(new PluginMessage("betterworldmap", "layer", layer));
 The map drawing is RuneLite's own map renderer from its cache library (BSD 2-Clause), adapted to read the
 running client. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
-Better Map is not affiliated with Jagex or RuneLite.
+Advanced Map is not affiliated with Jagex or RuneLite.

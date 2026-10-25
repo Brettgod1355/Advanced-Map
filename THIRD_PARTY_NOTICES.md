@@ -1,6 +1,6 @@
 # Third-party notices
 
-Better Map is an independent project. It is not an official RuneLite product and is not affiliated with
+Advanced Map is an independent project. It is not an official RuneLite product and is not affiliated with
 Jagex.
 
 ## RuneLite (BSD 2-Clause)
@@ -12,7 +12,7 @@ in the plugin JAR.
 The map is drawn with code from RuneLite's cache library (`net.runelite:cache`), taken from the
 `runelite-parent-1.13.4` release of [runelite/runelite](https://github.com/runelite/runelite) (commit
 `ad137adad1cb5052a5fef6e391888a8895d09830`, the published `cache-1.13.4-sources.jar`). The files keep their
-original copyright notices and are in `src/main/java/com/bettermap/cache/`:
+original copyright notices and are in `src/main/java/com/advancedmap/cache/`:
 
 | File here | From `cache/src/main/java/net/runelite/cache/` | Changes |
 |---|---|---|
@@ -65,7 +65,7 @@ included in the plugin JAR.
 
 ## The map itself
 
-Nothing of the map is bundled or downloaded. Better Map draws it, while you play, from the game data your own
+Nothing of the map is bundled or downloaded. Advanced Map draws it, while you play, from the game data your own
 client has already downloaded from Jagex, the same way the game's world map and RuneLite's own tools read it.
 The game and its data are Jagex's; this plugin is not affiliated with or endorsed by Jagex.
 

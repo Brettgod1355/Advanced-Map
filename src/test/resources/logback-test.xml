@@ -52,5 +52,5 @@
 		<appender-ref ref="STDOUT"/>
 		<appender-ref ref="FILE"/>
 	</root>
-	<logger name="com.bettermap" level="DEBUG" />
+	<logger name="com.advancedmap" level="DEBUG" />
 </configuration>
