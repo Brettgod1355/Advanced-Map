@@ -18,6 +18,7 @@ import java.util.Set;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.RejectedExecutionException;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -122,7 +123,16 @@ class RegionImages
 			long key = (long) level.ordinal() << 32 | id;
 			if (queued.add(key))
 			{
-				executor.execute(() -> make(id, level, key));
+				try
+				{
+					executor.execute(() -> make(id, level, key));
+				}
+				catch (RejectedExecutionException e)
+				{
+					// the plugin is stopping; a window may still repaint once before it closes
+					queued.remove(key);
+					return;
+				}
 			}
 		}
 	}

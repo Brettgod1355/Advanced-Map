@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import javax.inject.Inject;
+import javax.swing.SwingUtilities;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.Player;
@@ -71,6 +72,9 @@ public class AdvancedMapPlugin extends Plugin
 	@Inject
 	private AdvancedMapConfig config;
 
+	@Inject
+	private ConfigManager configManager;
+
 	/** One view per map, each remembering where it was left. */
 	private final Map<MapArea, MapViewport> viewports = new EnumMap<>(MapArea.class);
 	private volatile MapArea area = MapArea.SURFACE;
@@ -78,11 +82,18 @@ public class AdvancedMapPlugin extends Plugin
 	private CacheReader reader;
 	private RegionImages images;
 	private MapMessages messages;
+	private MapPainter painter;
 	private MapOverlay overlay;
 	private MapInput input;
 	private HotkeyListener hotkey;
 	private NavigationButton button;
+	/** Open over the game view. */
 	private volatile boolean mapOpen;
+	/** Open in its own window; the window itself is touched on the Swing thread only. */
+	private volatile boolean windowOpen;
+	private MapWindow window;
+	/** Where the player stands, kept by the client thread for the window to draw. */
+	private volatile WorldPoint player;
 
 	@Provides
 	AdvancedMapConfig provideConfig(ConfigManager configManager)
@@ -107,7 +118,8 @@ public class AdvancedMapPlugin extends Plugin
 		reader = new CacheReader(client);
 		images = new RegionImages(new ClientMapSource(reader), executor);
 		messages = new MapMessages(this::openMap);
-		overlay = new MapOverlay(client, this, images, messages);
+		painter = new MapPainter(images, messages);
+		overlay = new MapOverlay(client, this, painter);
 		input = new MapInput(this, client::getCanvasWidth, client::getCanvasHeight);
 		hotkey = new HotkeyListener(() -> config.toggleKey())
 		{
@@ -139,6 +151,16 @@ public class AdvancedMapPlugin extends Plugin
 	protected void shutDown()
 	{
 		mapOpen = false;
+		windowOpen = false;
+		SwingUtilities.invokeLater(() ->
+		{
+			MapWindow open = window;
+			window = null;
+			if (open != null)
+			{
+				open.dispose();
+			}
+		});
 		clientToolbar.removeNavigation(button);
 		keyManager.unregisterKeyListener(hotkey);
 		keyManager.unregisterKeyListener(input);
@@ -152,6 +174,7 @@ public class AdvancedMapPlugin extends Plugin
 		reader = null;
 		images = null;
 		messages = null;
+		painter = null;
 		overlay = null;
 		input = null;
 		hotkey = null;
@@ -164,6 +187,10 @@ public class AdvancedMapPlugin extends Plugin
 		if (reader != null)
 		{
 			reader.service();
+		}
+		if (mapOpen || windowOpen)
+		{
+			player = currentPlayerLocation();
 		}
 	}
 
@@ -193,9 +220,16 @@ public class AdvancedMapPlugin extends Plugin
 		}
 	}
 
+	/** True while the map is open over the game view (not in its own window). */
 	boolean isMapOpen()
 	{
 		return mapOpen;
+	}
+
+	/** Where the player stands, or null when logged out. */
+	WorldPoint playerLocation()
+	{
+		return player;
 	}
 
 	/** Which map is shown: the surface or underground. */
@@ -218,7 +252,7 @@ public class AdvancedMapPlugin extends Plugin
 
 	void toggleMap()
 	{
-		if (mapOpen)
+		if (mapOpen || windowOpen)
 		{
 			closeMap();
 		}
@@ -237,7 +271,8 @@ public class AdvancedMapPlugin extends Plugin
 			{
 				return;
 			}
-			WorldPoint center = at != null ? at : playerLocation();
+			player = currentPlayerLocation();
+			WorldPoint center = at != null ? at : player != null ? player : LUMBRIDGE;
 			area = MapArea.of(center.getY());
 			MapViewport viewport = viewports.get(area);
 			viewport.centerOn(center.getX(), center.getY());
@@ -245,21 +280,97 @@ public class AdvancedMapPlugin extends Plugin
 			{
 				viewport.setZoom(zoom);
 			}
-			if (!mapOpen)
+			boolean wasOpen = mapOpen || windowOpen;
+			if (config.popOut())
+			{
+				windowOpen = true;
+				SwingUtilities.invokeLater(this::showWindow);
+			}
+			else
 			{
 				mapOpen = true;
+			}
+			if (!wasOpen)
+			{
 				postState(true);
 			}
 		});
 	}
 
+	/** Closes the map, over the game or in its window. */
 	void closeMap()
 	{
+		if (windowOpen)
+		{
+			SwingUtilities.invokeLater(() ->
+			{
+				if (window != null)
+				{
+					window.dispose();
+				}
+			});
+			return;
+		}
 		if (!mapOpen)
 		{
 			return;
 		}
 		mapOpen = false;
+		closed();
+	}
+
+	/** Moves the map from over the game into its own window, and keeps it there next time (the setting). */
+	void popOut()
+	{
+		configManager.setConfiguration(AdvancedMapConfig.GROUP, "popOut", true);
+		windowOpen = true;
+		mapOpen = false;
+		SwingUtilities.invokeLater(this::showWindow);
+	}
+
+	/** Moves the map from its window back over the game, and keeps it there next time. Swing thread. */
+	void dock()
+	{
+		configManager.setConfiguration(AdvancedMapConfig.GROUP, "popOut", false);
+		MapWindow open = window;
+		window = null;
+		windowOpen = false;
+		mapOpen = true;
+		if (open != null)
+		{
+			open.dispose();
+		}
+	}
+
+	/** Swing thread. */
+	private void showWindow()
+	{
+		if (!windowOpen || painter == null)
+		{
+			return;
+		}
+		if (window == null)
+		{
+			window = new MapWindow(this, painter, this::windowClosed);
+		}
+		window.setVisible(true);
+	}
+
+	/** The player closed the window (or the map was closed). Swing thread. */
+	private void windowClosed(MapWindow closedWindow)
+	{
+		if (closedWindow != window)
+		{
+			// moved back over the game, or replaced
+			return;
+		}
+		window = null;
+		windowOpen = false;
+		closed();
+	}
+
+	private void closed()
+	{
 		RegionImages current = images;
 		if (current != null)
 		{
@@ -268,11 +379,10 @@ public class AdvancedMapPlugin extends Plugin
 		clientThread.invokeLater(() -> postState(false));
 	}
 
-	private WorldPoint playerLocation()
+	private WorldPoint currentPlayerLocation()
 	{
-		Player player = client.getLocalPlayer();
-		WorldPoint point = player == null ? null : WorldPoint.fromLocalInstance(client, player.getLocalLocation());
-		return point == null ? LUMBRIDGE : point;
+		Player local = client.getLocalPlayer();
+		return local == null ? null : WorldPoint.fromLocalInstance(client, local.getLocalLocation());
 	}
 
 	private void postState(boolean open)

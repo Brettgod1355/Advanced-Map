@@ -6,6 +6,8 @@ A full-screen world map for RuneLite, drawn from the game's own map data with sm
   close button close it.
 - **Drag** to move, **scroll** to zoom around the pointer. It opens on your character, on the surface or the
   underground map, whichever you are on; the button at the top switches between them.
+- **Pop it out** into a window of its own with the **Pop out** button (or the setting), to keep it beside the game's
+  own world map or on another screen. **Over the game** brings it back.
 - **No downloads.** The map is drawn on your computer from the game data your client already has, so it is
   always up to date with the game, and nothing is sent anywhere.
 

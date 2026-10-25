@@ -15,9 +15,10 @@ import net.runelite.client.input.MouseListener;
 import net.runelite.client.input.MouseWheelListener;
 
 /**
- * Mouse and keys while the map is open: drag to move, the wheel to zoom about the pointer, a button to switch
- * between the surface and underground maps, Escape or the close button to close. Every event is kept from the game
- * while the map covers it, so a click on the map never walks the player or opens a menu.
+ * Mouse and keys while the map is open over the game: drag to move, the wheel to zoom about the pointer, buttons to
+ * switch between the surface and underground maps and to pop the map out, Escape or the close button to close.
+ * Every event is kept from the game while the map covers it, so a click on the map never walks the player or opens
+ * a menu.
  */
 class MapInput implements MouseListener, MouseWheelListener, KeyListener
 {
@@ -45,13 +46,19 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 		{
 			return e;
 		}
-		if (SwingUtilities.isLeftMouseButton(e) && MapOverlay.closeButton(width.getAsInt()).contains(e.getPoint()))
+		MapPainter.Button button = SwingUtilities.isLeftMouseButton(e)
+			? MapPainter.buttonAt(e.getX(), e.getY(), width.getAsInt(), false) : null;
+		if (button == MapPainter.Button.CLOSE)
 		{
 			plugin.closeMap();
 		}
-		else if (SwingUtilities.isLeftMouseButton(e) && MapOverlay.areaButton(width.getAsInt()).contains(e.getPoint()))
+		else if (button == MapPainter.Button.AREA)
 		{
 			plugin.switchArea();
+		}
+		else if (button == MapPainter.Button.MODE)
+		{
+			plugin.popOut();
 		}
 		else
 		{

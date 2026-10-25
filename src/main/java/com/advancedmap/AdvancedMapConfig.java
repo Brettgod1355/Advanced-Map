@@ -38,4 +38,16 @@ public interface AdvancedMapConfig extends Config
 	{
 		return true;
 	}
+
+	@ConfigItem(
+		keyName = "popOut",
+		name = "Open in its own window",
+		description = "Open the map in a window of its own instead of over the game, to keep beside the game's own"
+			+ " world map. The Pop out and Over the game buttons on the map change this too.",
+		position = 2
+	)
+	default boolean popOut()
+	{
+		return false;
+	}
 }
