@@ -1,0 +1,85 @@
+# Third-party notices
+
+Better Map is an independent project. It is not an official RuneLite product and is not affiliated with
+Jagex.
+
+## RuneLite (BSD 2-Clause)
+
+The build and launcher follow the official [example plugin](https://github.com/runelite/example-plugin),
+commit `46e14f2c448fab6cbc599df1015b9631dcf1fc52`. RuneLite is a build/runtime dependency and is not bundled
+in the plugin JAR.
+
+The map is drawn with code from RuneLite's cache library (`net.runelite:cache`), taken from the
+`runelite-parent-1.13.4` release of [runelite/runelite](https://github.com/runelite/runelite) (commit
+`ad137adad1cb5052a5fef6e391888a8895d09830`, the published `cache-1.13.4-sources.jar`). The files keep their
+original copyright notices and are in `src/main/java/com/bettermap/cache/`:
+
+| File here | From `cache/src/main/java/net/runelite/cache/` | Changes |
+|---|---|---|
+| `MapImageRenderer.java` | `MapImageDumper.java` | Draws one region at a time from a `MapSource` instead of a cache folder on disk; the command-line tool, whole-world images, world map labels, inter-map link icons, the render switches and the out-of-bounds print are left out; map icons and map scenery come as ready-made `MapSprite`s; tile shapes are generated under a lock |
+| `Region.java`, `Location.java`, `Position.java`, `HeightCalc.java` | `region/` | Package only |
+| `MapDefinition.java`, `LocationsDefinition.java`, `UnderlayDefinition.java`, `OverlayDefinition.java`, `ObjectDefinition.java`, `AreaDefinition.java` | `definitions/` | Package only |
+| `MapLoader.java`, `LocationsLoader.java`, `UnderlayLoader.java`, `OverlayLoader.java`, `ObjectLoader.java`, `AreaLoader.java`, `EntityOpsLoader.java` | `definitions/loaders/` | Package only |
+| `EntityOpsDefinition.java` | `EntityOpsDefinition.java` | Package only |
+| `JagexColor.java` | `models/JagexColor.java` | Package only |
+| `InputStream.java` | `io/InputStream.java` | Package only, and no longer extends `java.io.InputStream` |
+
+The license text, as it appears with the first holder's notice:
+
+```
+Copyright (c) 2016-2017, Adam <Adam@sigterm.info>
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this
+   list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice,
+   this list of conditions and the following disclaimer in the documentation
+   and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+```
+
+The other copied files carry the same license under their own holders, named in each file's header: Adam
+<Adam@sigterm.info> (2016-2017 and 2017), Kyle Friz (2015) and Abex (2020 and 2026).
+
+The test-only `logback-test.xml` comes from the example plugin (same license, Adam's notice kept in the file).
+
+## Gradle wrapper
+
+The wrapper scripts, JAR, and properties come from the RuneLite example plugin, commit
+`46e14f2c448fab6cbc599df1015b9631dcf1fc52`. Gradle is licensed under Apache 2.0; see
+`licenses/Apache-2.0.txt` and the notices retained in the scripts and wrapper. This development tooling is not
+included in the plugin JAR.
+
+## The map itself
+
+Nothing of the map is bundled or downloaded. Better Map draws it, while you play, from the game data your own
+client has already downloaded from Jagex, the same way the game's world map and RuneLite's own tools read it.
+The game and its data are Jagex's; this plugin is not affiliated with or endorsed by Jagex.
+
+## Images
+
+`icon.png` and the sidebar icon are this project's own drawing, made in code (`MapIcon.java`) and licensed with
+the rest of the project under the BSD 2-Clause License. No game artwork or wiki image is included.
+
+## Behavior references (no code copied)
+
+- [Reimagined World Map](https://github.com/Maiz19/reimagined-world-map) was looked at for ideas only (a
+  full-screen map over the game view). No code, data or images from it are included.
+- [Shortest Path](https://github.com/Skretzo/shortest-path) (BSD 2-Clause) was read, at its Plugin Hub version
+  1.22.1 (commit `50f30435f37d1d5c5e2af790925fa7aa70b7840d`), to learn which plugin messages it sends and takes.
+  Nothing from it is included.
+- [Extended Render Distance](https://github.com/Conrad33/extended-render-distance) was read to confirm that a
+  plugin can read map regions from the client's cache through `Client.getIndex`. Nothing from it is included.
