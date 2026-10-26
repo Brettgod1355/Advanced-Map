@@ -44,7 +44,9 @@ enum IconGroup
 
 	/** The game's category for the arrows that jump to another map; left out, as the map has no such jumps. */
 	static final int MAP_LINK = 1063;
+	static final int BANK = 1055;
 	static final int QUEST = 1056;
+	static final int DUNGEON = 1062;
 	static final int AGILITY_SHORTCUT = 1117;
 	static final int AGILITY_SHORTCUT_ONE_WAY = 2505;
 

@@ -53,4 +53,10 @@ public interface MapSource
 	{
 		return -1;
 	}
+
+	/** A map area with an icon of a category, the lowest such, for an icon the game's map leaves out; or -1. */
+	default int categoryArea(int category)
+	{
+		return -1;
+	}
 }

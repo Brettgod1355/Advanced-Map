@@ -73,6 +73,8 @@ class ClientMapSource implements MapSource
 	private final Map<Integer, UnderlayDefinition> underlays = new ConcurrentHashMap<>();
 	private final Map<Integer, OverlayDefinition> overlays = new ConcurrentHashMap<>();
 	private final Map<Integer, ObjectDefinition> objects = new ConcurrentHashMap<>();
+	/** {@link #categoryIcons()}, kept once read. */
+	private volatile Map<Integer, Integer> categoryAreas;
 	private final Map<Integer, Integer> textures = new ConcurrentHashMap<>();
 	private final Map<Integer, Optional<MapSprite>> areaIcons = new ConcurrentHashMap<>();
 	private final Map<Integer, Integer> areaCategories = new ConcurrentHashMap<>();
@@ -396,6 +398,19 @@ class ClientMapSource implements MapSource
 			}
 		});
 		return out;
+	}
+
+	@Override
+	public int categoryArea(int category)
+	{
+		Map<Integer, Integer> icons = categoryAreas;
+		if (icons == null)
+		{
+			icons = categoryIcons();
+			// kept only once the game's tables gave something, so an early ask is asked again
+			categoryAreas = icons.isEmpty() ? null : icons;
+		}
+		return icons.getOrDefault(category, -1);
 	}
 
 	/** Every region the game has on either map, by region id. One wait for the client thread. */

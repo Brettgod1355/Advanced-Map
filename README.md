@@ -15,6 +15,11 @@ A full-screen world map for RuneLite, drawn from the game's own map data with sm
   destinations. Click one for its details (a quest's difficulty and the levels it needs, a shortcut's Agility level,
   a spell's Magic level and quest). Agility shortcuts and teleport spells you can't use yet are grayed out with a
   red mark, and finished quests can be left out.
+- **Banks**: banks the game's map leaves out get an icon too (the Culinaromancer's Chest in Lumbridge Castle's
+  cellar, the Lovakengj blast mine's other chests ...). The bank chests you build yourself (Fossil Island, the
+  Sailing islands, Vampyrium) and the banks a quest opens (Corsair Cove, Ape Atoll, Burgh de Rott) stay grayed out
+  with a red mark until you have built or opened them; click one for what it needs. The hole from Lumbridge Castle's
+  cellar to the Lumbridge Swamp Caves shows the same way until The Lost Tribe opens it.
 - **Filters**: the Filters button at the top left drops down a list of every kind of icon, with its picture and name,
   grouped (Banks, Quests, Shops ...) and searchable: tick or untick a whole group or a single kind, or all at once.
 - **Hide just one icon** by right-clicking it. "Show hidden icons" at the top of the Filters list shows the hidden

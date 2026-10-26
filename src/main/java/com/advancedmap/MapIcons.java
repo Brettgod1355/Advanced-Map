@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import lombok.Value;
 import net.runelite.api.Quest;
@@ -87,11 +88,26 @@ final class MapIcons
 	private final Map<Integer, List<MapSpot>> byRegion = new ConcurrentHashMap<>();
 	private final Map<Integer, BufferedImage> images = new ConcurrentHashMap<>();
 	private final Map<Integer, BufferedImage> grayImages = new ConcurrentHashMap<>();
+	/** The variables of the unlocks found so far, for {@link Progress} to read. */
+	private final Set<Integer> watchedVars = ConcurrentHashMap.newKeySet();
 
 	/** Keeps a drawn region's icons. Render threads. */
 	void addRegion(int regionId, List<MapSpot> spots)
 	{
+		for (MapSpot spot : spots)
+		{
+			if (spot.getUnlock() != null)
+			{
+				watchedVars.add(spot.getUnlock().getVariable());
+			}
+		}
 		byRegion.put(regionId, Collections.unmodifiableList(new ArrayList<>(spots)));
+	}
+
+	/** The variables of the unlocks found so far. */
+	Set<Integer> watchedVars()
+	{
+		return Collections.unmodifiableSet(watchedVars);
 	}
 
 	/** Keeps the picture of a map area's icon. Render threads. */
@@ -141,7 +157,7 @@ final class MapIcons
 				{
 					for (MapSpot spot : spots)
 					{
-						if (everyFloor || spot.getPlane() == plane)
+						if ((everyFloor || spot.getPlane() == plane) && !markedNearby(spot, rx, ry))
 						{
 							add(out, spot, view, area, settings, progress);
 						}
@@ -192,12 +208,51 @@ final class MapIcons
 		out.add(new Shown(spot, new Rectangle(cx - width / 2, cy - height / 2, width, height), look));
 	}
 
+	/**
+	 * True for a bank Advanced Map found that a bank icon of the game's in a neighboring region turns out to stand
+	 * for (the region's own icons were checked when it was found).
+	 */
+	private boolean markedNearby(MapSpot spot, int regionX, int regionY)
+	{
+		if (spot.getCluster() == null)
+		{
+			return false;
+		}
+		for (int rx = regionX - 1; rx <= regionX + 1; rx++)
+		{
+			for (int ry = regionY - 1; ry <= regionY + 1; ry++)
+			{
+				List<MapSpot> spots = rx == regionX && ry == regionY ? null : byRegion.get(rx << 8 | ry);
+				if (spots != null && FoundIcons.nearGameBank(spots, spot.getCluster()))
+				{
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
 	/** How a spot looks, or null when it is not drawn at all. */
 	static Look look(MapSpot spot, MapSettings settings, Progress progress)
 	{
 		if (settings.isHidden(spot))
 		{
 			return settings.isShowHidden() ? Look.HIDDEN : null;
+		}
+		Unlock unlock = spot.getUnlock();
+		if (unlock != null)
+		{
+			int value = progress.value(unlock.getVariable());
+			if (spot.getUnlockable() == null)
+			{
+				// a chest of a game event: a bank only on some days, and nothing to say about it on others
+				return unlock.isOpen(value) ? Look.NORMAL : null;
+			}
+			// grayed only once the player's value is read (a few ticks after its region is first drawn)
+			if (value >= 0 && !unlock.isOpen(value) && settings.isMarkLocked() && progress.isLoggedIn())
+			{
+				return Look.LOCKED;
+			}
 		}
 		Progress.QuestInfo quest = spot.getCategory() == IconGroup.QUEST ? progress.getQuestsByIcon().get(spot.getAreaId())
 			: null;
@@ -285,6 +340,10 @@ final class MapIcons
 		{
 			return spot.getTeleport().title();
 		}
+		if (spot.getUnlockable() != null)
+		{
+			return spot.getUnlockable().label;
+		}
 		Progress.QuestInfo quest = spot.getCategory() == IconGroup.QUEST ? progress.getQuestsByIcon().get(spot.getAreaId())
 			: null;
 		if (quest != null)
@@ -319,6 +378,14 @@ final class MapIcons
 		else if (spot.getTeleport() != null)
 		{
 			teleportInfo(lines, spot.getTeleport(), progress);
+		}
+		else if (spot.getUnlockable() != null)
+		{
+			unlockInfo(lines, spot, progress);
+		}
+		else if (spot.getDetail() != null)
+		{
+			lines.add(new Line(spot.getDetail() + ", not on the game's own map", QUIET));
 		}
 		lines.add(new Line(spot.getPlane() > 0 ? spot.getX() + ", " + spot.getY() + ", " + floors.name(spot.getPlane())
 			: spot.getX() + ", " + spot.getY(), QUIET));
@@ -375,6 +442,52 @@ final class MapIcons
 			QuestState state = progress.state(quest);
 			Color color = !progress.isLoggedIn() ? PLAIN : state == QuestState.FINISHED ? GOOD : BAD;
 			lines.add(new Line("Needs " + quest.getName(), color));
+		}
+	}
+
+	/**
+	 * What something built or unlocked needs, and whether the player has it: built or not, and until it is, the levels,
+	 * the quest and the materials of a bank chest; how a quest opens the others.
+	 */
+	private static void unlockInfo(List<Line> lines, MapSpot spot, Progress progress)
+	{
+		Unlockable unlockable = spot.getUnlockable();
+		lines.add(new Line(unlockable.note, QUIET));
+		if (!progress.isLoggedIn())
+		{
+			lines.add(new Line(unlockable.built ? "Log in to see whether you have built it"
+				: "Log in to see whether it is open to you", QUIET));
+		}
+		else if (spot.getUnlock().isOpen(progress.value(spot.getUnlock().getVariable())))
+		{
+			lines.add(new Line(unlockable.built ? "You have built it" : "Open to you", GOOD));
+			return;
+		}
+		else
+		{
+			lines.add(new Line(unlockable.built ? "You have not built it yet" : "Not open to you yet", BAD));
+		}
+		if (unlockable.construction > 0)
+		{
+			levelLine(lines, Skill.CONSTRUCTION, unlockable.construction, progress);
+		}
+		if (unlockable.sailing > 0)
+		{
+			levelLine(lines, Skill.SAILING, unlockable.sailing, progress);
+		}
+		if (unlockable.built && unlockable.quest != null)
+		{
+			QuestState state = progress.state(unlockable.quest);
+			Color color = !progress.isLoggedIn() ? PLAIN : state == QuestState.FINISHED ? GOOD : BAD;
+			lines.add(new Line("Needs " + unlockable.quest.getName(), color));
+		}
+		if (unlockable.materials.length > 0)
+		{
+			lines.add(new Line("Built from:", PLAIN));
+			for (String material : unlockable.materials)
+			{
+				lines.add(new Line("  " + material, PLAIN));
+			}
 		}
 	}
 

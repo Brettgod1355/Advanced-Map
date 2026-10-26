@@ -46,7 +46,8 @@ public class MapIconsTest
 		}
 		Map<Integer, Progress.QuestInfo> quests = new HashMap<>();
 		quests.put(QUEST_ICON, new Progress.QuestInfo("Cook's Assistant", cooksAssistant, 0, 0, false, new int[0]));
-		return new Progress(true, levels, states, quests, Collections.singletonMap(IconGroup.QUEST, "Quest"));
+		return new Progress(true, levels, states, quests, Collections.singletonMap(IconGroup.QUEST, "Quest"),
+			Collections.emptyMap());
 	}
 
 	@Test

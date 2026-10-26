@@ -264,7 +264,8 @@ public class AdvancedMapPlugin extends Plugin
 	{
 		try
 		{
-			progress = Progress.read(client);
+			MapIcons current = icons;
+			progress = Progress.read(client, current == null ? Collections.emptySet() : current.watchedVars());
 		}
 		catch (RuntimeException e)
 		{

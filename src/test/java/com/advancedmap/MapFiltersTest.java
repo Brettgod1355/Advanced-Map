@@ -39,7 +39,7 @@ public class MapFiltersTest
 		names.put(1050, "Sword shop");
 		names.put(1056, "Quest");
 		NAMES = new Progress(false, new int[Skill.values().length], new EnumMap<>(Quest.class), Collections.emptyMap(),
-			names);
+			names, Collections.emptyMap());
 	}
 
 	private static MapSettings settings(Set<IconGroup> groups, Set<String> hiddenTypes)

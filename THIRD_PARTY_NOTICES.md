@@ -83,6 +83,15 @@ The game and its data are Jagex's; this plugin is not affiliated with or endorse
 `icon.png` and the sidebar icon are this project's own drawing, made in code (`MapIcon.java`) and licensed with
 the rest of the project under the BSD 2-Clause License. No game artwork or wiki image is included.
 
+## Facts from the Old School RuneScape Wiki
+
+What the buildable bank chests need (Construction and Sailing levels, quests, materials) and which quest opens the
+Corsair Cove and Ape Atoll banks, the Culinaromancer's Chest and the hole from Lumbridge Castle's cellar were checked
+on the [Old School RuneScape Wiki](https://oldschool.runescape.wiki/) on 2026-10-26 (pages "Buildable bank chests",
+"Lumbridge Castle", "Corsair Cove" and "Ape Atoll bank"; the wiki's text is licensed CC BY-NC-SA 3.0). Only those
+game facts are written in `Unlockable.java`; no wiki text or image is included, and nothing is fetched while the
+plugin runs. Which chests and banks there are, and whether a player has built or opened one, come from the game.
+
 ## Behavior references (no code copied)
 
 - [Reimagined World Map](https://github.com/Maiz19/reimagined-world-map) was looked at for ideas only (a

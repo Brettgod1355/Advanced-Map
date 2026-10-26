@@ -6,6 +6,7 @@
 package com.advancedmap;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -23,7 +24,8 @@ import net.runelite.api.gameval.DBTableID;
 /**
  * What the map needs to know about the player and the game's own names, read on the client thread and kept as an
  * unchanging copy that the overlay and the window read from any thread: skill levels, quest states, each quest's
- * details by its start icon (from the game's quest table), and the names of the icon categories.
+ * details by its start icon (from the game's quest table), the names of the icon categories, and the variables that say
+ * what the player has built or unlocked.
  */
 @Value
 class Progress
@@ -34,7 +36,7 @@ class Progress
 	static final String[] LENGTH = {"Very short", "Short", "Medium", "Long", "Very long"};
 
 	static final Progress NONE = new Progress(false, new int[Skill.values().length], Collections.emptyMap(),
-		Collections.emptyMap(), Collections.emptyMap());
+		Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap());
 
 	/** A quest as its start icon shows it. */
 	@Value
@@ -56,6 +58,8 @@ class Progress
 	/** Quests by the map area of their start icon. */
 	Map<Integer, QuestInfo> questsByIcon;
 	Map<Integer, String> categoryNames;
+	/** The player's values of the variables the map's unlocks read ({@link Unlock#getVariable()}). */
+	Map<Integer, Integer> vars;
 
 	int level(Skill skill)
 	{
@@ -72,8 +76,15 @@ class Progress
 		return categoryNames.get(category);
 	}
 
-	/** Reads it all. Client thread. */
-	static Progress read(Client client)
+	/** The player's value of an unlock's variable, or -1 when not read (logged out, or not read yet). */
+	int value(int var)
+	{
+		Integer value = vars.get(var);
+		return value == null ? -1 : value;
+	}
+
+	/** Reads it all, with the variables of the unlocks found so far. Client thread. */
+	static Progress read(Client client, Collection<Integer> watched)
 	{
 		Map<Integer, String> names = new HashMap<>();
 		EnumComposition categories = client.getEnum(CATEGORY_NAMES);
@@ -87,8 +98,20 @@ class Progress
 		boolean loggedIn = client.getGameState() == GameState.LOGGED_IN;
 		int[] levels = new int[Skill.values().length];
 		Map<Quest, QuestState> states = new EnumMap<>(Quest.class);
+		Map<Integer, Integer> vars = new HashMap<>();
 		if (loggedIn)
 		{
+			for (int var : watched)
+			{
+				try
+				{
+					vars.put(var, var >= 0 ? client.getVarbitValue(var) : client.getVarpValue(-var - 1));
+				}
+				catch (RuntimeException e)
+				{
+					// a variable this game version does not have: its unlock stays unknown
+				}
+			}
 			for (Skill skill : Skill.values())
 			{
 				levels[skill.ordinal()] = client.getBoostedSkillLevel(skill);
@@ -124,7 +147,7 @@ class Progress
 				number(field(client, row, DBTableID.Quest.COL_MEMBERS)) == 1,
 				tuples(client, row, DBTableID.Quest.COL_REQUIREMENT_STATS)));
 		}
-		return new Progress(loggedIn, levels, states, byIcon, names);
+		return new Progress(loggedIn, levels, states, byIcon, names, vars);
 	}
 
 	private static Object field(Client client, int row, int column)

@@ -358,8 +358,9 @@ class RegionImages
 	}
 
 	/**
-	 * Hands the icons a region's objects put on the game's map, on every floor, to {@link MapIcons}. An icon is on the
-	 * floor it is drawn on: an object over a bridge tile is stored a floor up but drawn a floor lower, as the map is.
+	 * Hands the icons a region's objects put on the game's map, on every floor, to {@link MapIcons}, with Advanced
+	 * Map's own ({@link FoundIcons}). An icon is on the floor it is drawn on: an object over a bridge tile is stored a
+	 * floor up but drawn a floor lower, as the map is.
 	 */
 	private void findIcons(Region region)
 	{
@@ -381,7 +382,12 @@ class RegionImages
 			int y = location.getPosition().getY();
 			spots.add(MapSpot.icon(x, y, floorOf(region, x, y, location.getPosition().getZ()), areaId, category));
 		}
-		icons.addRegion(region.getRegionID(), spots);
+		List<MapSpot> all = FoundIcons.find(region, source, spots);
+		for (int i = spots.size(); i < all.size(); i++)
+		{
+			icons.addSprite(all.get(i).getAreaId(), source.areaIcon(all.get(i).getAreaId()));
+		}
+		icons.addRegion(region.getRegionID(), all);
 	}
 
 	/** The floor an object on a tile is drawn on: a floor lower over a bridge tile. */

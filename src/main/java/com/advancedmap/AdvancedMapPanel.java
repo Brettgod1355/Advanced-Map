@@ -132,8 +132,9 @@ class AdvancedMapPanel extends PluginPanel
 			+ " are numbered is a setting.")
 			+ section("Icons", "Click an icon for its details: a quest's difficulty and the levels it needs, a"
 			+ " shortcut's Agility level, a spell's Magic level. Shortcuts and teleports you can't use yet are grayed"
-			+ " out with a red mark. \"Icons\" at the top left turns every icon off or on at once; place names"
-			+ " stay.")
+			+ " out with a red mark, and so are bank chests you haven't built yet and banks a quest hasn't opened"
+			+ " for you; click one for what it needs. \"Icons\" at the top left turns every icon off or on at once;"
+			+ " place names stay.")
 			+ section("Filters", "\"Filters\" at the top left drops down a list of every kind of icon with its"
 			+ " picture and name, grouped (Banks, Quests, Shops ...). Tick or untick a whole group or a single kind, or"
 			+ " type to search; the mouse wheel scrolls it. An orange dot on the button means some icons are"

@@ -312,8 +312,8 @@ public interface AdvancedMapConfig extends Config
 	@ConfigItem(
 		keyName = "markLocked",
 		name = "Mark what you can't use yet",
-		description = "Show agility shortcuts above your Agility level, and teleport spells you can't cast yet, grayed"
-			+ " out with a red mark.",
+		description = "Show agility shortcuts above your Agility level, teleport spells you can't cast yet, and banks"
+			+ " you haven't built or unlocked yet, grayed out with a red mark.",
 		section = ICONS,
 		position = 18
 	)
