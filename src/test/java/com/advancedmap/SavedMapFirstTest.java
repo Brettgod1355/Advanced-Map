@@ -161,4 +161,33 @@ public class SavedMapFirstTest
 		assertNotNull(now);
 		assertNotEquals("drawn again from the game's data", 0xFF336699, now.getRGB(5, 5));
 	}
+
+	@Test
+	public void aStalePictureStaysOnScreenUntilItsNewOneIsReady() throws Exception
+	{
+		RegionImages images = images(new Source(true, SAVED + 1));
+		// asked for once, as when the map opens; never asked again
+		images.request(0, Collections.singletonList(REGION), RegionImages.Level.FULL);
+		boolean seen = false;
+		BufferedImage now = null;
+		for (int i = 0; i < 150; i++)
+		{
+			now = images.get(0, REGION, RegionImages.Level.FULL);
+			if (now != null)
+			{
+				seen = true;
+				if (now.getRGB(5, 5) != 0xFF336699)
+				{
+					break;
+				}
+			}
+			else if (seen)
+			{
+				throw new AssertionError("the region went blank between the old picture and the new one");
+			}
+			TimeUnit.MILLISECONDS.sleep(10);
+		}
+		assertNotNull(now);
+		assertNotEquals("swapped for the one drawn again", 0xFF336699, now.getRGB(5, 5));
+	}
 }

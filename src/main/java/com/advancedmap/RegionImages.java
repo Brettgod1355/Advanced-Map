@@ -220,15 +220,7 @@ class RegionImages
 			{
 				return;
 			}
-			if (drawn.full != null && level == Level.FULL)
-			{
-				images.get(Level.FULL).put(key, drawn.full);
-			}
-			if (drawn.full != null)
-			{
-				images.get(Level.HALF).put(key, shrink(drawn.full, 2));
-			}
-			images.get(Level.SMALL).put(key, drawn.small);
+			keep(key, level, drawn);
 		}
 		catch (CancellationException | CacheNotReadyException e)
 		{
@@ -315,6 +307,20 @@ class RegionImages
 		return drawChecked(key, level);
 	}
 
+	/** Puts a floor's pictures in memory, replacing what was there. */
+	private void keep(int key, Level level, Drawn drawn)
+	{
+		if (drawn.full != null && level == Level.FULL)
+		{
+			images.get(Level.FULL).put(key, drawn.full);
+		}
+		if (drawn.full != null)
+		{
+			images.get(Level.HALF).put(key, shrink(drawn.full, 2));
+		}
+		images.get(Level.SMALL).put(key, drawn.small);
+	}
+
 	private static Drawn loadSaved(MapStore saved, int key, long hash, Level level)
 	{
 		BufferedImage small = level == Level.SMALL ? saved.load(key, hash, MapStore.Kind.SMALL) : null;
@@ -343,8 +349,8 @@ class RegionImages
 	}
 
 	/**
-	 * Reads a region's game data, finds its icons, and when the saved picture was drawn from older data, drops it
-	 * from memory so it is drawn again on the next request. Render threads.
+	 * Reads a region's game data, finds its icons, and when the saved picture was drawn from older data, draws it
+	 * again (and saves it), keeping the old one on screen until the new one is ready. Render threads.
 	 */
 	private void check(int key)
 	{
@@ -363,11 +369,21 @@ class RegionImages
 			checked.add(key);
 			if (savedHash == null || savedHash != hash)
 			{
-				for (Level level : Level.values())
+				// drawn again from the game's data while the old picture stays on screen, then swapped in
+				Level level = images.get(Level.FULL).containsKey(key) ? Level.FULL : Level.SMALL;
+				Drawn fresh = drawChecked(key, level);
+				if (fresh == null)
 				{
-					images.get(level).remove(key);
+					for (Level each : Level.values())
+					{
+						images.get(each).remove(key);
+					}
 				}
-				absent.remove(key);
+				else
+				{
+					absent.remove(key);
+					keep(key, level, fresh);
+				}
 			}
 		}
 		catch (CancellationException e)
