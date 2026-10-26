@@ -67,6 +67,8 @@ public class AdvancedMapPlugin extends Plugin
 	private static final int RENDER_THREADS = 2;
 	/** How often the player's levels and quests are read again while the map is open, in game ticks (3 s). */
 	private static final int PROGRESS_TICKS = 5;
+	/** How often, while the map is open, Shortest Path is asked what route it is showing (3 ticks, about 2 s). */
+	private static final int ROUTE_TICKS = 3;
 	/** How far the mouse may move between press and release for it to count as a click, in pixels. */
 	static final int CLICK_SLOP = 4;
 
@@ -114,6 +116,7 @@ public class AdvancedMapPlugin extends Plugin
 	private MapPreparer preparer;
 	private AdvancedMapPanel panel;
 	private MapMessages messages;
+	private ShortestPathRoute shortestPathRoute;
 	private MapPainter painter;
 	private MapOverlay overlay;
 	private MapInput input;
@@ -156,6 +159,7 @@ public class AdvancedMapPlugin extends Plugin
 		viewports.get(MapArea.UNDERGROUND).centerOn(EDGEVILLE_DUNGEON.getX(), EDGEVILLE_DUNGEON.getY());
 		area = MapArea.SURFACE;
 		reader = new CacheReader(client);
+		shortestPathRoute = new ShortestPathRoute();
 		source = new ClientMapSource(reader);
 		icons = new MapIcons();
 		labels = new MapLabels();
@@ -396,6 +400,10 @@ public class AdvancedMapPlugin extends Plugin
 		{
 			readProgress();
 		}
+		if ((mapOpen || windowOpen) && ticks % ROUTE_TICKS == 0 && messages != null)
+		{
+			askForRoute();
+		}
 	}
 
 	/** Reads the player's levels and quests again, keeping the last copy if the game cannot answer now. */
@@ -419,6 +427,30 @@ public class AdvancedMapPlugin extends Plugin
 		{
 			messages.handle(event.getName(), event.getData());
 		}
+		else if (messages != null && ShortestPathRoute.NAMESPACE.equals(event.getNamespace()))
+		{
+			Map<String, Object> query = shortestPathRoute.onMessage(event.getName(), event.getData(),
+				currentPlayerLocation(), messages);
+			if (query != null)
+			{
+				clientThread.invokeLater(() -> eventBus.post(new PluginMessage(ShortestPathRoute.NAMESPACE, "query",
+					query)));
+			}
+		}
+	}
+
+	/**
+	 * Asks Shortest Path what route it is showing, so the map can draw it, while the map is open and Shortest Path
+	 * is the routing plugin that is on. Client thread.
+	 */
+	private void askForRoute()
+	{
+		if (settings.getRouting() != RoutingPlugin.SHORTEST_PATH)
+		{
+			shortestPathRoute.clear(messages);
+			return;
+		}
+		eventBus.post(new PluginMessage(ShortestPathRoute.NAMESPACE, "getTarget", ShortestPathRoute.getTarget()));
 	}
 
 	@Subscribe
@@ -642,8 +674,13 @@ public class AdvancedMapPlugin extends Plugin
 		String namespace = settings.getRouting().getNamespace();
 		if (namespace != null)
 		{
-			clientThread.invokeLater(() -> eventBus.post(new PluginMessage(namespace, "path",
-				Collections.<String, Object>singletonMap("target", target))));
+			clientThread.invokeLater(() ->
+			{
+				eventBus.post(new PluginMessage(namespace, "path", Collections.<String, Object>singletonMap("target",
+					target)));
+				// Shortest Path's new route, drawn here as soon as it says what it is showing
+				clientThread.invokeLater(this::askForRoute);
+			});
 		}
 	}
 

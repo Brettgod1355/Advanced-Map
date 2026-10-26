@@ -59,6 +59,17 @@ class MapMessages
 		return sorted;
 	}
 
+	/** Puts a layer of this plugin's own on the map, replacing one with the same id. */
+	void put(MapLayer layer)
+	{
+		layers.put(layer.getId(), layer);
+	}
+
+	void remove(String id)
+	{
+		layers.remove(id);
+	}
+
 	void clear()
 	{
 		layers.clear();
