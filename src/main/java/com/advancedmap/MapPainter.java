@@ -752,7 +752,8 @@ final class MapPainter
 		{
 			return MapIcons.name(selection.getSpot(), progress);
 		}
-		WorldPoint point = selection.getPoint();
+		// the game's own tile, in Prifddinas the city's
+		WorldPoint point = Prifddinas.toCity(selection.getPoint());
 		return point.getX() + ", " + point.getY() + (point.getPlane() > 0 ? ", " + floors.name(point.getPlane())
 			: "");
 	}
@@ -816,8 +817,10 @@ final class MapPainter
 		{
 			Path2D path = new Path2D.Double();
 			boolean first = true;
-			for (WorldPoint point : line.getPoints())
+			for (WorldPoint at : line.getPoints())
 			{
+				// another plugin's tiles in Prifddinas, on the surface where the map draws the city
+				WorldPoint point = Prifddinas.toSurface(at);
 				double sx = view.screenX(point.getX() + 0.5);
 				double sy = view.screenY(point.getY() + 0.5);
 				if (first)
@@ -843,8 +846,9 @@ final class MapPainter
 
 		for (MapLayer.Marker marker : layer.getMarkers())
 		{
-			double sx = view.screenX(marker.getPoint().getX() + 0.5);
-			double sy = view.screenY(marker.getPoint().getY() + 0.5);
+			WorldPoint point = Prifddinas.toSurface(marker.getPoint());
+			double sx = view.screenX(point.getX() + 0.5);
+			double sy = view.screenY(point.getY() + 0.5);
 			if (sx < -50 || sy < -50 || sx > view.width + 50 || sy > view.height + 50)
 			{
 				continue;

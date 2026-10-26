@@ -93,7 +93,7 @@ class MapMessages
 				if (in.get("point") instanceof WorldPoint)
 				{
 					Object zoom = in.get("zoom");
-					show.accept((WorldPoint) in.get("point"),
+					show.accept(Prifddinas.toSurface((WorldPoint) in.get("point")),
 						zoom instanceof Number ? ((Number) zoom).doubleValue() : null);
 				}
 				break;

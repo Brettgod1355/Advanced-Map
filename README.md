@@ -11,6 +11,9 @@ A full-screen world map for RuneLite, drawn from the game's own map data with sm
 - **Wilderness teleport limits**: zoomed in, red dashed lines show where the Wilderness passes level 20 and level 30,
   above which most teleports stop working. Turn them off with the "Wilderness teleport limits" setting.
 - **Place names** from the game's own map: kingdoms when zoomed far out, then towns, then smaller places.
+- **Prifddinas in Tirannwn**: the game keeps the elven city on a map of its own; Advanced Map draws it inside its
+  walls on the main map, with its icons, and puts you, its teleports and the transports that go there (the spirit
+  tree, the teleport crystal) there too.
 - **Icons you can click**: banks, quests, shops, shortcuts and every other icon of the game's map, plus teleport
   destinations. Click one for its details (a quest's difficulty and the levels it needs, a shortcut's Agility level,
   a spell's Magic level and quest). Agility shortcuts and teleport spells you can't use yet are grayed out with a

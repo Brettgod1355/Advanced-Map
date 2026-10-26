@@ -8,6 +8,7 @@ package com.advancedmap;
 import java.awt.Rectangle;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import net.runelite.api.coords.WorldPoint;
 import net.runelite.client.game.AgilityShortcut;
 
 /**
@@ -92,10 +93,12 @@ final class MapSpot
 			cluster);
 	}
 
+	/** A teleport's icon, where it lands: in Prifddinas, on the surface where the map draws the city. */
 	static MapSpot teleport(Teleport teleport)
 	{
-		return new MapSpot("t" + teleport.name(), teleport.getLocation().getX(), teleport.getLocation().getY(),
-			teleport.getLocation().getPlane(), -1, -1, IconGroup.TELEPORTS, teleport, null, null, null, null, null);
+		WorldPoint at = Prifddinas.toSurface(teleport.getLocation());
+		return new MapSpot("t" + teleport.name(), at.getX(), at.getY(), at.getPlane(), -1, -1, IconGroup.TELEPORTS,
+			teleport, null, null, null, null, null);
 	}
 
 	/** The shortcut in RuneLite's list placed nearest a map icon, the lowest level on a tie; null if none is close. */

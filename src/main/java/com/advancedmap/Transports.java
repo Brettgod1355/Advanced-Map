@@ -129,9 +129,11 @@ final class Transports
 		return rows;
 	}
 
+	/** A tile of the lists; one in Prifddinas on the surface, where the map draws the city. */
 	private static WorldPoint point(String[] f, int at)
 	{
-		return new WorldPoint(Integer.parseInt(f[at]), Integer.parseInt(f[at + 1]), Integer.parseInt(f[at + 2]));
+		return Prifddinas.toSurface(new WorldPoint(Integer.parseInt(f[at]), Integer.parseInt(f[at + 1]),
+			Integer.parseInt(f[at + 2])));
 	}
 
 	private static void parseTransports(InputStream in, Data out) throws IOException
@@ -362,7 +364,8 @@ final class Transports
 
 	/**
 	 * Lines from a transport to each place it goes on the same map, each place marked with its name. A place on the
-	 * other map (Prifddinas, Keldagrim, a player's house) gets no line: it would run off the map's edge.
+	 * other map (Keldagrim, a player's house) gets no line: it would run off the map's edge. Prifddinas is on the
+	 * surface ({@link Prifddinas}).
 	 */
 	static MapLayer layer(WorldPoint from, List<Destination> destinations)
 	{

@@ -82,6 +82,8 @@ class ClientMapSource implements MapSource
 	private final Map<Integer, Integer> areaCategories = new ConcurrentHashMap<>();
 	/** CRC32 of each region's map files, read with the region. */
 	private final Map<Integer, Long> regionCrcs = new ConcurrentHashMap<>();
+	/** The surface regions at Prifddinas's walls, with the city drawn in. */
+	private final Map<Integer, Region> withCity = new ConcurrentHashMap<>();
 	/** CRC32 of the ground and texture tables, which every region's picture depends on. */
 	private volatile long tablesCrc;
 	/** CRC32 of the map scenery sprite sheet (trees, rocks and the like drawn on the map). */
@@ -99,8 +101,34 @@ class ClientMapSource implements MapSource
 		this.reader = reader;
 	}
 
+	/**
+	 * A region as the map draws it: Prifddinas's copy left out, and the surface regions at its walls with the city in
+	 * them ({@link Prifddinas}).
+	 */
 	@Override
 	public Region region(int regionX, int regionY)
+	{
+		if (Prifddinas.isCopyRegion(regionX, regionY))
+		{
+			return null;
+		}
+		Region region = loaded(regionX, regionY);
+		if (region == null || !Prifddinas.takesCity(regionX, regionY))
+		{
+			return region;
+		}
+		Region merged = withCity.get(region.getRegionID());
+		if (merged == null)
+		{
+			merged = Prifddinas.merge(region, loaded(regionX + (Prifddinas.SHIFT_X >> 6),
+				regionY + (Prifddinas.SHIFT_Y >> 6)));
+			withCity.put(region.getRegionID(), merged);
+		}
+		return merged;
+	}
+
+	/** A region as the game has it, read once. */
+	private Region loaded(int regionX, int regionY)
 	{
 		if (regionX < 0 || regionY < 0 || regionX > 255 || regionY > 255)
 		{
@@ -439,7 +467,7 @@ class ClientMapSource implements MapSource
 		if (links == null)
 		{
 			byte[] script = reader.read(client -> client.getIndexScripts().loadData(MapLinks.SCRIPT, 0));
-			links = MapLinks.decode(script);
+			links = Prifddinas.moveLinks(MapLinks.decode(script));
 			// kept once read; a script the client has not got yet is asked for again
 			mapLinks = script == null ? null : links;
 		}
@@ -509,6 +537,13 @@ class ClientMapSource implements MapSource
 				Region near = region(regionX + dx, regionY + dy);
 				Long nearCrc = regionCrcs.get(regionX + dx << 8 | regionY + dy);
 				update(crc, data, near == null || nearCrc == null ? -1 : nearCrc);
+				if (near != null && Prifddinas.takesCity(regionX + dx, regionY + dy))
+				{
+					// drawn with Prifddinas's copy in it: a change to the copy changes the picture too
+					Long copyCrc = regionCrcs.get(regionX + dx + (Prifddinas.SHIFT_X >> 6) << 8
+						| regionY + dy + (Prifddinas.SHIFT_Y >> 6));
+					update(crc, data, copyCrc == null ? -1 : copyCrc);
+				}
 				if (near != null)
 				{
 					for (Location location : near.getLocations())
@@ -626,7 +661,8 @@ class ClientMapSource implements MapSource
 			for (WorldMapElements.Element element : WorldMapElements.load(map))
 			{
 				AreaDefinition area = labelAreas.get(element.getAreaId());
-				if (area == null || element.getPlane() != 0
+				// Prifddinas's own map repeats the surface's names around it, at the copy's tiles
+				if (area == null || element.getPlane() != 0 || Prifddinas.COPY.contains(element.getX(), element.getY())
 					|| !seen.add(area.id + "@" + element.getX() + "," + element.getY()))
 				{
 					continue;

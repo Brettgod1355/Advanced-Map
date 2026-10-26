@@ -5,6 +5,7 @@
  */
 package com.advancedmap;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import net.runelite.api.coords.WorldPoint;
@@ -90,14 +91,25 @@ public class TransportsTest
 	}
 
 	@Test
-	public void placesOnTheOtherMapGetNoLine()
+	public void theSpiritTreeToPrifddinasLandsOnTheSurface()
 	{
-		// the Grand Exchange spirit tree reaches Prifddinas, which is drawn on the other map
+		// the Grand Exchange spirit tree reaches Prifddinas: its tree at 3274, 6123 in the city's copy, drawn in Tirannwn
 		List<Transports.Destination> to = Transports.from(3185, 3508, 0);
 		assertTrue(labels(to).contains("Prifddinas"));
 		MapLayer layer = Transports.layer(new WorldPoint(3185, 3508, 0), to);
-		assertTrue(layer.getMarkers().stream().noneMatch(m -> "Prifddinas".equals(m.getLabel())));
-		assertTrue(layer.getLines().size() < to.size());
+		assertTrue(layer.getMarkers().stream().anyMatch(m -> "Prifddinas".equals(m.getLabel())
+			&& m.getPoint().equals(new WorldPoint(2250, 3371, 0))));
+	}
+
+	@Test
+	public void placesOnTheOtherMapGetNoLine()
+	{
+		Transports.Destination keldagrim = new Transports.Destination(new WorldPoint(2908, 10170, 0), "Minecart",
+			"Keldagrim");
+		Transports.Destination falador = new Transports.Destination(new WorldPoint(2965, 3380, 0), "Minecart", "");
+		MapLayer layer = Transports.layer(new WorldPoint(3140, 3504, 0), Arrays.asList(keldagrim, falador));
+		assertEquals(1, layer.getLines().size());
+		assertTrue(layer.getMarkers().stream().noneMatch(m -> "Keldagrim".equals(m.getLabel())));
 	}
 
 	@Test

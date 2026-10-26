@@ -298,7 +298,7 @@ public class AdvancedMapPlugin extends Plugin
 		}
 		if (mapOpen || windowOpen)
 		{
-			player = currentPlayerLocation();
+			player = Prifddinas.toSurface(currentPlayerLocation());
 		}
 		if (windowOpen)
 		{
@@ -406,7 +406,7 @@ public class AdvancedMapPlugin extends Plugin
 		WorldPoint here = currentPlayerLocation();
 		if (here != null)
 		{
-			lastSeen = here;
+			lastSeen = Prifddinas.toSurface(here);
 		}
 		if ((mapOpen || windowOpen) && ++ticks % PROGRESS_TICKS == 0)
 		{
@@ -714,7 +714,7 @@ public class AdvancedMapPlugin extends Plugin
 			clientThread.invokeLater(() ->
 			{
 				eventBus.post(new PluginMessage(namespace, "path", Collections.<String, Object>singletonMap("target",
-					target)));
+					Prifddinas.toCity(target))));
 				// Shortest Path's new route, drawn here as soon as it says what it is showing
 				clientThread.invokeLater(this::askForRoute);
 			});
@@ -1127,7 +1127,7 @@ public class AdvancedMapPlugin extends Plugin
 			{
 				return;
 			}
-			player = currentPlayerLocation();
+			player = Prifddinas.toSurface(currentPlayerLocation());
 			readProgress();
 			loadLabels();
 			WorldPoint center = at != null ? at : player != null ? player : LUMBRIDGE;

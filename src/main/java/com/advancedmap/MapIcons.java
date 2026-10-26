@@ -19,6 +19,7 @@ import lombok.Value;
 import net.runelite.api.Quest;
 import net.runelite.api.QuestState;
 import net.runelite.api.Skill;
+import net.runelite.api.coords.WorldPoint;
 import net.runelite.client.game.AgilityShortcut;
 
 /**
@@ -424,8 +425,10 @@ final class MapIcons
 				levelLine(lines, Skill.WOODCUTTING, tree.getLevel(), progress);
 			}
 		}
-		lines.add(new Line(spot.getPlane() > 0 ? spot.getX() + ", " + spot.getY() + ", " + floors.name(spot.getPlane())
-			: spot.getX() + ", " + spot.getY(), QUIET));
+		// the game's own tile, in Prifddinas the city's
+		WorldPoint tile = Prifddinas.toCity(new WorldPoint(spot.getX(), spot.getY(), spot.getPlane()));
+		lines.add(new Line(tile.getPlane() > 0 ? tile.getX() + ", " + tile.getY() + ", " + floors.name(tile.getPlane())
+			: tile.getX() + ", " + tile.getY(), QUIET));
 		lines.add(new Line(hidden ? "Hidden: right-click to unhide" : "Right-click to hide this icon", QUIET));
 		return lines;
 	}

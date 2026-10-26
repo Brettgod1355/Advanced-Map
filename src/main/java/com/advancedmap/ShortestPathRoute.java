@@ -123,8 +123,10 @@ class ShortestPathRoute
 		List<MapLayer.Marker> marks = new ArrayList<>();
 		List<WorldPoint> stretch = new ArrayList<>();
 		WorldPoint last = null;
-		for (WorldPoint point : path)
+		for (WorldPoint step : path)
 		{
+			// a walk out of Prifddinas's gate is one line on the surface, not a jump
+			WorldPoint point = Prifddinas.toSurface(step);
 			if (last != null && isJump(last, point))
 			{
 				addLine(lines, stretch);

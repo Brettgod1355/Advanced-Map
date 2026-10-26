@@ -63,6 +63,67 @@ public class Region
 		this.baseY = y << 6;
 	}
 
+	/** A copy of another region, to change without changing it. */
+	public Region(Region other)
+	{
+		this(other.regionID);
+		for (int z = 0; z < Z; z++)
+		{
+			for (int x = 0; x < X; x++)
+			{
+				tileHeights[z][x] = other.tileHeights[z][x].clone();
+				tileSettings[z][x] = other.tileSettings[z][x].clone();
+				overlayIds[z][x] = other.overlayIds[z][x].clone();
+				overlayPaths[z][x] = other.overlayPaths[z][x].clone();
+				overlayRotations[z][x] = other.overlayRotations[z][x].clone();
+				underlayIds[z][x] = other.underlayIds[z][x].clone();
+			}
+		}
+		locations.addAll(other.locations);
+	}
+
+	/**
+	 * Takes an 8x8 zone, on every floor, from another region: its ground at the same local tiles, and its objects in
+	 * place of this region's there, moved to this region's tiles.
+	 */
+	public void takeZone(Region from, int zoneX, int zoneY)
+	{
+		int x0 = zoneX * 8;
+		int y0 = zoneY * 8;
+		for (int z = 0; z < Z; z++)
+		{
+			for (int x = x0; x < x0 + 8; x++)
+			{
+				for (int y = y0; y < y0 + 8; y++)
+				{
+					tileHeights[z][x][y] = from.tileHeights[z][x][y];
+					tileSettings[z][x][y] = from.tileSettings[z][x][y];
+					overlayIds[z][x][y] = from.overlayIds[z][x][y];
+					overlayPaths[z][x][y] = from.overlayPaths[z][x][y];
+					overlayRotations[z][x][y] = from.overlayRotations[z][x][y];
+					underlayIds[z][x][y] = from.underlayIds[z][x][y];
+				}
+			}
+		}
+		locations.removeIf(loc -> inZone(loc, baseX, baseY, x0, y0));
+		for (Location loc : from.locations)
+		{
+			if (inZone(loc, from.baseX, from.baseY, x0, y0))
+			{
+				Position at = loc.getPosition();
+				locations.add(new Location(loc.getId(), loc.getType(), loc.getOrientation(),
+					new Position(at.getX() - from.baseX + baseX, at.getY() - from.baseY + baseY, at.getZ())));
+			}
+		}
+	}
+
+	private static boolean inZone(Location loc, int baseX, int baseY, int x0, int y0)
+	{
+		int x = loc.getPosition().getX() - baseX;
+		int y = loc.getPosition().getY() - baseY;
+		return x >= x0 && x < x0 + 8 && y >= y0 && y < y0 + 8;
+	}
+
 	public void loadTerrain(MapDefinition map)
 	{
 		Tile[][][] tiles = map.getTiles();
