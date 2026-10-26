@@ -112,6 +112,20 @@ public class MapPainterTest
 		assertTrue(MapPainter.menuEntries(tile, settings(RoutingPlugin.NONE)).isEmpty());
 	}
 
+	@Test
+	public void aRightClickedTileDrawsWithIconsOnScreen()
+	{
+		// a tile's selection has no icon; drawing the icons beside it threw on every frame (found 2026-10-26)
+		MapPainter painter = new MapPainter(null, null, new MapIcons(), null, null);
+		MapPainter.Selection tile = new MapPainter.Selection(null, true, 10, 10, new WorldPoint(3222, 3218, 0));
+		List<MapIcons.Shown> shown = Collections.singletonList(new MapIcons.Shown(MapSpot.teleport(Teleport.VARROCK),
+			new Rectangle(100, 100, 12, 12), MapIcons.Look.NORMAL));
+		BufferedImage image = new BufferedImage(200, 200, BufferedImage.TYPE_INT_RGB);
+		Graphics2D g = image.createGraphics();
+		painter.drawIcons(g, shown, tile);
+		g.dispose();
+	}
+
 	private static MapSettings settings(RoutingPlugin routing)
 	{
 		return new MapSettings(EnumSet.allOf(IconGroup.class), Collections.emptySet(), Collections.emptySet(), false,

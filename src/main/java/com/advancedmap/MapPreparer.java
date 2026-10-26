@@ -76,6 +76,11 @@ final class MapPreparer
 		listed = false;
 	}
 
+	private synchronized void requeue(int key)
+	{
+		todo.add(key);
+	}
+
 	/** How many regions' floors are still to prepare; -1 before the list is made. */
 	synchronized int remaining()
 	{
@@ -94,7 +99,15 @@ final class MapPreparer
 			Integer key = next(store);
 			if (key != null)
 			{
-				images.prepare(key);
+				try
+				{
+					images.prepare(key);
+				}
+				catch (CacheNotReadyException e)
+				{
+					// the client has not downloaded this part of the cache yet: last in the queue, not forgotten
+					requeue(key);
+				}
 			}
 		}
 		catch (CancellationException e)

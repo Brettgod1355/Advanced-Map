@@ -478,7 +478,7 @@ final class MapPainter
 	}
 
 	/** Draws the icons on screen, with a mark for each look and a ring round the one whose info box is open. */
-	private void drawIcons(Graphics2D g, List<MapIcons.Shown> shown, Selection selection)
+	void drawIcons(Graphics2D g, List<MapIcons.Shown> shown, Selection selection)
 	{
 		java.awt.Composite composite = g.getComposite();
 		for (MapIcons.Shown icon : shown)
@@ -504,7 +504,7 @@ final class MapPainter
 			}
 			g.setComposite(composite);
 			drawBadge(g, at, look);
-			if (selection != null && selection.getSpot().equals(icon.getSpot()))
+			if (selection != null && icon.getSpot().equals(selection.getSpot()))
 			{
 				Stroke stroke = g.getStroke();
 				g.setStroke(THICK);

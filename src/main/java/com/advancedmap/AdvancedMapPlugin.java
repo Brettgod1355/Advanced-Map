@@ -17,9 +17,11 @@ import javax.inject.Inject;
 import javax.swing.SwingUtilities;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
+import net.runelite.api.GameState;
 import net.runelite.api.Player;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.BeforeRender;
+import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
@@ -270,6 +272,21 @@ public class AdvancedMapPlugin extends Plugin
 		if (mapOpen || windowOpen)
 		{
 			player = currentPlayerLocation();
+		}
+	}
+
+	/**
+	 * Leaving the game (logout, a disconnect, a world hop) closes the map over the game view: RuneLite stops drawing
+	 * overlays there, and an invisible map would still take every click on the login screen. The window stays.
+	 */
+	@Subscribe
+	public void onGameStateChanged(GameStateChanged event)
+	{
+		GameState state = event.getGameState();
+		if (mapOpen && (state == GameState.LOGIN_SCREEN || state == GameState.HOPPING
+			|| state == GameState.CONNECTION_LOST))
+		{
+			closeMap();
 		}
 	}
 
@@ -808,7 +825,8 @@ public class AdvancedMapPlugin extends Plugin
 				viewport.setZoom(zoom);
 			}
 			boolean wasOpen = mapOpen || windowOpen;
-			if (config.popOut())
+			// RuneLite draws overlays only while logged in, so on the login screen the map opens in its window
+			if (config.popOut() || client.getGameState() != GameState.LOGGED_IN)
 			{
 				windowOpen = true;
 				SwingUtilities.invokeLater(this::showWindow);

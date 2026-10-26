@@ -241,6 +241,11 @@ class ClientMapSource implements MapSource
 				}
 				return out;
 			});
+			if (sprites.values().stream().anyMatch(frames -> frames == null))
+			{
+				// the client has not loaded these sprites yet: draw nothing now rather than pictures without them
+				throw new CacheNotReadyException();
+			}
 			mapScenes = sprites.get(SpriteID.MAPSCENE);
 			areaSprites.forEach((id, sprite) ->
 			{
@@ -377,6 +382,11 @@ class ClientMapSource implements MapSource
 				return Optional.empty();
 			}
 			MapSprite[] frames = reader.read(client -> sprites(client, area.spriteId));
+			if (frames == null)
+			{
+				// not loaded yet: nothing is kept, so it is asked again
+				throw new CacheNotReadyException();
+			}
 			return frames.length == 0 ? Optional.empty() : Optional.ofNullable(frames[0]);
 		}).orElse(null);
 	}
@@ -520,13 +530,13 @@ class ClientMapSource implements MapSource
 		return reader.read(client -> client.getIndexConfig().loadData(group, id));
 	}
 
-	/** The frames of a sprite group, placed on their full canvas. Client thread. */
+	/** The frames of a sprite group, placed on their full canvas, or null while the client has not loaded it. */
 	private static MapSprite[] sprites(Client client, int group)
 	{
 		SpritePixels[] frames = client.getSprites(client.getIndexSprites(), group, 0);
 		if (frames == null)
 		{
-			return new MapSprite[0];
+			return null;
 		}
 		List<MapSprite> out = new ArrayList<>(frames.length);
 		for (SpritePixels frame : frames)

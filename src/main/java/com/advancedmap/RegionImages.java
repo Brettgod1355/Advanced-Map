@@ -243,6 +243,7 @@ class RegionImages
 	 * Draws a region's floor ahead of time, for the disk only: nothing is kept in memory. Does nothing when it is
 	 * saved already. Render threads.
 	 */
+	/** Draws and saves a floor of a region. Throws {@link CacheNotReadyException} when it must be tried again later. */
 	void prepare(int key)
 	{
 		MapStore saved = store;
@@ -254,9 +255,9 @@ class RegionImages
 		{
 			draw(key, Level.SMALL);
 		}
-		catch (CancellationException | CacheNotReadyException e)
+		catch (CancellationException e)
 		{
-			// tried again on a later pass
+			// the plugin is stopping
 		}
 		catch (RuntimeException e)
 		{
