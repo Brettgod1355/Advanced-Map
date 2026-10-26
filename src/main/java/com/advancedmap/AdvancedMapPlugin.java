@@ -28,10 +28,12 @@ import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
+import net.runelite.client.events.PluginChanged;
 import net.runelite.client.events.PluginMessage;
 import net.runelite.client.input.KeyManager;
 import net.runelite.client.input.MouseManager;
 import net.runelite.client.plugins.Plugin;
+import net.runelite.client.plugins.PluginManager;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.ClientToolbar;
 import net.runelite.client.ui.NavigationButton;
@@ -84,6 +86,9 @@ public class AdvancedMapPlugin extends Plugin
 
 	@Inject
 	private ConfigManager configManager;
+
+	@Inject
+	private PluginManager pluginManager;
 
 	/** One view per map, each remembering where it was left. */
 	private final Map<MapArea, MapViewport> viewports = new EnumMap<>(MapArea.class);
@@ -146,7 +151,7 @@ public class AdvancedMapPlugin extends Plugin
 		labels = new MapLabels();
 		filters = new MapFilters();
 		labelsLoading = false;
-		settings = MapSettings.of(config);
+		settings = readSettings();
 		progress = Progress.NONE;
 		selection = null;
 		plane = 0;
@@ -275,6 +280,41 @@ public class AdvancedMapPlugin extends Plugin
 		}
 	}
 
+	/** A plugin was turned on or off: "Route here" follows whether the chosen routing plugin is running. */
+	@Subscribe
+	public void onPluginChanged(PluginChanged event)
+	{
+		if (reader != null)
+		{
+			settings = readSettings();
+		}
+	}
+
+	private MapSettings readSettings()
+	{
+		return MapSettings.of(config, routingRunning(config.routing()));
+	}
+
+	/**
+	 * Whether a routing plugin is installed and running, found by name in RuneLite's own plugin list (read only;
+	 * nothing of the other plugin is touched). Without it "Route here" would send a message nobody answers.
+	 */
+	private boolean routingRunning(RoutingPlugin routing)
+	{
+		if (routing == null || routing.getPluginName() == null)
+		{
+			return false;
+		}
+		for (Plugin plugin : pluginManager.getPlugins())
+		{
+			if (plugin != null && routing.getPluginName().equals(plugin.getName()))
+			{
+				return pluginManager.isPluginActive(plugin);
+			}
+		}
+		return false;
+	}
+
 	/**
 	 * Leaving the game (logout, a disconnect, a world hop) closes the map over the game view: RuneLite stops drawing
 	 * overlays there, and an invisible map would still take every click on the login screen. The window stays.
@@ -334,7 +374,7 @@ public class AdvancedMapPlugin extends Plugin
 		{
 			return;
 		}
-		settings = MapSettings.of(config);
+		settings = readSettings();
 		if ("saveMap".equals(event.getKey()) && images != null)
 		{
 			if (config.saveMap())
@@ -663,7 +703,7 @@ public class AdvancedMapPlugin extends Plugin
 			default:
 				break;
 		}
-		settings = MapSettings.of(config);
+		settings = readSettings();
 		return true;
 	}
 
@@ -764,13 +804,13 @@ public class AdvancedMapPlugin extends Plugin
 	{
 		configManager.setConfiguration(AdvancedMapConfig.GROUP, AdvancedMapConfig.HIDDEN_ICONS,
 			MapSettings.withHidden(settings.getHidden(), spot.getKey(), hide));
-		settings = MapSettings.of(config);
+		settings = readSettings();
 	}
 
 	private void setSwitch(String key, boolean on)
 	{
 		configManager.setConfiguration(AdvancedMapConfig.GROUP, key, on);
-		settings = MapSettings.of(config);
+		settings = readSettings();
 	}
 
 	/** Which map is shown: the surface or underground. */

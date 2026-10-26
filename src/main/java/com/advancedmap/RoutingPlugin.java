@@ -18,12 +18,14 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum RoutingPlugin
 {
-	NONE("None", null),
-	SHORTEST_PATH("Shortest Path", "shortestpath"),
-	GPS("GPS", "gps");
+	NONE("None", null, null),
+	SHORTEST_PATH("Shortest Path", "shortestpath", "Shortest Path"),
+	GPS("GPS", "gps", "GPS");
 
 	private final String label;
 	private final String namespace;
+	/** The name on the plugin's descriptor, as RuneLite's plugin list shows it (GPS read at its Hub pin {@code 5fa29ba}). */
+	private final String pluginName;
 
 	@Override
 	public String toString()

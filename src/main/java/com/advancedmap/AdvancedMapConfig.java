@@ -348,8 +348,8 @@ public interface AdvancedMapConfig extends Config
 	@ConfigItem(
 		keyName = "routing",
 		name = "Route with",
-		description = "The plugin that right-click \"Route here\" asks for a route: Shortest Path or GPS, whichever"
-			+ " you have installed. With None the menu has no route entries.",
+		description = "The plugin that right-click \"Route here\" asks for a route: Shortest Path or GPS. \"Route"
+			+ " here\" shows only while that plugin is installed and on. With None the menu has no route entries.",
 		position = 6
 	)
 	default RoutingPlugin routing()

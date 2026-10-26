@@ -39,7 +39,8 @@ class MapSettings
 	RoutingPlugin routing;
 	FloorNumbers floorNumbers;
 
-	static MapSettings of(AdvancedMapConfig config)
+	/** The settings, with routing only when the chosen routing plugin is installed and running. */
+	static MapSettings of(AdvancedMapConfig config, boolean routingRunning)
 	{
 		Set<IconGroup> groups = EnumSet.noneOf(IconGroup.class);
 		for (IconGroup group : IconGroup.values())
@@ -52,7 +53,7 @@ class MapSettings
 		return new MapSettings(Collections.unmodifiableSet(groups), parseHidden(config.hiddenIcons()),
 			parseHidden(config.hiddenTypes()),
 			config.hideCompletedQuests(), config.markLocked(), config.iconsOff(), config.showHidden(),
-			config.placeNames(), config.wildernessLines(), config.routing(), config.floorNumbers());
+			config.placeNames(), config.wildernessLines(), routingRunning ? config.routing() : RoutingPlugin.NONE, config.floorNumbers());
 	}
 
 	boolean shows(IconGroup group)
