@@ -12,6 +12,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 import net.runelite.client.ui.ColorScheme;
@@ -83,8 +84,15 @@ class AdvancedMapPanel extends PluginPanel
 		redraw.setToolTipText("Delete the saved map, so every region is drawn again from the game's data");
 		redraw.addActionListener(e ->
 		{
-			plugin.clearSavedMap();
-			update();
+			int answer = JOptionPane.showConfirmDialog(this,
+				"Delete the saved map and draw every region again from the game's data?\n"
+					+ "Until it is drawn again, the map fills in as you look around.",
+				"Draw the map again", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
+			if (answer == JOptionPane.OK_OPTION)
+			{
+				plugin.clearSavedMap();
+				update();
+			}
 		});
 		content.add(left(redraw));
 

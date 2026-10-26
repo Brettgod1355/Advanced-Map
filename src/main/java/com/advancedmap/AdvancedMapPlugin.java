@@ -7,10 +7,13 @@ package com.advancedmap;
 
 import com.google.inject.Provides;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import javax.inject.Inject;
@@ -18,11 +21,16 @@ import javax.swing.SwingUtilities;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
+import net.runelite.api.Menu;
+import net.runelite.api.MenuAction;
+import net.runelite.api.MenuEntry;
 import net.runelite.api.Player;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.BeforeRender;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
+import net.runelite.api.events.PostMenuSort;
+import net.runelite.api.gameval.InterfaceID;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.EventBus;
@@ -33,11 +41,13 @@ import net.runelite.client.events.PluginMessage;
 import net.runelite.client.input.KeyManager;
 import net.runelite.client.input.MouseManager;
 import net.runelite.client.plugins.Plugin;
-import net.runelite.client.plugins.PluginManager;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.plugins.PluginManager;
 import net.runelite.client.ui.ClientToolbar;
+import net.runelite.client.ui.JagexColors;
 import net.runelite.client.ui.NavigationButton;
 import net.runelite.client.ui.overlay.OverlayManager;
+import net.runelite.client.util.ColorUtil;
 import net.runelite.client.util.HotkeyListener;
 
 @Slf4j
@@ -278,6 +288,49 @@ public class AdvancedMapPlugin extends Plugin
 		{
 			player = currentPlayerLocation();
 		}
+	}
+
+	/** The world map orb, in each of the game's minimap layouts. */
+	private static final Set<Integer> ORB = new HashSet<>(Arrays.asList(
+		InterfaceID.Orbs.ORB_WORLDMAP, InterfaceID.Orbs.WORLDMAP,
+		InterfaceID.OrbsNomap.ORB_WORLDMAP, InterfaceID.OrbsNomap.WORLDMAP,
+		InterfaceID.OrbsOsm.ORB_WORLDMAP, InterfaceID.OrbsOsm.WORLDMAP,
+		InterfaceID.OrbsOsmNomap.ORB_WORLDMAP, InterfaceID.OrbsOsmNomap.WORLDMAP));
+	private static final String ORB_OPTION = "Open";
+	private static final String ORB_TARGET = ColorUtil.wrapWithColorTag("Advanced Map", JagexColors.MENU_TARGET);
+
+	/**
+	 * Adds "Open Advanced Map" to the world map orb's menu, once the game has sorted it: at the bottom (above
+	 * Cancel), or at the top when it is to be the left click. The game's own entries stay as they are. It only opens
+	 * this plugin's map; nothing is sent to the game.
+	 */
+	@Subscribe
+	public void onPostMenuSort(PostMenuSort event)
+	{
+		boolean left = config.orbLeftClick();
+		if (reader == null || !left && !config.orbMenu() || client.isMenuOpen())
+		{
+			return;
+		}
+		Menu menu = client.getMenu();
+		boolean orb = false;
+		for (MenuEntry entry : menu.getMenuEntries())
+		{
+			if (ORB_TARGET.equals(entry.getTarget()))
+			{
+				return;
+			}
+			orb |= ORB.contains(entry.getParam1());
+		}
+		if (!orb)
+		{
+			return;
+		}
+		menu.createMenuEntry(left ? -1 : 1)
+			.setOption(ORB_OPTION)
+			.setTarget(ORB_TARGET)
+			.setType(MenuAction.RUNELITE)
+			.onClick(entry -> openMap(null, null));
 	}
 
 	/** A plugin was turned on or off: "Route here" follows whether the chosen routing plugin is running. */

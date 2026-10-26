@@ -44,6 +44,29 @@ public interface AdvancedMapConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "orbMenu",
+		name = "World map orb menu entry",
+		description = "Add \"Open Advanced Map\" to the right-click menu of the world map orb by the minimap.",
+		position = -2
+	)
+	default boolean orbMenu()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "orbLeftClick",
+		name = "World map orb opens Advanced Map",
+		description = "Left-click the world map orb to open Advanced Map. The game's own world map stays in the orb's"
+			+ " right-click menu.",
+		position = -1
+	)
+	default boolean orbLeftClick()
+	{
+		return false;
+	}
+
+	@ConfigItem(
 		keyName = "sidebarButton",
 		name = "Sidebar button",
 		description = "Show Advanced Map's tab in the sidebar, with a button that opens the map and how much is saved.",
