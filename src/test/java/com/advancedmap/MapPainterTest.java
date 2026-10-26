@@ -129,7 +129,7 @@ public class MapPainterTest
 	private static MapSettings settings(RoutingPlugin routing)
 	{
 		return new MapSettings(EnumSet.allOf(IconGroup.class), Collections.emptySet(), Collections.emptySet(), false,
-			true, false, false, true, true, routing, FloorNumbers.GROUND_IS_FIRST, 100);
+			true, false, false, true, true, routing, FloorNumbers.GROUND_IS_FIRST, 100, true);
 	}
 
 	@Test

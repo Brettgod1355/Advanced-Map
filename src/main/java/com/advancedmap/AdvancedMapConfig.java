@@ -365,6 +365,19 @@ public interface AdvancedMapConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "transportNames",
+		name = "Transport names",
+		description = "When zoomed in, show each fairy ring's code beside it, and the place of each spirit tree, hot air"
+			+ " balloon, quetzal, gnome glider, mushtree and Lovakengj minecart.",
+		section = ICONS,
+		position = 20
+	)
+	default boolean transportNames()
+	{
+		return true;
+	}
+
+	@ConfigItem(
 		keyName = "placeNames",
 		name = "Place names",
 		description = "Show the names of kingdoms when zoomed far out, then towns and places as you zoom in.",

@@ -358,13 +358,26 @@ final class MapIcons
 		{
 			return spot.getShortcut().getDescription();
 		}
+		// which fairy ring, spirit tree or cart: the game's map calls them all "Transportation"
+		String transport = Transports.stopTitle(spot);
+		if (transport == null)
+		{
+			transport = Transports.iconName(spot);
+		}
+		if (transport != null)
+		{
+			return transport;
+		}
 		String name = progress.categoryName(spot.getCategory());
 		return name != null ? name : "Map icon";
 	}
 
-	/** The lines of an icon's info box, after its name. */
 	/** The game's name for the mining site icons' category. */
 	static final String MINING_SITE = "Mining site";
+	/** The game's name for the rare trees icons' category. */
+	static final String RARE_TREES = "Rare trees";
+
+	/** The lines of an icon's info box, after its name. */
 
 	static List<Line> info(MapSpot spot, Progress progress, boolean hidden, FloorNumbers floors)
 	{
@@ -400,6 +413,15 @@ final class MapIcons
 			for (String rocks : MiningSites.rocksNear(spot.getX(), spot.getY(), spot.getPlane()))
 			{
 				lines.add(new Line(rocks, PLAIN));
+			}
+		}
+		if (RARE_TREES.equalsIgnoreCase(progress.categoryName(spot.getCategory())))
+		{
+			// which trees, as RuneLite's own map says; the game's map leaves it out too
+			for (RareTrees.Tree tree : RareTrees.near(spot.getX(), spot.getY(), spot.getPlane()))
+			{
+				lines.add(new Line(tree.getName(), PLAIN));
+				levelLine(lines, Skill.WOODCUTTING, tree.getLevel(), progress);
 			}
 		}
 		lines.add(new Line(spot.getPlane() > 0 ? spot.getX() + ", " + spot.getY() + ", " + floors.name(spot.getPlane())

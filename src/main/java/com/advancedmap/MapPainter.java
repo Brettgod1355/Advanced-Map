@@ -89,6 +89,8 @@ final class MapPainter
 	static final double PLAYER_MARKER_SCALE = 1.4;
 	private static final float PLAYER_STROKE = 2.5f;
 	private static final Color LOCATED = new Color(0x5AA9FF);
+	/** The names beside transport icons. */
+	private static final Color STOP_NAME = Transports.LINE;
 	static final int FLOOR_WIDTH = 64;
 	static final int FLOOR_HEIGHT = 26;
 	/** Room for the floor's name between its two buttons. */
@@ -196,6 +198,10 @@ final class MapPainter
 		}
 		List<MapIcons.Shown> shown = icons.visible(view, area, plane, settings, progress);
 		drawIcons(g, shown, selection);
+		if (settings.isTransportNames() && view.zoom >= MapLabels.PLACE_ZOOM)
+		{
+			drawStopNames(g, shown);
+		}
 
 		Object antialiasing = g.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -533,6 +539,35 @@ final class MapPainter
 				g.drawOval(at.x - 3, at.y - 3, at.width + 5, at.height + 5);
 				g.setStroke(stroke);
 			}
+		}
+	}
+
+	/**
+	 * Draws the name of each network stop under its icon: a fairy ring's code, a spirit tree's or balloon's place. A
+	 * name that would cover one already drawn is left out.
+	 */
+	static void drawStopNames(Graphics2D g, List<MapIcons.Shown> shown)
+	{
+		g.setFont(FontManager.getRunescapeSmallFont());
+		FontMetrics metrics = g.getFontMetrics();
+		List<Rectangle> taken = new ArrayList<>();
+		for (MapIcons.Shown icon : shown)
+		{
+			String name = icon.getLook() == MapIcons.Look.HIDDEN ? null : Transports.stopName(icon.getSpot());
+			if (name == null)
+			{
+				continue;
+			}
+			Rectangle at = icon.getBounds();
+			int width = metrics.stringWidth(name);
+			Rectangle box = new Rectangle(at.x + at.width / 2 - width / 2 - 1, at.y + at.height, width + 2,
+				metrics.getHeight());
+			if (overlaps(box, taken))
+			{
+				continue;
+			}
+			taken.add(box);
+			drawShadowed(g, name, box.x + 1, box.y + metrics.getAscent(), STOP_NAME);
 		}
 	}
 

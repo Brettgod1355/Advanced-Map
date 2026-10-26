@@ -45,7 +45,7 @@ public class MapFiltersTest
 	private static MapSettings settings(Set<IconGroup> groups, Set<String> hiddenTypes)
 	{
 		return new MapSettings(groups, Collections.emptySet(), hiddenTypes, false, true, false, false, true, true,
-			RoutingPlugin.SHORTEST_PATH, FloorNumbers.GROUND_IS_FIRST, 100);
+			RoutingPlugin.SHORTEST_PATH, FloorNumbers.GROUND_IS_FIRST, 100, true);
 	}
 
 	@Test

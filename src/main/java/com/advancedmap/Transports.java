@@ -12,29 +12,43 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.coords.WorldPoint;
 
 /**
  * Where a transport goes: spirit trees, gnome gliders, fairy rings, balloons, carpets, mushtrees, quetzals, minecarts,
- * canoes, boats, ships and charter ships, from {@code transports.tsv} (derived from Shortest Path's transport lists;
- * see THIRD_PARTY_NOTICES.md). A network's every boarding spot reaches every one of its destinations; the others list
- * each spot's own.
+ * canoes, boats, ships and charter ships, from {@code transports.tsv} (derived from Shortest Path's transport lists),
+ * and what each transport icon is called, from {@code transport-points.tsv} (transcribed from RuneLite's world map
+ * plugin); see THIRD_PARTY_NOTICES.md. A network's every boarding spot reaches every one of its destinations; the
+ * others list each spot's own.
  */
 @Slf4j
 final class Transports
 {
 	/** How far from a transport icon its boarding spot may be. */
 	static final int REACH = 12;
+	/** How far from an icon a network's stop may be to give the icon its name. */
+	static final int NAME_REACH = 6;
 	static final String LAYER = "advancedmap:transport";
 	static final Color LINE = new Color(0xFFD23F);
 	/** A spirit tree a player plants shows the game's farming patch icon, not a transport one. */
 	static final String SPIRIT_TREE = "Spirit tree";
+
+	/** RuneLite's list names the Keldagrim carts but not where they go: the minecart station in Keldagrim. */
+	private static final String TO_KELDAGRIM = "Minecart to Keldagrim";
+	private static final String KELDAGRIM = "Keldagrim Minecart System";
+
+	/** A menu key before a stop's name: "1: Tree Gnome Village", "A: Port Piscarilius", "2. Verdant Valley". */
+	private static final Pattern MENU_KEY = Pattern.compile("^[0-9A-Z][:.] ");
+	/** The spaces of a fairy ring code: "D K R". */
+	private static final Pattern CODE_SPACE = Pattern.compile("(?<=\\b[A-Z]) (?=[A-Z]\\b)");
 
 	@Value
 	static class Destination
@@ -49,12 +63,29 @@ final class Transports
 		}
 	}
 
+	/** A place to board: a network's spot, a boat's or ship's spot, or a RuneLite transport icon that names its stop. */
+	@Value
+	private static class Station
+	{
+		WorldPoint point;
+		String kind;
+		/** Null for a network's spot: it reaches its kind's every destination. */
+		List<Destination> destinations;
+	}
+
+	/** A transport icon's name in RuneLite's list. */
+	@Value
+	private static class Named
+	{
+		WorldPoint point;
+		String name;
+	}
+
 	private static final class Data
 	{
-		final Map<String, List<WorldPoint>> networkSpots = new LinkedHashMap<>();
-		final Map<String, List<Destination>> networkDestinations = new LinkedHashMap<>();
-		final List<WorldPoint> pairFrom = new ArrayList<>();
-		final List<Destination> pairTo = new ArrayList<>();
+		final List<Station> stations = new ArrayList<>();
+		final Map<String, List<Destination>> networks = new LinkedHashMap<>();
+		final List<Named> names = new ArrayList<>();
 	}
 
 	private static volatile Data data = new Data();
@@ -63,14 +94,18 @@ final class Transports
 	{
 	}
 
-	/** Reads the list from the plugin's resources. Called once at start-up, off the client thread. */
+	/** Reads the lists from the plugin's resources. Called once at start-up, off the client thread. */
 	static void load()
 	{
-		try (InputStream in = Transports.class.getResourceAsStream("transports.tsv"))
+		try (InputStream transports = Transports.class.getResourceAsStream("transports.tsv");
+			InputStream points = Transports.class.getResourceAsStream("transport-points.tsv"))
 		{
-			if (in != null)
+			if (transports != null && points != null)
 			{
-				data = parse(in);
+				Data out = new Data();
+				parseTransports(transports, out);
+				parsePoints(points, out);
+				data = out;
 			}
 		}
 		catch (IOException | RuntimeException e)
@@ -79,81 +114,141 @@ final class Transports
 		}
 	}
 
-	private static Data parse(InputStream in) throws IOException
+	private static List<String[]> rows(InputStream in) throws IOException
 	{
-		Data out = new Data();
+		List<String[]> rows = new ArrayList<>();
 		BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
 		String line;
 		while ((line = reader.readLine()) != null)
 		{
-			if (line.isEmpty() || line.startsWith("#"))
+			if (!line.isEmpty() && !line.startsWith("#"))
 			{
-				continue;
+				rows.add(line.split("\t", -1));
 			}
-			String[] f = line.split("\t", -1);
+		}
+		return rows;
+	}
+
+	private static WorldPoint point(String[] f, int at)
+	{
+		return new WorldPoint(Integer.parseInt(f[at]), Integer.parseInt(f[at + 1]), Integer.parseInt(f[at + 2]));
+	}
+
+	private static void parseTransports(InputStream in, Data out) throws IOException
+	{
+		// a boat's or ship's spot sails to each of its own places: one station per spot and kind
+		Map<String, List<Destination>> pairs = new LinkedHashMap<>();
+		Map<String, WorldPoint> pairSpots = new LinkedHashMap<>();
+		for (String[] f : rows(in))
+		{
 			String kind = f[1];
-			WorldPoint first = new WorldPoint(Integer.parseInt(f[2]), Integer.parseInt(f[3]), Integer.parseInt(f[4]));
+			WorldPoint first = point(f, 2);
 			switch (f[0])
 			{
 				case "O":
-					out.networkSpots.computeIfAbsent(kind, k -> new ArrayList<>()).add(first);
+					out.stations.add(new Station(first, kind, null));
 					break;
 				case "D":
-					out.networkDestinations.computeIfAbsent(kind, k -> new ArrayList<>())
-						.add(new Destination(first, kind, f[5]));
+					out.networks.computeIfAbsent(kind, k -> new ArrayList<>()).add(new Destination(first, kind, clean(f[5])));
 					break;
 				case "P":
-					out.pairFrom.add(first);
-					out.pairTo.add(new Destination(new WorldPoint(Integer.parseInt(f[5]), Integer.parseInt(f[6]),
-						Integer.parseInt(f[7])), kind, f[8]));
+					String key = kind + "@" + first;
+					pairSpots.put(key, first);
+					pairs.computeIfAbsent(key, k -> new ArrayList<>()).add(new Destination(point(f, 5), kind, clean(f[8])));
 					break;
 				default:
 					break;
 			}
 		}
-		return out;
+		pairs.forEach((key, to) -> out.stations.add(new Station(pairSpots.get(key), to.get(0).getKind(),
+			Collections.unmodifiableList(to))));
+	}
+
+	private static void parsePoints(InputStream in, Data out) throws IOException
+	{
+		List<String[]> rows = rows(in);
+		WorldPoint keldagrim = null;
+		for (String[] f : rows)
+		{
+			if (KELDAGRIM.equals(f[0]))
+			{
+				keldagrim = point(f, 1);
+			}
+		}
+		List<Destination> fromKeldagrim = new ArrayList<>();
+		for (String[] f : rows)
+		{
+			String name = f[0];
+			WorldPoint at = point(f, 1);
+			out.names.add(new Named(at, name));
+			WorldPoint to = f.length >= 7 ? point(f, 4) : TO_KELDAGRIM.equals(name) ? keldagrim : null;
+			if (to != null)
+			{
+				int split = name.indexOf(" to ");
+				String place = split < 0 ? "" : name.substring(split + 4);
+				out.stations.add(new Station(at, name, Collections.singletonList(new Destination(to, name, place))));
+			}
+			if (TO_KELDAGRIM.equals(name))
+			{
+				fromKeldagrim.add(new Destination(at, KELDAGRIM, ""));
+			}
+		}
+		if (keldagrim != null && !fromKeldagrim.isEmpty())
+		{
+			out.stations.add(new Station(keldagrim, KELDAGRIM, Collections.unmodifiableList(fromKeldagrim)));
+		}
+	}
+
+	/** A stop's name as shown: without its menu key or trailing stop, a fairy ring code without spaces. */
+	static String clean(String name)
+	{
+		String out = MENU_KEY.matcher(name.trim()).replaceFirst("");
+		if (out.endsWith("."))
+		{
+			out = out.substring(0, out.length() - 1);
+		}
+		return CODE_SPACE.matcher(out).replaceAll("").replace(" - ", ", ");
 	}
 
 	/**
-	 * Where the transport at or near a map icon goes: every destination of a network whose boarding spot is within
-	 * {@link #REACH} tiles (but not back to the spot clicked), and every place a nearby boat, ship, canoe or carpet
-	 * sails to. Empty when no transport is near.
+	 * Where the transport at or near a map icon goes: the one whose boarding spot is nearest, within {@link #REACH}
+	 * tiles. A network's every other stop, or every place a boat, ship, canoe or carpet there sails to. Empty when no
+	 * transport is near.
 	 */
 	static List<Destination> from(int x, int y, int plane)
 	{
 		return from(x, y, plane, null);
 	}
 
-	/** As {@link #from(int, int, int)}, only one kind of network when {@code onlyKind} is set. */
+	/** As {@link #from(int, int, int)}, only one kind of transport when {@code onlyKind} is set. */
 	static List<Destination> from(int x, int y, int plane, String onlyKind)
 	{
 		Data known = data;
+		Station best = null;
+		int bestDistance = REACH + 1;
+		for (Station station : known.stations)
+		{
+			int distance = distance(station.point, x, y, plane);
+			if (distance < bestDistance && (onlyKind == null || onlyKind.equals(station.kind)))
+			{
+				best = station;
+				bestDistance = distance;
+			}
+		}
+		if (best == null)
+		{
+			return Collections.emptyList();
+		}
+		if (best.destinations != null)
+		{
+			return best.destinations;
+		}
 		List<Destination> out = new ArrayList<>();
-		known.networkSpots.forEach((kind, spots) ->
+		for (Destination to : known.networks.getOrDefault(best.kind, Collections.emptyList()))
 		{
-			if (onlyKind != null && !onlyKind.equals(kind))
-			{
-				return;
-			}
-			for (WorldPoint spot : spots)
-			{
-				if (near(spot, x, y, plane))
-				{
-					for (Destination to : known.networkDestinations.getOrDefault(kind, Collections.emptyList()))
-					{
-						if (!near(to.point, x, y, plane) && !out.contains(to))
-						{
-							out.add(to);
-						}
-					}
-					return;
-				}
-			}
-		});
-		for (int i = 0; i < known.pairFrom.size() && onlyKind == null; i++)
-		{
-			Destination to = known.pairTo.get(i);
-			if (near(known.pairFrom.get(i), x, y, plane) && !out.contains(to))
+			// not back to the stop clicked
+			if (distance(to.point, best.point.getX(), best.point.getY(), best.point.getPlane()) > NAME_REACH
+				&& !out.contains(to))
 			{
 				out.add(to);
 			}
@@ -161,9 +256,94 @@ final class Transports
 		return out;
 	}
 
-	private static boolean near(WorldPoint point, int x, int y, int plane)
+	/**
+	 * The name of the network stop a map icon stands for, for a label beside it: a fairy ring's code ("DKR"), or the
+	 * place of a spirit tree, balloon, quetzal, glider, mushtree or cart. Null for an icon that is no such stop.
+	 */
+	static String stopName(MapSpot spot)
 	{
-		return point.getPlane() == plane && Math.abs(point.getX() - x) <= REACH && Math.abs(point.getY() - y) <= REACH;
+		Destination stop = stopAt(spot);
+		return stop == null ? null : stop.name;
+	}
+
+	/** A stop's name with its kind, for an info box: "Fairy ring DKR", "Spirit tree: Grand Exchange"; or null. */
+	static String stopTitle(MapSpot spot)
+	{
+		Destination stop = stopAt(spot);
+		if (stop == null)
+		{
+			return null;
+		}
+		return "Fairy ring".equals(stop.kind) ? "Fairy ring " + stop.name : stop.kind + ": " + stop.name;
+	}
+
+	/** What RuneLite's list calls a transport icon ("Minecart to Keldagrim"), or null. */
+	static String iconName(MapSpot spot)
+	{
+		if (spot.getGroup() != IconGroup.TRANSPORTATION)
+		{
+			return null;
+		}
+		Named best = null;
+		int bestDistance = NAME_REACH + 1;
+		for (Named named : data.names)
+		{
+			int distance = distance(named.point, spot.getX(), spot.getY(), spot.getPlane());
+			if (distance < bestDistance)
+			{
+				best = named;
+				bestDistance = distance;
+			}
+		}
+		return best == null ? null : best.name;
+	}
+
+	/** The kind of transport an icon may be: any for a transport icon, a spirit tree for a farming patch, else none. */
+	static boolean mayBeTransport(MapSpot spot)
+	{
+		return spot.getGroup() == IconGroup.TRANSPORTATION || spot.getGroup() == IconGroup.FARMING;
+	}
+
+	/** Where a transport icon leads; a farming patch only as a spirit tree's, never a nearby boat's. */
+	static List<Destination> from(MapSpot spot)
+	{
+		if (!mayBeTransport(spot))
+		{
+			return Collections.emptyList();
+		}
+		return from(spot.getX(), spot.getY(), spot.getPlane(),
+			spot.getGroup() == IconGroup.FARMING ? SPIRIT_TREE : null);
+	}
+
+	private static Destination stopAt(MapSpot spot)
+	{
+		if (!mayBeTransport(spot))
+		{
+			return null;
+		}
+		String onlyKind = spot.getGroup() == IconGroup.FARMING ? SPIRIT_TREE : null;
+		Destination best = null;
+		int bestDistance = NAME_REACH + 1;
+		for (List<Destination> network : data.networks.values())
+		{
+			for (Destination stop : network)
+			{
+				int distance = distance(stop.point, spot.getX(), spot.getY(), spot.getPlane());
+				if (distance < bestDistance && !stop.name.isEmpty() && (onlyKind == null || onlyKind.equals(stop.kind)))
+				{
+					best = stop;
+					bestDistance = distance;
+				}
+			}
+		}
+		return best;
+	}
+
+	/** Tiles between two spots, on one floor; a floor apart counts as out of reach. */
+	private static int distance(WorldPoint point, int x, int y, int plane)
+	{
+		return point.getPlane() != plane ? Integer.MAX_VALUE
+			: Math.max(Math.abs(point.getX() - x), Math.abs(point.getY() - y));
 	}
 
 	/** Lines from a transport to each place it goes, each place marked with its name. */
@@ -173,7 +353,7 @@ final class Transports
 		List<MapLayer.Marker> marks = new ArrayList<>();
 		for (Destination to : destinations)
 		{
-			lines.add(new MapLayer.Line(java.util.Arrays.asList(from, to.point), LINE, 2, true));
+			lines.add(new MapLayer.Line(Arrays.asList(from, to.point), LINE, 2, true));
 			marks.add(new MapLayer.Marker(to.point, LINE, MapLayer.Shape.CIRCLE, 12, to.label()));
 		}
 		return new MapLayer(LAYER, 90, Collections.unmodifiableList(lines), Collections.unmodifiableList(marks));

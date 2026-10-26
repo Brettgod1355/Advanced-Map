@@ -13,6 +13,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 public class TransportsTest
@@ -46,7 +47,8 @@ public class TransportsTest
 		List<Transports.Destination> to = Transports.from(2996, 3114, 0);
 		assertTrue(to.size() > 40);
 		assertTrue(labels(to).contains("ZANARIS"));
-		assertFalse(labels(to).contains("A I Q"));
+		assertTrue(labels(to).contains("DKR"));
+		assertFalse(labels(to).contains("AIQ"));
 	}
 
 	@Test
@@ -66,6 +68,58 @@ public class TransportsTest
 			assertEquals(Transports.SPIRIT_TREE, d.getKind());
 		}
 		assertTrue(Transports.from(3222, 3218, 0).isEmpty());
+	}
+
+	@Test
+	public void theGrandExchangeMinecartGoesToKeldagrimAlone()
+	{
+		// the trapdoor in the Grand Exchange, 3139, 3504; a fairy ring (DKR) and a canoe are within reach too
+		List<Transports.Destination> to = Transports.from(3140, 3504, 0);
+		assertEquals(1, to.size());
+		assertEquals(new WorldPoint(2908, 10170, 0), to.get(0).getPoint());
+		assertEquals("Keldagrim", to.get(0).label());
+	}
+
+	@Test
+	public void theEdgevilleCanoeShowsOnlyCanoeTrips()
+	{
+		List<Transports.Destination> to = Transports.from(3131, 3509, 0);
+		assertFalse(to.isEmpty());
+		for (Transports.Destination d : to)
+		{
+			assertEquals("Canoe", d.getKind());
+		}
+	}
+
+	@Test
+	public void stopNamesLoseTheirMenuKeysAndCodeSpaces()
+	{
+		assertEquals("Tree Gnome Village", Transports.clean("1: Tree Gnome Village"));
+		assertEquals("Verdant Valley", Transports.clean("2. Verdant Valley"));
+		assertEquals("Meiyerditch", Transports.clean("1: Meiyerditch."));
+		assertEquals("DKR", Transports.clean("D K R"));
+		assertEquals("AIR, DLR, DJQ, AJS", Transports.clean("A I R - D L R - D J Q - A J S"));
+		assertEquals("Port Piscarilius", Transports.clean("A: Port Piscarilius"));
+	}
+
+	@Test
+	public void transportIconsAreNamedByTheirStop()
+	{
+		MapSpot ring = MapSpot.icon(3129, 3496, 0, 0, 1104);
+		assertEquals("DKR", Transports.stopName(ring));
+		assertEquals("Fairy ring DKR", Transports.stopTitle(ring));
+		MapSpot balloon = MapSpot.icon(2921, 3301, 0, 0, 1104);
+		assertEquals("Crafting Guild", Transports.stopName(balloon));
+		assertEquals("Minecart to Keldagrim", Transports.iconName(MapSpot.icon(3140, 3504, 0, 0, 1104)));
+		// a bank by a fairy ring is no stop
+		assertNull(Transports.stopName(MapSpot.icon(3129, 3496, 0, 0, 1055)));
+	}
+
+	@Test
+	public void aFarmingPatchIsNamedOnlyAsASpiritTree()
+	{
+		assertEquals("Spirit tree: Port Sarim", Transports.stopTitle(MapSpot.icon(3059, 3257, 0, 0, 1101)));
+		assertNull(Transports.stopName(MapSpot.icon(3129, 3496, 0, 0, 1101)));
 	}
 
 	@Test

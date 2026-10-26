@@ -163,6 +163,7 @@ public class AdvancedMapPlugin extends Plugin
 		viewports.get(MapArea.UNDERGROUND).centerOn(EDGEVILLE_DUNGEON.getX(), EDGEVILLE_DUNGEON.getY());
 		area = MapArea.SURFACE;
 		MiningSites.load();
+		RareTrees.load();
 		Transports.load();
 		reader = new CacheReader(client);
 		shortestPathRoute = new ShortestPathRoute();
@@ -739,8 +740,7 @@ public class AdvancedMapPlugin extends Plugin
 			return;
 		}
 		selection = icon == null ? null : new MapPainter.Selection(icon.getSpot(), false, x, y, null);
-		if (icon != null && (icon.getSpot().getGroup() == IconGroup.TRANSPORTATION
-			|| icon.getSpot().getGroup() == IconGroup.FARMING))
+		if (icon != null && Transports.mayBeTransport(icon.getSpot()))
 		{
 			showTransport(icon.getSpot());
 		}
@@ -762,9 +762,7 @@ public class AdvancedMapPlugin extends Plugin
 			layers.remove(Transports.LAYER);
 			return;
 		}
-		// a farming patch icon may be a spirit tree's: then only the spirit trees, never a nearby boat
-		List<Transports.Destination> destinations = Transports.from(spot.getX(), spot.getY(), spot.getPlane(),
-			spot.getGroup() == IconGroup.FARMING ? Transports.SPIRIT_TREE : null);
+		List<Transports.Destination> destinations = Transports.from(spot);
 		if (!destinations.isEmpty())
 		{
 			layers.put(Transports.layer(new WorldPoint(spot.getX(), spot.getY(), spot.getPlane()), destinations));

@@ -40,6 +40,8 @@ class MapSettings
 	FloorNumbers floorNumbers;
 	/** How big icons are drawn, in percent of the game's own size. */
 	int iconScale;
+	/** Fairy ring codes and the places of spirit trees, balloons and other stops beside their icons. */
+	boolean transportNames;
 
 	static final int MIN_ICON_SCALE = 50;
 	static final int MAX_ICON_SCALE = 300;
@@ -59,7 +61,7 @@ class MapSettings
 			parseHidden(config.hiddenTypes()),
 			config.hideCompletedQuests(), config.markLocked(), config.iconsOff(), config.showHidden(),
 			config.placeNames(), config.wildernessLines(), routingRunning ? config.routing() : RoutingPlugin.NONE, config.floorNumbers(),
-			Math.max(MIN_ICON_SCALE, Math.min(MAX_ICON_SCALE, config.iconSize())));
+			Math.max(MIN_ICON_SCALE, Math.min(MAX_ICON_SCALE, config.iconSize())), config.transportNames());
 	}
 
 	boolean shows(IconGroup group)
