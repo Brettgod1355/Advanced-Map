@@ -144,10 +144,12 @@ final class MapIcons
 			return out;
 		}
 		boolean everyFloor = plane == 0 && view.zoom < OWN_FLOOR_ZOOM;
-		int rx0 = (int) Math.floor(view.worldX(-TELEPORT_SIZE) / 64);
-		int rx1 = (int) Math.floor(view.worldX(view.width + TELEPORT_SIZE) / 64);
-		int ry0 = (int) Math.floor(view.worldY(view.height + TELEPORT_SIZE) / 64);
-		int ry1 = (int) Math.floor(view.worldY(-TELEPORT_SIZE) / 64);
+		// icons a little off screen can still reach into it; more so when drawn bigger
+		int margin = TELEPORT_SIZE * MapSettings.MAX_ICON_SCALE / 100;
+		int rx0 = (int) Math.floor(view.worldX(-margin) / 64);
+		int rx1 = (int) Math.floor(view.worldX(view.width + margin) / 64);
+		int ry0 = (int) Math.floor(view.worldY(view.height + margin) / 64);
+		int ry1 = (int) Math.floor(view.worldY(-margin) / 64);
 		for (int rx = rx0; rx <= rx1; rx++)
 		{
 			for (int ry = ry0; ry <= ry1; ry++)
@@ -199,6 +201,8 @@ final class MapIcons
 			width = image.getWidth();
 			height = image.getHeight();
 		}
+		width = Math.max(1, Math.round(width * settings.getIconScale() / 100f));
+		height = Math.max(1, Math.round(height * settings.getIconScale() / 100f));
 		int cx = (int) Math.round(view.screenX(spot.getX() + 0.5));
 		int cy = (int) Math.round(view.screenY(spot.getY() + 0.5));
 		if (cx < -width || cy < -height || cx > view.width + width || cy > view.height + height)

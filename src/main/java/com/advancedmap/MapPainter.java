@@ -85,6 +85,10 @@ final class MapPainter
 
 	static final int BUTTON_HEIGHT = 28;
 	static final int LOCATE_SIZE = 36;
+	/** The player's marker: the locate button's crosshair at this size (about 36 pixels across). */
+	static final double PLAYER_MARKER_SCALE = 1.4;
+	private static final float PLAYER_STROKE = 2.5f;
+	private static final Color LOCATED = new Color(0x5AA9FF);
 	static final int FLOOR_WIDTH = 64;
 	static final int FLOOR_HEIGHT = 26;
 	/** Room for the floor's name between its two buttons. */
@@ -499,7 +503,23 @@ final class MapPainter
 				BufferedImage image = icons.image(icon.getSpot().getAreaId(), look == MapIcons.Look.LOCKED);
 				if (image != null)
 				{
-					g.drawImage(image, at.x, at.y, null);
+					if (at.width == image.getWidth() && at.height == image.getHeight())
+					{
+						g.drawImage(image, at.x, at.y, null);
+					}
+					else
+					{
+						// whole multiples keep the game's pixel look; other sizes are smoothed
+						Object interpolation = g.getRenderingHint(RenderingHints.KEY_INTERPOLATION);
+						g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, at.width % image.getWidth() == 0
+							? RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR
+							: RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+						g.drawImage(image, at.x, at.y, at.width, at.height, null);
+						if (interpolation != null)
+						{
+							g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, interpolation);
+						}
+					}
 				}
 			}
 			g.setComposite(composite);
@@ -835,11 +855,36 @@ final class MapPainter
 		}
 		double sx = view.screenX(point.getX() + 0.5);
 		double sy = view.screenY(point.getY() + 0.5);
-		double r = 5;
-		g.setColor(OUTLINE);
-		g.fill(new Ellipse2D.Double(sx - r - 1.5, sy - r - 1.5, 2 * r + 3, 2 * r + 3));
-		g.setColor(PLAYER);
-		g.fill(new Ellipse2D.Double(sx - r, sy - r, 2 * r, 2 * r));
+		Object antialiasing = g.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
+		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		// the locate button's crosshair, bigger, with a dark edge so it reads on any ground
+		drawCrosshair(g, sx, sy, PLAYER_MARKER_SCALE, OUTLINE, PLAYER_STROKE + 2.5f);
+		drawCrosshair(g, sx, sy, PLAYER_MARKER_SCALE, LOCATED, PLAYER_STROKE);
+		if (antialiasing != null)
+		{
+			g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, antialiasing);
+		}
+	}
+
+	/**
+	 * A crosshair: a ring, four ticks pointing out and a dot in the middle, the shape of the locate button. At scale 1
+	 * the ring is 16 pixels across and the ticks reach 13 from the middle.
+	 */
+	static void drawCrosshair(Graphics2D g, double cx, double cy, double scale, Color color, float width)
+	{
+		Stroke stroke = g.getStroke();
+		g.setStroke(new BasicStroke(width, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+		g.setColor(color);
+		double ring = 8 * scale;
+		double tick = 13 * scale;
+		g.draw(new Ellipse2D.Double(cx - ring, cy - ring, 2 * ring, 2 * ring));
+		g.draw(new java.awt.geom.Line2D.Double(cx, cy - tick, cx, cy - ring));
+		g.draw(new java.awt.geom.Line2D.Double(cx, cy + ring, cx, cy + tick));
+		g.draw(new java.awt.geom.Line2D.Double(cx - tick, cy, cx - ring, cy));
+		g.draw(new java.awt.geom.Line2D.Double(cx + ring, cy, cx + tick, cy));
+		double dot = 3.5 * scale + (width - PLAYER_STROKE) / 2;
+		g.fill(new Ellipse2D.Double(cx - dot, cy - dot, 2 * dot, 2 * dot));
+		g.setStroke(stroke);
 	}
 
 	private static void drawBar(Graphics2D g, MapViewport.View view, Point mouse, boolean loading, boolean window,
@@ -1016,19 +1061,8 @@ final class MapPainter
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g.setColor(BAR);
 		g.fillOval(button.x, button.y, button.width, button.height);
-		Color color = located ? new Color(0x5AA9FF) : new Color(0x707070);
-		double cx = button.getCenterX();
-		double cy = button.getCenterY();
-		Stroke stroke = g.getStroke();
-		g.setStroke(THICK);
-		g.setColor(color);
-		g.draw(new Ellipse2D.Double(cx - 8, cy - 8, 16, 16));
-		g.drawLine((int) cx, (int) cy - 13, (int) cx, (int) cy - 8);
-		g.drawLine((int) cx, (int) cy + 8, (int) cx, (int) cy + 13);
-		g.drawLine((int) cx - 13, (int) cy, (int) cx - 8, (int) cy);
-		g.drawLine((int) cx + 8, (int) cy, (int) cx + 13, (int) cy);
-		g.fill(new Ellipse2D.Double(cx - 3.5, cy - 3.5, 7, 7));
-		g.setStroke(stroke);
+		drawCrosshair(g, button.getCenterX(), button.getCenterY(), 1, located ? LOCATED : new Color(0x707070),
+			2);
 		if (antialiasing != null)
 		{
 			g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, antialiasing);

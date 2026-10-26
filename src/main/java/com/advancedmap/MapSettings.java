@@ -38,6 +38,11 @@ class MapSettings
 	boolean wildernessLines;
 	RoutingPlugin routing;
 	FloorNumbers floorNumbers;
+	/** How big icons are drawn, in percent of the game's own size. */
+	int iconScale;
+
+	static final int MIN_ICON_SCALE = 50;
+	static final int MAX_ICON_SCALE = 300;
 
 	/** The settings, with routing only when the chosen routing plugin is installed and running. */
 	static MapSettings of(AdvancedMapConfig config, boolean routingRunning)
@@ -53,7 +58,8 @@ class MapSettings
 		return new MapSettings(Collections.unmodifiableSet(groups), parseHidden(config.hiddenIcons()),
 			parseHidden(config.hiddenTypes()),
 			config.hideCompletedQuests(), config.markLocked(), config.iconsOff(), config.showHidden(),
-			config.placeNames(), config.wildernessLines(), routingRunning ? config.routing() : RoutingPlugin.NONE, config.floorNumbers());
+			config.placeNames(), config.wildernessLines(), routingRunning ? config.routing() : RoutingPlugin.NONE, config.floorNumbers(),
+			Math.max(MIN_ICON_SCALE, Math.min(MAX_ICON_SCALE, config.iconSize())));
 	}
 
 	boolean shows(IconGroup group)

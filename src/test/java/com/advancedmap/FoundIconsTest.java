@@ -217,7 +217,7 @@ public class FoundIconsTest
 			Collections.singletonList(bankIcon(30, 30))).get(0);
 		MapSettings settings = new MapSettings(EnumSet.allOf(IconGroup.class), Collections.emptySet(),
 			Collections.emptySet(), false, true, false, false, true, true, RoutingPlugin.SHORTEST_PATH,
-			FloorNumbers.GROUND_IS_FIRST);
+			FloorNumbers.GROUND_IS_FIRST, 100);
 		Progress unbuilt = progress(true, 0);
 		Progress built = progress(true, 1);
 		assertEquals(MapIcons.Look.LOCKED, MapIcons.look(chest, settings, unbuilt));
@@ -244,7 +244,7 @@ public class FoundIconsTest
 		assertNull(chest.getUnlockable());
 		MapSettings settings = new MapSettings(EnumSet.allOf(IconGroup.class), Collections.emptySet(),
 			Collections.emptySet(), false, true, false, false, true, true, RoutingPlugin.SHORTEST_PATH,
-			FloorNumbers.GROUND_IS_FIRST);
+			FloorNumbers.GROUND_IS_FIRST, 100);
 		Map<Integer, Integer> on = Collections.singletonMap(3984, 1);
 		assertNull(MapIcons.look(chest, settings, Progress.NONE));
 		assertEquals(MapIcons.Look.NORMAL, MapIcons.look(chest, settings, new Progress(true,

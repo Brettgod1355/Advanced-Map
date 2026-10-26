@@ -12,6 +12,8 @@ import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
 import net.runelite.client.config.ConfigSection;
 import net.runelite.client.config.Keybind;
+import net.runelite.client.config.Range;
+import net.runelite.client.config.Units;
 
 @ConfigGroup(AdvancedMapConfig.GROUP)
 public interface AdvancedMapConfig extends Config
@@ -320,6 +322,20 @@ public interface AdvancedMapConfig extends Config
 	default boolean markLocked()
 	{
 		return true;
+	}
+
+	@Range(min = MapSettings.MIN_ICON_SCALE, max = MapSettings.MAX_ICON_SCALE)
+	@Units(Units.PERCENT)
+	@ConfigItem(
+		keyName = "iconSize",
+		name = "Icon size",
+		description = "How big the icons on the map are, as a share of the game's own size.",
+		section = ICONS,
+		position = 19
+	)
+	default int iconSize()
+	{
+		return 100;
 	}
 
 	@ConfigItem(
