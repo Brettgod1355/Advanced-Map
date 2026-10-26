@@ -346,13 +346,34 @@ final class Transports
 			: Math.max(Math.abs(point.getX() - x), Math.abs(point.getY() - y));
 	}
 
-	/** Lines from a transport to each place it goes, each place marked with its name. */
+	/**
+	 * Where a transport icon leads when that is one place on the other map (the Grand Exchange's cart to Keldagrim,
+	 * underground): the map opens there instead of drawing a line. Null otherwise.
+	 */
+	static WorldPoint elsewhere(MapSpot spot)
+	{
+		List<Destination> to = from(spot);
+		if (to.size() != 1 || MapArea.of(to.get(0).point.getY()) == MapArea.of(spot.getY()))
+		{
+			return null;
+		}
+		return to.get(0).point;
+	}
+
+	/**
+	 * Lines from a transport to each place it goes on the same map, each place marked with its name. A place on the
+	 * other map (Prifddinas, Keldagrim, a player's house) gets no line: it would run off the map's edge.
+	 */
 	static MapLayer layer(WorldPoint from, List<Destination> destinations)
 	{
 		List<MapLayer.Line> lines = new ArrayList<>();
 		List<MapLayer.Marker> marks = new ArrayList<>();
 		for (Destination to : destinations)
 		{
+			if (MapArea.of(to.point.getY()) != MapArea.of(from.getY()))
+			{
+				continue;
+			}
 			lines.add(new MapLayer.Line(Arrays.asList(from, to.point), LINE, 2, true));
 			marks.add(new MapLayer.Marker(to.point, LINE, MapLayer.Shape.CIRCLE, 12, to.label()));
 		}

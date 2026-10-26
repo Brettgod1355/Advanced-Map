@@ -81,6 +81,26 @@ public class TransportsTest
 	}
 
 	@Test
+	public void theGrandExchangeMinecartOpensKeldagrimInsteadOfALine()
+	{
+		MapSpot cart = MapSpot.icon(3140, 3504, 0, 0, 1104);
+		assertEquals(new WorldPoint(2908, 10170, 0), Transports.elsewhere(cart));
+		// the spirit tree there has many places: lines, not a jump
+		assertNull(Transports.elsewhere(MapSpot.icon(3184, 3510, 0, 0, 1104)));
+	}
+
+	@Test
+	public void placesOnTheOtherMapGetNoLine()
+	{
+		// the Grand Exchange spirit tree reaches Prifddinas, which is drawn on the other map
+		List<Transports.Destination> to = Transports.from(3185, 3508, 0);
+		assertTrue(labels(to).contains("Prifddinas"));
+		MapLayer layer = Transports.layer(new WorldPoint(3185, 3508, 0), to);
+		assertTrue(layer.getMarkers().stream().noneMatch(m -> "Prifddinas".equals(m.getLabel())));
+		assertTrue(layer.getLines().size() < to.size());
+	}
+
+	@Test
 	public void theEdgevilleCanoeShowsOnlyCanoeTrips()
 	{
 		List<Transports.Destination> to = Transports.from(3131, 3509, 0);

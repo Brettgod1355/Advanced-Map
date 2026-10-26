@@ -734,7 +734,7 @@ public class AdvancedMapPlugin extends Plugin
 	{
 		MapIcons.Shown icon = iconAt(x, y, width, height);
 		showTransport(null);
-		if (icon != null && followLink(icon.getSpot()))
+		if (icon != null && (followLink(icon.getSpot()) || followTransport(icon.getSpot())))
 		{
 			selection = null;
 			return;
@@ -789,6 +789,20 @@ public class AdvancedMapPlugin extends Plugin
 		area = MapArea.of(MapLinks.y(to));
 		plane = MapLinks.plane(to);
 		viewports.get(area).centerOn(MapLinks.x(to), MapLinks.y(to));
+		return true;
+	}
+
+	/** A click on a transport that goes to one place on the other map moves the map there. False otherwise. */
+	private boolean followTransport(MapSpot spot)
+	{
+		WorldPoint to = Transports.elsewhere(spot);
+		if (to == null)
+		{
+			return false;
+		}
+		area = MapArea.of(to.getY());
+		plane = to.getPlane();
+		viewports.get(area).centerOn(to.getX(), to.getY());
 		return true;
 	}
 
