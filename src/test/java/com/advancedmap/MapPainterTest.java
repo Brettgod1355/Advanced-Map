@@ -106,14 +106,16 @@ public class MapPainterTest
 		assertEquals(2, entries.size());
 		assertEquals(MapPainter.Action.ROUTE, entries.get(0).getAction());
 		assertEquals("Route here (GPS)", entries.get(0).getText());
-		assertEquals("3222, 3218, Floor 1", MapPainter.menuTitle(tile, Progress.NONE));
+		assertEquals("3222, 3218, Floor 2", MapPainter.menuTitle(tile, Progress.NONE, FloorNumbers.GROUND_IS_FIRST));
+		assertEquals("3222, 3218, Floor 1", MapPainter.menuTitle(tile, Progress.NONE,
+			FloorNumbers.FIRST_ABOVE_GROUND));
 		assertTrue(MapPainter.menuEntries(tile, settings(RoutingPlugin.NONE)).isEmpty());
 	}
 
 	private static MapSettings settings(RoutingPlugin routing)
 	{
 		return new MapSettings(EnumSet.allOf(IconGroup.class), Collections.emptySet(), Collections.emptySet(), false,
-			true, false, false, true, true, routing);
+			true, false, false, true, true, routing, FloorNumbers.GROUND_IS_FIRST);
 	}
 
 	@Test

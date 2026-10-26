@@ -357,7 +357,10 @@ class RegionImages
 		return false;
 	}
 
-	/** Hands the icons a region's objects put on the game's map, on every floor, to {@link MapIcons}. */
+	/**
+	 * Hands the icons a region's objects put on the game's map, on every floor, to {@link MapIcons}. An icon is on the
+	 * floor it is drawn on: an object over a bridge tile is stored a floor up but drawn a floor lower, as the map is.
+	 */
 	private void findIcons(Region region)
 	{
 		List<MapSpot> spots = new ArrayList<>();
@@ -374,10 +377,18 @@ class RegionImages
 				continue;
 			}
 			icons.addSprite(areaId, source.areaIcon(areaId));
-			spots.add(MapSpot.icon(location.getPosition().getX(), location.getPosition().getY(),
-				location.getPosition().getZ(), areaId, category));
+			int x = location.getPosition().getX();
+			int y = location.getPosition().getY();
+			spots.add(MapSpot.icon(x, y, floorOf(region, x, y, location.getPosition().getZ()), areaId, category));
 		}
 		icons.addRegion(region.getRegionID(), spots);
+	}
+
+	/** The floor an object on a tile is drawn on: a floor lower over a bridge tile. */
+	static int floorOf(Region region, int x, int y, int z)
+	{
+		boolean bridge = (region.getTileSetting(1, x - region.getBaseX(), y - region.getBaseY()) & 2) != 0;
+		return bridge && z > 0 ? z - 1 : z;
 	}
 
 	/** Averages each square of {@code by} x {@code by} pixels into one, see-through parts included. */

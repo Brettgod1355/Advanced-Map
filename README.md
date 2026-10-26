@@ -22,7 +22,9 @@ A full-screen world map for RuneLite, drawn from the game's own map data with sm
   place names.
 - **Back to you**: the round button at the bottom right moves the map to your character.
 - **Floors**: the arrows above it go up and down a floor. The floors below are shown darkened underneath, so you can
-  see where you are. Basements and dungeons are on the underground map ("Show underground" at the top).
+  see where you are. Zoomed out, the ground floor shows every floor's icons, as the game's map does; zoomed in, each
+  icon is on its own floor. Floors are numbered Ground, 2, 3, 4, or Ground, 1, 2, 3 ("Floor numbers" setting).
+  Basements and dungeons are on the underground map ("Show underground" at the top).
 - **Route here**: right-click anywhere on the map, or on an icon, and choose "Route here" to have
   [Shortest Path](https://github.com/Skretzo/shortest-path) or GPS show the way ("Route with" in the settings).
 - **Saved on your computer**: once drawn, the map is kept in RuneLite's plugin data folder, shared by every character

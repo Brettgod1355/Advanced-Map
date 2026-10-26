@@ -334,11 +334,23 @@ public interface AdvancedMapConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "floorNumbers",
+		name = "Floor numbers",
+		description = "How the floors above the ground are numbered: \"Ground, 2, 3, 4\" counts the ground floor as the"
+			+ " first; \"Ground, 1, 2, 3\" counts the floor above it as the first, as in the UK and on the wiki.",
+		position = 5
+	)
+	default FloorNumbers floorNumbers()
+	{
+		return FloorNumbers.GROUND_IS_FIRST;
+	}
+
+	@ConfigItem(
 		keyName = "routing",
 		name = "Route with",
 		description = "The plugin that right-click \"Route here\" asks for a route: Shortest Path or GPS, whichever"
 			+ " you have installed. With None the menu has no route entries.",
-		position = 5
+		position = 6
 	)
 	default RoutingPlugin routing()
 	{
@@ -350,7 +362,7 @@ public interface AdvancedMapConfig extends Config
 		name = "Save the map on this computer",
 		description = "Keep the drawn map in RuneLite's plugin data folder, shared by all your characters and profiles,"
 			+ " so it opens at once next time. A region is drawn again only when a game update changes it.",
-		position = 6
+		position = 7
 	)
 	default boolean saveMap()
 	{
@@ -363,7 +375,7 @@ public interface AdvancedMapConfig extends Config
 		description = "From the moment the client starts, draw the regions not saved yet in the background, nearest you"
 			+ " first, so the map is ready when you open it. Uses spare processor time for a few minutes the first time"
 			+ " and after updates.",
-		position = 7
+		position = 8
 	)
 	default boolean prepareMap()
 	{

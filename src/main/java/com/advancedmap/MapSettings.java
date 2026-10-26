@@ -37,6 +37,7 @@ class MapSettings
 	boolean placeNames;
 	boolean wildernessLines;
 	RoutingPlugin routing;
+	FloorNumbers floorNumbers;
 
 	static MapSettings of(AdvancedMapConfig config)
 	{
@@ -51,7 +52,7 @@ class MapSettings
 		return new MapSettings(Collections.unmodifiableSet(groups), parseHidden(config.hiddenIcons()),
 			parseHidden(config.hiddenTypes()),
 			config.hideCompletedQuests(), config.markLocked(), config.iconsOff(), config.showHidden(),
-			config.placeNames(), config.wildernessLines(), config.routing());
+			config.placeNames(), config.wildernessLines(), config.routing(), config.floorNumbers());
 	}
 
 	boolean shows(IconGroup group)

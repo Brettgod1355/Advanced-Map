@@ -626,7 +626,8 @@ final class MapPainter
 		Progress progress)
 	{
 		String title = MapIcons.name(icon.getSpot(), progress);
-		List<MapIcons.Line> lines = MapIcons.info(icon.getSpot(), progress, settings.isHidden(icon.getSpot()));
+		List<MapIcons.Line> lines = MapIcons.info(icon.getSpot(), progress, settings.isHidden(icon.getSpot()),
+			settings.getFloorNumbers());
 		java.awt.Font titleFont = FontManager.getRunescapeBoldFont();
 		java.awt.Font font = FontManager.getRunescapeSmallFont();
 		FontMetrics titleMetrics = g.getFontMetrics(titleFont);
@@ -681,14 +682,14 @@ final class MapPainter
 	}
 
 	/** The menu's name row: the icon's name, or the tile with no icon. */
-	static String menuTitle(Selection selection, Progress progress)
+	static String menuTitle(Selection selection, Progress progress, FloorNumbers floors)
 	{
 		if (selection.getSpot() != null)
 		{
 			return MapIcons.name(selection.getSpot(), progress);
 		}
 		WorldPoint point = selection.getPoint();
-		return point.getX() + ", " + point.getY() + (point.getPlane() > 0 ? ", " + MapIcons.floorName(point.getPlane())
+		return point.getX() + ", " + point.getY() + (point.getPlane() > 0 ? ", " + floors.name(point.getPlane())
 			: "");
 	}
 
@@ -717,7 +718,7 @@ final class MapPainter
 	private static void drawMenu(Graphics2D g, MapViewport.View view, Selection selection, MapSettings settings,
 		Progress progress)
 	{
-		String title = menuTitle(selection, progress);
+		String title = menuTitle(selection, progress, settings.getFloorNumbers());
 		List<MenuEntry> entries = menuEntries(selection, settings);
 		Rectangle menu = menuBounds(selection, title, entries, view.width, view.height);
 		drawPanel(g, menu);
@@ -887,7 +888,7 @@ final class MapPainter
 				drawFloorButton(g, button, up, up ? plane < RegionImages.PLANES - 1 : plane > 0);
 				if (up)
 				{
-					drawFloorName(g, button, plane);
+					drawFloorName(g, button, plane, settings.getFloorNumbers());
 				}
 				continue;
 			}
@@ -934,12 +935,12 @@ final class MapPainter
 		}
 	}
 
-	/** The floor's name between the floor buttons: "Ground floor", "Floor 1" and so on. */
-	private static void drawFloorName(Graphics2D g, Rectangle up, int plane)
+	/** The floor's name between the floor buttons: "Ground floor", "Floor 2" and so on. */
+	private static void drawFloorName(Graphics2D g, Rectangle up, int plane, FloorNumbers floors)
 	{
 		g.setFont(FontManager.getRunescapeSmallFont());
 		FontMetrics metrics = g.getFontMetrics();
-		String text = MapIcons.floorName(plane);
+		String text = floors.name(plane);
 		int width = metrics.stringWidth(text) + 10;
 		int x = up.x + up.width - width;
 		int y = up.y + up.height + 2;

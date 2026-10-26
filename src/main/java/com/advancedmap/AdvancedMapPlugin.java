@@ -465,7 +465,7 @@ public class AdvancedMapPlugin extends Plugin
 		}
 		selection = null;
 		List<MapPainter.MenuEntry> entries = MapPainter.menuEntries(open, settings);
-		java.awt.Rectangle menu = MapPainter.menuBounds(open, MapPainter.menuTitle(open, progress), entries, width,
+		java.awt.Rectangle menu = MapPainter.menuBounds(open, MapPainter.menuTitle(open, progress, settings.getFloorNumbers()), entries, width,
 			height);
 		for (int i = 0; i < entries.size(); i++)
 		{

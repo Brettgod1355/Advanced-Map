@@ -31,7 +31,7 @@ public class MapIconsTest
 	private static MapSettings settings(Set<String> hidden, boolean hideCompleted, boolean showHidden, boolean iconsOff)
 	{
 		return new MapSettings(EnumSet.allOf(IconGroup.class), hidden, Collections.emptySet(), hideCompleted, true,
-			iconsOff, showHidden, true, true, RoutingPlugin.SHORTEST_PATH);
+			iconsOff, showHidden, true, true, RoutingPlugin.SHORTEST_PATH, FloorNumbers.GROUND_IS_FIRST);
 	}
 
 	private static Progress progress(int agility, int magic, QuestState cooksAssistant)
@@ -134,7 +134,7 @@ public class MapIconsTest
 	public void theInfoBoxSaysWhatIsMissing()
 	{
 		List<MapIcons.Line> lines = MapIcons.info(MapSpot.teleport(Teleport.VARROCK), progress(1, 20, QuestState.NOT_STARTED),
-			false);
+			false, FloorNumbers.GROUND_IS_FIRST);
 		assertTrue(lines.stream().anyMatch(line -> line.getText().equals("Needs 25 Magic (you have 20)")
 			&& line.getColor().equals(MapIcons.BAD)));
 		assertEquals("Varrock Teleport", Teleport.VARROCK.title());
@@ -177,18 +177,32 @@ public class MapIconsTest
 	}
 
 	@Test
-	public void theGroundShowsEveryFloorsIconsAndAFloorOnlyItsOwn()
+	public void zoomedOutTheGroundShowsEveryFloorsIconsAndZoomedInEachFloorOnlyItsOwn()
 	{
 		MapIcons icons = new MapIcons();
 		icons.addSprite(0, com.advancedmap.cache.MapSprite.of(15, 15, 0, 0, 1, 1, new int[]{0xFFFFFF}));
 		// Lumbridge Castle's bank is on its top floor
 		MapSpot bank = MapSpot.icon(3208, 3220, 2, 0, 1055);
 		icons.addRegion(3208 >> 6 << 8 | 3220 >> 6, Collections.singletonList(bank));
-		MapViewport.View view = new MapViewport.View(3208, 3220, 4, 800, 600);
 		MapSettings on = settings(Collections.emptySet(), false, false, false);
-		assertTrue(has(icons.visible(view, MapArea.SURFACE, 0, on, Progress.NONE), bank));
-		assertTrue(has(icons.visible(view, MapArea.SURFACE, 2, on, Progress.NONE), bank));
-		assertFalse(has(icons.visible(view, MapArea.SURFACE, 1, on, Progress.NONE), bank));
+		MapViewport.View out = new MapViewport.View(3208, 3220, MapIcons.OWN_FLOOR_ZOOM - 0.5, 800, 600);
+		assertTrue(has(icons.visible(out, MapArea.SURFACE, 0, on, Progress.NONE), bank));
+		assertTrue(has(icons.visible(out, MapArea.SURFACE, 2, on, Progress.NONE), bank));
+		assertFalse(has(icons.visible(out, MapArea.SURFACE, 1, on, Progress.NONE), bank));
+		MapViewport.View in = new MapViewport.View(3208, 3220, MapIcons.OWN_FLOOR_ZOOM, 800, 600);
+		assertFalse(has(icons.visible(in, MapArea.SURFACE, 0, on, Progress.NONE), bank));
+		assertTrue(has(icons.visible(in, MapArea.SURFACE, 2, on, Progress.NONE), bank));
+		assertFalse(has(icons.visible(in, MapArea.SURFACE, 1, on, Progress.NONE), bank));
+	}
+
+	@Test
+	public void floorsAreNumberedFromTheGroundOrFromTheFloorAboveIt()
+	{
+		assertEquals("Ground floor", FloorNumbers.GROUND_IS_FIRST.name(0));
+		assertEquals("Floor 2", FloorNumbers.GROUND_IS_FIRST.name(1));
+		assertEquals("Floor 4", FloorNumbers.GROUND_IS_FIRST.name(3));
+		assertEquals("Ground floor", FloorNumbers.FIRST_ABOVE_GROUND.name(0));
+		assertEquals("Floor 1", FloorNumbers.FIRST_ABOVE_GROUND.name(1));
 	}
 
 	private static boolean has(List<MapIcons.Shown> shown, MapSpot spot)

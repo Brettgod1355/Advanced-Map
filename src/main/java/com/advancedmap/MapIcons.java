@@ -29,6 +29,11 @@ final class MapIcons
 {
 	/** Icons show from this zoom (screen pixels per tile) in; further out there would be too many to read. */
 	static final double ICON_ZOOM = 1.25;
+	/**
+	 * Zoomed in this far, each icon shows on its own floor only (Lumbridge Castle's bank on the floor it is on, not on
+	 * the ground); further out, the ground shows every floor's icons, as the game's own map does.
+	 */
+	static final double OWN_FLOOR_ZOOM = 3;
 	/** Size of a teleport's mark, and the most a game icon is assumed to be, in pixels. */
 	static final int TELEPORT_SIZE = 15;
 
@@ -111,9 +116,9 @@ final class MapIcons
 
 	/**
 	 * The icons to draw on a view of a floor, bottom first, with their looks: those of the groups turned on, minus
-	 * hidden ones (shown faded instead while {@code showHidden}) and finished quests when the player hides them. The
-	 * ground shows every floor's icons, as the game's own map does; a floor above it only its own. None while zoomed
-	 * out past {@link #ICON_ZOOM} or with icons turned off.
+	 * hidden ones (shown faded instead while {@code showHidden}) and finished quests when the player hides them. A
+	 * floor shows its own icons; the ground also the floors' above while zoomed out past {@link #OWN_FLOOR_ZOOM}. None
+	 * while zoomed out past {@link #ICON_ZOOM} or with icons turned off.
 	 */
 	List<Shown> visible(MapViewport.View view, MapArea area, int plane, MapSettings settings, Progress progress)
 	{
@@ -122,6 +127,7 @@ final class MapIcons
 		{
 			return out;
 		}
+		boolean everyFloor = plane == 0 && view.zoom < OWN_FLOOR_ZOOM;
 		int rx0 = (int) Math.floor(view.worldX(-TELEPORT_SIZE) / 64);
 		int rx1 = (int) Math.floor(view.worldX(view.width + TELEPORT_SIZE) / 64);
 		int ry0 = (int) Math.floor(view.worldY(view.height + TELEPORT_SIZE) / 64);
@@ -135,7 +141,7 @@ final class MapIcons
 				{
 					for (MapSpot spot : spots)
 					{
-						if (plane == 0 || spot.getPlane() == plane)
+						if (everyFloor || spot.getPlane() == plane)
 						{
 							add(out, spot, view, area, settings, progress);
 						}
@@ -145,7 +151,7 @@ final class MapIcons
 		}
 		for (MapSpot spot : TELEPORTS)
 		{
-			if (plane == 0 || spot.getPlane() == plane)
+			if (everyFloor || spot.getPlane() == plane)
 			{
 				add(out, spot, view, area, settings, progress);
 			}
@@ -294,7 +300,7 @@ final class MapIcons
 	}
 
 	/** The lines of an icon's info box, after its name. */
-	static List<Line> info(MapSpot spot, Progress progress, boolean hidden)
+	static List<Line> info(MapSpot spot, Progress progress, boolean hidden, FloorNumbers floors)
 	{
 		List<Line> lines = new ArrayList<>();
 		Progress.QuestInfo quest = spot.getCategory() == IconGroup.QUEST ? progress.getQuestsByIcon().get(spot.getAreaId())
@@ -314,7 +320,7 @@ final class MapIcons
 		{
 			teleportInfo(lines, spot.getTeleport(), progress);
 		}
-		lines.add(new Line(spot.getPlane() > 0 ? spot.getX() + ", " + spot.getY() + ", " + floorName(spot.getPlane())
+		lines.add(new Line(spot.getPlane() > 0 ? spot.getX() + ", " + spot.getY() + ", " + floors.name(spot.getPlane())
 			: spot.getX() + ", " + spot.getY(), QUIET));
 		lines.add(new Line(hidden ? "Hidden: right-click to unhide" : "Right-click to hide this icon", QUIET));
 		return lines;
@@ -370,12 +376,6 @@ final class MapIcons
 			Color color = !progress.isLoggedIn() ? PLAIN : state == QuestState.FINISHED ? GOOD : BAD;
 			lines.add(new Line("Needs " + quest.getName(), color));
 		}
-	}
-
-	/** What the map calls a floor: "Ground floor", then "Floor 1" and up. */
-	static String floorName(int plane)
-	{
-		return plane == 0 ? "Ground floor" : "Floor " + plane;
 	}
 
 	/** "Needs 33 Agility (you have 20)", green when met, red when not, plain when logged out. */

@@ -127,7 +127,9 @@ class AdvancedMapPanel extends PluginPanel
 			+ section("Surface and underground", "The button at the top right switches between the two maps."
 			+ " Basements, caves and dungeons are on the underground map.")
 			+ section("Floors", "The arrows at the bottom right go up and down a floor. The floors below are shown"
-			+ " darkened underneath, so you can see where you are.")
+			+ " darkened underneath, so you can see where you are. Zoomed out, the ground floor shows every floor's"
+			+ " icons; zoomed in, each icon is on its own floor (Lumbridge Castle's bank is at the top). How floors"
+			+ " are numbered is a setting.")
 			+ section("Icons", "Click an icon for its details: a quest's difficulty and the levels it needs, a"
 			+ " shortcut's Agility level, a spell's Magic level. Shortcuts and teleports you can't use yet are grayed"
 			+ " out with a red mark. \"Icons\" at the top left turns every icon off or on at once; place names"
