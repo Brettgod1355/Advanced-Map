@@ -363,6 +363,9 @@ final class MapIcons
 	}
 
 	/** The lines of an icon's info box, after its name. */
+	/** The game's name for the mining site icons' category. */
+	static final String MINING_SITE = "Mining site";
+
 	static List<Line> info(MapSpot spot, Progress progress, boolean hidden, FloorNumbers floors)
 	{
 		List<Line> lines = new ArrayList<>();
@@ -390,6 +393,14 @@ final class MapIcons
 		else if (spot.getDetail() != null)
 		{
 			lines.add(new Line(spot.getDetail() + ", not on the game's own map", QUIET));
+		}
+		if (MINING_SITE.equals(progress.categoryName(spot.getCategory())))
+		{
+			// what RuneLite's own map shows here, which the game's map leaves out
+			for (String rocks : MiningSites.rocksNear(spot.getX(), spot.getY(), spot.getPlane()))
+			{
+				lines.add(new Line(rocks, PLAIN));
+			}
 		}
 		lines.add(new Line(spot.getPlane() > 0 ? spot.getX() + ", " + spot.getY() + ", " + floors.name(spot.getPlane())
 			: spot.getX() + ", " + spot.getY(), QUIET));

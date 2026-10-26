@@ -158,6 +158,7 @@ public class AdvancedMapPlugin extends Plugin
 		viewports.get(MapArea.SURFACE).centerOn(LUMBRIDGE.getX(), LUMBRIDGE.getY());
 		viewports.get(MapArea.UNDERGROUND).centerOn(EDGEVILLE_DUNGEON.getX(), EDGEVILLE_DUNGEON.getY());
 		area = MapArea.SURFACE;
+		MiningSites.load();
 		reader = new CacheReader(client);
 		shortestPathRoute = new ShortestPathRoute();
 		source = new ClientMapSource(reader);

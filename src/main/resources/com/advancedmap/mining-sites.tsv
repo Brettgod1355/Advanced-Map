@@ -1,0 +1,170 @@
+# Mining sites and their rocks: x, y, plane, then "count ore" pairs separated by ";".
+# Transcribed from RuneLite runelite-parent-1.13.4 (ad137ad), runelite-client/src/main/java/net/runelite/client/
+# plugins/worldmap/MiningSiteLocation.java (BSD 2-Clause, Copyright (c) 2020, dekvall). See THIRD_PARTY_NOTICES.md.
+3322	2875	0	5 Gold
+1430	2882	0	8 Iron;5 Silver;6 Coal;5 Gold
+3298	3312	0	3 Copper;1 Tin;7 Iron;5 Silver;3 Coal;2 Mithril;2 Adamantite
+3298	3282	0	2 Iron;2 Gold
+1847	5414	0	4 Mithril
+1826	5392	0	2 Mithril
+1840	5397	0	8 Mithril
+2322	3269	0	8 Limestone
+3346	6021	0	8 Limestone
+1763	3860	0	1 Dense essence
+1763	3844	0	1 Dense essence
+2670	9680	0	5 Iron;5 Coal
+2599	3232	0	6 Iron;4 Coal
+3063	9582	0	2 Blurite
+3049	9568	0	2 Blurite
+1618	2991	0	6 Iron
+3086	3763	0	16 Iron;20 Coal;22 Mithril;8 Adamantite
+3171	2912	0	2 Clay;2 Coal;36 Sandstone;34 Granite
+3078	3421	0	5 Tin;4 Coal
+2471	3255	0	3 Copper;1 Tin
+1502	3869	0	20 Hard rock
+1485	3882	0	17 Hard rock
+1471	3865	0	22 Hard rock
+2732	3225	0	10 Gold
+2743	3150	0	6 Gold
+1510	9540	0	5 Iron;4 Coal;16 Calcified rocks;2 Mithril;1 Adamantite
+2934	5811	0	8 Barronite;1 Clay;2 Tin;1 Copper
+2914	5811	0	10 Barronite;2 Copper;2 Clay;1 Tin
+2374	3850	0	7 Coal;1 Runite
+2698	8785	0	10 Coal;3 Adamantite;2 Runite
+2640	2390	0	11 Coal
+3400	3170	0	3 Iron
+2580	3484	0	18 Coal
+2939	3283	0	6 Clay;6 Silver;7 Gold
+2860	3287	0	3 Gold
+2831	3296	0	7 Coal;1 Mithril
+2835	3245	0	3 Coal;3 Adamantite
+2819	3247	0	7 Mithril
+1281	3412	0	8 Iron;3 Coal;6 Mithril
+3631	3340	0	3 Daeyalt essence
+1945	2805	0	3 Tin;4 Copper;6 Iron;5 Mithril
+1932	2790	0	5 Silver;7 Lead;6 Gold;7 Nickel
+1996	9205	0	7 Iron;7 Lead
+1944	9204	0	23 Coal;4 Adamantite
+1932	9186	0	6 Iron;3 Mithril
+2067	9208	0	12 Nickel
+2090	9201	0	21 Coal;6 Adamantite;4 Runite
+3299	3021	0	4 Copper;4 Tin;3 Iron;4 Coal
+3309	9645	0	1 Iron;9 Silver
+3322	9616	0	3 Iron
+3312	9621	0	3 Iron
+3311	9628	0	3 Iron;2 Silver
+3039	9763	0	5 Tin;2 Iron;8 Coal;2 Gold;1 Adamantite
+3037	9775	0	4 Copper;3 Iron;3 Coal;2 Mithril;2 Adamantite
+3051	9820	0	2 Clay;3 Tin;2 Iron
+3028	9809	0	3 Clay;4 Copper
+3031	9828	0	3 Copper;2 Tin;2 Iron
+2405	3867	0	3 Copper;3 Tin;4 Coal
+3424	3164	0	7 Clay
+3138	9874	0	2 Copper;2 Tin;3 Iron;3 Silver;6 Coal;1 Mithril;2 Adamantite
+2907	3362	0	2 Copper;6 Tin;3 Iron;2 Coal
+2638	2996	0	3 Rock
+2579	2998	0	4 Rock
+2567	2961	0	3 Rock
+2630	3142	0	4 Clay;2 Copper;7 Tin;9 Iron;1 Coal;2 Mithril
+3770	3815	0	7 Iron;20 Coal;3 Mithril;5 Adamantite;2 Runite
+2310	3853	0	3 Copper
+2963	3933	0	1 Runite
+2975	3937	0	1 Runite
+2947	3914	0	1 Runite
+2489	9916	0	9 Clay;8 Iron;4 Silver;11 Coal;4 Gold;4 Mithril;3 Adamantite
+3183	2502	0	2 Tin;3 Copper;8 Iron;2 Coal;3 Clay;2 Mithril
+3248	2352	0	3 Iron;2 Coal;9 Granite;9 Sandstone
+2911	4084	0	3 Coal;3 Adamantite;4 Nickel
+2901	4084	0	2 Coal;3 Runite
+2909	4062	0	2 Coal;4 Nickel
+2163	3415	0	10 Gold
+3187	6167	0	10 Gold
+2940	9884	0	3 Coal;2 Runite
+2939	9898	0	5 Coal
+2921	9904	0	3 Coal
+2914	9916	0	2 Mithril;2 Adamantite
+1777	3489	0	10 Clay;11 Copper;4 Tin;9 Iron;2 Silver
+2277	3159	0	4 Adamantite;2 Runite
+2279	9237	0	1 Runite
+2262	9244	0	2 Adamantite
+2195	2793	0	3 Clay;3 Tin;3 Copper;10 Iron;3 Silver;6 Coal;4 Gold;2 Mithril
+2396	3812	0	11 Tin;7 Iron;8 Coal;15 Mithril;11 Adamantite
+2848	3033	0	1 Iron;1 Silver;1 Coal;2 Mithril;2 Adamantite
+2856	9579	0	4 Gold
+1211	3657	0	4 Adamantite;5 Mithril
+2724	3693	0	9 Iron;2 Mithril
+2937	10232	0	9 Coal
+2872	10119	0	2 Copper;5 Coal
+2818	10156	0	4 Iron;1 Gold
+2864	10170	0	5 Tin
+3045	10263	0	1 Runite
+3059	3884	0	2 Runite
+2709	3331	0	6 Iron;8 Coal
+2694	3332	0	5 Iron;5 Coal
+1476	3779	0	4 Iron;6 Coal;1 Mithril
+1445	3870	0	3 Volcanic sulphur
+1427	3870	0	2 Volcanic sulphur
+1430	3849	0	33 Coal;58 Lovakite
+1447	3840	0	12 Coal;22 Lovakite
+3226	3146	0	5 Copper;5 Tin
+3148	3149	0	7 Coal;5 Mithril;2 Adamantite
+2163	10347	0	2 Silver;1 Gold;1 Gem rock;6 Lunar
+2165	10325	0	3 Gem rock;4 Lunar
+2140	10318	0	3 Silver;3 Lunar
+2125	10327	0	4 Gold;1 Lunar
+2124	10342	0	2 Gold;5 Lunar
+3022	9704	0	26 Amethyst
+3040	9740	0	4 Iron;37 Coal;5 Mithril;2 Adamantite
+3032	9720	0	8 Iron;20 Coal;10 Mithril;8 Adamantite;2 Runite
+3006	9711	0	36 Amethyst
+2526	3891	0	9 Coal
+2504	10287	0	4 Coal
+2458	5167	0	3 Silver;3 Gold
+2513	5074	0	6 Silver;7 Gold
+2499	5062	0	3 Iron;4 Coal;2 Adamantite;3 Runite
+1278	3814	0	6 Iron;5 Coal
+1936	9020	0	4 Adamantite;2 Runite
+3319	2708	0	5 Sandstone;5 Granite
+1977	9041	0	5 Coal;2 Mithril;1 Adamantite
+2978	2254	0	8 Iron;3 Silver;6 Lead;4 Gem rock;4 Gold
+3055	9367	0	3 Copper;3 Tin;5 Iron;3 Coal;8 Lead
+3056	3945	0	1 Iron;4 Coal;4 Mithril;1 Adamantite
+1759	3718	0	5 Copper;6 Tin;5 Iron;2 Silver;1 Mithril
+2337	3640	0	2 Clay;2 Copper;2 Tin;3 Iron
+2651	3172	0	2 Copper;2 Tin;2 Mithril
+1480	3086	0	4 Copper;4 Tin;4 Iron;3 Adamantite
+2682	3704	0	4 Clay;3 Silver;7 Coal
+2977	3240	0	2 Clay;5 Copper;2 Tin;6 Iron;2 Gold
+3377	2777	0	3 Clay;5 Iron;3 Coal;1 Adamantite
+3172	2871	0	1 Copper;1 Tin;5 Iron;2 Silver;1 Coal
+2835	10334	0	7 Basalt;15 Te salt;12 Efh salt;12 Urt salt
+1671	3284	0	5 Iron;5 Gold
+1631	3277	0	7 Coal;3 Mithril;2 Adamantite
+1601	3645	0	3 Clay;3 Iron;4 Coal;2 Mithril;2 Adamantite
+2822	3001	0	7 Gem rock
+3371	3498	0	7 Limestone
+3888	9749	0	6 Iron;14 Coal
+1747	2955	0	5 Clay;6 Iron;4 Silver;10 Coal;3 Gold;4 Mithril
+1169	3323	0	3 Iron;3 Coal;3 Mithril;3 Adamantite;1 Runite
+2221	9003	0	4 Coal;5 Mithril
+2224	8977	0	3 Coal;4 Adamantite
+1352	3112	0	7 Iron;4 Coal;5 Gold;4 Mithril;4 Adamantite;1 Gemstone Crab
+1272	3173	0	9 Silver;8 Clay;1 Gemstone Crab
+1238	3043	0	13 Copper;10 Iron;7 Coal;1 Gemstone Crab
+3295	12387	0	26 Iron;8 Silver;19 Coal;14 Gold;7 Mithril;10 Soft clay;7 Adamantite;4 Runite
+3415	3160	0	10 Clay
+2567	7735	0	14 Iron
+3286	3365	0	9 Copper;6 Tin;4 Iron
+3176	3370	0	3 Clay;8 Tin;3 Iron;3 Silver
+1891	2987	0	2 Clay;2 Silver;2 Gold;1 Mithril
+1893	2975	0	2 Iron;2 Coal;2 Clay;4 Gold
+3766	3757	0	3 Iron
+3192	3930	0	6 Iron;11 Coal;4 Gold;1 Mithril;6 Adamantite
+3104	3569	0	2 Iron;3 Coal
+3013	3589	0	34 Coal
+2807	8593	0	10 Silver;7 Lead;2 Coal;6 Nickel;1 Runite
+2613	2237	0	9 Sunstone;5 Coal;2 Mithril;1 Runite
+2597	2239	0	13 Sunstone;5 Iron;8 Coal
+2224	3476	0	4 Iron;3 Nickel
+2267	9892	0	5 Mithril;8 Adamantite
+2249	9878	0	2 Mithril;2 Runite

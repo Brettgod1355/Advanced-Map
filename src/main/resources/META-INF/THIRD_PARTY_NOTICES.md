@@ -58,6 +58,11 @@ release (the published `client-1.13.4-sources.jar`): every destination, its kind
 the icon file names (Advanced Map draws its own teleport marks). The agility shortcuts' levels come from RuneLite's
 `net.runelite.client.game.AgilityShortcut`, used through the client at runtime and not copied.
 
+The rocks at each mining site in `src/main/resources/com/advancedmap/mining-sites.tsv` (167 sites, as "2 Iron", "3
+Coal") are transcribed from the same plugin's `MiningSiteLocation.java` at the same release (runelite/runelite
+`ad137adad1cb5052a5fef6e391888a8895d09830`): each site's tile and its rock counts, nothing else. That file carries the
+license above under "Copyright (c) 2020, dekvall <https://github.com/dekvall>".
+
 The other copied files carry the same license under their own holders, named in each file's header: Adam
 <Adam@sigterm.info> (2016-2017 and 2017), Kyle Friz (2015), Abex (2020 and 2026), Christopher Brown
 <christoabrown@gmail.com> (2024, `WorldMapElements.java`) and Morgan Lewis <https://github.com/MESLewis> (2018,
