@@ -19,6 +19,10 @@ import com.advancedmap.cache.OverlayLoader;
 import com.advancedmap.cache.Region;
 import com.advancedmap.cache.UnderlayDefinition;
 import com.advancedmap.cache.UnderlayLoader;
+import com.advancedmap.cache.WorldMapElements;
+import java.awt.Color;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -47,6 +51,9 @@ class ClientMapSource implements MapSource
 	private static final int OVERLAYS = 4;
 	private static final int OBJECTS = 6;
 	private static final int AREAS = 35;
+	/** The world map's index, and its group of composite maps: one file per map, each with its labels and icons. */
+	private static final int WORLD_MAP = 19;
+	private static final int COMPOSITE_MAPS = 1;
 	/** Regions kept decoded; each is read again for its neighbors' edges. */
 	private static final int REGIONS_KEPT = 160;
 	/** How far around a missing region its neighbors are read with it: 1 is a 3x3 block. */
@@ -67,6 +74,9 @@ class ClientMapSource implements MapSource
 	private final Map<Integer, ObjectDefinition> objects = new ConcurrentHashMap<>();
 	private final Map<Integer, Integer> textures = new ConcurrentHashMap<>();
 	private final Map<Integer, Optional<MapSprite>> areaIcons = new ConcurrentHashMap<>();
+	private final Map<Integer, Integer> areaCategories = new ConcurrentHashMap<>();
+	/** The map areas that are place names: a name and no icon. */
+	private final Map<Integer, AreaDefinition> labelAreas = new ConcurrentHashMap<>();
 	private volatile MapSprite[] mapScenes;
 	private volatile boolean tablesLoaded;
 
@@ -192,9 +202,14 @@ class ClientMapSource implements MapSource
 			tables.get(AREAS).forEach((id, bytes) ->
 			{
 				AreaDefinition area = new AreaLoader().load(bytes, id);
+				areaCategories.put(id, area.category);
 				if (area.spriteId < 0)
 				{
 					areaIcons.put(id, Optional.empty());
+					if (area.name != null && !area.name.isEmpty())
+					{
+						labelAreas.put(id, area);
+					}
 				}
 				else
 				{
@@ -349,6 +364,57 @@ class ClientMapSource implements MapSource
 			MapSprite[] frames = reader.read(client -> sprites(client, area.spriteId));
 			return frames.length == 0 ? Optional.empty() : Optional.ofNullable(frames[0]);
 		}).orElse(null);
+	}
+
+	@Override
+	public int areaCategory(int areaId)
+	{
+		loadTables();
+		return areaCategories.getOrDefault(areaId, -1);
+	}
+
+	/**
+	 * The place names of the game's world map, on the ground floor, each once (several of the game's maps show the
+	 * same place). Read in one wait for the client thread; empty while the client has no world map data yet.
+	 */
+	List<MapLabels.Label> labels()
+	{
+		loadTables();
+		List<byte[]> maps = reader.read(client ->
+		{
+			List<byte[]> out = new ArrayList<>();
+			IndexDataBase index = client.getIndex(WORLD_MAP);
+			int[] files = index == null ? null : index.getFileIds(COMPOSITE_MAPS);
+			if (files != null)
+			{
+				for (int file : files)
+				{
+					byte[] data = index.loadData(COMPOSITE_MAPS, file);
+					if (data != null)
+					{
+						out.add(data);
+					}
+				}
+			}
+			return out;
+		});
+		List<MapLabels.Label> labels = new ArrayList<>();
+		Set<String> seen = new HashSet<>();
+		for (byte[] map : maps)
+		{
+			for (WorldMapElements.Element element : WorldMapElements.load(map))
+			{
+				AreaDefinition area = labelAreas.get(element.getAreaId());
+				if (area == null || element.getPlane() != 0
+					|| !seen.add(area.id + "@" + element.getX() + "," + element.getY()))
+				{
+					continue;
+				}
+				labels.add(new MapLabels.Label(Arrays.asList(area.name.split("<br>")), element.getX(), element.getY(),
+					area.textScale, new Color(area.textColor)));
+			}
+		}
+		return labels;
 	}
 
 	private byte[] config(int group, int id)

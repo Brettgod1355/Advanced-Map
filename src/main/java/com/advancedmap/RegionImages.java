@@ -5,14 +5,17 @@
  */
 package com.advancedmap;
 
+import com.advancedmap.cache.Location;
 import com.advancedmap.cache.MapImageRenderer;
 import com.advancedmap.cache.MapSource;
 import com.advancedmap.cache.Region;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CancellationException;
@@ -24,7 +27,8 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * The drawn pictures of map regions, made on background threads as the map needs them and kept at three sizes:
  * 4, 2 and 1 pixels per tile. The biggest are made first and shrunk for the others; only the smallest are kept
- * for the whole world, the bigger ones for the regions seen last.
+ * for the whole world, the bigger ones for the regions seen last. The game's map icons are left out of the pictures:
+ * each region's are handed to {@link MapIcons}, which draws them so they can be clicked and turned off.
  */
 @Slf4j
 class RegionImages
@@ -58,16 +62,19 @@ class RegionImages
 	private final MapSource source;
 	private final MapImageRenderer renderer;
 	private final ExecutorService executor;
+	private final MapIcons icons;
+	private final Set<Integer> iconsFound = ConcurrentHashMap.newKeySet();
 	private final Map<Level, Map<Integer, BufferedImage>> images = new ConcurrentHashMap<>();
 	private final Set<Integer> absent = ConcurrentHashMap.newKeySet();
 	private final Set<Long> queued = ConcurrentHashMap.newKeySet();
 	private volatile Set<Integer> wanted = Collections.emptySet();
 
-	RegionImages(MapSource source, ExecutorService executor)
+	RegionImages(MapSource source, ExecutorService executor, MapIcons icons)
 	{
 		this.source = source;
 		this.renderer = new MapImageRenderer(source);
 		this.executor = executor;
+		this.icons = icons;
 		for (Level level : Level.values())
 		{
 			images.put(level, Collections.synchronizedMap(
@@ -157,6 +164,11 @@ class RegionImages
 				absent.add(id);
 				return;
 			}
+			if (!iconsFound.contains(id))
+			{
+				findIcons(region);
+				iconsFound.add(id);
+			}
 			BufferedImage full = renderer.drawRegion(region, 0);
 			BufferedImage half = shrink(full, 2);
 			if (level == Level.FULL)
@@ -179,6 +191,32 @@ class RegionImages
 		{
 			queued.remove(key);
 		}
+	}
+
+	/** Hands the icons a region's objects put on the game's map (ground floor) to {@link MapIcons}. */
+	private void findIcons(Region region)
+	{
+		List<MapSpot> spots = new ArrayList<>();
+		for (Location location : region.getLocations())
+		{
+			if (location.getPosition().getZ() != 0)
+			{
+				continue;
+			}
+			int areaId = source.object(location.getId()).getMapAreaId();
+			if (areaId == -1)
+			{
+				continue;
+			}
+			int category = source.areaCategory(areaId);
+			if (category == IconGroup.MAP_LINK)
+			{
+				continue;
+			}
+			icons.addSprite(areaId, source.areaIcon(areaId));
+			spots.add(MapSpot.icon(location.getPosition().getX(), location.getPosition().getY(), areaId, category));
+		}
+		icons.addRegion(region.getRegionID(), spots);
 	}
 
 	/** Averages each square of {@code by} x {@code by} pixels into one. */

@@ -16,13 +16,14 @@ original copyright notices and are in `src/main/java/com/advancedmap/cache/`:
 
 | File here | From `cache/src/main/java/net/runelite/cache/` | Changes |
 |---|---|---|
-| `MapImageRenderer.java` | `MapImageDumper.java` | Draws one region at a time from a `MapSource` instead of a cache folder on disk; the command-line tool, whole-world images, world map labels, inter-map link icons, the render switches and the out-of-bounds print are left out; map icons and map scenery come as ready-made `MapSprite`s; tile shapes are generated under a lock |
+| `MapImageRenderer.java` | `MapImageDumper.java` | Draws one region at a time from a `MapSource` instead of a cache folder on disk; the command-line tool, whole-world images, world map labels, inter-map link icons, the render switches and the out-of-bounds print are left out; map scenery comes as ready-made `MapSprite`s; tile shapes are generated under a lock; map icons are left out of the pictures (Advanced Map draws them itself, so they can be clicked and turned off) |
 | `Region.java`, `Location.java`, `Position.java`, `HeightCalc.java` | `region/` | Package only |
 | `MapDefinition.java`, `LocationsDefinition.java`, `UnderlayDefinition.java`, `OverlayDefinition.java`, `ObjectDefinition.java`, `AreaDefinition.java` | `definitions/` | Package only |
 | `MapLoader.java`, `LocationsLoader.java`, `UnderlayLoader.java`, `OverlayLoader.java`, `ObjectLoader.java`, `AreaLoader.java`, `EntityOpsLoader.java` | `definitions/loaders/` | Package only |
 | `EntityOpsDefinition.java` | `EntityOpsDefinition.java` | Package only |
 | `JagexColor.java` | `models/JagexColor.java` | Package only |
 | `InputStream.java` | `io/InputStream.java` | Package only, and no longer extends `java.io.InputStream` |
+| `WorldMapElements.java` | `definitions/loaders/WorldMapCompositeLoader.java`, `definitions/loaders/WorldMapDataLoader.java`, `definitions/loaders/WorldMapElementLoader.java`, `definitions/WorldMapCompositeDefinition.java` | Combined into one reader of a composite map file that returns its elements at their world positions; the current format only; the definition classes are left out |
 
 The license text, as it appears with the first holder's notice:
 
@@ -51,8 +52,16 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ```
 
+The teleport destinations in `src/main/java/com/advancedmap/Teleport.java` are transcribed from RuneLite's world map
+plugin, `runelite-client/src/main/java/net/runelite/client/plugins/worldmap/TeleportLocationData.java` at the same
+release (the published `client-1.13.4-sources.jar`): every destination, its kind, item, Magic level and tile, without
+the icon file names (Advanced Map draws its own teleport marks). The agility shortcuts' levels come from RuneLite's
+`net.runelite.client.game.AgilityShortcut`, used through the client at runtime and not copied.
+
 The other copied files carry the same license under their own holders, named in each file's header: Adam
-<Adam@sigterm.info> (2016-2017 and 2017), Kyle Friz (2015) and Abex (2020 and 2026).
+<Adam@sigterm.info> (2016-2017 and 2017), Kyle Friz (2015), Abex (2020 and 2026), Christopher Brown
+<christoabrown@gmail.com> (2024, `WorldMapElements.java`) and Morgan Lewis <https://github.com/MESLewis> (2018,
+`Teleport.java`).
 
 The test-only `logback-test.xml` comes from the example plugin (same license, Adam's notice kept in the file).
 

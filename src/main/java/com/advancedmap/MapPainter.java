@@ -20,18 +20,21 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.Path2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import lombok.Value;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.client.ui.FontManager;
 
 /**
- * Draws the map: region pictures, the Wilderness levels, other plugins' layers, the player, a bar with the tile under
- * the mouse, and the buttons. The same drawing goes over the game view and into the pop-out window. It touches no client state, so it
- * runs on the client thread for the overlay and on the Swing thread for the window.
+ * Draws the map: region pictures, the Wilderness levels, place names, icons, other plugins' layers, the player, an
+ * icon's info box or menu, a bar with the tile under the mouse, and the buttons. The same drawing goes over the game
+ * view and into the pop-out window. It touches no client state, so it runs on the client thread for the overlay and
+ * on the Swing thread for the window.
  */
 final class MapPainter
 {
@@ -39,13 +42,36 @@ final class MapPainter
 	{
 		CLOSE,
 		AREA,
-		MODE
+		MODE,
+		/** Shows or hides every icon at once; place names stay. */
+		ICONS,
+		/** Shows the icons the player hid, faded, so they can be unhidden. */
+		HIDDEN,
+		/** Moves the map back to the player. */
+		LOCATE
+	}
+
+	/** The icon whose info box or right-click menu is open, and where the menu was opened. */
+	@Value
+	static class Selection
+	{
+		MapSpot spot;
+		boolean menu;
+		int x;
+		int y;
 	}
 
 	static final int BUTTON_HEIGHT = 28;
+	static final int LOCATE_SIZE = 36;
 	private static final int GAP = 8;
 	private static final int AREA_WIDTH = 110;
 	private static final int MODE_WIDTH = 100;
+	private static final int ICONS_WIDTH = 76;
+	private static final int HIDDEN_WIDTH = 116;
+	private static final int MENU_ROW = 20;
+	private static final int PAD = 8;
+	/** The Wilderness lines' text shows from this zoom in; further out the kingdom names show instead. */
+	private static final double WILDERNESS_TEXT_ZOOM = 0.5;
 
 	private static final Color BACKGROUND = new Color(0x0B1520);
 	private static final Color LOADING = new Color(0x13202D);
@@ -60,22 +86,34 @@ final class MapPainter
 	private static final Stroke THIN = new BasicStroke(1);
 	private static final Stroke THICK = new BasicStroke(2);
 
+	/** For measuring text outside a frame (where the menu's entry is, for a click). */
+	private static final Graphics2D MEASURE = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB).createGraphics();
+
 	private final RegionImages images;
 	private final MapMessages messages;
+	private final MapIcons icons;
+	private final MapLabels labels;
 
-	MapPainter(RegionImages images, MapMessages messages)
+	MapPainter(RegionImages images, MapMessages messages, MapIcons icons, MapLabels labels)
 	{
 		this.images = images;
 		this.messages = messages;
+		this.icons = icons;
+		this.labels = labels;
 	}
 
 	/**
-	 * Where the buttons sit, right to left along the top: close (over the game only; a window has its own), the map
-	 * switch, and the button that moves the map between the game view and its own window.
+	 * Where the buttons sit: right to left along the top, close (over the game only; a window has its own), the map
+	 * switch, and the button that moves the map between the game view and its own window; at the top left, the two
+	 * icon switches; at the bottom right, the button that finds the player.
 	 */
-	static Map<Button, Rectangle> buttons(int width, boolean window)
+	static Map<Button, Rectangle> buttons(int width, int height, boolean window)
 	{
 		Map<Button, Rectangle> out = new EnumMap<>(Button.class);
+		out.put(Button.ICONS, new Rectangle(GAP, GAP, ICONS_WIDTH, BUTTON_HEIGHT));
+		out.put(Button.HIDDEN, new Rectangle(GAP * 2 + ICONS_WIDTH, GAP, HIDDEN_WIDTH, BUTTON_HEIGHT));
+		out.put(Button.LOCATE, new Rectangle(width - GAP - LOCATE_SIZE, height - GAP - LOCATE_SIZE, LOCATE_SIZE,
+			LOCATE_SIZE));
 		int right = width - GAP;
 		if (!window)
 		{
@@ -89,9 +127,9 @@ final class MapPainter
 	}
 
 	/** The button under a point, or null. */
-	static Button buttonAt(int x, int y, int width, boolean window)
+	static Button buttonAt(int x, int y, int width, int height, boolean window)
 	{
-		for (Map.Entry<Button, Rectangle> button : buttons(width, window).entrySet())
+		for (Map.Entry<Button, Rectangle> button : buttons(width, height, window).entrySet())
 		{
 			if (button.getValue().contains(x, y))
 			{
@@ -103,18 +141,24 @@ final class MapPainter
 
 	/**
 	 * Draws one frame. {@code player} is where the player stands (null when logged out), {@code mouse} where the
-	 * pointer is (null when it is elsewhere), {@code wilderness} whether to draw the Wilderness levels.
+	 * pointer is (null when it is elsewhere), {@code selection} the icon whose info box or menu is open (or null).
 	 */
 	void paint(Graphics2D g, MapViewport.View view, MapArea area, WorldPoint player, Point mouse, boolean window,
-		boolean wilderness)
+		MapSettings settings, Progress progress, Selection selection)
 	{
 		g.setColor(BACKGROUND);
 		g.fillRect(0, 0, view.width, view.height);
 		boolean loading = drawRegions(g, view, area);
-		if (wilderness)
+		if (settings.isWildernessLines())
 		{
 			drawWilderness(g, view, area);
 		}
+		if (settings.isPlaceNames())
+		{
+			drawLabels(g, view, area, labels.all(), buttons(view.width, view.height, window).values());
+		}
+		List<MapIcons.Shown> shown = icons.visible(view, area, settings, progress);
+		drawIcons(g, shown, selection);
 
 		Object antialiasing = g.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -123,8 +167,20 @@ final class MapPainter
 			drawLayer(g, view, layer);
 		}
 		drawPlayer(g, view, area, player);
-		drawBar(g, view, mouse, loading, window);
-		drawButtons(g, view.width, area, window);
+		if (selection != null)
+		{
+			MapIcons.Shown selected = find(shown, selection.getSpot());
+			if (selection.isMenu())
+			{
+				drawMenu(g, view, selection, settings, progress);
+			}
+			else if (selected != null)
+			{
+				drawInfo(g, view, selected, settings, progress);
+			}
+		}
+		drawBar(g, view, mouse, loading, window, !shown.isEmpty());
+		drawButtons(g, view, area, window, settings, player != null);
 		if (antialiasing != null)
 		{
 			g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, antialiasing);
@@ -217,7 +273,8 @@ final class MapPainter
 		double west = view.screenX(counted.x);
 		double east = view.screenX(counted.x + counted.width);
 		int step = Wilderness.lineStep(view.zoom);
-		boolean labels = 8 * step * view.zoom >= metrics.getAscent() + 4;
+		// far out the kingdom names show instead
+		boolean labels = 8 * step * view.zoom >= metrics.getAscent() + 4 && view.zoom >= WILDERNESS_TEXT_ZOOM;
 		for (int level = 2; level <= Wilderness.topLevel(counted); level++)
 		{
 			if (!Wilderness.drawsLine(level, step))
@@ -245,8 +302,11 @@ final class MapPainter
 			g.setStroke(THICK);
 			g.setColor(TELEPORT_LINE);
 			g.drawLine((int) west, y, (int) east, y);
-			drawLineLabel(g, "Level " + level + " teleport limit", view, west, east, y, false, TELEPORT_LINE, clip,
-				own);
+			if (view.zoom >= WILDERNESS_TEXT_ZOOM)
+			{
+				drawLineLabel(g, "Level " + level + " teleport limit", view, west, east, y, false, TELEPORT_LINE, clip,
+					own);
+			}
 		}
 		g.setClip(clip);
 
@@ -259,8 +319,11 @@ final class MapPainter
 			five.subtract(new Area(screenRect(view, Wilderness.FLAT_FIVE_HOLE)));
 			g.draw(five);
 			// in the lower half, clear of the hole in the middle
-			drawCenteredLabel(g, "Level 5", view.screenX(Wilderness.FLAT_FIVE.getCenterX()),
-				view.screenY(Wilderness.FLAT_FIVE.y + Wilderness.FLAT_FIVE.height / 4.0));
+			if (view.zoom >= WILDERNESS_TEXT_ZOOM)
+			{
+				drawCenteredLabel(g, "Level 5", view.screenX(Wilderness.FLAT_FIVE.getCenterX()),
+					view.screenY(Wilderness.FLAT_FIVE.y + Wilderness.FLAT_FIVE.height / 4.0));
+			}
 		}
 		for (int[] region : Wilderness.OWN_LEVEL)
 		{
@@ -328,6 +391,318 @@ final class MapPainter
 		g.drawString(text, x + 1, y + 1);
 		g.setColor(color);
 		g.drawString(text, x, y);
+	}
+
+	/**
+	 * Draws the place names that show at this zoom, kingdoms first, then towns, then smaller places, leaving out any
+	 * that would cover one already drawn or a button.
+	 */
+	static void drawLabels(Graphics2D g, MapViewport.View view, MapArea area, List<MapLabels.Label> labels,
+		Collection<Rectangle> buttons)
+	{
+		List<Rectangle> taken = new ArrayList<>(buttons);
+		for (int size = MapLabels.KINGDOM; size >= MapLabels.PLACE; size--)
+		{
+			if (!MapLabels.shows(size, view.zoom))
+			{
+				continue;
+			}
+			g.setFont(labelFont(size));
+			FontMetrics metrics = g.getFontMetrics();
+			for (MapLabels.Label label : labels)
+			{
+				if (label.getSize() != size || MapArea.of(label.getY()) != area)
+				{
+					continue;
+				}
+				int width = 0;
+				for (String line : label.getLines())
+				{
+					width = Math.max(width, metrics.stringWidth(line));
+				}
+				int height = metrics.getHeight() * label.getLines().size();
+				int cx = (int) Math.round(view.screenX(label.getX() + 0.5));
+				int cy = (int) Math.round(view.screenY(label.getY() + 0.5));
+				Rectangle box = new Rectangle(cx - width / 2 - 2, cy - height / 2 - 2, width + 4, height + 4);
+				if (!box.intersects(0, 0, view.width, view.height) || overlaps(box, taken))
+				{
+					continue;
+				}
+				taken.add(box);
+				int y = box.y + 2 + metrics.getAscent();
+				for (String line : label.getLines())
+				{
+					int x = cx - metrics.stringWidth(line) / 2;
+					g.setColor(Color.BLACK);
+					g.drawString(line, x + 1, y + 1);
+					g.drawString(line, x - 1, y + 1);
+					g.drawString(line, x + 1, y - 1);
+					g.drawString(line, x - 1, y - 1);
+					g.setColor(label.getColor());
+					g.drawString(line, x, y);
+					y += metrics.getHeight();
+				}
+			}
+		}
+	}
+
+	private static java.awt.Font labelFont(int size)
+	{
+		switch (size)
+		{
+			case MapLabels.KINGDOM:
+				return FontManager.getRunescapeBoldFont().deriveFont(24f);
+			case MapLabels.TOWN:
+				return FontManager.getRunescapeBoldFont();
+			default:
+				return FontManager.getRunescapeSmallFont();
+		}
+	}
+
+	private static boolean overlaps(Rectangle box, List<Rectangle> taken)
+	{
+		for (Rectangle other : taken)
+		{
+			if (other.intersects(box))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/** Draws the icons on screen, with a mark for each look and a ring round the one whose info box is open. */
+	private void drawIcons(Graphics2D g, List<MapIcons.Shown> shown, Selection selection)
+	{
+		java.awt.Composite composite = g.getComposite();
+		for (MapIcons.Shown icon : shown)
+		{
+			Rectangle at = icon.getBounds();
+			MapIcons.Look look = icon.getLook();
+			if (look == MapIcons.Look.HIDDEN)
+			{
+				g.setComposite(java.awt.AlphaComposite.getInstance(java.awt.AlphaComposite.SRC_OVER, 0.4f));
+			}
+			Teleport teleport = icon.getSpot().getTeleport();
+			if (teleport != null)
+			{
+				drawTeleportMark(g, at, teleport.getType(), look == MapIcons.Look.LOCKED);
+			}
+			else
+			{
+				BufferedImage image = icons.image(icon.getSpot().getAreaId(), look == MapIcons.Look.LOCKED);
+				if (image != null)
+				{
+					g.drawImage(image, at.x, at.y, null);
+				}
+			}
+			g.setComposite(composite);
+			drawBadge(g, at, look);
+			if (selection != null && selection.getSpot().equals(icon.getSpot()))
+			{
+				Stroke stroke = g.getStroke();
+				g.setStroke(THICK);
+				g.setColor(PLAYER);
+				g.drawOval(at.x - 3, at.y - 3, at.width + 5, at.height + 5);
+				g.setStroke(stroke);
+			}
+		}
+	}
+
+	/** Advanced Map's own teleport mark: a four-pointed spark on a disc in the colors of its spellbook or kind. */
+	static void drawTeleportMark(Graphics2D g, Rectangle at, Teleport.Type type, boolean locked)
+	{
+		Object antialiasing = g.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
+		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g.setColor(OUTLINE);
+		g.fillOval(at.x - 1, at.y - 1, at.width + 2, at.height + 2);
+		g.setColor(locked ? new Color(0x6E6E6E) : teleportColor(type));
+		g.fillOval(at.x, at.y, at.width, at.height);
+		double cx = at.getCenterX();
+		double cy = at.getCenterY();
+		double r = at.width * 0.36;
+		double w = r * 0.32;
+		Path2D spark = new Path2D.Double();
+		spark.moveTo(cx, cy - r);
+		spark.lineTo(cx + w, cy - w);
+		spark.lineTo(cx + r, cy);
+		spark.lineTo(cx + w, cy + w);
+		spark.lineTo(cx, cy + r);
+		spark.lineTo(cx - w, cy + w);
+		spark.lineTo(cx - r, cy);
+		spark.lineTo(cx - w, cy - w);
+		spark.closePath();
+		g.setColor(locked ? new Color(0xBDBDBD) : Color.WHITE);
+		g.fill(spark);
+		if (antialiasing != null)
+		{
+			g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, antialiasing);
+		}
+	}
+
+	static Color teleportColor(Teleport.Type type)
+	{
+		switch (type)
+		{
+			case NORMAL_MAGIC:
+				return new Color(0x3D7FE0);
+			case ANCIENT_MAGICKS:
+				return new Color(0x8E4FCF);
+			case LUNAR_MAGIC:
+				return new Color(0x7F9CC4);
+			case ARCEUUS_MAGIC:
+				return new Color(0x2F9E68);
+			case JEWELLERY:
+				return new Color(0xC8961E);
+			case SCROLL:
+				return new Color(0xB59B62);
+			default:
+				return new Color(0x1E9EA6);
+		}
+	}
+
+	/** A small mark at an icon's lower right: red no-entry for locked, a green tick for done, yellow for started. */
+	private static void drawBadge(Graphics2D g, Rectangle at, MapIcons.Look look)
+	{
+		if (look != MapIcons.Look.LOCKED && look != MapIcons.Look.DONE && look != MapIcons.Look.STARTED)
+		{
+			return;
+		}
+		Object antialiasing = g.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
+		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		int size = 9;
+		int x = at.x + at.width - size + 2;
+		int y = at.y + at.height - size + 2;
+		g.setColor(OUTLINE);
+		g.fillOval(x - 1, y - 1, size + 2, size + 2);
+		Stroke stroke = g.getStroke();
+		switch (look)
+		{
+			case LOCKED:
+				g.setColor(new Color(0xE0342A));
+				g.fillOval(x, y, size, size);
+				g.setColor(Color.WHITE);
+				g.fillRect(x + 2, y + size / 2 - 1, size - 4, 2);
+				break;
+			case DONE:
+				g.setColor(new Color(0x3FA34D));
+				g.fillOval(x, y, size, size);
+				g.setColor(Color.WHITE);
+				g.setStroke(new BasicStroke(1.5f));
+				g.drawPolyline(new int[]{x + 2, x + 4, x + 7}, new int[]{y + 5, y + 7, y + 2}, 3);
+				break;
+			default:
+				g.setColor(new Color(0xF2C230));
+				g.fillOval(x, y, size, size);
+				break;
+		}
+		g.setStroke(stroke);
+		if (antialiasing != null)
+		{
+			g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, antialiasing);
+		}
+	}
+
+	private static MapIcons.Shown find(List<MapIcons.Shown> shown, MapSpot spot)
+	{
+		for (MapIcons.Shown icon : shown)
+		{
+			if (icon.getSpot().equals(spot))
+			{
+				return icon;
+			}
+		}
+		return null;
+	}
+
+	/** The info box beside an icon: its name, then what the player needs to know about it. Never cut short. */
+	private static void drawInfo(Graphics2D g, MapViewport.View view, MapIcons.Shown icon, MapSettings settings,
+		Progress progress)
+	{
+		String title = MapIcons.name(icon.getSpot(), progress);
+		List<MapIcons.Line> lines = MapIcons.info(icon.getSpot(), progress, settings.isHidden(icon.getSpot()));
+		java.awt.Font titleFont = FontManager.getRunescapeBoldFont();
+		java.awt.Font font = FontManager.getRunescapeSmallFont();
+		FontMetrics titleMetrics = g.getFontMetrics(titleFont);
+		FontMetrics metrics = g.getFontMetrics(font);
+		int width = titleMetrics.stringWidth(title);
+		for (MapIcons.Line line : lines)
+		{
+			width = Math.max(width, metrics.stringWidth(line.getText()));
+		}
+		width += PAD * 2;
+		int height = PAD * 2 + titleMetrics.getHeight() + metrics.getHeight() * lines.size();
+		Rectangle at = icon.getBounds();
+		int x = at.x + at.width + 8;
+		if (x + width > view.width - GAP)
+		{
+			x = at.x - 8 - width;
+		}
+		x = Math.max(GAP, x);
+		int y = Math.max(GAP + BUTTON_HEIGHT + GAP, Math.min(at.y - PAD, view.height - height - GAP));
+		drawPanel(g, new Rectangle(x, y, width, height));
+		int baseline = y + PAD + titleMetrics.getAscent();
+		g.setFont(titleFont);
+		g.setColor(TEXT);
+		g.drawString(title, x + PAD, baseline);
+		baseline += titleMetrics.getDescent() + metrics.getAscent();
+		g.setFont(font);
+		for (MapIcons.Line line : lines)
+		{
+			g.setColor(line.getColor());
+			g.drawString(line.getText(), x + PAD, baseline);
+			baseline += metrics.getHeight();
+		}
+	}
+
+	/** The text of the right-click menu's one entry. */
+	static String menuEntry(MapSpot spot, MapSettings settings)
+	{
+		return settings.isHidden(spot) ? "Unhide this icon" : "Hide this icon";
+	}
+
+	/** Where the right-click menu sits: its name row, then its entry, kept on the screen. */
+	static Rectangle menuBounds(Selection selection, String title, String entry, int width, int height)
+	{
+		FontMetrics metrics = MEASURE.getFontMetrics(FontManager.getRunescapeSmallFont());
+		int menuWidth = Math.max(metrics.stringWidth(title), metrics.stringWidth(entry)) + PAD * 2;
+		int menuHeight = MENU_ROW * 2;
+		int x = Math.max(0, Math.min(selection.getX(), width - menuWidth));
+		int y = Math.max(0, Math.min(selection.getY(), height - menuHeight));
+		return new Rectangle(x, y, menuWidth, menuHeight);
+	}
+
+	/** The menu's entry row, the only part that does anything. */
+	static Rectangle menuEntryBounds(Rectangle menu)
+	{
+		return new Rectangle(menu.x, menu.y + MENU_ROW, menu.width, MENU_ROW);
+	}
+
+	private static void drawMenu(Graphics2D g, MapViewport.View view, Selection selection, MapSettings settings,
+		Progress progress)
+	{
+		String title = MapIcons.name(selection.getSpot(), progress);
+		String entry = menuEntry(selection.getSpot(), settings);
+		Rectangle menu = menuBounds(selection, title, entry, view.width, view.height);
+		drawPanel(g, menu);
+		g.setFont(FontManager.getRunescapeSmallFont());
+		FontMetrics metrics = g.getFontMetrics();
+		int baseline = (MENU_ROW + metrics.getAscent() - metrics.getDescent()) / 2;
+		g.setColor(MapIcons.QUIET);
+		g.drawString(title, menu.x + PAD, menu.y + baseline);
+		Rectangle row = menuEntryBounds(menu);
+		g.setColor(new Color(255, 255, 255, 30));
+		g.fillRect(row.x + 2, row.y, row.width - 4, row.height - 2);
+		g.setColor(TEXT);
+		g.drawString(entry, row.x + PAD, row.y + baseline);
+	}
+
+	private static void drawPanel(Graphics2D g, Rectangle box)
+	{
+		g.setColor(new Color(0x10, 0x18, 0x22, 235));
+		g.fillRoundRect(box.x, box.y, box.width, box.height, 8, 8);
+		g.setColor(new Color(0x5A5040));
+		g.drawRoundRect(box.x, box.y, box.width - 1, box.height - 1, 8, 8);
 	}
 
 	private static void drawLayer(Graphics2D g, MapViewport.View view, MapLayer layer)
@@ -427,7 +802,8 @@ final class MapPainter
 		g.fill(new Ellipse2D.Double(sx - r, sy - r, 2 * r, 2 * r));
 	}
 
-	private static void drawBar(Graphics2D g, MapViewport.View view, Point mouse, boolean loading, boolean window)
+	private static void drawBar(Graphics2D g, MapViewport.View view, Point mouse, boolean loading, boolean window,
+		boolean icons)
 	{
 		g.setFont(FontManager.getRunescapeSmallFont());
 		FontMetrics metrics = g.getFontMetrics();
@@ -439,6 +815,10 @@ final class MapPainter
 			text.append(String.format(Locale.ROOT, "%d, %d", tx, ty)).append("    ");
 		}
 		text.append(window ? "Drag to move, scroll to zoom" : "Drag to move, scroll to zoom, Esc to close");
+		if (icons)
+		{
+			text.append(", click an icon for details");
+		}
 		if (loading)
 		{
 			text.append("    Drawing the map...");
@@ -450,12 +830,18 @@ final class MapPainter
 		g.drawString(text.toString(), 8, view.height - 4 - metrics.getDescent());
 	}
 
-	private static void drawButtons(Graphics2D g, int width, MapArea area, boolean window)
+	private static void drawButtons(Graphics2D g, MapViewport.View view, MapArea area, boolean window,
+		MapSettings settings, boolean located)
 	{
-		for (Map.Entry<Button, Rectangle> entry : buttons(width, window).entrySet())
+		for (Map.Entry<Button, Rectangle> entry : buttons(view.width, view.height, window).entrySet())
 		{
 			Rectangle button = entry.getValue();
 			g.setColor(BAR);
+			if (entry.getKey() == Button.LOCATE)
+			{
+				drawLocate(g, button, located);
+				continue;
+			}
 			g.fillRoundRect(button.x, button.y, button.width, button.height, 8, 8);
 			switch (entry.getKey())
 			{
@@ -465,10 +851,64 @@ final class MapPainter
 				case AREA:
 					drawLabel(g, button, "Show " + area.other().label.toLowerCase(Locale.ROOT));
 					break;
+				case ICONS:
+					drawSwitch(g, button, "Icons", !settings.isIconsOff());
+					break;
+				case HIDDEN:
+					drawSwitch(g, button, "Hidden icons", settings.isShowHidden());
+					break;
 				default:
 					drawLabel(g, button, window ? "Over the game" : "Pop out");
 					break;
 			}
+		}
+	}
+
+	/** A button that is on or off: a box, ticked when on, before its name. */
+	private static void drawSwitch(Graphics2D g, Rectangle button, String text, boolean on)
+	{
+		int box = 12;
+		int bx = button.x + PAD;
+		int by = button.y + (button.height - box) / 2;
+		g.setColor(on ? new Color(0x3FA34D) : new Color(0x2A333D));
+		g.fillRect(bx, by, box, box);
+		g.setColor(TEXT);
+		g.drawRect(bx, by, box, box);
+		if (on)
+		{
+			Stroke stroke = g.getStroke();
+			g.setStroke(new BasicStroke(2f));
+			g.drawPolyline(new int[]{bx + 3, bx + 5, bx + 10}, new int[]{by + 6, by + 9, by + 3}, 3);
+			g.setStroke(stroke);
+		}
+		g.setFont(FontManager.getRunescapeSmallFont());
+		FontMetrics metrics = g.getFontMetrics();
+		g.drawString(text, bx + box + 6, button.y + (button.height + metrics.getAscent() - metrics.getDescent()) / 2);
+	}
+
+	/** The find-me button: a round button with a location mark, dimmed while there is no player to find. */
+	private static void drawLocate(Graphics2D g, Rectangle button, boolean located)
+	{
+		Object antialiasing = g.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
+		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g.setColor(BAR);
+		g.fillOval(button.x, button.y, button.width, button.height);
+		Color color = located ? new Color(0x5AA9FF) : new Color(0x707070);
+		double cx = button.getCenterX();
+		double cy = button.getCenterY();
+		Stroke stroke = g.getStroke();
+		g.setStroke(THICK);
+		g.setColor(color);
+		g.draw(new Ellipse2D.Double(cx - 8, cy - 8, 16, 16));
+		g.drawLine((int) cx, (int) cy - 13, (int) cx, (int) cy - 8);
+		g.drawLine((int) cx, (int) cy + 8, (int) cx, (int) cy + 13);
+		g.drawLine((int) cx - 13, (int) cy, (int) cx - 8, (int) cy);
+		g.drawLine((int) cx + 8, (int) cy, (int) cx + 13, (int) cy);
+		g.fill(new Ellipse2D.Double(cx - 3.5, cy - 3.5, 7, 7));
+		g.setStroke(stroke);
+		if (antialiasing != null)
+		{
+			g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, antialiasing);
 		}
 	}
 

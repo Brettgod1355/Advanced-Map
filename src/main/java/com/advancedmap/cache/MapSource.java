@@ -38,4 +38,10 @@ public interface MapSource
 
 	/** The map icon of a map area (bank, altar and so on), or null when it has none. */
 	MapSprite areaIcon(int areaId);
+
+	/** The icon category of a map area (bank, quest and so on, as on the game's world map Key), or -1. */
+	default int areaCategory(int areaId)
+	{
+		return -1;
+	}
 }

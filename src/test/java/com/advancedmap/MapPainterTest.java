@@ -22,21 +22,21 @@ public class MapPainterTest
 	@Test
 	public void overTheGameThereIsACloseButtonAndInAWindowThereIsNot()
 	{
-		assertTrue(MapPainter.buttons(1200, false).containsKey(MapPainter.Button.CLOSE));
-		assertFalse(MapPainter.buttons(1200, true).containsKey(MapPainter.Button.CLOSE));
-		assertEquals(3, MapPainter.buttons(1200, false).size());
-		assertEquals(2, MapPainter.buttons(1200, true).size());
+		assertTrue(MapPainter.buttons(1200, 800, false).containsKey(MapPainter.Button.CLOSE));
+		assertFalse(MapPainter.buttons(1200, 800, true).containsKey(MapPainter.Button.CLOSE));
+		assertEquals(6, MapPainter.buttons(1200, 800, false).size());
+		assertEquals(5, MapPainter.buttons(1200, 800, true).size());
 	}
 
 	@Test
-	public void buttonsSitInsideTheTopRightAndDoNotOverlap()
+	public void buttonsSitInsideTheViewAndDoNotOverlap()
 	{
 		for (boolean window : new boolean[]{false, true})
 		{
-			Map<MapPainter.Button, Rectangle> buttons = MapPainter.buttons(1200, window);
+			Map<MapPainter.Button, Rectangle> buttons = MapPainter.buttons(800, 500, window);
 			for (Rectangle a : buttons.values())
 			{
-				assertTrue(a.x >= 0 && a.x + a.width <= 1200 && a.y >= 0);
+				assertTrue(a.x >= 0 && a.x + a.width <= 800 && a.y >= 0 && a.y + a.height <= 500);
 				for (Rectangle b : buttons.values())
 				{
 					assertTrue(a == b || !a.intersects(b));
@@ -46,14 +46,33 @@ public class MapPainterTest
 	}
 
 	@Test
+	public void theFindMeButtonIsInTheBottomRightCorner()
+	{
+		Rectangle locate = MapPainter.buttons(1000, 700, false).get(MapPainter.Button.LOCATE);
+		assertTrue(locate.x > 900 && locate.y > 600);
+		assertEquals(MapPainter.Button.LOCATE, MapPainter.buttonAt(985, 685 - 10, 1000, 700, false));
+	}
+
+	@Test
 	public void aClickFindsItsButton()
 	{
-		for (Map.Entry<MapPainter.Button, Rectangle> button : MapPainter.buttons(800, false).entrySet())
+		for (Map.Entry<MapPainter.Button, Rectangle> button : MapPainter.buttons(800, 600, false).entrySet())
 		{
 			Rectangle r = button.getValue();
-			assertEquals(button.getKey(), MapPainter.buttonAt(r.x + r.width / 2, r.y + r.height / 2, 800, false));
+			assertEquals(button.getKey(), MapPainter.buttonAt(r.x + r.width / 2, r.y + r.height / 2, 800, 600, false));
 		}
-		assertNull(MapPainter.buttonAt(400, 400, 800, false));
+		assertNull(MapPainter.buttonAt(400, 300, 800, 600, false));
+	}
+
+	@Test
+	public void theMenuStaysOnScreenAndItsEntryIsItsSecondRow()
+	{
+		MapPainter.Selection near = new MapPainter.Selection(MapSpot.teleport(Teleport.VARROCK), true, 790, 590);
+		Rectangle menu = MapPainter.menuBounds(near, "Varrock Teleport", "Hide this icon", 800, 600);
+		assertTrue(menu.x + menu.width <= 800 && menu.y + menu.height <= 600);
+		Rectangle entry = MapPainter.menuEntryBounds(menu);
+		assertTrue(menu.contains(entry));
+		assertTrue(entry.y > menu.y);
 	}
 
 	@Test

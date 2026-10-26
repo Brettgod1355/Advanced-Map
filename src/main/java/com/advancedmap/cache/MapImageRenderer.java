@@ -91,7 +91,6 @@ public class MapImageRenderer
 		drawNeighborObjects(image, region.getRegionX(), region.getRegionY(), 1, -1, z);
 		drawNeighborObjects(image, region.getRegionX(), region.getRegionY(), 1, 0, z);
 		drawNeighborObjects(image, region.getRegionX(), region.getRegionY(), 1, 1, z);
-		drawMapIcons(image, region, z, 0, 0);
 
 		return image;
 	}
@@ -1315,43 +1314,6 @@ public class MapImageRenderer
 			for (int j = 0; j < MAP_SCALE; ++j)
 			{
 				pixels[x + i][y + j] = rgb;
-			}
-		}
-	}
-
-	private void drawMapIcons(BufferedImage img, Region region, int z, int drawBaseX, int drawBaseY)
-	{
-
-		for (Location location : region.getLocations())
-		{
-			int localX = location.getPosition().getX() - region.getBaseX();
-			int localY = location.getPosition().getY() - region.getBaseY();
-
-			if (z != location.getPosition().getZ())
-			{
-				// draw all icons on z=0
-				continue;
-			}
-
-			ObjectDefinition od = source.object(location.getId());
-
-			assert od != null;
-
-			int drawX = drawBaseX + localX;
-			int drawY = drawBaseY + (Region.Y - 1 - localY);
-
-			if (od.getMapAreaId() != -1)
-			{
-				MapSprite sprite = source.areaIcon(od.getMapAreaId());
-				if (sprite == null)
-				{
-					continue;
-				}
-
-				blitIcon(img,
-					(drawX * MAP_SCALE) - (sprite.getWidth() / 2),
-					(drawY * MAP_SCALE) - (sprite.getHeight() / 2),
-					sprite, 1.0f);
 			}
 		}
 	}

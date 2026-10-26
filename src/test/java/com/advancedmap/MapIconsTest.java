@@ -1,0 +1,178 @@
+/*
+ * SPDX-License-Identifier: BSD-2-Clause
+ * Copyright (c) 2026, Brettgod1355 <github.com/Brettgod1355>
+ * See LICENSE for redistribution conditions and disclaimer.
+ */
+package com.advancedmap;
+
+import java.util.Collections;
+import java.util.EnumMap;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import net.runelite.api.Quest;
+import net.runelite.api.QuestState;
+import net.runelite.api.Skill;
+import net.runelite.client.game.AgilityShortcut;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+public class MapIconsTest
+{
+	private static final int QUEST_ICON = 715;
+
+	private static MapSettings settings(Set<String> hidden, boolean hideCompleted, boolean showHidden, boolean iconsOff)
+	{
+		return new MapSettings(EnumSet.allOf(IconGroup.class), hidden, hideCompleted, true, iconsOff, showHidden, true,
+			true);
+	}
+
+	private static Progress progress(int agility, int magic, QuestState cooksAssistant)
+	{
+		int[] levels = new int[Skill.values().length];
+		levels[Skill.AGILITY.ordinal()] = agility;
+		levels[Skill.MAGIC.ordinal()] = magic;
+		Map<Quest, QuestState> states = new EnumMap<>(Quest.class);
+		for (Quest quest : Quest.values())
+		{
+			states.put(quest, QuestState.NOT_STARTED);
+		}
+		Map<Integer, Progress.QuestInfo> quests = new HashMap<>();
+		quests.put(QUEST_ICON, new Progress.QuestInfo("Cook's Assistant", cooksAssistant, 0, 0, false, new int[0]));
+		return new Progress(true, levels, states, quests, Collections.singletonMap(IconGroup.QUEST, "Quest"));
+	}
+
+	@Test
+	public void aHiddenIconIsLeftOutUnlessHiddenIconsAreShown()
+	{
+		MapSpot bank = MapSpot.icon(3208, 3220, 0, 1055);
+		Set<String> hidden = Collections.singleton(bank.getKey());
+		assertNull(MapIcons.look(bank, settings(hidden, false, false, false), Progress.NONE));
+		assertEquals(MapIcons.Look.HIDDEN, MapIcons.look(bank, settings(hidden, false, true, false), Progress.NONE));
+		assertEquals(MapIcons.Look.NORMAL, MapIcons.look(bank, settings(Collections.emptySet(), false, false, false),
+			Progress.NONE));
+	}
+
+	@Test
+	public void hidingOneIconLeavesTheSameKindElsewhere()
+	{
+		MapSpot here = MapSpot.icon(3208, 3220, 0, 1055);
+		MapSpot there = MapSpot.icon(3092, 3243, 0, 1055);
+		Set<String> hidden = MapSettings.parseHidden(MapSettings.withHidden(Collections.emptySet(), here.getKey(), true));
+		assertTrue(hidden.contains(here.getKey()));
+		assertFalse(hidden.contains(there.getKey()));
+		assertTrue(MapSettings.parseHidden(MapSettings.withHidden(hidden, here.getKey(), false)).isEmpty());
+	}
+
+	@Test
+	public void finishedQuestsAreMarkedOrLeftOut()
+	{
+		MapSpot quest = MapSpot.icon(3208, 3214, QUEST_ICON, IconGroup.QUEST);
+		Progress done = progress(1, 1, QuestState.FINISHED);
+		assertEquals(MapIcons.Look.DONE, MapIcons.look(quest, settings(Collections.emptySet(), false, false, false), done));
+		assertNull(MapIcons.look(quest, settings(Collections.emptySet(), true, false, false), done));
+		assertEquals(MapIcons.Look.STARTED, MapIcons.look(quest, settings(Collections.emptySet(), true, false, false),
+			progress(1, 1, QuestState.IN_PROGRESS)));
+		assertEquals("Cook's Assistant", MapIcons.name(quest, done));
+	}
+
+	@Test
+	public void aShortcutAboveTheAgilityLevelIsLocked()
+	{
+		AgilityShortcut shortcut = null;
+		for (AgilityShortcut candidate : AgilityShortcut.values())
+		{
+			if (candidate.getWorldMapLocation() != null && candidate.getLevel() > 30)
+			{
+				shortcut = candidate;
+				break;
+			}
+		}
+		assertNotNull(shortcut);
+		MapSpot spot = MapSpot.icon(shortcut.getWorldMapLocation().getX(), shortcut.getWorldMapLocation().getY(), 0,
+			IconGroup.AGILITY_SHORTCUT);
+		assertNotNull(spot.getShortcut());
+		MapSettings shown = settings(Collections.emptySet(), false, false, false);
+		assertEquals(MapIcons.Look.LOCKED, MapIcons.look(spot, shown, progress(spot.getShortcut().getLevel() - 1, 1,
+			QuestState.NOT_STARTED)));
+		assertEquals(MapIcons.Look.NORMAL, MapIcons.look(spot, shown, progress(spot.getShortcut().getLevel(), 1,
+			QuestState.NOT_STARTED)));
+		assertEquals(MapIcons.Look.NORMAL, MapIcons.look(spot, shown, Progress.NONE));
+	}
+
+	@Test
+	public void aShortcutIconFarFromAnyKnownShortcutHasNoLevel()
+	{
+		assertNull(MapSpot.nearestShortcut(10, 10));
+	}
+
+	@Test
+	public void teleportSpellsNeedTheirLevelAndQuest()
+	{
+		MapSettings shown = settings(Collections.emptySet(), false, false, false);
+		MapSpot varrock = MapSpot.teleport(Teleport.VARROCK);
+		assertEquals(MapIcons.Look.NORMAL, MapIcons.look(varrock, shown, progress(1, 25, QuestState.NOT_STARTED)));
+		assertEquals(MapIcons.Look.LOCKED, MapIcons.look(varrock, shown, progress(1, 24, QuestState.NOT_STARTED)));
+		// Ancient Magicks need Desert Treasure I, not started here
+		assertEquals(MapIcons.Look.LOCKED, MapIcons.look(MapSpot.teleport(Teleport.PADDEWWA), shown,
+			progress(1, 99, QuestState.NOT_STARTED)));
+		assertEquals(Quest.PLAGUE_CITY, MapIcons.requiredQuest(Teleport.ARDOUGNE));
+		assertNull(MapIcons.requiredQuest(Teleport.LUMBRIDGE));
+		// a teleport by item is never marked: whether the player has the item is not known
+		assertEquals(MapIcons.Look.NORMAL, MapIcons.look(MapSpot.teleport(Teleport.BARBARIAN_ASSAULT), shown,
+			progress(1, 1, QuestState.NOT_STARTED)));
+	}
+
+	@Test
+	public void theInfoBoxSaysWhatIsMissing()
+	{
+		List<MapIcons.Line> lines = MapIcons.info(MapSpot.teleport(Teleport.VARROCK), progress(1, 20, QuestState.NOT_STARTED),
+			false);
+		assertTrue(lines.stream().anyMatch(line -> line.getText().equals("Needs 25 Magic (you have 20)")
+			&& line.getColor().equals(MapIcons.BAD)));
+		assertEquals("Varrock Teleport", Teleport.VARROCK.title());
+		assertEquals("Games Necklace: Barbarian Assault", Teleport.BARBARIAN_ASSAULT.title());
+	}
+
+	@Test
+	public void noIconsWhenZoomedOutOrTurnedOff()
+	{
+		MapIcons icons = new MapIcons();
+		MapSettings on = settings(Collections.emptySet(), false, false, false);
+		MapViewport.View near = new MapViewport.View(3213, 3424, 4, 800, 600);
+		assertFalse(icons.visible(near, MapArea.SURFACE, on, Progress.NONE).isEmpty());
+		MapViewport.View far = new MapViewport.View(3213, 3424, MapIcons.ICON_ZOOM / 2, 800, 600);
+		assertTrue(icons.visible(far, MapArea.SURFACE, on, Progress.NONE).isEmpty());
+		assertTrue(icons.visible(near, MapArea.SURFACE, settings(Collections.emptySet(), false, false, true),
+			Progress.NONE).isEmpty());
+	}
+
+	@Test
+	public void aClickFindsTheIconUnderIt()
+	{
+		MapIcons icons = new MapIcons();
+		MapViewport.View view = new MapViewport.View(3213.5, 3424.5, 4, 800, 600);
+		List<MapIcons.Shown> shown = icons.visible(view, MapArea.SURFACE, settings(Collections.emptySet(), false, false,
+			false), Progress.NONE);
+		MapIcons.Shown varrock = MapIcons.at(shown, 400, 300);
+		assertNotNull(varrock);
+		assertEquals(Teleport.VARROCK, varrock.getSpot().getTeleport());
+		assertNull(MapIcons.at(shown, 5, 5));
+	}
+
+	@Test
+	public void everyCategoryBelongsToAGroup()
+	{
+		assertEquals(IconGroup.BANKS, IconGroup.of(1055));
+		assertEquals(IconGroup.QUESTS, IconGroup.of(IconGroup.QUEST));
+		assertEquals(IconGroup.AGILITY, IconGroup.of(IconGroup.AGILITY_SHORTCUT));
+		assertEquals(IconGroup.OTHER, IconGroup.of(99999));
+	}
+}

@@ -62,7 +62,14 @@ final class MapWindow extends JFrame
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent e)
 			{
-				dispose();
+				if (plugin.selection() != null)
+				{
+					plugin.escape();
+				}
+				else
+				{
+					dispose();
+				}
 			}
 		});
 		redraw.start();
@@ -75,6 +82,7 @@ final class MapWindow extends JFrame
 		private final MapPainter painter;
 		private Point mouse;
 		private Point dragFrom;
+		private Point pressedAt;
 
 		MapPanel(AdvancedMapPlugin plugin, MapPainter painter)
 		{
@@ -86,19 +94,23 @@ final class MapWindow extends JFrame
 				@Override
 				public void mousePressed(MouseEvent e)
 				{
+					if (SwingUtilities.isRightMouseButton(e))
+					{
+						plugin.rightClick(e.getX(), e.getY(), getWidth(), getHeight());
+						repaint();
+						return;
+					}
 					MapPainter.Button button = SwingUtilities.isLeftMouseButton(e)
-						? MapPainter.buttonAt(e.getX(), e.getY(), getWidth(), true) : null;
-					if (button == MapPainter.Button.AREA)
+						? MapPainter.buttonAt(e.getX(), e.getY(), getWidth(), getHeight(), true) : null;
+					if (button != null)
 					{
-						plugin.switchArea();
+						plugin.pressButton(button, true);
 					}
-					else if (button == MapPainter.Button.MODE)
-					{
-						plugin.dock();
-					}
-					else
+					else if (!plugin.pressMenu(e.getX(), e.getY(), getWidth(), getHeight())
+						&& SwingUtilities.isLeftMouseButton(e))
 					{
 						dragFrom = e.getPoint();
+						pressedAt = e.getPoint();
 					}
 					repaint();
 				}
@@ -118,7 +130,14 @@ final class MapWindow extends JFrame
 				@Override
 				public void mouseReleased(MouseEvent e)
 				{
+					if (pressedAt != null && Math.abs(e.getX() - pressedAt.x) <= AdvancedMapPlugin.CLICK_SLOP
+						&& Math.abs(e.getY() - pressedAt.y) <= AdvancedMapPlugin.CLICK_SLOP)
+					{
+						plugin.leftClick(e.getX(), e.getY(), getWidth(), getHeight());
+					}
 					dragFrom = null;
+					pressedAt = null;
+					repaint();
 				}
 
 				@Override
@@ -152,7 +171,7 @@ final class MapWindow extends JFrame
 		protected void paintComponent(Graphics g)
 		{
 			painter.paint((Graphics2D) g, plugin.viewport().view(getWidth(), getHeight()), plugin.area(),
-				plugin.playerLocation(), mouse, true, plugin.wildernessLines());
+				plugin.playerLocation(), mouse, true, plugin.settings(), plugin.progress(), plugin.selection());
 		}
 	}
 }

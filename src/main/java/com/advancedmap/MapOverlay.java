@@ -44,7 +44,8 @@ class MapOverlay extends Overlay
 		int height = client.getCanvasHeight();
 		Point mouse = client.getMouseCanvasPosition();
 		painter.paint(g, plugin.viewport().view(width, height), plugin.area(), plugin.playerLocation(),
-			mouse == null ? null : new java.awt.Point(mouse.getX(), mouse.getY()), false, plugin.wildernessLines());
+			mouse == null ? null : new java.awt.Point(mouse.getX(), mouse.getY()), false, plugin.settings(),
+			plugin.progress(), plugin.selection());
 		return new Dimension(width, height);
 	}
 }
