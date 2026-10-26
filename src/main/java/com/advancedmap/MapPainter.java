@@ -48,10 +48,15 @@ final class MapPainter
 		/** Shows the icons the player hid, faded, so they can be unhidden. */
 		HIDDEN,
 		/** Moves the map back to the player. */
-		LOCATE
+		LOCATE,
+		FLOOR_UP,
+		FLOOR_DOWN
 	}
 
-	/** The icon whose info box or right-click menu is open, and where the menu was opened. */
+	/**
+	 * What a right click or a click opened: the info box of an icon, or the menu of an icon or of a tile with no icon
+	 * ({@code spot} null), with where on the screen and which tile.
+	 */
 	@Value
 	static class Selection
 	{
@@ -59,10 +64,30 @@ final class MapPainter
 		boolean menu;
 		int x;
 		int y;
+		WorldPoint point;
+	}
+
+	enum Action
+	{
+		HIDE,
+		UNHIDE,
+		ROUTE,
+		CLEAR_ROUTE
+	}
+
+	@Value
+	static class MenuEntry
+	{
+		Action action;
+		String text;
 	}
 
 	static final int BUTTON_HEIGHT = 28;
 	static final int LOCATE_SIZE = 36;
+	static final int FLOOR_WIDTH = 64;
+	static final int FLOOR_HEIGHT = 26;
+	/** Room for the floor's name between its two buttons. */
+	private static final int FLOOR_LABEL = 22;
 	private static final int GAP = 8;
 	private static final int AREA_WIDTH = 110;
 	private static final int MODE_WIDTH = 100;
@@ -75,6 +100,8 @@ final class MapPainter
 
 	private static final Color BACKGROUND = new Color(0x0B1520);
 	private static final Color LOADING = new Color(0x13202D);
+	/** Laid over the floors below the one shown: darker and duller, so the floor itself stands out. */
+	private static final Color LOWER_FLOORS = new Color(0x0B, 0x15, 0x20, 165);
 	private static final Color BAR = new Color(0, 0, 0, 170);
 	private static final Color TEXT = new Color(0xE8E2D0);
 	private static final Color PLAYER = new Color(0xFFFFFF);
@@ -114,6 +141,10 @@ final class MapPainter
 		out.put(Button.HIDDEN, new Rectangle(GAP * 2 + ICONS_WIDTH, GAP, HIDDEN_WIDTH, BUTTON_HEIGHT));
 		out.put(Button.LOCATE, new Rectangle(width - GAP - LOCATE_SIZE, height - GAP - LOCATE_SIZE, LOCATE_SIZE,
 			LOCATE_SIZE));
+		int down = height - GAP - LOCATE_SIZE - GAP - FLOOR_HEIGHT;
+		out.put(Button.FLOOR_DOWN, new Rectangle(width - GAP - FLOOR_WIDTH, down, FLOOR_WIDTH, FLOOR_HEIGHT));
+		out.put(Button.FLOOR_UP, new Rectangle(width - GAP - FLOOR_WIDTH, down - FLOOR_LABEL - FLOOR_HEIGHT, FLOOR_WIDTH,
+			FLOOR_HEIGHT));
 		int right = width - GAP;
 		if (!window)
 		{
@@ -140,15 +171,16 @@ final class MapPainter
 	}
 
 	/**
-	 * Draws one frame. {@code player} is where the player stands (null when logged out), {@code mouse} where the
-	 * pointer is (null when it is elsewhere), {@code selection} the icon whose info box or menu is open (or null).
+	 * Draws one frame of a floor ({@code plane}, 0 for the ground). {@code player} is where the player stands (null when
+	 * logged out), {@code mouse} where the pointer is (null when it is elsewhere), {@code selection} what a click
+	 * opened (or null).
 	 */
-	void paint(Graphics2D g, MapViewport.View view, MapArea area, WorldPoint player, Point mouse, boolean window,
-		MapSettings settings, Progress progress, Selection selection)
+	void paint(Graphics2D g, MapViewport.View view, MapArea area, int plane, WorldPoint player, Point mouse,
+		boolean window, MapSettings settings, Progress progress, Selection selection)
 	{
 		g.setColor(BACKGROUND);
 		g.fillRect(0, 0, view.width, view.height);
-		boolean loading = drawRegions(g, view, area);
+		boolean loading = drawRegions(g, view, area, plane);
 		if (settings.isWildernessLines())
 		{
 			drawWilderness(g, view, area);
@@ -157,7 +189,7 @@ final class MapPainter
 		{
 			drawLabels(g, view, area, labels.all(), buttons(view.width, view.height, window).values());
 		}
-		List<MapIcons.Shown> shown = icons.visible(view, area, settings, progress);
+		List<MapIcons.Shown> shown = icons.visible(view, area, plane, settings, progress);
 		drawIcons(g, shown, selection);
 
 		Object antialiasing = g.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
@@ -180,15 +212,19 @@ final class MapPainter
 			}
 		}
 		drawBar(g, view, mouse, loading, window, !shown.isEmpty());
-		drawButtons(g, view, area, window, settings, player != null);
+		drawButtons(g, view, area, plane, window, settings, player != null);
 		if (antialiasing != null)
 		{
 			g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, antialiasing);
 		}
 	}
 
-	/** Draws the region pictures there are and asks for the rest. True while some are still being drawn. */
-	private boolean drawRegions(Graphics2D g, MapViewport.View view, MapArea area)
+	/**
+	 * Draws the region pictures there are and asks for the rest. On a floor above the ground, the floors below are
+	 * drawn first and darkened, and the floor itself in full color on top, so it shows where it sits. True while some
+	 * of the floor are still being drawn.
+	 */
+	private boolean drawRegions(Graphics2D g, MapViewport.View view, MapArea area, int plane)
 	{
 		int rx0 = Math.max(area.minRegionX, (int) Math.floor(view.worldX(0) / 64));
 		int rx1 = Math.min(area.maxRegionX, (int) Math.floor(view.worldX(view.width) / 64));
@@ -214,31 +250,42 @@ final class MapPainter
 		}));
 
 		RegionImages.Level level = RegionImages.Level.forZoom(view.zoom);
-		images.request(visible, level);
+		images.request(plane, visible, level);
 
 		Object interpolation = g.getRenderingHint(RenderingHints.KEY_INTERPOLATION);
 		g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, view.zoom > 4
 			? RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR
 			: RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 		boolean loading = false;
-		for (int id : visible)
+		for (int p = 0; p <= plane; p++)
 		{
-			int baseX = (id >> 8) << 6;
-			int baseY = (id & 0xFF) << 6;
-			int x0 = (int) Math.floor(view.screenX(baseX));
-			int x1 = (int) Math.floor(view.screenX(baseX + 64));
-			int y0 = (int) Math.floor(view.screenY(baseY + 64));
-			int y1 = (int) Math.floor(view.screenY(baseY));
-			BufferedImage image = images.get(id, level);
-			if (image != null)
+			if (p == plane && plane > 0)
 			{
-				g.drawImage(image, x0, y0, x1 - x0, y1 - y0, null);
+				g.setColor(LOWER_FLOORS);
+				g.fillRect(0, 0, view.width, view.height);
 			}
-			else if (!images.isAbsent(id))
+			for (int id : visible)
 			{
-				loading = true;
-				g.setColor(LOADING);
-				g.fillRect(x0, y0, x1 - x0, y1 - y0);
+				int baseX = (id >> 8) << 6;
+				int baseY = (id & 0xFF) << 6;
+				int x0 = (int) Math.floor(view.screenX(baseX));
+				int x1 = (int) Math.floor(view.screenX(baseX + 64));
+				int y0 = (int) Math.floor(view.screenY(baseY + 64));
+				int y1 = (int) Math.floor(view.screenY(baseY));
+				BufferedImage image = images.get(p, id, level);
+				if (image != null)
+				{
+					g.drawImage(image, x0, y0, x1 - x0, y1 - y0, null);
+				}
+				else if (!images.isAbsent(p, id) && p == plane)
+				{
+					loading = true;
+					if (p == 0)
+					{
+						g.setColor(LOADING);
+						g.fillRect(x0, y0, x1 - x0, y1 - y0);
+					}
+				}
 			}
 		}
 		if (interpolation != null)
@@ -655,46 +702,79 @@ final class MapPainter
 		}
 	}
 
-	/** The text of the right-click menu's one entry. */
-	static String menuEntry(MapSpot spot, MapSettings settings)
+	/** The right-click menu's entries: hide or unhide for an icon, and route entries when a routing plugin is chosen. */
+	static List<MenuEntry> menuEntries(Selection selection, MapSettings settings)
 	{
-		return settings.isHidden(spot) ? "Unhide this icon" : "Hide this icon";
+		List<MenuEntry> entries = new ArrayList<>();
+		MapSpot spot = selection.getSpot();
+		if (spot != null)
+		{
+			entries.add(settings.isHidden(spot) ? new MenuEntry(Action.UNHIDE, "Unhide this icon")
+				: new MenuEntry(Action.HIDE, "Hide this icon"));
+		}
+		RoutingPlugin routing = settings.getRouting();
+		if (routing != null && routing != RoutingPlugin.NONE)
+		{
+			entries.add(new MenuEntry(Action.ROUTE, "Route here (" + routing.getLabel() + ")"));
+			entries.add(new MenuEntry(Action.CLEAR_ROUTE, "Clear route"));
+		}
+		return entries;
 	}
 
-	/** Where the right-click menu sits: its name row, then its entry, kept on the screen. */
-	static Rectangle menuBounds(Selection selection, String title, String entry, int width, int height)
+	/** The menu's name row: the icon's name, or the tile with no icon. */
+	static String menuTitle(Selection selection, Progress progress)
+	{
+		if (selection.getSpot() != null)
+		{
+			return MapIcons.name(selection.getSpot(), progress);
+		}
+		WorldPoint point = selection.getPoint();
+		return point.getX() + ", " + point.getY() + (point.getPlane() > 0 ? ", " + MapIcons.floorName(point.getPlane())
+			: "");
+	}
+
+	/** Where the right-click menu sits: its name row, then its entries, kept on the screen. */
+	static Rectangle menuBounds(Selection selection, String title, List<MenuEntry> entries, int width, int height)
 	{
 		FontMetrics metrics = MEASURE.getFontMetrics(FontManager.getRunescapeSmallFont());
-		int menuWidth = Math.max(metrics.stringWidth(title), metrics.stringWidth(entry)) + PAD * 2;
-		int menuHeight = MENU_ROW * 2;
+		int menuWidth = metrics.stringWidth(title);
+		for (MenuEntry entry : entries)
+		{
+			menuWidth = Math.max(menuWidth, metrics.stringWidth(entry.getText()));
+		}
+		menuWidth += PAD * 2;
+		int menuHeight = MENU_ROW * (1 + entries.size());
 		int x = Math.max(0, Math.min(selection.getX(), width - menuWidth));
 		int y = Math.max(0, Math.min(selection.getY(), height - menuHeight));
 		return new Rectangle(x, y, menuWidth, menuHeight);
 	}
 
-	/** The menu's entry row, the only part that does anything. */
-	static Rectangle menuEntryBounds(Rectangle menu)
+	/** The row of the menu's entry {@code index} (0 is the first entry, under the name row). */
+	static Rectangle menuEntryBounds(Rectangle menu, int index)
 	{
-		return new Rectangle(menu.x, menu.y + MENU_ROW, menu.width, MENU_ROW);
+		return new Rectangle(menu.x, menu.y + MENU_ROW * (index + 1), menu.width, MENU_ROW);
 	}
 
 	private static void drawMenu(Graphics2D g, MapViewport.View view, Selection selection, MapSettings settings,
 		Progress progress)
 	{
-		String title = MapIcons.name(selection.getSpot(), progress);
-		String entry = menuEntry(selection.getSpot(), settings);
-		Rectangle menu = menuBounds(selection, title, entry, view.width, view.height);
+		String title = menuTitle(selection, progress);
+		List<MenuEntry> entries = menuEntries(selection, settings);
+		Rectangle menu = menuBounds(selection, title, entries, view.width, view.height);
 		drawPanel(g, menu);
 		g.setFont(FontManager.getRunescapeSmallFont());
 		FontMetrics metrics = g.getFontMetrics();
 		int baseline = (MENU_ROW + metrics.getAscent() - metrics.getDescent()) / 2;
 		g.setColor(MapIcons.QUIET);
 		g.drawString(title, menu.x + PAD, menu.y + baseline);
-		Rectangle row = menuEntryBounds(menu);
-		g.setColor(new Color(255, 255, 255, 30));
-		g.fillRect(row.x + 2, row.y, row.width - 4, row.height - 2);
-		g.setColor(TEXT);
-		g.drawString(entry, row.x + PAD, row.y + baseline);
+		for (int i = 0; i < entries.size(); i++)
+		{
+			Rectangle row = menuEntryBounds(menu, i);
+			g.setColor(new Color(255, 255, 255, 30));
+			g.fillRect(row.x + 2, row.y, row.width - 4, row.height - 2);
+			g.setColor(TEXT);
+			g.drawString(entries.get(i).getText(), row.x + PAD, row.y + baseline);
+		}
 	}
 
 	private static void drawPanel(Graphics2D g, Rectangle box)
@@ -830,7 +910,7 @@ final class MapPainter
 		g.drawString(text.toString(), 8, view.height - 4 - metrics.getDescent());
 	}
 
-	private static void drawButtons(Graphics2D g, MapViewport.View view, MapArea area, boolean window,
+	private static void drawButtons(Graphics2D g, MapViewport.View view, MapArea area, int plane, boolean window,
 		MapSettings settings, boolean located)
 	{
 		for (Map.Entry<Button, Rectangle> entry : buttons(view.width, view.height, window).entrySet())
@@ -840,6 +920,16 @@ final class MapPainter
 			if (entry.getKey() == Button.LOCATE)
 			{
 				drawLocate(g, button, located);
+				continue;
+			}
+			if (entry.getKey() == Button.FLOOR_UP || entry.getKey() == Button.FLOOR_DOWN)
+			{
+				boolean up = entry.getKey() == Button.FLOOR_UP;
+				drawFloorButton(g, button, up, up ? plane < RegionImages.PLANES - 1 : plane > 0);
+				if (up)
+				{
+					drawFloorName(g, button, plane);
+				}
 				continue;
 			}
 			g.fillRoundRect(button.x, button.y, button.width, button.height, 8, 8);
@@ -862,6 +952,41 @@ final class MapPainter
 					break;
 			}
 		}
+	}
+
+	/** An arrow button that moves up or down a floor, dimmed when there is no floor that way. */
+	private static void drawFloorButton(Graphics2D g, Rectangle button, boolean up, boolean enabled)
+	{
+		g.setColor(BAR);
+		g.fillRoundRect(button.x, button.y, button.width, button.height, 8, 8);
+		Object antialiasing = g.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
+		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		int cx = button.x + button.width / 2;
+		int cy = button.y + button.height / 2;
+		int half = 7;
+		int tip = up ? cy - 5 : cy + 5;
+		int base = up ? cy + 4 : cy - 4;
+		g.setColor(enabled ? TEXT : new Color(0x5A5A5A));
+		g.fill(new Polygon(new int[]{cx - half, cx + half, cx}, new int[]{base, base, tip}, 3));
+		if (antialiasing != null)
+		{
+			g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, antialiasing);
+		}
+	}
+
+	/** The floor's name between the floor buttons: "Ground floor", "Floor 1" and so on. */
+	private static void drawFloorName(Graphics2D g, Rectangle up, int plane)
+	{
+		g.setFont(FontManager.getRunescapeSmallFont());
+		FontMetrics metrics = g.getFontMetrics();
+		String text = MapIcons.floorName(plane);
+		int width = metrics.stringWidth(text) + 10;
+		int x = up.x + up.width - width;
+		int y = up.y + up.height + 2;
+		g.setColor(BAR);
+		g.fillRoundRect(x, y, width, FLOOR_LABEL - 4, 8, 8);
+		g.setColor(TEXT);
+		g.drawString(text, x + 5, y + (FLOOR_LABEL - 4 + metrics.getAscent() - metrics.getDescent()) / 2);
 	}
 
 	/** A button that is on or off: a box, ticked when on, before its name. */

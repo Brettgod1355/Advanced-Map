@@ -170,7 +170,7 @@ final class MapWindow extends JFrame
 		@Override
 		protected void paintComponent(Graphics g)
 		{
-			painter.paint((Graphics2D) g, plugin.viewport().view(getWidth(), getHeight()), plugin.area(),
+			painter.paint((Graphics2D) g, plugin.viewport().view(getWidth(), getHeight()), plugin.area(), plugin.plane(),
 				plugin.playerLocation(), mouse, true, plugin.settings(), plugin.progress(), plugin.selection());
 		}
 	}

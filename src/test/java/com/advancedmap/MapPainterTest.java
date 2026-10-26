@@ -9,7 +9,11 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.List;
 import java.util.Map;
+import net.runelite.api.coords.WorldPoint;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -24,8 +28,8 @@ public class MapPainterTest
 	{
 		assertTrue(MapPainter.buttons(1200, 800, false).containsKey(MapPainter.Button.CLOSE));
 		assertFalse(MapPainter.buttons(1200, 800, true).containsKey(MapPainter.Button.CLOSE));
-		assertEquals(6, MapPainter.buttons(1200, 800, false).size());
-		assertEquals(5, MapPainter.buttons(1200, 800, true).size());
+		assertEquals(8, MapPainter.buttons(1200, 800, false).size());
+		assertEquals(7, MapPainter.buttons(1200, 800, true).size());
 	}
 
 	@Test
@@ -65,14 +69,51 @@ public class MapPainterTest
 	}
 
 	@Test
-	public void theMenuStaysOnScreenAndItsEntryIsItsSecondRow()
+	public void theFloorButtonsSitAboveTheFindMeButton()
 	{
-		MapPainter.Selection near = new MapPainter.Selection(MapSpot.teleport(Teleport.VARROCK), true, 790, 590);
-		Rectangle menu = MapPainter.menuBounds(near, "Varrock Teleport", "Hide this icon", 800, 600);
+		Map<MapPainter.Button, Rectangle> buttons = MapPainter.buttons(1000, 700, false);
+		Rectangle locate = buttons.get(MapPainter.Button.LOCATE);
+		Rectangle up = buttons.get(MapPainter.Button.FLOOR_UP);
+		Rectangle down = buttons.get(MapPainter.Button.FLOOR_DOWN);
+		assertTrue(up.y < down.y && down.y + down.height <= locate.y);
+		assertEquals(locate.x + locate.width, down.x + down.width);
+	}
+
+	@Test
+	public void theMenuStaysOnScreenWithOneRowPerEntry()
+	{
+		MapSpot varrock = MapSpot.teleport(Teleport.VARROCK);
+		MapPainter.Selection near = new MapPainter.Selection(varrock, true, 790, 590, Teleport.VARROCK.getLocation());
+		List<MapPainter.MenuEntry> entries = MapPainter.menuEntries(near, settings(RoutingPlugin.SHORTEST_PATH));
+		assertEquals(3, entries.size());
+		assertEquals(MapPainter.Action.HIDE, entries.get(0).getAction());
+		assertEquals("Route here (Shortest Path)", entries.get(1).getText());
+		Rectangle menu = MapPainter.menuBounds(near, "Varrock Teleport", entries, 800, 600);
 		assertTrue(menu.x + menu.width <= 800 && menu.y + menu.height <= 600);
-		Rectangle entry = MapPainter.menuEntryBounds(menu);
-		assertTrue(menu.contains(entry));
-		assertTrue(entry.y > menu.y);
+		for (int i = 0; i < entries.size(); i++)
+		{
+			Rectangle row = MapPainter.menuEntryBounds(menu, i);
+			assertTrue(menu.contains(row));
+			assertTrue(row.y > menu.y);
+		}
+	}
+
+	@Test
+	public void aTileWithNoIconOnlyRoutes()
+	{
+		MapPainter.Selection tile = new MapPainter.Selection(null, true, 10, 10, new WorldPoint(3222, 3218, 1));
+		List<MapPainter.MenuEntry> entries = MapPainter.menuEntries(tile, settings(RoutingPlugin.GPS));
+		assertEquals(2, entries.size());
+		assertEquals(MapPainter.Action.ROUTE, entries.get(0).getAction());
+		assertEquals("Route here (GPS)", entries.get(0).getText());
+		assertEquals("3222, 3218, Floor 1", MapPainter.menuTitle(tile, Progress.NONE));
+		assertTrue(MapPainter.menuEntries(tile, settings(RoutingPlugin.NONE)).isEmpty());
+	}
+
+	private static MapSettings settings(RoutingPlugin routing)
+	{
+		return new MapSettings(EnumSet.allOf(IconGroup.class), Collections.emptySet(), false, true, false, false, true,
+			true, routing);
 	}
 
 	@Test

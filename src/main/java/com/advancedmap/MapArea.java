@@ -6,18 +6,19 @@
 package com.advancedmap;
 
 /**
- * The two maps the game's world coordinates hold: the surface, and everything the game keeps further north
- * (dungeons and caves around y 9,000 to 12,800, and other areas such as Zanaris above the surface). Each is its own
- * view, as on the game's world map, so a player in a dungeon sees the dungeon.
+ * The two maps the game's world coordinates hold: the surface, and everything else (dungeons and caves around y 9,000
+ * to 12,800, and the instances and minigame areas the game keeps beside the surface, such as those just north of it).
+ * Each is its own view, as on the game's world map, so a player in a dungeon sees the dungeon.
  * <p>
- * The region bounds are where the game cache has map regions (read from the live cache, 2026-10-25: surface
- * regions x 15-65, y 19-68; the rest x 18-98, y 69-199), with a few regions to spare for new content. The view
- * stops at them.
+ * The surface is the rectangle the game fills with regions (OpenRS2 cache 2746, 2026-10-20: region columns 15-62, rows
+ * 32-65), with two columns and rows to spare for new land except to the north, where the instances start at row 66.
+ * Everything outside it is on the other map, whose bounds are where the game has regions there (columns 18-98, rows
+ * 66-199) with a few to spare. The views stop at the bounds.
  */
 enum MapArea
 {
-	SURFACE("Surface", 12, 68, 18, 68),
-	UNDERGROUND("Underground", 15, 101, 69, 202);
+	SURFACE("Surface", 13, 64, 30, 65),
+	UNDERGROUND("Underground", 15, 101, 66, 202);
 
 	final String label;
 	final int minRegionX;
@@ -37,7 +38,8 @@ enum MapArea
 	/** The map that holds a world tile's row. */
 	static MapArea of(int worldY)
 	{
-		return (worldY >> 6) > SURFACE.maxRegionY ? UNDERGROUND : SURFACE;
+		int row = worldY >> 6;
+		return row > SURFACE.maxRegionY || row < SURFACE.minRegionY ? UNDERGROUND : SURFACE;
 	}
 
 	MapArea other()

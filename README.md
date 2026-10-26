@@ -2,7 +2,7 @@
 
 A full-screen world map for RuneLite, drawn from the game's own map data with smooth pan and zoom.
 
-- **Open it** with the sidebar button or **Ctrl+M** (change the key in the settings). **Escape**, Ctrl+M or the
+- **Open it** from its sidebar tab or with **Ctrl+M** (change the key in the settings). **Escape**, Ctrl+M or the
   close button close it.
 - **Drag** to move, **scroll** to zoom around the pointer. It opens on your character, on the surface or the
   underground map, whichever you are on; the button at the top switches between them.
@@ -18,6 +18,13 @@ A full-screen world map for RuneLite, drawn from the game's own map data with sm
 - **Hide just one icon** by right-clicking it. "Hidden icons" at the top left shows the hidden ones again, faded,
   so they can be unhidden the same way; "Icons" turns every icon off or on at once and keeps the place names.
 - **Back to you**: the round button at the bottom right moves the map to your character.
+- **Floors**: the arrows above it go up and down a floor. The floors below are shown darkened underneath, so you can
+  see where you are. Basements and dungeons are on the underground map ("Show underground" at the top).
+- **Route here**: right-click anywhere on the map, or on an icon, and choose "Route here" to have
+  [Shortest Path](https://github.com/Skretzo/shortest-path) or GPS show the way ("Route with" in the settings).
+- **Saved on your computer**: once drawn, the map is kept in RuneLite's plugin data folder, shared by every character
+  and profile, so it opens at once. It prepares the rest in the background, a few regions a second, and draws a region
+  again only when a game update changes it. The sidebar tab shows how far along it is.
 - **No downloads.** The map is drawn on your computer from the game data your client already has, so it is
   always up to date with the game, and nothing is sent anywhere.
 

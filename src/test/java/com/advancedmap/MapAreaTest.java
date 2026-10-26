@@ -18,12 +18,14 @@ public class MapAreaTest
 		// Lumbridge
 		assertEquals(MapArea.SURFACE, MapArea.of(3218));
 		// the top of the surface, north of the Wilderness
-		assertEquals(MapArea.SURFACE, MapArea.of(4415));
+		assertEquals(MapArea.SURFACE, MapArea.of(4223));
+		// the instances just north of it, such as the Corporeal Beast's lair (about 2967, 4384), are on the other map
+		assertEquals(MapArea.UNDERGROUND, MapArea.of(4384));
 		// Grimstone Dungeon (the region 117 HD calls GRIMSTONE_DUNGEON, about 2900, 10450)
 		assertEquals(MapArea.UNDERGROUND, MapArea.of(10450));
 		// Edgeville Dungeon
 		assertEquals(MapArea.UNDERGROUND, MapArea.of(9867));
-		assertEquals(MapArea.UNDERGROUND, MapArea.of(4416));
+		assertEquals(MapArea.UNDERGROUND, MapArea.of(4224));
 	}
 
 	@Test
@@ -47,11 +49,11 @@ public class MapAreaTest
 	@Test
 	public void everyRegionTheCacheHasIsInsideItsMap()
 	{
-		// the extremes of the live cache, 2026-10-25
-		assertTrue(MapArea.SURFACE.minRegionX <= 15 && MapArea.SURFACE.maxRegionX >= 65);
-		assertTrue(MapArea.SURFACE.minRegionY <= 19);
+		// the extremes of OpenRS2 cache 2746 (2026-10-20): the surface rectangle, and the rest
+		assertTrue(MapArea.SURFACE.minRegionX <= 15 && MapArea.SURFACE.maxRegionX >= 62);
+		assertTrue(MapArea.SURFACE.minRegionY <= 32 && MapArea.SURFACE.maxRegionY >= 65);
 		assertTrue(MapArea.UNDERGROUND.minRegionX <= 18 && MapArea.UNDERGROUND.maxRegionX >= 98);
-		assertTrue(MapArea.UNDERGROUND.maxRegionY >= 199);
+		assertTrue(MapArea.UNDERGROUND.minRegionY <= 66 && MapArea.UNDERGROUND.maxRegionY >= 199);
 	}
 
 	@Test

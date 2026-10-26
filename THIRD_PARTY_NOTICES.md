@@ -16,7 +16,7 @@ original copyright notices and are in `src/main/java/com/advancedmap/cache/`:
 
 | File here | From `cache/src/main/java/net/runelite/cache/` | Changes |
 |---|---|---|
-| `MapImageRenderer.java` | `MapImageDumper.java` | Draws one region at a time from a `MapSource` instead of a cache folder on disk; the command-line tool, whole-world images, world map labels, inter-map link icons, the render switches and the out-of-bounds print are left out; map scenery comes as ready-made `MapSprite`s; tile shapes are generated under a lock; map icons are left out of the pictures (Advanced Map draws them itself, so they can be clicked and turned off) |
+| `MapImageRenderer.java` | `MapImageDumper.java` | Draws one region at a time from a `MapSource` instead of a cache folder on disk; the command-line tool, whole-world images, world map labels, inter-map link icons, the render switches and the out-of-bounds print are left out; map scenery comes as ready-made `MapSprite`s; tile shapes are generated under a lock; map icons are left out of the pictures (Advanced Map draws them itself, so they can be clicked and turned off); pictures are see-through where a floor has no tile (ARGB), so a floor can be drawn over the floors below it |
 | `Region.java`, `Location.java`, `Position.java`, `HeightCalc.java` | `region/` | Package only |
 | `MapDefinition.java`, `LocationsDefinition.java`, `UnderlayDefinition.java`, `OverlayDefinition.java`, `ObjectDefinition.java`, `AreaDefinition.java` | `definitions/` | Package only |
 | `MapLoader.java`, `LocationsLoader.java`, `UnderlayLoader.java`, `OverlayLoader.java`, `ObjectLoader.java`, `AreaLoader.java`, `EntityOpsLoader.java` | `definitions/loaders/` | Package only |

@@ -24,6 +24,8 @@ final class MapSpot
 	private final String key;
 	private final int x;
 	private final int y;
+	/** The floor: 0 on the ground. */
+	private final int plane;
 	/** The game's map area of the icon, or -1 for a teleport. */
 	private final int areaId;
 	/** The game's icon category, or -1 for a teleport. */
@@ -34,12 +36,13 @@ final class MapSpot
 	/** For an agility shortcut RuneLite knows, else null. */
 	private final AgilityShortcut shortcut;
 
-	private MapSpot(String key, int x, int y, int areaId, int category, IconGroup group, Teleport teleport,
+	private MapSpot(String key, int x, int y, int plane, int areaId, int category, IconGroup group, Teleport teleport,
 		AgilityShortcut shortcut)
 	{
 		this.key = key;
 		this.x = x;
 		this.y = y;
+		this.plane = plane;
 		this.areaId = areaId;
 		this.category = category;
 		this.group = group;
@@ -48,17 +51,17 @@ final class MapSpot
 	}
 
 	/** An icon of the game's map at a world tile. */
-	static MapSpot icon(int x, int y, int areaId, int category)
+	static MapSpot icon(int x, int y, int plane, int areaId, int category)
 	{
 		boolean isShortcut = category == IconGroup.AGILITY_SHORTCUT || category == IconGroup.AGILITY_SHORTCUT_ONE_WAY;
-		return new MapSpot("a" + areaId + "@" + x + "," + y, x, y, areaId, category, IconGroup.of(category), null,
-			isShortcut ? nearestShortcut(x, y) : null);
+		return new MapSpot("a" + areaId + "@" + x + "," + y, x, y, plane, areaId, category, IconGroup.of(category),
+			null, isShortcut ? nearestShortcut(x, y) : null);
 	}
 
 	static MapSpot teleport(Teleport teleport)
 	{
-		return new MapSpot("t" + teleport.name(), teleport.getLocation().getX(), teleport.getLocation().getY(), -1, -1,
-			IconGroup.TELEPORTS, teleport, null);
+		return new MapSpot("t" + teleport.name(), teleport.getLocation().getX(), teleport.getLocation().getY(),
+			teleport.getLocation().getPlane(), -1, -1, IconGroup.TELEPORTS, teleport, null);
 	}
 
 	/** The shortcut in RuneLite's list placed nearest a map icon, the lowest level on a tie; null if none is close. */

@@ -33,6 +33,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.zip.CRC32;
 import net.runelite.api.Client;
 import net.runelite.api.IndexDataBase;
 import net.runelite.api.SpritePixels;
@@ -75,6 +76,10 @@ class ClientMapSource implements MapSource
 	private final Map<Integer, Integer> textures = new ConcurrentHashMap<>();
 	private final Map<Integer, Optional<MapSprite>> areaIcons = new ConcurrentHashMap<>();
 	private final Map<Integer, Integer> areaCategories = new ConcurrentHashMap<>();
+	/** CRC32 of each region's map files, read with the region. */
+	private final Map<Integer, Long> regionCrcs = new ConcurrentHashMap<>();
+	/** CRC32 of the ground and texture tables, which every region's picture depends on. */
+	private volatile long tablesCrc;
 	/** The map areas that are place names: a name and no icon. */
 	private final Map<Integer, AreaDefinition> labelAreas = new ConcurrentHashMap<>();
 	private volatile MapSprite[] mapScenes;
@@ -154,6 +159,13 @@ class ClientMapSource implements MapSource
 			else if (data[0] != null)
 			{
 				// a region whose terrain the client has not got yet stays unknown, to be asked again
+				CRC32 crc = new CRC32();
+				crc.update(data[0]);
+				if (data[1] != null)
+				{
+					crc.update(data[1]);
+				}
+				regionCrcs.put(id, crc.getValue());
 				Region region = new Region(id);
 				region.loadTerrain(new MapLoader().load(id >> 8, id & 0xFF, data[0]));
 				if (data[1] != null)
@@ -195,6 +207,7 @@ class ClientMapSource implements MapSource
 				out.put(-TEXTURES, textureIndex == null ? new HashMap<>() : files(textureIndex, 0));
 				return out;
 			});
+			tablesCrc = crc(tables.get(UNDERLAYS), tables.get(OVERLAYS), tables.get(-TEXTURES));
 			tables.get(UNDERLAYS).forEach((id, bytes) -> underlays.put(id, new UnderlayLoader().load(id, bytes)));
 			tables.get(OVERLAYS).forEach((id, bytes) -> overlays.put(id, new OverlayLoader().load(id, bytes)));
 			tables.get(-TEXTURES).forEach((id, bytes) -> textures.put(id, textureColor(bytes)));
@@ -364,6 +377,57 @@ class ClientMapSource implements MapSource
 			MapSprite[] frames = reader.read(client -> sprites(client, area.spriteId));
 			return frames.length == 0 ? Optional.empty() : Optional.ofNullable(frames[0]);
 		}).orElse(null);
+	}
+
+	/** Every region the game has on either map, by region id. One wait for the client thread. */
+	List<Integer> regionIds()
+	{
+		return reader.read(client ->
+		{
+			List<Integer> out = new ArrayList<>();
+			IndexDataBase maps = client.getIndex(MAPS);
+			if (maps == null)
+			{
+				return out;
+			}
+			for (MapArea area : MapArea.values())
+			{
+				for (int rx = area.minRegionX; rx <= area.maxRegionX; rx++)
+				{
+					for (int ry = area.minRegionY; ry <= area.maxRegionY; ry++)
+					{
+						if (maps.getFileIds(rx << 8 | ry) != null)
+						{
+							out.add(rx << 8 | ry);
+						}
+					}
+				}
+			}
+			return out;
+		});
+	}
+
+	@Override
+	public long regionHash(int regionX, int regionY)
+	{
+		Long crc = regionCrcs.get(regionX << 8 | regionY);
+		return crc == null ? 0 : tablesCrc << 32 | crc;
+	}
+
+	/** One CRC32 over tables of files, in id order. */
+	@SafeVarargs
+	private static long crc(Map<Integer, byte[]>... tables)
+	{
+		CRC32 crc = new CRC32();
+		for (Map<Integer, byte[]> table : tables)
+		{
+			new java.util.TreeMap<>(table).forEach((id, bytes) ->
+			{
+				crc.update(id);
+				crc.update(bytes);
+			});
+		}
+		return crc.getValue();
 	}
 
 	@Override

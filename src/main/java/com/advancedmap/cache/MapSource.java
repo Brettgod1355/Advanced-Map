@@ -39,6 +39,15 @@ public interface MapSource
 	/** The map icon of a map area (bank, altar and so on), or null when it has none. */
 	MapSprite areaIcon(int areaId);
 
+	/**
+	 * A hash of the game data a region is drawn from, which changes when a game update changes the region; 0 when it
+	 * is not known.
+	 */
+	default long regionHash(int regionX, int regionY)
+	{
+		return 0;
+	}
+
 	/** The icon category of a map area (bank, quest and so on, as on the game's world map Key), or -1. */
 	default int areaCategory(int areaId)
 	{

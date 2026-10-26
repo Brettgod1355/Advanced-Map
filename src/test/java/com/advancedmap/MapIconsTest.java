@@ -31,7 +31,7 @@ public class MapIconsTest
 	private static MapSettings settings(Set<String> hidden, boolean hideCompleted, boolean showHidden, boolean iconsOff)
 	{
 		return new MapSettings(EnumSet.allOf(IconGroup.class), hidden, hideCompleted, true, iconsOff, showHidden, true,
-			true);
+			true, RoutingPlugin.SHORTEST_PATH);
 	}
 
 	private static Progress progress(int agility, int magic, QuestState cooksAssistant)
@@ -52,7 +52,7 @@ public class MapIconsTest
 	@Test
 	public void aHiddenIconIsLeftOutUnlessHiddenIconsAreShown()
 	{
-		MapSpot bank = MapSpot.icon(3208, 3220, 0, 1055);
+		MapSpot bank = MapSpot.icon(3208, 3220, 0, 0, 1055);
 		Set<String> hidden = Collections.singleton(bank.getKey());
 		assertNull(MapIcons.look(bank, settings(hidden, false, false, false), Progress.NONE));
 		assertEquals(MapIcons.Look.HIDDEN, MapIcons.look(bank, settings(hidden, false, true, false), Progress.NONE));
@@ -63,8 +63,8 @@ public class MapIconsTest
 	@Test
 	public void hidingOneIconLeavesTheSameKindElsewhere()
 	{
-		MapSpot here = MapSpot.icon(3208, 3220, 0, 1055);
-		MapSpot there = MapSpot.icon(3092, 3243, 0, 1055);
+		MapSpot here = MapSpot.icon(3208, 3220, 0, 0, 1055);
+		MapSpot there = MapSpot.icon(3092, 3243, 0, 0, 1055);
 		Set<String> hidden = MapSettings.parseHidden(MapSettings.withHidden(Collections.emptySet(), here.getKey(), true));
 		assertTrue(hidden.contains(here.getKey()));
 		assertFalse(hidden.contains(there.getKey()));
@@ -74,7 +74,7 @@ public class MapIconsTest
 	@Test
 	public void finishedQuestsAreMarkedOrLeftOut()
 	{
-		MapSpot quest = MapSpot.icon(3208, 3214, QUEST_ICON, IconGroup.QUEST);
+		MapSpot quest = MapSpot.icon(3208, 3214, 0, QUEST_ICON, IconGroup.QUEST);
 		Progress done = progress(1, 1, QuestState.FINISHED);
 		assertEquals(MapIcons.Look.DONE, MapIcons.look(quest, settings(Collections.emptySet(), false, false, false), done));
 		assertNull(MapIcons.look(quest, settings(Collections.emptySet(), true, false, false), done));
@@ -96,7 +96,7 @@ public class MapIconsTest
 			}
 		}
 		assertNotNull(shortcut);
-		MapSpot spot = MapSpot.icon(shortcut.getWorldMapLocation().getX(), shortcut.getWorldMapLocation().getY(), 0,
+		MapSpot spot = MapSpot.icon(shortcut.getWorldMapLocation().getX(), shortcut.getWorldMapLocation().getY(), 0, 0,
 			IconGroup.AGILITY_SHORTCUT);
 		assertNotNull(spot.getShortcut());
 		MapSettings shown = settings(Collections.emptySet(), false, false, false);
@@ -147,10 +147,10 @@ public class MapIconsTest
 		MapIcons icons = new MapIcons();
 		MapSettings on = settings(Collections.emptySet(), false, false, false);
 		MapViewport.View near = new MapViewport.View(3213, 3424, 4, 800, 600);
-		assertFalse(icons.visible(near, MapArea.SURFACE, on, Progress.NONE).isEmpty());
+		assertFalse(icons.visible(near, MapArea.SURFACE, 0, on, Progress.NONE).isEmpty());
 		MapViewport.View far = new MapViewport.View(3213, 3424, MapIcons.ICON_ZOOM / 2, 800, 600);
-		assertTrue(icons.visible(far, MapArea.SURFACE, on, Progress.NONE).isEmpty());
-		assertTrue(icons.visible(near, MapArea.SURFACE, settings(Collections.emptySet(), false, false, true),
+		assertTrue(icons.visible(far, MapArea.SURFACE, 0, on, Progress.NONE).isEmpty());
+		assertTrue(icons.visible(near, MapArea.SURFACE, 0, settings(Collections.emptySet(), false, false, true),
 			Progress.NONE).isEmpty());
 	}
 
@@ -159,7 +159,7 @@ public class MapIconsTest
 	{
 		MapIcons icons = new MapIcons();
 		MapViewport.View view = new MapViewport.View(3213.5, 3424.5, 4, 800, 600);
-		List<MapIcons.Shown> shown = icons.visible(view, MapArea.SURFACE, settings(Collections.emptySet(), false, false,
+		List<MapIcons.Shown> shown = icons.visible(view, MapArea.SURFACE, 0, settings(Collections.emptySet(), false, false,
 			false), Progress.NONE);
 		MapIcons.Shown varrock = MapIcons.at(shown, 400, 300);
 		assertNotNull(varrock);
@@ -174,5 +174,25 @@ public class MapIconsTest
 		assertEquals(IconGroup.QUESTS, IconGroup.of(IconGroup.QUEST));
 		assertEquals(IconGroup.AGILITY, IconGroup.of(IconGroup.AGILITY_SHORTCUT));
 		assertEquals(IconGroup.OTHER, IconGroup.of(99999));
+	}
+
+	@Test
+	public void theGroundShowsEveryFloorsIconsAndAFloorOnlyItsOwn()
+	{
+		MapIcons icons = new MapIcons();
+		icons.addSprite(0, com.advancedmap.cache.MapSprite.of(15, 15, 0, 0, 1, 1, new int[]{0xFFFFFF}));
+		// Lumbridge Castle's bank is on its top floor
+		MapSpot bank = MapSpot.icon(3208, 3220, 2, 0, 1055);
+		icons.addRegion(3208 >> 6 << 8 | 3220 >> 6, Collections.singletonList(bank));
+		MapViewport.View view = new MapViewport.View(3208, 3220, 4, 800, 600);
+		MapSettings on = settings(Collections.emptySet(), false, false, false);
+		assertTrue(has(icons.visible(view, MapArea.SURFACE, 0, on, Progress.NONE), bank));
+		assertTrue(has(icons.visible(view, MapArea.SURFACE, 2, on, Progress.NONE), bank));
+		assertFalse(has(icons.visible(view, MapArea.SURFACE, 1, on, Progress.NONE), bank));
+	}
+
+	private static boolean has(List<MapIcons.Shown> shown, MapSpot spot)
+	{
+		return shown.stream().anyMatch(icon -> icon.getSpot().equals(spot));
 	}
 }

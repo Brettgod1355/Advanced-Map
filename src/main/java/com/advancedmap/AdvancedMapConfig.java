@@ -42,7 +42,7 @@ public interface AdvancedMapConfig extends Config
 	@ConfigItem(
 		keyName = "sidebarButton",
 		name = "Sidebar button",
-		description = "Show a button in the sidebar that opens the map.",
+		description = "Show Advanced Map's tab in the sidebar, with a button that opens the map and how much is saved.",
 		position = 1
 	)
 	default boolean sidebarButton()
@@ -311,6 +311,42 @@ public interface AdvancedMapConfig extends Config
 		position = 4
 	)
 	default boolean placeNames()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "routing",
+		name = "Route with",
+		description = "The plugin that right-click \"Route here\" asks for a route: Shortest Path or GPS, whichever"
+			+ " you have installed. With None the menu has no route entries.",
+		position = 5
+	)
+	default RoutingPlugin routing()
+	{
+		return RoutingPlugin.SHORTEST_PATH;
+	}
+
+	@ConfigItem(
+		keyName = "saveMap",
+		name = "Save the map on this computer",
+		description = "Keep the drawn map in RuneLite's plugin data folder, shared by all your characters and profiles,"
+			+ " so it opens at once next time. A region is drawn again only when a game update changes it.",
+		position = 6
+	)
+	default boolean saveMap()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "prepareMap",
+		name = "Prepare the whole map",
+		description = "Draw the regions you haven't looked at yet in the background, a few a second, and save them, so"
+			+ " the whole map is ready. Uses some processor time for a few minutes the first time and after updates.",
+		position = 7
+	)
+	default boolean prepareMap()
 	{
 		return true;
 	}

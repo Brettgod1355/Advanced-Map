@@ -110,11 +110,12 @@ final class MapIcons
 	}
 
 	/**
-	 * The icons to draw on a view, bottom first, with their looks: those of the groups turned on, minus hidden ones
-	 * (shown faded instead while {@code showHidden}) and finished quests when the player hides them. None while
-	 * zoomed out past {@link #ICON_ZOOM} or with icons turned off.
+	 * The icons to draw on a view of a floor, bottom first, with their looks: those of the groups turned on, minus
+	 * hidden ones (shown faded instead while {@code showHidden}) and finished quests when the player hides them. The
+	 * ground shows every floor's icons, as the game's own map does; a floor above it only its own. None while zoomed
+	 * out past {@link #ICON_ZOOM} or with icons turned off.
 	 */
-	List<Shown> visible(MapViewport.View view, MapArea area, MapSettings settings, Progress progress)
+	List<Shown> visible(MapViewport.View view, MapArea area, int plane, MapSettings settings, Progress progress)
 	{
 		List<Shown> out = new ArrayList<>();
 		if (settings.isIconsOff() || view.zoom < ICON_ZOOM)
@@ -134,14 +135,20 @@ final class MapIcons
 				{
 					for (MapSpot spot : spots)
 					{
-						add(out, spot, view, area, settings, progress);
+						if (plane == 0 || spot.getPlane() == plane)
+						{
+							add(out, spot, view, area, settings, progress);
+						}
 					}
 				}
 			}
 		}
 		for (MapSpot spot : TELEPORTS)
 		{
-			add(out, spot, view, area, settings, progress);
+			if (plane == 0 || spot.getPlane() == plane)
+			{
+				add(out, spot, view, area, settings, progress);
+			}
 		}
 		return out;
 	}
@@ -307,7 +314,8 @@ final class MapIcons
 		{
 			teleportInfo(lines, spot.getTeleport(), progress);
 		}
-		lines.add(new Line(spot.getX() + ", " + spot.getY(), QUIET));
+		lines.add(new Line(spot.getPlane() > 0 ? spot.getX() + ", " + spot.getY() + ", " + floorName(spot.getPlane())
+			: spot.getX() + ", " + spot.getY(), QUIET));
 		lines.add(new Line(hidden ? "Hidden: right-click to unhide" : "Right-click to hide this icon", QUIET));
 		return lines;
 	}
@@ -362,6 +370,12 @@ final class MapIcons
 			Color color = !progress.isLoggedIn() ? PLAIN : state == QuestState.FINISHED ? GOOD : BAD;
 			lines.add(new Line("Needs " + quest.getName(), color));
 		}
+	}
+
+	/** What the map calls a floor: "Ground floor", then "Floor 1" and up. */
+	static String floorName(int plane)
+	{
+		return plane == 0 ? "Ground floor" : "Floor " + plane;
 	}
 
 	/** "Needs 33 Agility (you have 20)", green when met, red when not, plain when logged out. */

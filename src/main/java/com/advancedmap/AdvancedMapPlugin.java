@@ -6,6 +6,7 @@
 package com.advancedmap;
 
 import com.google.inject.Provides;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
@@ -38,6 +39,7 @@ import net.runelite.client.util.HotkeyListener;
 @Slf4j
 @PluginDescriptor(
 	name = "Advanced Map",
+	internalName = "advanced-map",
 	description = "A full-screen world map drawn from the game's own map data, with smooth pan and zoom",
 	tags = {"map", "world map", "worldmap", "full screen", "fullscreen", "zoom", "atlas"}
 )
@@ -91,6 +93,8 @@ public class AdvancedMapPlugin extends Plugin
 	private MapLabels labels;
 	private volatile boolean labelsLoading;
 	private RegionImages images;
+	private MapPreparer preparer;
+	private AdvancedMapPanel panel;
 	private MapMessages messages;
 	private MapPainter painter;
 	private MapOverlay overlay;
@@ -107,6 +111,8 @@ public class AdvancedMapPlugin extends Plugin
 	private volatile MapSettings settings;
 	private volatile Progress progress = Progress.NONE;
 	private volatile MapPainter.Selection selection;
+	/** The floor shown: 0 for the ground, up to 3. */
+	private volatile int plane;
 	private int ticks;
 
 	@Provides
@@ -137,7 +143,14 @@ public class AdvancedMapPlugin extends Plugin
 		settings = MapSettings.of(config);
 		progress = Progress.NONE;
 		selection = null;
+		plane = 0;
 		images = new RegionImages(source, executor, icons);
+		if (config.saveMap())
+		{
+			executor.execute(this::openStore);
+		}
+		preparer = new MapPreparer(images, source, executor, () -> config.saveMap() && config.prepareMap());
+		preparer.start();
 		messages = new MapMessages(this::openMap);
 		painter = new MapPainter(images, messages, icons, labels);
 		overlay = new MapOverlay(client, this, painter);
@@ -150,11 +163,13 @@ public class AdvancedMapPlugin extends Plugin
 				toggleMap();
 			}
 		};
+		// a tab in the sidebar: a button with no panel would go in the client's title bar instead
+		panel = new AdvancedMapPanel(this, config.toggleKey().toString());
 		button = NavigationButton.builder()
 			.tooltip("Advanced Map")
 			.icon(MapIcon.draw(16))
 			.priority(7)
-			.onClick(this::toggleMap)
+			.panel(panel)
 			.build();
 
 		overlayManager.add(overlay);
@@ -183,6 +198,9 @@ public class AdvancedMapPlugin extends Plugin
 			}
 		});
 		clientToolbar.removeNavigation(button);
+		AdvancedMapPanel stoppedPanel = panel;
+		SwingUtilities.invokeLater(stoppedPanel::stop);
+		preparer.stop();
 		keyManager.unregisterKeyListener(hotkey);
 		keyManager.unregisterKeyListener(input);
 		mouseManager.unregisterMouseWheelListener(input);
@@ -197,6 +215,8 @@ public class AdvancedMapPlugin extends Plugin
 		icons = null;
 		labels = null;
 		images = null;
+		preparer = null;
+		panel = null;
 		messages = null;
 		painter = null;
 		overlay = null;
@@ -257,6 +277,17 @@ public class AdvancedMapPlugin extends Plugin
 			return;
 		}
 		settings = MapSettings.of(config);
+		if ("saveMap".equals(event.getKey()) && images != null)
+		{
+			if (config.saveMap())
+			{
+				executor.execute(this::openStore);
+			}
+			else
+			{
+				images.setStore(null);
+			}
+		}
 		if (!"sidebarButton".equals(event.getKey()))
 		{
 			return;
@@ -283,9 +314,77 @@ public class AdvancedMapPlugin extends Plugin
 		return player;
 	}
 
+	/** Opens the saved map in the plugin's data folder. Render thread. */
+	private void openStore()
+	{
+		RegionImages current = images;
+		if (current == null || current.store() != null)
+		{
+			return;
+		}
+		try
+		{
+			current.setStore(MapStore.open(getPluginDirectory()));
+		}
+		catch (IOException | RuntimeException e)
+		{
+			log.warn("Advanced Map could not open its saved map; it will be drawn each time", e);
+		}
+	}
+
+	/** Deletes the saved map, so every region is drawn again. */
+	void clearSavedMap()
+	{
+		RegionImages current = images;
+		MapPreparer currentPreparer = preparer;
+		if (current == null || current.store() == null)
+		{
+			return;
+		}
+		executor.execute(() ->
+		{
+			current.store().clear();
+			currentPreparer.restart();
+		});
+	}
+
+	/** For the sidebar: how much of the map is saved on this computer. */
+	String savedMapStatus()
+	{
+		RegionImages current = images;
+		MapStore store = current == null ? null : current.store();
+		if (!config.saveMap())
+		{
+			return "Off: the map is drawn again each time the client starts (Advanced Map's settings).";
+		}
+		if (store == null)
+		{
+			return "Not ready yet.";
+		}
+		int remaining = preparer == null ? -1 : preparer.remaining();
+		String count = store.count() + " regions and floors saved on this computer, for every character and profile.";
+		if (!config.prepareMap() || remaining < 0)
+		{
+			return count;
+		}
+		return remaining == 0 ? count + " The whole map is ready." : count + " Preparing the rest: " + remaining
+			+ " to go.";
+	}
+
+	/** True while the map is open, over the game or in its window. */
+	boolean isOpen()
+	{
+		return mapOpen || windowOpen;
+	}
+
 	MapSettings settings()
 	{
 		return settings;
+	}
+
+	int plane()
+	{
+		return plane;
 	}
 
 	Progress progress()
@@ -326,6 +425,14 @@ public class AdvancedMapPlugin extends Plugin
 			case HIDDEN:
 				setSwitch(AdvancedMapConfig.SHOW_HIDDEN, !settings.isShowHidden());
 				break;
+			case FLOOR_UP:
+				plane = Math.min(RegionImages.PLANES - 1, plane + 1);
+				selection = null;
+				break;
+			case FLOOR_DOWN:
+				plane = Math.max(0, plane - 1);
+				selection = null;
+				break;
 			default:
 				locate();
 				break;
@@ -333,8 +440,8 @@ public class AdvancedMapPlugin extends Plugin
 	}
 
 	/**
-	 * A left press while the right-click menu is open: on its entry it hides or unhides the icon. The menu closes
-	 * either way. True when the press was on the menu, so it does not start a drag.
+	 * A left press while the right-click menu is open: on an entry it does what the entry says. The menu closes either
+	 * way. True when the press was on the menu, so it does not start a drag.
 	 */
 	boolean pressMenu(int x, int y, int width, int height)
 	{
@@ -344,27 +451,87 @@ public class AdvancedMapPlugin extends Plugin
 			return false;
 		}
 		selection = null;
-		java.awt.Rectangle menu = MapPainter.menuBounds(open, MapIcons.name(open.getSpot(), progress),
-			MapPainter.menuEntry(open.getSpot(), settings), width, height);
-		if (MapPainter.menuEntryBounds(menu).contains(x, y))
+		List<MapPainter.MenuEntry> entries = MapPainter.menuEntries(open, settings);
+		java.awt.Rectangle menu = MapPainter.menuBounds(open, MapPainter.menuTitle(open, progress), entries, width,
+			height);
+		for (int i = 0; i < entries.size(); i++)
 		{
-			setHidden(open.getSpot(), !settings.isHidden(open.getSpot()));
+			if (MapPainter.menuEntryBounds(menu, i).contains(x, y))
+			{
+				act(entries.get(i).getAction(), open);
+			}
 		}
 		return menu.contains(x, y);
+	}
+
+	private void act(MapPainter.Action action, MapPainter.Selection on)
+	{
+		switch (action)
+		{
+			case HIDE:
+				setHidden(on.getSpot(), true);
+				break;
+			case UNHIDE:
+				setHidden(on.getSpot(), false);
+				break;
+			case ROUTE:
+				route(on.getPoint());
+				break;
+			default:
+				clearRoute();
+				break;
+		}
+	}
+
+	/** Asks the chosen routing plugin for a route from the player to a tile. */
+	private void route(WorldPoint target)
+	{
+		String namespace = settings.getRouting().getNamespace();
+		if (namespace != null)
+		{
+			clientThread.invokeLater(() -> eventBus.post(new PluginMessage(namespace, "path",
+				Collections.<String, Object>singletonMap("target", target))));
+		}
+	}
+
+	private void clearRoute()
+	{
+		String namespace = settings.getRouting().getNamespace();
+		if (namespace != null)
+		{
+			clientThread.invokeLater(() -> eventBus.post(new PluginMessage(namespace, "clear")));
+		}
 	}
 
 	/** A left click (pressed and released in place): opens the info box of the icon under it, or closes it. */
 	void leftClick(int x, int y, int width, int height)
 	{
 		MapIcons.Shown icon = iconAt(x, y, width, height);
-		selection = icon == null ? null : new MapPainter.Selection(icon.getSpot(), false, x, y);
+		selection = icon == null ? null : new MapPainter.Selection(icon.getSpot(), false, x, y, null);
 	}
 
-	/** A right click: opens the menu of the icon under it, or closes any. */
+	/**
+	 * A right click: opens the menu of the icon under it, or of the tile when a routing plugin is chosen (to route
+	 * there), or closes any.
+	 */
 	void rightClick(int x, int y, int width, int height)
 	{
 		MapIcons.Shown icon = iconAt(x, y, width, height);
-		selection = icon == null ? null : new MapPainter.Selection(icon.getSpot(), true, x, y);
+		if (icon != null)
+		{
+			MapSpot spot = icon.getSpot();
+			selection = new MapPainter.Selection(spot, true, x, y, new WorldPoint(spot.getX(), spot.getY(),
+				spot.getPlane()));
+			return;
+		}
+		if (settings.getRouting() == RoutingPlugin.NONE)
+		{
+			selection = null;
+			return;
+		}
+		MapViewport.View view = viewport().view(width, height);
+		selection = new MapPainter.Selection(null, true, x, y, new WorldPoint((int) Math.floor(view.worldX(x)),
+			(int) Math.floor(view.worldY(y)), plane));
 	}
 
 	/** Escape: closes an info box or menu first, then the map. */
@@ -388,7 +555,7 @@ public class AdvancedMapPlugin extends Plugin
 			// the plugin is stopping; the window may still pass on a click
 			return null;
 		}
-		List<MapIcons.Shown> shown = current.visible(viewport().view(width, height), area, settings, progress);
+		List<MapIcons.Shown> shown = current.visible(viewport().view(width, height), area, plane, settings, progress);
 		return MapIcons.at(shown, x, y);
 	}
 
@@ -401,6 +568,7 @@ public class AdvancedMapPlugin extends Plugin
 			return;
 		}
 		area = MapArea.of(at.getY());
+		plane = at.getPlane();
 		viewports.get(area).centerOn(at.getX(), at.getY());
 	}
 
@@ -461,6 +629,7 @@ public class AdvancedMapPlugin extends Plugin
 			loadLabels();
 			WorldPoint center = at != null ? at : player != null ? player : LUMBRIDGE;
 			area = MapArea.of(center.getY());
+			plane = center.getPlane();
 			MapViewport viewport = viewports.get(area);
 			viewport.centerOn(center.getX(), center.getY());
 			if (zoom != null)

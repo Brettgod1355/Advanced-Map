@@ -78,7 +78,8 @@ public class MapImageRenderer
 		int pixelsX = Region.X * MAP_SCALE;
 		int pixelsY = Region.Y * MAP_SCALE;
 
-		BufferedImage image = new BufferedImage(pixelsX, pixelsY, BufferedImage.TYPE_INT_RGB);
+		// transparent where a floor has no tile, so a floor can be drawn over the ones below it
+		BufferedImage image = new BufferedImage(pixelsX, pixelsY, BufferedImage.TYPE_INT_ARGB);
 
 		drawMap(image, 0, 0, z, region);
 
@@ -152,7 +153,7 @@ public class MapImageRenderer
 				{
 					to.setRGB(drawBaseX * MAP_SCALE + x * MAP_SCALE + i,
 						drawBaseY * MAP_SCALE + y * MAP_SCALE + j,
-						argb);
+						argb | 0xFF000000);
 				}
 			}
 		}
@@ -1226,6 +1227,7 @@ public class MapImageRenderer
 									{
 										rgb = this.doorColor;
 									}
+									rgb |= 0xFF000000;
 
 									if (rotation != 0 && rotation != 2)
 									{
