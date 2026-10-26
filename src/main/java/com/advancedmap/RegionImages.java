@@ -7,6 +7,7 @@ package com.advancedmap;
 
 import com.advancedmap.cache.Location;
 import com.advancedmap.cache.MapImageRenderer;
+import com.advancedmap.cache.MapLinks;
 import com.advancedmap.cache.MapSource;
 import com.advancedmap.cache.Region;
 import java.awt.image.BufferedImage;
@@ -69,6 +70,8 @@ class RegionImages
 	private final ExecutorService executor;
 	private final MapIcons icons;
 	private final Set<Integer> iconsFound = ConcurrentHashMap.newKeySet();
+	/** How far a link spot may be from an icon of the game's that stands for it. */
+	static final int LINK_REACH = 2;
 	/** Floors whose saved picture has been checked against the game's data this session. */
 	private final Set<Integer> checked = ConcurrentHashMap.newKeySet();
 	/** Floors waiting to be checked. */
@@ -506,12 +509,47 @@ class RegionImages
 			int y = location.getPosition().getY();
 			spots.add(MapSpot.icon(x, y, floorOf(region, x, y, location.getPosition().getZ()), areaId, category));
 		}
-		List<MapSpot> all = FoundIcons.find(region, source, spots);
+		List<MapSpot> all = new ArrayList<>(FoundIcons.find(region, source, spots));
 		for (int i = spots.size(); i < all.size(); i++)
 		{
 			icons.addSprite(all.get(i).getAreaId(), source.areaIcon(all.get(i).getAreaId()));
 		}
+		addLinkIcons(region, all);
 		icons.addRegion(region.getRegionID(), all);
+	}
+
+	/**
+	 * The game's map link icon on each link spot in a region that has no icon of its own within {@link #LINK_REACH}
+	 * tiles: mostly the ways out of dungeons. A dungeon's entrance usually has its dungeon icon already.
+	 */
+	private void addLinkIcons(Region region, List<MapSpot> all)
+	{
+		Map<Integer, Integer> links = source.mapLinks();
+		int linkArea = source.categoryArea(IconGroup.MAP_LINK);
+		if (linkArea < 0)
+		{
+			return;
+		}
+		for (int from : links.keySet())
+		{
+			int x = MapLinks.x(from);
+			int y = MapLinks.y(from);
+			if ((x >> 6) != region.getRegionX() || (y >> 6) != region.getRegionY())
+			{
+				continue;
+			}
+			boolean marked = false;
+			for (MapSpot spot : all)
+			{
+				marked |= spot.getPlane() == MapLinks.plane(from) && Math.abs(spot.getX() - x) <= LINK_REACH
+					&& Math.abs(spot.getY() - y) <= LINK_REACH;
+			}
+			if (!marked)
+			{
+				icons.addSprite(linkArea, source.areaIcon(linkArea));
+				all.add(MapSpot.icon(x, y, MapLinks.plane(from), linkArea, IconGroup.MAP_LINK));
+			}
+		}
 	}
 
 	/** The floor an object on a tile is drawn on: a floor lower over a bridge tile. */

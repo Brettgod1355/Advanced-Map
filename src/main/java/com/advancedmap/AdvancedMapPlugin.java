@@ -5,6 +5,7 @@
  */
 package com.advancedmap;
 
+import com.advancedmap.cache.MapLinks;
 import com.google.inject.Provides;
 import java.io.IOException;
 import java.util.Arrays;
@@ -730,7 +731,35 @@ public class AdvancedMapPlugin extends Plugin
 	void leftClick(int x, int y, int width, int height)
 	{
 		MapIcons.Shown icon = iconAt(x, y, width, height);
+		if (icon != null && followLink(icon.getSpot()))
+		{
+			selection = null;
+			return;
+		}
 		selection = icon == null ? null : new MapPainter.Selection(icon.getSpot(), false, x, y, null);
+	}
+
+	/**
+	 * A click on a dungeon's entrance or exit (a spot in the game's map links) moves the map to where it leads, on
+	 * that map and floor, as the game's own map does. False when the icon is no link.
+	 */
+	private boolean followLink(MapSpot spot)
+	{
+		ClientMapSource links = source;
+		if (links == null)
+		{
+			return false;
+		}
+		int to = MapLinks.destinationNear(links.knownMapLinks(), spot.getX(), spot.getY(), spot.getPlane(),
+			RegionImages.LINK_REACH);
+		if (to < 0)
+		{
+			return false;
+		}
+		area = MapArea.of(MapLinks.y(to));
+		plane = MapLinks.plane(to);
+		viewports.get(area).centerOn(MapLinks.x(to), MapLinks.y(to));
+		return true;
 	}
 
 	/**

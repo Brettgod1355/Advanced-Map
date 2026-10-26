@@ -9,6 +9,7 @@ import com.advancedmap.cache.AreaDefinition;
 import com.advancedmap.cache.AreaLoader;
 import com.advancedmap.cache.Location;
 import com.advancedmap.cache.LocationsLoader;
+import com.advancedmap.cache.MapLinks;
 import com.advancedmap.cache.MapLoader;
 import com.advancedmap.cache.MapSource;
 import com.advancedmap.cache.MapSprite;
@@ -91,6 +92,7 @@ class ClientMapSource implements MapSource
 	private final Map<Integer, AreaDefinition> labelAreas = new ConcurrentHashMap<>();
 	private volatile MapSprite[] mapScenes;
 	private volatile boolean tablesLoaded;
+	private volatile Map<Integer, Integer> mapLinks;
 
 	ClientMapSource(CacheReader reader)
 	{
@@ -404,7 +406,7 @@ class ClientMapSource implements MapSource
 	}
 
 	/**
-	 * For each icon category the game has (map links left out), the lowest map area with an icon, whose picture the
+	 * For each icon category the game has, the lowest map area with an icon, whose picture the
 	 * Filters list shows for the category.
 	 */
 	Map<Integer, Integer> categoryIcons()
@@ -414,12 +416,34 @@ class ClientMapSource implements MapSource
 		areaCategories.forEach((id, category) ->
 		{
 			Optional<MapSprite> icon = areaIcons.get(id);
-			if (category >= 0 && category != IconGroup.MAP_LINK && icon != null && icon.isPresent())
+			if (category >= 0 && icon != null && icon.isPresent())
 			{
 				out.merge(category, id, Math::min);
 			}
 		});
 		return out;
+	}
+
+	/** The map links if they have been read, without waiting for the client: for input threads. */
+	Map<Integer, Integer> knownMapLinks()
+	{
+		Map<Integer, Integer> links = mapLinks;
+		return links == null ? java.util.Collections.emptyMap() : links;
+	}
+
+	@Override
+	public Map<Integer, Integer> mapLinks()
+	{
+		loadTables();
+		Map<Integer, Integer> links = mapLinks;
+		if (links == null)
+		{
+			byte[] script = reader.read(client -> client.getIndexScripts().loadData(MapLinks.SCRIPT, 0));
+			links = MapLinks.decode(script);
+			// kept once read; a script the client has not got yet is asked for again
+			mapLinks = script == null ? null : links;
+		}
+		return links;
 	}
 
 	@Override

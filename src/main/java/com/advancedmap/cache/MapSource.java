@@ -59,4 +59,10 @@ public interface MapSource
 	{
 		return -1;
 	}
+
+	/** The game's map links (see {@link MapLinks}), packed tile to packed tile; empty until read. */
+	default java.util.Map<Integer, Integer> mapLinks()
+	{
+		return java.util.Collections.emptyMap();
+	}
 }

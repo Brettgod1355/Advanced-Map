@@ -22,7 +22,7 @@ enum IconGroup
 	AGILITY("showAgility", "Agility", AdvancedMapConfig::showAgility, 1117, 2505, 1098),
 	TELEPORTS("showTeleports", "Teleports", AdvancedMapConfig::showTeleports),
 	TRANSPORTATION("showTransportation", "Transportation", AdvancedMapConfig::showTransportation, 1104, 1105),
-	DUNGEONS("showDungeons", "Dungeons", AdvancedMapConfig::showDungeons, 1062),
+	DUNGEONS("showDungeons", "Dungeons", AdvancedMapConfig::showDungeons, 1062, 1063),
 	ALTARS("showAltars", "Altars", AdvancedMapConfig::showAltars, 1070),
 	SHOPS("showShops", "Shops", AdvancedMapConfig::showShops, 1049, 1050, 1052, 1053, 1054, 1057, 1064, 1065, 1066,
 		1067, 1068, 1069, 1071, 1072, 1073, 1074, 1075, 1076, 1078, 1079, 1080, 1081, 1082, 1083, 1090, 1093, 1094, 1095,

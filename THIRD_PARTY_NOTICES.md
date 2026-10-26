@@ -99,6 +99,11 @@ plugin runs. Which chests and banks there are, and whether a player has built or
 
 ## Behavior references (no code copied)
 
+- Where each map link leads (a dungeon's entrance to the dungeon and back) is read at runtime from the game's own
+  client script for it, `worldmap_intermap_op` (script 1705), found in RuneLite's published decompiled scripts
+  ([runelite/cs2-scripts](https://github.com/runelite/cs2-scripts), commit `1d418ff`). How a compiled script is laid
+  out was learned from RuneLite's cache library (`ScriptLoader`, BSD 2-Clause, release 1.13.4); `MapLinks.java` is
+  this project's own decoder, and no code or data from either is included.
 - [Shortest Path](https://github.com/Skretzo/shortest-path) (BSD 2-Clause) was read, at its Plugin Hub version
   1.22.1 (commit `50f30435f37d1d5c5e2af790925fa7aa70b7840d`), to learn which plugin messages it sends and takes.
   Nothing from it is included.
