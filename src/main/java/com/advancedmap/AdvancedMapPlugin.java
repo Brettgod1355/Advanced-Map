@@ -108,6 +108,8 @@ public class AdvancedMapPlugin extends Plugin
 	private MapWindow window;
 	/** Where the player stands, kept by the client thread for the window to draw. */
 	private volatile WorldPoint player;
+	/** Where the player was last seen, map open or not, for the background drawing to start near them. */
+	private volatile WorldPoint lastSeen;
 	private volatile MapSettings settings;
 	private volatile Progress progress = Progress.NONE;
 	private volatile MapPainter.Selection selection;
@@ -149,7 +151,9 @@ public class AdvancedMapPlugin extends Plugin
 		{
 			executor.execute(this::openStore);
 		}
-		preparer = new MapPreparer(images, source, executor, () -> config.saveMap() && config.prepareMap());
+		lastSeen = null;
+		preparer = new MapPreparer(images, source, () -> config.saveMap() && config.prepareMap(),
+			() -> lastSeen != null ? lastSeen : LUMBRIDGE);
 		preparer.start();
 		messages = new MapMessages(this::openMap);
 		painter = new MapPainter(images, messages, icons, labels);
@@ -241,6 +245,11 @@ public class AdvancedMapPlugin extends Plugin
 	@Subscribe
 	public void onGameTick(GameTick event)
 	{
+		WorldPoint here = currentPlayerLocation();
+		if (here != null)
+		{
+			lastSeen = here;
+		}
 		if ((mapOpen || windowOpen) && ++ticks % PROGRESS_TICKS == 0)
 		{
 			readProgress();

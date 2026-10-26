@@ -5,74 +5,79 @@
  */
 package com.advancedmap;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Queue;
 import java.util.concurrent.CancellationException;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 import lombok.extern.slf4j.Slf4j;
+import net.runelite.api.coords.WorldPoint;
 
 /**
- * Draws the regions not saved yet in the background and saves them, so the whole map opens at once: every region of
- * both maps, the ground first, then each floor above it. One region at a time, a few a second, and only while the map
- * is not busy drawing what the player is looking at. After a game update only the changed regions are drawn again,
- * when they are next looked at.
+ * Draws the regions not saved yet in the background and saves them, from the moment the plugin starts (installed, or
+ * the client launched), so the map is ready when it is first opened. Nearest the player first (Lumbridge before
+ * logging in), the ground of the player's map, then the other map's, then the floors above; the order follows the
+ * player as they move. One region after another on a thread of its own at the lowest priority, so the game and the
+ * map's own drawing come first, and paused while the map is drawing what is on screen. After a game update only the
+ * changed regions are drawn again, when they are next looked at.
  */
 @Slf4j
 final class MapPreparer
 {
-	/** Waits this long after the plugin starts, to stay out of the way while the client logs in. */
-	private static final long START_DELAY_SECONDS = 30;
-	private static final long STEP_MILLIS = 150;
+	/** Waits this long after the plugin starts, so the client's own start comes first. */
+	private static final long START_DELAY_MILLIS = 10_000;
+	/** A breath between regions. */
+	private static final long STEP_MILLIS = 25;
 
 	private final RegionImages images;
 	private final ClientMapSource source;
-	private final ExecutorService renderer;
 	private final BooleanSupplier enabled;
-	private final ScheduledExecutorService ticker;
-	private final Queue<Integer> todo = new ConcurrentLinkedQueue<>();
-	private final AtomicBoolean working = new AtomicBoolean();
-	private volatile boolean listed;
+	private final Supplier<WorldPoint> focus;
+	private final ScheduledExecutorService worker;
+	/** Floors of regions still to prepare, in order; ticker thread, and {@link #restart} and {@link #remaining}. */
+	private final List<Integer> todo = new ArrayList<>();
+	private boolean listed;
+	/** The region the list was last sorted around. */
+	private int sortedFor = -1;
 
-	MapPreparer(RegionImages images, ClientMapSource source, ExecutorService renderer, BooleanSupplier enabled)
+	MapPreparer(RegionImages images, ClientMapSource source, BooleanSupplier enabled, Supplier<WorldPoint> focus)
 	{
 		this.images = images;
 		this.source = source;
-		this.renderer = renderer;
 		this.enabled = enabled;
-		this.ticker = Executors.newSingleThreadScheduledExecutor(task ->
+		this.focus = focus;
+		this.worker = Executors.newSingleThreadScheduledExecutor(task ->
 		{
 			Thread thread = new Thread(task, "Advanced Map preparer");
 			thread.setDaemon(true);
+			thread.setPriority(Thread.MIN_PRIORITY);
 			return thread;
 		});
 	}
 
 	void start()
 	{
-		ticker.scheduleWithFixedDelay(this::step, START_DELAY_SECONDS * 1000, STEP_MILLIS, TimeUnit.MILLISECONDS);
+		worker.scheduleWithFixedDelay(this::step, START_DELAY_MILLIS, STEP_MILLIS, TimeUnit.MILLISECONDS);
 	}
 
 	void stop()
 	{
-		ticker.shutdownNow();
+		worker.shutdownNow();
 	}
 
 	/** Lists the regions again, after the saved map was deleted. */
-	void restart()
+	synchronized void restart()
 	{
 		todo.clear();
 		listed = false;
 	}
 
 	/** How many regions' floors are still to prepare; -1 before the list is made. */
-	int remaining()
+	synchronized int remaining()
 	{
 		return listed ? todo.size() : -1;
 	}
@@ -82,64 +87,80 @@ final class MapPreparer
 		try
 		{
 			MapStore store = images.store();
-			if (!enabled.getAsBoolean() || store == null || images.isBusy() || working.get())
+			if (!enabled.getAsBoolean() || store == null || images.isBusy())
 			{
 				return;
 			}
-			if (!listed)
+			Integer key = next(store);
+			if (key != null)
 			{
-				list(store);
-				return;
+				images.prepare(key);
 			}
-			Integer key = todo.poll();
-			if (key == null)
-			{
-				return;
-			}
-			working.set(true);
-			renderer.execute(() ->
-			{
-				try
-				{
-					images.prepare(key);
-				}
-				finally
-				{
-					working.set(false);
-				}
-			});
 		}
-		catch (RejectedExecutionException | CancellationException e)
+		catch (CancellationException e)
 		{
 			// the plugin is stopping
-			working.set(false);
 		}
 		catch (RuntimeException e)
 		{
 			log.debug("could not prepare the map", e);
-			working.set(false);
 		}
 	}
 
-	private void list(MapStore store)
+	/** The next floor of a region to prepare, listing them first and sorting again when the player has moved. */
+	private synchronized Integer next(MapStore store)
 	{
-		List<Integer> regions = source.regionIds();
-		if (regions.isEmpty())
+		if (!listed)
 		{
-			// the client has not loaded its map index yet: listed on a later step
-			return;
-		}
-		for (int plane = 0; plane < RegionImages.PLANES; plane++)
-		{
-			for (int region : regions)
+			List<Integer> regions = source.regionIds();
+			if (regions.isEmpty())
 			{
-				int key = RegionImages.key(plane, region);
-				if (!store.has(key))
+				// the client has not loaded its map index yet: listed on a later step
+				return null;
+			}
+			for (int plane = 0; plane < RegionImages.PLANES; plane++)
+			{
+				for (int region : regions)
 				{
-					todo.add(key);
+					int key = RegionImages.key(plane, region);
+					if (!store.has(key))
+					{
+						todo.add(key);
+					}
 				}
 			}
+			listed = true;
+			sortedFor = -1;
 		}
-		listed = true;
+		WorldPoint around = focus.get();
+		int aroundRegion = around.getRegionID();
+		if (aroundRegion != sortedFor)
+		{
+			todo.sort(Comparator.comparingLong(key -> order(key, around)));
+			sortedFor = aroundRegion;
+		}
+		return todo.isEmpty() ? null : todo.remove(0);
+	}
+
+	/**
+	 * A floor of a region's place in the queue: by floor, then the player's own map before the other, then distance
+	 * from the player. Distances on the other map are measured from where its regions lie under (or over) the player:
+	 * most dungeons are 6,400 tiles north of what is above them.
+	 */
+	static long order(int key, WorldPoint around)
+	{
+		int region = RegionImages.region(key);
+		MapArea area = MapArea.of((region & 0xFF) << 6);
+		MapArea aroundArea = MapArea.of(around.getY());
+		int x = around.getX();
+		int y = around.getY();
+		if (area != aroundArea)
+		{
+			y += area == MapArea.UNDERGROUND ? 6400 : -6400;
+		}
+		long dx = ((region >> 8) << 6) + 32 - x;
+		long dy = ((region & 0xFF) << 6) + 32 - y;
+		long distance = Math.min(dx * dx + dy * dy, (1L << 40) - 1);
+		return (long) RegionImages.plane(key) << 42 | (area == aroundArea ? 0L : 1L << 41) | distance;
 	}
 }

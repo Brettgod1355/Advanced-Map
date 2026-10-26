@@ -23,8 +23,9 @@ A full-screen world map for RuneLite, drawn from the game's own map data with sm
 - **Route here**: right-click anywhere on the map, or on an icon, and choose "Route here" to have
   [Shortest Path](https://github.com/Skretzo/shortest-path) or GPS show the way ("Route with" in the settings).
 - **Saved on your computer**: once drawn, the map is kept in RuneLite's plugin data folder, shared by every character
-  and profile, so it opens at once. It prepares the rest in the background, a few regions a second, and draws a region
-  again only when a game update changes it. The sidebar tab shows how far along it is.
+  and profile, so it opens at once. From the moment the client starts (or the plugin is installed) it draws the rest in
+  the background, nearest you first, using spare processor time, and draws a region again only when a game update
+  changes it. The sidebar tab shows how far along it is.
 - **No downloads.** The map is drawn on your computer from the game data your client already has, so it is
   always up to date with the game, and nothing is sent anywhere.
 
