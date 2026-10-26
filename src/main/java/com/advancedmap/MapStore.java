@@ -92,6 +92,12 @@ final class MapStore
 		}
 	}
 
+	/** The fingerprint of the game data a floor of a region was saved from, or null when it is not saved. */
+	Long savedHash(int key)
+	{
+		return saved.get(key);
+	}
+
 	/** True when a floor of a region is saved, whatever game data it was drawn from. */
 	boolean has(int key)
 	{

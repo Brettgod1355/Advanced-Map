@@ -69,6 +69,12 @@ class RegionImages
 	private final ExecutorService executor;
 	private final MapIcons icons;
 	private final Set<Integer> iconsFound = ConcurrentHashMap.newKeySet();
+	/** Floors whose saved picture has been checked against the game's data this session. */
+	private final Set<Integer> checked = ConcurrentHashMap.newKeySet();
+	/** Floors waiting to be checked. */
+	private final Set<Integer> checking = ConcurrentHashMap.newKeySet();
+	/** A saved floor with nothing on it, shown from disk. */
+	private static final Drawn NOTHING = new Drawn(null, null);
 	private final Map<Level, Map<Integer, BufferedImage>> images = new ConcurrentHashMap<>();
 	private final Set<Integer> absent = ConcurrentHashMap.newKeySet();
 	private final Set<Long> queued = ConcurrentHashMap.newKeySet();
@@ -283,6 +289,107 @@ class RegionImages
 	 * saved). Null when the game has nothing there.
 	 */
 	private Drawn draw(int key, Level level)
+	{
+		MapStore saved = store;
+		if (saved != null && !checked.contains(key))
+		{
+			// what was saved shows at once, without reading the game's data first; it is checked against that data
+			// afterwards, and drawn again if a game update changed it
+			Long savedHash = saved.savedHash(key);
+			if (savedHash != null)
+			{
+				Drawn quick = saved.isEmpty(key, savedHash) ? NOTHING : loadSaved(saved, key, savedHash, level);
+				if (quick != null)
+				{
+					checkLater(key);
+					if (quick == NOTHING)
+					{
+						absent.add(key);
+						return null;
+					}
+					return quick;
+				}
+			}
+		}
+		checked.add(key);
+		return drawChecked(key, level);
+	}
+
+	private static Drawn loadSaved(MapStore saved, int key, long hash, Level level)
+	{
+		BufferedImage small = level == Level.SMALL ? saved.load(key, hash, MapStore.Kind.SMALL) : null;
+		if (small != null)
+		{
+			return new Drawn(null, small);
+		}
+		BufferedImage full = saved.load(key, hash, MapStore.Kind.FULL);
+		return full == null ? null : new Drawn(full, shrink(shrink(full, 2), 2));
+	}
+
+	/** Checks a floor shown from disk against the game's data, once, behind the pictures waiting to be shown. */
+	private void checkLater(int key)
+	{
+		if (checking.add(key))
+		{
+			try
+			{
+				executor.execute(() -> check(key));
+			}
+			catch (RejectedExecutionException e)
+			{
+				checking.remove(key);
+			}
+		}
+	}
+
+	/**
+	 * Reads a region's game data, finds its icons, and when the saved picture was drawn from older data, drops it
+	 * from memory so it is drawn again on the next request. Render threads.
+	 */
+	private void check(int key)
+	{
+		try
+		{
+			int id = region(key);
+			Region region = source.region(id >> 8, id & 0xFF);
+			if (region != null && !iconsFound.contains(id))
+			{
+				findIcons(region);
+				iconsFound.add(id);
+			}
+			MapStore saved = store;
+			Long savedHash = saved == null ? null : saved.savedHash(key);
+			long hash = region == null ? 0 : source.regionHash(id >> 8, id & 0xFF);
+			checked.add(key);
+			if (savedHash == null || savedHash != hash)
+			{
+				for (Level level : Level.values())
+				{
+					images.get(level).remove(key);
+				}
+				absent.remove(key);
+			}
+		}
+		catch (CancellationException e)
+		{
+			// the plugin stopped
+		}
+		catch (CacheNotReadyException e)
+		{
+			// asked again next time the floor is shown from disk
+		}
+		catch (RuntimeException e)
+		{
+			log.debug("could not check region {} floor {}", region(key), plane(key), e);
+		}
+		finally
+		{
+			checking.remove(key);
+		}
+	}
+
+	/** The pictures of a region's floor drawn or loaded after reading the game's data to see they match. */
+	private Drawn drawChecked(int key, Level level)
 	{
 		int plane = plane(key);
 		int id = region(key);
