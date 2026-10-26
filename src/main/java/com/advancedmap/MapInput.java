@@ -50,7 +50,7 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 		}
 		int w = width.getAsInt();
 		int h = height.getAsInt();
-		if (SwingUtilities.isLeftMouseButton(e) && plugin.pressFilters(e.getX(), e.getY(), w, h, false))
+		if (SwingUtilities.isLeftMouseButton(e) && plugin.pressPanels(e.getX(), e.getY(), w, h, false))
 		{
 			e.consume();
 			return e;
@@ -145,7 +145,7 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 		{
 			return e;
 		}
-		if (!plugin.wheelFilters(e.getX(), e.getY(), e.getPreciseWheelRotation(), width.getAsInt(),
+		if (!plugin.wheelPanels(e.getX(), e.getY(), e.getPreciseWheelRotation(), width.getAsInt(),
 			height.getAsInt(), false))
 		{
 			double factor = Math.pow(WHEEL_STEP, -e.getPreciseWheelRotation());

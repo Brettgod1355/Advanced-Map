@@ -116,7 +116,7 @@ public class MapPainterTest
 	public void aRightClickedTileDrawsWithIconsOnScreen()
 	{
 		// a tile's selection has no icon; drawing the icons beside it threw on every frame (found 2026-10-26)
-		MapPainter painter = new MapPainter(null, null, new MapIcons(), null, null);
+		MapPainter painter = new MapPainter(null, null, new MapIcons(), null, null, new TransportList());
 		MapPainter.Selection tile = new MapPainter.Selection(null, true, 10, 10, new WorldPoint(3222, 3218, 0));
 		List<MapIcons.Shown> shown = Collections.singletonList(new MapIcons.Shown(MapSpot.teleport(Teleport.VARROCK),
 			new Rectangle(100, 100, 12, 12), MapIcons.Look.NORMAL));

@@ -112,6 +112,7 @@ public class AdvancedMapPlugin extends Plugin
 	private MapIcons icons;
 	private MapLabels labels;
 	private MapFilters filters;
+	private final TransportList transportList = new TransportList();
 	private volatile boolean labelsLoading;
 	private RegionImages images;
 	private MapPreparer preparer;
@@ -186,7 +187,7 @@ public class AdvancedMapPlugin extends Plugin
 			() -> lastSeen != null ? lastSeen : LUMBRIDGE);
 		preparer.start();
 		messages = new MapMessages(this::openMap);
-		painter = new MapPainter(images, messages, icons, labels, filters);
+		painter = new MapPainter(images, messages, icons, labels, filters, transportList);
 		overlay = new MapOverlay(client, this, painter);
 		input = new MapInput(this, client::getCanvasWidth, client::getCanvasHeight);
 		hotkey = new HotkeyListener(() -> config.toggleKey())
@@ -747,8 +748,8 @@ public class AdvancedMapPlugin extends Plugin
 	}
 
 	/**
-	 * Draws lines from a transport icon to every place it goes, each marked with its name; null takes them away. The
-	 * lines stay until another click or Escape.
+	 * Draws lines from a transport icon to every place it goes, each marked with its name, and lists the places when
+	 * there are several; null takes them away. They stay until another click or Escape.
 	 */
 	private void showTransport(MapSpot spot)
 	{
@@ -760,12 +761,18 @@ public class AdvancedMapPlugin extends Plugin
 		if (spot == null)
 		{
 			layers.remove(Transports.LAYER);
+			transportList.close();
 			return;
 		}
 		List<Transports.Destination> destinations = Transports.from(spot);
+		WorldPoint from = new WorldPoint(spot.getX(), spot.getY(), spot.getPlane());
 		if (!destinations.isEmpty())
 		{
-			layers.put(Transports.layer(new WorldPoint(spot.getX(), spot.getY(), spot.getPlane()), destinations));
+			layers.put(Transports.layer(from, destinations));
+		}
+		if (destinations.size() > 1)
+		{
+			transportList.open(MapIcons.name(spot, progress), from, destinations);
 		}
 	}
 
@@ -786,9 +793,7 @@ public class AdvancedMapPlugin extends Plugin
 		{
 			return false;
 		}
-		area = MapArea.of(MapLinks.y(to));
-		plane = MapLinks.plane(to);
-		viewports.get(area).centerOn(MapLinks.x(to), MapLinks.y(to));
+		goTo(new WorldPoint(MapLinks.x(to), MapLinks.y(to), MapLinks.plane(to)));
 		return true;
 	}
 
@@ -800,10 +805,16 @@ public class AdvancedMapPlugin extends Plugin
 		{
 			return false;
 		}
+		goTo(to);
+		return true;
+	}
+
+	/** Moves the map to a tile: onto its map and floor, centered there. */
+	private void goTo(WorldPoint to)
+	{
 		area = MapArea.of(to.getY());
 		plane = to.getPlane();
 		viewports.get(area).centerOn(to.getX(), to.getY());
-		return true;
 	}
 
 	/**
@@ -837,7 +848,7 @@ public class AdvancedMapPlugin extends Plugin
 		{
 			filters.setOpen(false);
 		}
-		else if (selection != null)
+		else if (selection != null || transportList.isOpen())
 		{
 			selection = null;
 			showTransport(null);
@@ -846,6 +857,12 @@ public class AdvancedMapPlugin extends Plugin
 		{
 			closeMap();
 		}
+	}
+
+	/** True while a transport's list of places is open, so Escape closes it before the map. */
+	boolean transportListOpen()
+	{
+		return transportList.isOpen();
 	}
 
 	/** True while the Filters list is open, so keys go to its search box. */
@@ -860,7 +877,42 @@ public class AdvancedMapPlugin extends Plugin
 	 * so for everything. A press elsewhere closes the list (the Filters button itself toggles it). True when the press
 	 * was on the list, so it does nothing else.
 	 */
-	boolean pressFilters(int x, int y, int width, int height, boolean window)
+	boolean pressPanels(int x, int y, int width, int height, boolean window)
+	{
+		return pressTransportList(x, y, width, height, window) || pressFilters(x, y, width, height, window);
+	}
+
+	/**
+	 * A left press while a transport's places are listed: a place moves the map there, the close box closes the list
+	 * and the lines. True when the press was on the list.
+	 */
+	private boolean pressTransportList(int x, int y, int width, int height, boolean window)
+	{
+		if (!transportList.isOpen())
+		{
+			return false;
+		}
+		TransportList.Layout layout = TransportList.layout(MapPainter.buttons(width, height, window),
+			transportList.places().size());
+		TransportList.Hit hit = transportList.hitAt(x, y, layout);
+		if (hit.getIndex() == TransportList.Hit.OUTSIDE)
+		{
+			return false;
+		}
+		if (hit.getIndex() == TransportList.Hit.CLOSE)
+		{
+			selection = null;
+			showTransport(null);
+		}
+		else if (hit.getIndex() >= 0)
+		{
+			selection = null;
+			goTo(transportList.places().get(hit.getIndex()).getPoint());
+		}
+		return true;
+	}
+
+	private boolean pressFilters(int x, int y, int width, int height, boolean window)
 	{
 		MapFilters list = filters;
 		if (list == null || !list.isOpen())
@@ -936,9 +988,19 @@ public class AdvancedMapPlugin extends Plugin
 			String.join(MapSettings.SEPARATOR, hidden));
 	}
 
-	/** The mouse wheel over the Filters list scrolls it. True when it did. */
-	boolean wheelFilters(int x, int y, double notches, int width, int height, boolean window)
+	/** The mouse wheel over the Filters list or a transport's places scrolls it. True when it did. */
+	boolean wheelPanels(int x, int y, double notches, int width, int height, boolean window)
 	{
+		if (transportList.isOpen())
+		{
+			TransportList.Layout places = TransportList.layout(MapPainter.buttons(width, height, window),
+				transportList.places().size());
+			if (places.getPanel().contains(x, y))
+			{
+				transportList.scroll(notches, places);
+				return true;
+			}
+		}
 		MapFilters list = filters;
 		if (list == null || !list.isOpen())
 		{
@@ -1031,7 +1093,22 @@ public class AdvancedMapPlugin extends Plugin
 
 	void toggleMap()
 	{
-		if (mapOpen || windowOpen)
+		if (windowOpen)
+		{
+			SwingUtilities.invokeLater(() ->
+			{
+				if (window != null && window.isMinimized())
+				{
+					showWindow();
+				}
+				else
+				{
+					closeMap();
+				}
+			});
+			return;
+		}
+		if (mapOpen)
 		{
 			closeMap();
 		}
@@ -1163,6 +1240,14 @@ public class AdvancedMapPlugin extends Plugin
 		if (!windowOpen || painter == null)
 		{
 			return;
+		}
+		if (window != null && window.isMinimized())
+		{
+			// the Plugin Hub allows no window manipulation, so a minimized window is not brought back up: it closes
+			// and a new one opens in its place, where it was
+			MapWindow minimized = window;
+			window = null;
+			minimized.dispose();
 		}
 		if (window == null)
 		{

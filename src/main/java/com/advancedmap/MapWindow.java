@@ -105,6 +105,8 @@ final class MapWindow extends JFrame
 	private final Timer redraw;
 	private final Timer saveSoon;
 	private static final int SAVE_DELAY_MS = 1000;
+	/** Set while the player has the window minimized, from the window's own events. */
+	private volatile boolean minimized;
 
 	/**
 	 * Opens where the window was last ({@code savedBounds}, "x,y,width,height") when that is still on a screen, else
@@ -150,6 +152,18 @@ final class MapWindow extends JFrame
 		addWindowListener(new WindowAdapter()
 		{
 			@Override
+			public void windowIconified(WindowEvent e)
+			{
+				minimized = true;
+			}
+
+			@Override
+			public void windowDeiconified(WindowEvent e)
+			{
+				minimized = false;
+			}
+
+			@Override
 			public void windowClosed(WindowEvent e)
 			{
 				redraw.stop();
@@ -164,7 +178,7 @@ final class MapWindow extends JFrame
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent e)
 			{
-				if (plugin.selection() != null || plugin.filtersOpen())
+				if (plugin.selection() != null || plugin.filtersOpen() || plugin.transportListOpen())
 				{
 					plugin.escape();
 				}
@@ -175,6 +189,11 @@ final class MapWindow extends JFrame
 			}
 		});
 		redraw.start();
+	}
+
+	boolean isMinimized()
+	{
+		return minimized;
 	}
 
 	/** The drawing surface: the shared painter, and the mouse for dragging, zooming and the buttons. */
@@ -198,7 +217,7 @@ final class MapWindow extends JFrame
 				{
 					requestFocusInWindow();
 					if (SwingUtilities.isLeftMouseButton(e)
-						&& plugin.pressFilters(x(e), y(e), width(), height(), true))
+						&& plugin.pressPanels(x(e), y(e), width(), height(), true))
 					{
 						repaint();
 						return;
@@ -266,7 +285,7 @@ final class MapWindow extends JFrame
 				@Override
 				public void mouseWheelMoved(MouseWheelEvent e)
 				{
-					if (!plugin.wheelFilters(x(e), y(e), e.getPreciseWheelRotation(), width(), height(), true))
+					if (!plugin.wheelPanels(x(e), y(e), e.getPreciseWheelRotation(), width(), height(), true))
 					{
 						double factor = Math.pow(MapInput.WHEEL_STEP, -e.getPreciseWheelRotation());
 						plugin.viewport().zoomAt(factor, x(e), y(e), width(), height());

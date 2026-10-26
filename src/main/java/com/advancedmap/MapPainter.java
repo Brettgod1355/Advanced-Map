@@ -126,14 +126,17 @@ final class MapPainter
 	private final MapIcons icons;
 	private final MapLabels labels;
 	private final MapFilters filters;
+	private final TransportList transportList;
 
-	MapPainter(RegionImages images, MapMessages messages, MapIcons icons, MapLabels labels, MapFilters filters)
+	MapPainter(RegionImages images, MapMessages messages, MapIcons icons, MapLabels labels, MapFilters filters,
+		TransportList transportList)
 	{
 		this.images = images;
 		this.messages = messages;
 		this.icons = icons;
 		this.labels = labels;
 		this.filters = filters;
+		this.transportList = transportList;
 	}
 
 	/**
@@ -228,6 +231,11 @@ final class MapPainter
 		{
 			Rectangle button = buttons(view.width, view.height, window).get(Button.FILTERS);
 			filters.draw(g, MapFilters.layout(button, view.height), filters.entries(progress), settings, icons);
+		}
+		if (transportList.isOpen())
+		{
+			transportList.draw(g, TransportList.layout(buttons(view.width, view.height, window),
+				transportList.places().size()), mouse);
 		}
 		if (antialiasing != null)
 		{
