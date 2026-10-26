@@ -28,6 +28,8 @@ class MapSettings
 
 	Set<IconGroup> groups;
 	Set<String> hidden;
+	/** Kinds of icon turned off on their own in the Filters list ({@link #typeKey}). */
+	Set<String> hiddenTypes;
 	boolean hideCompletedQuests;
 	boolean markLocked;
 	boolean iconsOff;
@@ -47,6 +49,7 @@ class MapSettings
 			}
 		}
 		return new MapSettings(Collections.unmodifiableSet(groups), parseHidden(config.hiddenIcons()),
+			parseHidden(config.hiddenTypes()),
 			config.hideCompletedQuests(), config.markLocked(), config.iconsOff(), config.showHidden(),
 			config.placeNames(), config.wildernessLines(), config.routing());
 	}
@@ -54,6 +57,45 @@ class MapSettings
 	boolean shows(IconGroup group)
 	{
 		return groups.contains(group);
+	}
+
+	/** True when a spot's group is on and its own kind is not turned off. */
+	boolean shows(MapSpot spot)
+	{
+		return groups.contains(spot.getGroup()) && !hiddenTypes.contains(typeKey(spot));
+	}
+
+	/** A kind of icon, as the Filters list turns it off: {@code c1055} for a game category, {@code tJEWELLERY}. */
+	static String typeKey(MapSpot spot)
+	{
+		return spot.getTeleport() != null ? typeKey(spot.getTeleport().getType()) : typeKey(spot.getCategory());
+	}
+
+	/** The group a kind of icon ({@link #typeKey}) belongs to. */
+	static IconGroup groupOf(String typeKey)
+	{
+		if (typeKey.startsWith("t"))
+		{
+			return IconGroup.TELEPORTS;
+		}
+		try
+		{
+			return IconGroup.of(Integer.parseInt(typeKey.substring(1)));
+		}
+		catch (NumberFormatException e)
+		{
+			return IconGroup.OTHER;
+		}
+	}
+
+	static String typeKey(int category)
+	{
+		return "c" + category;
+	}
+
+	static String typeKey(Teleport.Type type)
+	{
+		return "t" + type.name();
 	}
 
 	boolean isHidden(MapSpot spot)
@@ -73,7 +115,7 @@ class MapSettings
 		return Collections.unmodifiableSet(keys);
 	}
 
-	/** The saved setting with one icon hidden or shown again. */
+	/** The saved setting with one icon (or kind of icon) hidden or shown again. */
 	static String withHidden(Set<String> hidden, String key, boolean hide)
 	{
 		Set<String> out = new LinkedHashSet<>(hidden);

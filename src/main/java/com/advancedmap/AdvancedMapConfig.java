@@ -20,10 +20,12 @@ public interface AdvancedMapConfig extends Config
 	String HIDDEN_ICONS = "hiddenIcons";
 	String SHOW_HIDDEN = "showHidden";
 	String ICONS_OFF = "iconsOff";
+	String HIDDEN_TYPES = "hiddenTypes";
 
 	@ConfigSection(
 		name = "Icons",
-		description = "Which icons the map shows. Click an icon for its details; right-click it to hide just that one.",
+		description = "Which icons the map shows is chosen with Filters at the top left of the map. Click an icon for its"
+			+ " details; right-click it to hide just that one.",
 		position = 10
 	)
 	String ICONS = "icons";
@@ -79,6 +81,7 @@ public interface AdvancedMapConfig extends Config
 		name = "Banks",
 		description = "Banks, the Grand Exchange and its pricing experts.",
 		section = ICONS,
+		hidden = true,
 		position = 0
 	)
 	default boolean showBanks()
@@ -91,6 +94,7 @@ public interface AdvancedMapConfig extends Config
 		name = "Quests",
 		description = "Where each quest starts.",
 		section = ICONS,
+		hidden = true,
 		position = 1
 	)
 	default boolean showQuests()
@@ -103,6 +107,7 @@ public interface AdvancedMapConfig extends Config
 		name = "Agility",
 		description = "Agility shortcuts and courses.",
 		section = ICONS,
+		hidden = true,
 		position = 2
 	)
 	default boolean showAgility()
@@ -115,6 +120,7 @@ public interface AdvancedMapConfig extends Config
 		name = "Teleports",
 		description = "Where spells, jewellery, scrolls and other items teleport you.",
 		section = ICONS,
+		hidden = true,
 		position = 3
 	)
 	default boolean showTeleports()
@@ -127,6 +133,7 @@ public interface AdvancedMapConfig extends Config
 		name = "Transportation",
 		description = "Boats, carts, gliders, spirit trees and other ways to travel, and house portals.",
 		section = ICONS,
+		hidden = true,
 		position = 4
 	)
 	default boolean showTransportation()
@@ -139,6 +146,7 @@ public interface AdvancedMapConfig extends Config
 		name = "Dungeons",
 		description = "Dungeon entrances.",
 		section = ICONS,
+		hidden = true,
 		position = 5
 	)
 	default boolean showDungeons()
@@ -151,6 +159,7 @@ public interface AdvancedMapConfig extends Config
 		name = "Altars",
 		description = "Prayer altars.",
 		section = ICONS,
+		hidden = true,
 		position = 6
 	)
 	default boolean showAltars()
@@ -163,6 +172,7 @@ public interface AdvancedMapConfig extends Config
 		name = "Shops",
 		description = "Shops, traders and pubs.",
 		section = ICONS,
+		hidden = true,
 		position = 7
 	)
 	default boolean showShops()
@@ -175,6 +185,7 @@ public interface AdvancedMapConfig extends Config
 		name = "Skilling spots",
 		description = "Mining sites, fishing spots, rare trees, hunter areas and other places to train a gathering skill.",
 		section = ICONS,
+		hidden = true,
 		position = 8
 	)
 	default boolean showResources()
@@ -187,6 +198,7 @@ public interface AdvancedMapConfig extends Config
 		name = "Farming patches",
 		description = "Farming patches.",
 		section = ICONS,
+		hidden = true,
 		position = 9
 	)
 	default boolean showFarming()
@@ -199,6 +211,7 @@ public interface AdvancedMapConfig extends Config
 		name = "Crafting and cooking",
 		description = "Anvils, furnaces, cooking ranges, spinning wheels, water sources and other places to make things.",
 		section = ICONS,
+		hidden = true,
 		position = 10
 	)
 	default boolean showCrafting()
@@ -211,6 +224,7 @@ public interface AdvancedMapConfig extends Config
 		name = "Minigames and raids",
 		description = "Minigames, raids and combat training.",
 		section = ICONS,
+		hidden = true,
 		position = 11
 	)
 	default boolean showMinigames()
@@ -223,6 +237,7 @@ public interface AdvancedMapConfig extends Config
 		name = "Slayer masters",
 		description = "Slayer masters and task masters.",
 		section = ICONS,
+		hidden = true,
 		position = 12
 	)
 	default boolean showSlayer()
@@ -235,6 +250,7 @@ public interface AdvancedMapConfig extends Config
 		name = "Sailing",
 		description = "Docks, salvaging spots, shipwrights and other Sailing places.",
 		section = ICONS,
+		hidden = true,
 		position = 13
 	)
 	default boolean showSailing()
@@ -247,6 +263,7 @@ public interface AdvancedMapConfig extends Config
 		name = "Services",
 		description = "Hairdressers, estate agents, Death's Office and other services.",
 		section = ICONS,
+		hidden = true,
 		position = 14
 	)
 	default boolean showServices()
@@ -259,6 +276,7 @@ public interface AdvancedMapConfig extends Config
 		name = "Tutors and guides",
 		description = "Tutors and guides for new players.",
 		section = ICONS,
+		hidden = true,
 		position = 15
 	)
 	default boolean showTutors()
@@ -271,6 +289,7 @@ public interface AdvancedMapConfig extends Config
 		name = "Other icons",
 		description = "Any other icon on the game's map.",
 		section = ICONS,
+		hidden = true,
 		position = 16
 	)
 	default boolean showOtherIcons()
@@ -358,6 +377,17 @@ public interface AdvancedMapConfig extends Config
 		hidden = true
 	)
 	default String hiddenIcons()
+	{
+		return "";
+	}
+
+	@ConfigItem(
+		keyName = HIDDEN_TYPES,
+		name = "",
+		description = "",
+		hidden = true
+	)
+	default String hiddenTypes()
 	{
 		return "";
 	}

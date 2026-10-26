@@ -379,6 +379,25 @@ class ClientMapSource implements MapSource
 		}).orElse(null);
 	}
 
+	/**
+	 * For each icon category the game has (map links left out), the lowest map area with an icon, whose picture the
+	 * Filters list shows for the category.
+	 */
+	Map<Integer, Integer> categoryIcons()
+	{
+		loadTables();
+		Map<Integer, Integer> out = new java.util.TreeMap<>();
+		areaCategories.forEach((id, category) ->
+		{
+			Optional<MapSprite> icon = areaIcons.get(id);
+			if (category >= 0 && category != IconGroup.MAP_LINK && icon != null && icon.isPresent())
+			{
+				out.merge(category, id, Math::min);
+			}
+		});
+		return out;
+	}
+
 	/** Every region the game has on either map, by region id. One wait for the client thread. */
 	List<Integer> regionIds()
 	{

@@ -62,7 +62,7 @@ final class MapWindow extends JFrame
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent e)
 			{
-				if (plugin.selection() != null)
+				if (plugin.selection() != null || plugin.filtersOpen())
 				{
 					plugin.escape();
 				}
@@ -94,6 +94,13 @@ final class MapWindow extends JFrame
 				@Override
 				public void mousePressed(MouseEvent e)
 				{
+					requestFocusInWindow();
+					if (SwingUtilities.isLeftMouseButton(e)
+						&& plugin.pressFilters(e.getX(), e.getY(), getWidth(), getHeight(), true))
+					{
+						repaint();
+						return;
+					}
 					if (SwingUtilities.isRightMouseButton(e))
 					{
 						plugin.rightClick(e.getX(), e.getY(), getWidth(), getHeight());
@@ -157,14 +164,41 @@ final class MapWindow extends JFrame
 				@Override
 				public void mouseWheelMoved(MouseWheelEvent e)
 				{
-					double factor = Math.pow(MapInput.WHEEL_STEP, -e.getPreciseWheelRotation());
-					plugin.viewport().zoomAt(factor, e.getX(), e.getY(), getWidth(), getHeight());
+					if (!plugin.wheelFilters(e.getX(), e.getY(), e.getPreciseWheelRotation(), getWidth(), getHeight(), true))
+					{
+						double factor = Math.pow(MapInput.WHEEL_STEP, -e.getPreciseWheelRotation());
+						plugin.viewport().zoomAt(factor, e.getX(), e.getY(), getWidth(), getHeight());
+					}
 					repaint();
 				}
 			};
 			addMouseListener(input);
 			addMouseMotionListener(input);
 			addMouseWheelListener(input);
+			// the Filters list's search box types here
+			setFocusable(true);
+			addKeyListener(new java.awt.event.KeyAdapter()
+			{
+				@Override
+				public void keyTyped(KeyEvent e)
+				{
+					if (plugin.filtersOpen())
+					{
+						plugin.typeFilters(e.getKeyChar());
+						repaint();
+					}
+				}
+
+				@Override
+				public void keyPressed(KeyEvent e)
+				{
+					if (plugin.filtersOpen() && e.getKeyCode() == KeyEvent.VK_BACK_SPACE)
+					{
+						plugin.backspaceFilters();
+						repaint();
+					}
+				}
+			});
 		}
 
 		@Override

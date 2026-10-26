@@ -91,6 +91,7 @@ public class AdvancedMapPlugin extends Plugin
 	private ClientMapSource source;
 	private MapIcons icons;
 	private MapLabels labels;
+	private MapFilters filters;
 	private volatile boolean labelsLoading;
 	private RegionImages images;
 	private MapPreparer preparer;
@@ -141,6 +142,7 @@ public class AdvancedMapPlugin extends Plugin
 		source = new ClientMapSource(reader);
 		icons = new MapIcons();
 		labels = new MapLabels();
+		filters = new MapFilters();
 		labelsLoading = false;
 		settings = MapSettings.of(config);
 		progress = Progress.NONE;
@@ -156,7 +158,7 @@ public class AdvancedMapPlugin extends Plugin
 			() -> lastSeen != null ? lastSeen : LUMBRIDGE);
 		preparer.start();
 		messages = new MapMessages(this::openMap);
-		painter = new MapPainter(images, messages, icons, labels);
+		painter = new MapPainter(images, messages, icons, labels, filters);
 		overlay = new MapOverlay(client, this, painter);
 		input = new MapInput(this, client::getCanvasWidth, client::getCanvasHeight);
 		hotkey = new HotkeyListener(() -> config.toggleKey())
@@ -218,6 +220,7 @@ public class AdvancedMapPlugin extends Plugin
 		source = null;
 		icons = null;
 		labels = null;
+		filters = null;
 		images = null;
 		preparer = null;
 		panel = null;
@@ -434,6 +437,10 @@ public class AdvancedMapPlugin extends Plugin
 			case HIDDEN:
 				setSwitch(AdvancedMapConfig.SHOW_HIDDEN, !settings.isShowHidden());
 				break;
+			case FILTERS:
+				filters.setOpen(!filters.isOpen());
+				selection = null;
+				break;
 			case FLOOR_UP:
 				plane = Math.min(RegionImages.PLANES - 1, plane + 1);
 				selection = null;
@@ -543,16 +550,141 @@ public class AdvancedMapPlugin extends Plugin
 			(int) Math.floor(view.worldY(y)), plane));
 	}
 
-	/** Escape: closes an info box or menu first, then the map. */
+	/** Escape: closes the Filters list, an info box or a menu first, then the map. */
 	void escape()
 	{
-		if (selection != null)
+		if (filters.isOpen())
+		{
+			filters.setOpen(false);
+		}
+		else if (selection != null)
 		{
 			selection = null;
 		}
 		else
 		{
 			closeMap();
+		}
+	}
+
+	/** True while the Filters list is open, so keys go to its search box. */
+	boolean filtersOpen()
+	{
+		MapFilters current = filters;
+		return current != null && current.isOpen();
+	}
+
+	/**
+	 * A left press while the Filters list is open: a box turns its group or kind on or off, "All on" and "All off" do
+	 * so for everything. A press elsewhere closes the list (the Filters button itself toggles it). True when the press
+	 * was on the list, so it does nothing else.
+	 */
+	boolean pressFilters(int x, int y, int width, int height, boolean window)
+	{
+		MapFilters list = filters;
+		if (list == null || !list.isOpen())
+		{
+			return false;
+		}
+		java.awt.Rectangle button = MapPainter.buttons(width, height, window).get(MapPainter.Button.FILTERS);
+		List<MapFilters.Entry> entries = list.entries(progress);
+		MapFilters.Hit hit = list.hitAt(x, y, MapFilters.layout(button, height), entries);
+		switch (hit.getPart())
+		{
+			case OUTSIDE:
+				if (!button.contains(x, y))
+				{
+					list.setOpen(false);
+				}
+				return false;
+			case ALL_ON:
+				for (IconGroup group : IconGroup.values())
+				{
+					configManager.setConfiguration(AdvancedMapConfig.GROUP, group.key, true);
+				}
+				configManager.setConfiguration(AdvancedMapConfig.GROUP, AdvancedMapConfig.HIDDEN_TYPES, "");
+				break;
+			case ALL_OFF:
+				for (IconGroup group : IconGroup.values())
+				{
+					configManager.setConfiguration(AdvancedMapConfig.GROUP, group.key, false);
+				}
+				break;
+			case ENTRY:
+				toggle(hit.getEntry());
+				break;
+			default:
+				break;
+		}
+		settings = MapSettings.of(config);
+		return true;
+	}
+
+	/**
+	 * Turns a group or kind on or off. A group turned on shows all its kinds again; a kind turned on while its group is
+	 * off turns the group on with only that kind.
+	 */
+	private void toggle(MapFilters.Entry entry)
+	{
+		IconGroup group = entry.getGroup();
+		java.util.Set<String> hidden = new java.util.LinkedHashSet<>(settings.getHiddenTypes());
+		if (entry.isGroup())
+		{
+			boolean on = !settings.shows(group);
+			if (on)
+			{
+				hidden.removeIf(key -> MapSettings.groupOf(key) == group);
+			}
+			configManager.setConfiguration(AdvancedMapConfig.GROUP, group.key, on);
+		}
+		else if (!settings.shows(group))
+		{
+			hidden.addAll(filters.keysOf(group));
+			hidden.remove(entry.getKey());
+			configManager.setConfiguration(AdvancedMapConfig.GROUP, group.key, true);
+		}
+		else if (!hidden.remove(entry.getKey()))
+		{
+			hidden.add(entry.getKey());
+		}
+		configManager.setConfiguration(AdvancedMapConfig.GROUP, AdvancedMapConfig.HIDDEN_TYPES,
+			String.join(MapSettings.SEPARATOR, hidden));
+	}
+
+	/** The mouse wheel over the Filters list scrolls it. True when it did. */
+	boolean wheelFilters(int x, int y, double notches, int width, int height, boolean window)
+	{
+		MapFilters list = filters;
+		if (list == null || !list.isOpen())
+		{
+			return false;
+		}
+		java.awt.Rectangle button = MapPainter.buttons(width, height, window).get(MapPainter.Button.FILTERS);
+		MapFilters.Layout layout = MapFilters.layout(button, height);
+		if (!layout.getPanel().contains(x, y))
+		{
+			return false;
+		}
+		list.scroll(notches, layout, list.entries(progress).size());
+		return true;
+	}
+
+	/** A key typed while the Filters list is open: into its search box. */
+	void typeFilters(char c)
+	{
+		MapFilters list = filters;
+		if (list != null && !Character.isISOControl(c))
+		{
+			list.type(c);
+		}
+	}
+
+	void backspaceFilters()
+	{
+		MapFilters list = filters;
+		if (list != null)
+		{
+			list.backspace();
 		}
 	}
 
@@ -665,17 +797,22 @@ public class AdvancedMapPlugin extends Plugin
 	/** Reads the place names in the background, once; again next time if the client had no world map data yet. */
 	private void loadLabels()
 	{
-		if (labelsLoading || !labels.all().isEmpty())
+		if (labelsLoading || !labels.all().isEmpty() && filters.hasCategories())
 		{
 			return;
 		}
 		labelsLoading = true;
 		ClientMapSource from = source;
 		MapLabels into = labels;
+		MapFilters list = filters;
+		MapIcons pictures = icons;
 		executor.execute(() ->
 		{
 			try
 			{
+				Map<Integer, Integer> categories = from.categoryIcons();
+				categories.values().forEach(areaId -> pictures.addSprite(areaId, from.areaIcon(areaId)));
+				list.setCategoryIcons(categories);
 				into.set(from.labels());
 			}
 			catch (RuntimeException e)

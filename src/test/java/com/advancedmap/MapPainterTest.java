@@ -28,8 +28,8 @@ public class MapPainterTest
 	{
 		assertTrue(MapPainter.buttons(1200, 800, false).containsKey(MapPainter.Button.CLOSE));
 		assertFalse(MapPainter.buttons(1200, 800, true).containsKey(MapPainter.Button.CLOSE));
-		assertEquals(8, MapPainter.buttons(1200, 800, false).size());
-		assertEquals(7, MapPainter.buttons(1200, 800, true).size());
+		assertEquals(9, MapPainter.buttons(1200, 800, false).size());
+		assertEquals(8, MapPainter.buttons(1200, 800, true).size());
 	}
 
 	@Test
@@ -112,8 +112,8 @@ public class MapPainterTest
 
 	private static MapSettings settings(RoutingPlugin routing)
 	{
-		return new MapSettings(EnumSet.allOf(IconGroup.class), Collections.emptySet(), false, true, false, false, true,
-			true, routing);
+		return new MapSettings(EnumSet.allOf(IconGroup.class), Collections.emptySet(), Collections.emptySet(), false,
+			true, false, false, true, true, routing);
 	}
 
 	@Test

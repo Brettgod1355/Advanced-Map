@@ -14,7 +14,9 @@ A full-screen world map for RuneLite, drawn from the game's own map data with sm
 - **Icons you can click**: banks, quests, shops, shortcuts and every other icon of the game's map, plus teleport
   destinations. Click one for its details (a quest's difficulty and the levels it needs, a shortcut's Agility level,
   a spell's Magic level and quest). Agility shortcuts and teleport spells you can't use yet are grayed out with a
-  red mark, and finished quests can be left out. Each kind of icon has its own setting.
+  red mark, and finished quests can be left out.
+- **Filters**: the Filters button at the top left drops down a list of every kind of icon, with its picture and name,
+  grouped (Banks, Quests, Shops ...) and searchable: tick or untick a whole group or a single kind, or all at once.
 - **Hide just one icon** by right-clicking it. "Hidden icons" at the top left shows the hidden ones again, faded,
   so they can be unhidden the same way; "Icons" turns every icon off or on at once and keeps the place names.
 - **Back to you**: the round button at the bottom right moves the map to your character.

@@ -156,7 +156,7 @@ final class MapIcons
 	private void add(List<Shown> out, MapSpot spot, MapViewport.View view, MapArea area, MapSettings settings,
 		Progress progress)
 	{
-		if (!settings.shows(spot.getGroup()) || MapArea.of(spot.getY()) != area)
+		if (!settings.shows(spot) || MapArea.of(spot.getY()) != area)
 		{
 			return;
 		}

@@ -48,6 +48,8 @@ final class MapPainter
 		ICONS,
 		/** Shows the icons the player hid, faded, so they can be unhidden. */
 		HIDDEN,
+		/** Opens the list that turns each group and kind of icon on or off. */
+		FILTERS,
 		/** Moves the map back to the player. */
 		LOCATE,
 		FLOOR_UP,
@@ -94,6 +96,7 @@ final class MapPainter
 	private static final int MODE_WIDTH = 100;
 	private static final int ICONS_WIDTH = 76;
 	private static final int HIDDEN_WIDTH = 116;
+	private static final int FILTERS_WIDTH = 86;
 	private static final int MENU_ROW = 20;
 	private static final int PAD = 8;
 	/** The Wilderness teleport limits show from this zoom in, as icons do. */
@@ -119,13 +122,15 @@ final class MapPainter
 	private final MapMessages messages;
 	private final MapIcons icons;
 	private final MapLabels labels;
+	private final MapFilters filters;
 
-	MapPainter(RegionImages images, MapMessages messages, MapIcons icons, MapLabels labels)
+	MapPainter(RegionImages images, MapMessages messages, MapIcons icons, MapLabels labels, MapFilters filters)
 	{
 		this.images = images;
 		this.messages = messages;
 		this.icons = icons;
 		this.labels = labels;
+		this.filters = filters;
 	}
 
 	/**
@@ -138,6 +143,7 @@ final class MapPainter
 		Map<Button, Rectangle> out = new EnumMap<>(Button.class);
 		out.put(Button.ICONS, new Rectangle(GAP, GAP, ICONS_WIDTH, BUTTON_HEIGHT));
 		out.put(Button.HIDDEN, new Rectangle(GAP * 2 + ICONS_WIDTH, GAP, HIDDEN_WIDTH, BUTTON_HEIGHT));
+		out.put(Button.FILTERS, new Rectangle(GAP * 3 + ICONS_WIDTH + HIDDEN_WIDTH, GAP, FILTERS_WIDTH, BUTTON_HEIGHT));
 		out.put(Button.LOCATE, new Rectangle(width - GAP - LOCATE_SIZE, height - GAP - LOCATE_SIZE, LOCATE_SIZE,
 			LOCATE_SIZE));
 		int down = height - GAP - LOCATE_SIZE - GAP - FLOOR_HEIGHT;
@@ -211,7 +217,12 @@ final class MapPainter
 			}
 		}
 		drawBar(g, view, mouse, loading, window, !shown.isEmpty());
-		drawButtons(g, view, area, plane, window, settings, player != null);
+		drawButtons(g, view, area, plane, window, settings, player != null, filters.isOpen());
+		if (filters.isOpen())
+		{
+			Rectangle button = buttons(view.width, view.height, window).get(Button.FILTERS);
+			filters.draw(g, MapFilters.layout(button, view.height), filters.entries(progress), settings, icons);
+		}
 		if (antialiasing != null)
 		{
 			g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, antialiasing);
@@ -863,7 +874,7 @@ final class MapPainter
 	}
 
 	private static void drawButtons(Graphics2D g, MapViewport.View view, MapArea area, int plane, boolean window,
-		MapSettings settings, boolean located)
+		MapSettings settings, boolean located, boolean filtersOpen)
 	{
 		for (Map.Entry<Button, Rectangle> entry : buttons(view.width, view.height, window).entrySet())
 		{
@@ -898,6 +909,10 @@ final class MapPainter
 					break;
 				case HIDDEN:
 					drawSwitch(g, button, "Hidden icons", settings.isShowHidden());
+					break;
+				case FILTERS:
+					drawFiltersButton(g, button, filtersOpen, settings.getGroups().size() < IconGroup.values().length
+						|| !settings.getHiddenTypes().isEmpty());
 					break;
 				default:
 					drawLabel(g, button, window ? "Over the game" : "Pop out");
@@ -939,6 +954,43 @@ final class MapPainter
 		g.fillRoundRect(x, y, width, FLOOR_LABEL - 4, 8, 8);
 		g.setColor(TEXT);
 		g.drawString(text, x + 5, y + (FLOOR_LABEL - 4 + metrics.getAscent() - metrics.getDescent()) / 2);
+	}
+
+	/**
+	 * The Filters button: a funnel, its name and an arrow; lit while its list is open, with a dot while some icons are
+	 * filtered out.
+	 */
+	private static void drawFiltersButton(Graphics2D g, Rectangle button, boolean open, boolean filtering)
+	{
+		if (open)
+		{
+			g.setColor(new Color(255, 255, 255, 40));
+			g.fillRoundRect(button.x, button.y, button.width, button.height, 8, 8);
+		}
+		Object antialiasing = g.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
+		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		int x = button.x + PAD;
+		int y = button.y + (button.height - 12) / 2;
+		g.setColor(TEXT);
+		g.fill(new Polygon(new int[]{x, x + 12, x + 7, x + 7, x + 5, x + 5}, new int[]{y, y, y + 6, y + 12, y + 10, y + 6},
+			6));
+		if (filtering)
+		{
+			g.setColor(new Color(0xF29A30));
+			g.fillOval(x + 9, y - 3, 6, 6);
+		}
+		int arrowX = button.x + button.width - PAD - 7;
+		int arrowY = button.y + button.height / 2 - 2;
+		g.setColor(TEXT);
+		g.fill(new Polygon(new int[]{arrowX, arrowX + 7, arrowX + 3}, open ? new int[]{arrowY + 4, arrowY + 4, arrowY}
+			: new int[]{arrowY, arrowY, arrowY + 4}, 3));
+		if (antialiasing != null)
+		{
+			g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, antialiasing);
+		}
+		g.setFont(FontManager.getRunescapeSmallFont());
+		FontMetrics metrics = g.getFontMetrics();
+		g.drawString("Filters", x + 18, button.y + (button.height + metrics.getAscent() - metrics.getDescent()) / 2);
 	}
 
 	/** A button that is on or off: a box, ticked when on, before its name. */

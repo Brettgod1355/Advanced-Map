@@ -50,6 +50,11 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 		}
 		int w = width.getAsInt();
 		int h = height.getAsInt();
+		if (SwingUtilities.isLeftMouseButton(e) && plugin.pressFilters(e.getX(), e.getY(), w, h, false))
+		{
+			e.consume();
+			return e;
+		}
 		if (SwingUtilities.isRightMouseButton(e))
 		{
 			plugin.rightClick(e.getX(), e.getY(), w, h);
@@ -140,8 +145,12 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 		{
 			return e;
 		}
-		double factor = Math.pow(WHEEL_STEP, -e.getPreciseWheelRotation());
-		plugin.viewport().zoomAt(factor, e.getX(), e.getY(), width.getAsInt(), height.getAsInt());
+		if (!plugin.wheelFilters(e.getX(), e.getY(), e.getPreciseWheelRotation(), width.getAsInt(),
+			height.getAsInt(), false))
+		{
+			double factor = Math.pow(WHEEL_STEP, -e.getPreciseWheelRotation());
+			plugin.viewport().zoomAt(factor, e.getX(), e.getY(), width.getAsInt(), height.getAsInt());
+		}
 		e.consume();
 		return e;
 	}
@@ -149,6 +158,11 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 	@Override
 	public void keyTyped(KeyEvent e)
 	{
+		if (plugin.isMapOpen() && plugin.filtersOpen() && !hasShortcutKey(e))
+		{
+			plugin.typeFilters(e.getKeyChar());
+			e.consume();
+		}
 	}
 
 	@Override
@@ -159,11 +173,30 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 			plugin.escape();
 			e.consume();
 		}
+		else if (plugin.isMapOpen() && plugin.filtersOpen() && !hasShortcutKey(e))
+		{
+			// typing in the search box: keep the keys from the game's chat
+			if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE)
+			{
+				plugin.backspaceFilters();
+			}
+			e.consume();
+		}
 	}
 
 	@Override
 	public void keyReleased(KeyEvent e)
 	{
+		if (plugin.isMapOpen() && plugin.filtersOpen() && !hasShortcutKey(e))
+		{
+			e.consume();
+		}
+	}
+
+	/** Keys held with Ctrl, Alt or Meta stay shortcuts (Ctrl+M closes the map) even while typing a search. */
+	private static boolean hasShortcutKey(KeyEvent e)
+	{
+		return e.isControlDown() || e.isAltDown() || e.isMetaDown();
 	}
 
 	private MouseEvent swallow(MouseEvent e)

@@ -30,8 +30,8 @@ public class MapIconsTest
 
 	private static MapSettings settings(Set<String> hidden, boolean hideCompleted, boolean showHidden, boolean iconsOff)
 	{
-		return new MapSettings(EnumSet.allOf(IconGroup.class), hidden, hideCompleted, true, iconsOff, showHidden, true,
-			true, RoutingPlugin.SHORTEST_PATH);
+		return new MapSettings(EnumSet.allOf(IconGroup.class), hidden, Collections.emptySet(), hideCompleted, true,
+			iconsOff, showHidden, true, true, RoutingPlugin.SHORTEST_PATH);
 	}
 
 	private static Progress progress(int agility, int magic, QuestState cooksAssistant)
