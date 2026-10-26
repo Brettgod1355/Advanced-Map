@@ -92,6 +92,13 @@ final class Wilderness
 	/** The levels most teleports stop working above: 20, and 30 for the few that go further. */
 	static final int[] TELEPORT_LIMITS = {20, 30};
 
+	/**
+	 * Underground, the teleport lines start east of this region column: the Wilderness God Wars Dungeon's (47, 158),
+	 * which has a level of its own, and nothing west of it (owner, 2026-10-26: "remove the lines to the left of the
+	 * icy area / wilderness god wars dungeon").
+	 */
+	static final int UNDERGROUND_LINES_FROM_COLUMN = 48;
+
 	/** The area a map's levels count in: {@link #SURFACE} or {@link #UNDERGROUND}. */
 	static Rectangle counted(MapArea area)
 	{

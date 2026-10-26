@@ -327,7 +327,8 @@ final class MapPainter
 		{
 			own.add(new Area(screenRect(view, new Rectangle(region[0] << 6, region[1] << 6, 64, 64))));
 		}
-		int firstColumn = Math.max(counted.x >> 6, (int) Math.floor(view.worldX(0) / 64));
+		int westColumn = area == MapArea.SURFACE ? counted.x >> 6 : Wilderness.UNDERGROUND_LINES_FROM_COLUMN;
+		int firstColumn = Math.max(westColumn, (int) Math.floor(view.worldX(0) / 64));
 		int lastColumn = Math.min((counted.x + counted.width - 1) >> 6, (int) Math.floor(view.worldX(view.width) / 64));
 		double west = view.screenX(counted.x);
 		for (int level : Wilderness.TELEPORT_LIMITS)

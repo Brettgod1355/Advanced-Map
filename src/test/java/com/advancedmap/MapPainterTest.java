@@ -223,4 +223,26 @@ public class MapPainterTest
 		assertTrue("a line across the caves", red);
 		assertEquals("none over empty space", Color.BLACK.getRGB(), image.getRGB(outside, row));
 	}
+
+	@Test
+	public void noCaveLineWestOfTheWildernessGodWarsDungeon()
+	{
+		// the level 30 line's row runs through the God Wars Dungeon (47, 158); every region there has a map here
+		MapViewport.View view = new MapViewport.View(3008, 10160, 2, 600, 200);
+		BufferedImage image = new BufferedImage(600, 200, BufferedImage.TYPE_INT_RGB);
+		Graphics2D g = image.createGraphics();
+		MapPainter.drawWilderness(g, view, MapArea.UNDERGROUND, id -> false);
+		g.dispose();
+		int row = (int) Math.round(view.screenY(Wilderness.teleportLimitY(Wilderness.UNDERGROUND, 30)));
+		for (int x = 0; x < (int) view.screenX(48 * 64); x++)
+		{
+			assertFalse("no line at x " + x, isReddish(image.getRGB(x, row)));
+		}
+		boolean east = false;
+		for (int x = (int) view.screenX(48 * 64) + 2; x < 600; x++)
+		{
+			east |= isReddish(image.getRGB(x, row));
+		}
+		assertTrue("the line still runs east of it", east);
+	}
 }
