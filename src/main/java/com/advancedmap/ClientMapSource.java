@@ -21,11 +21,12 @@ import com.advancedmap.cache.UnderlayDefinition;
 import com.advancedmap.cache.UnderlayLoader;
 import com.advancedmap.cache.WorldMapElements;
 import java.awt.Color;
-import java.util.Arrays;
-import java.util.HashSet;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -82,6 +83,10 @@ class ClientMapSource implements MapSource
 	private final Map<Integer, Long> regionCrcs = new ConcurrentHashMap<>();
 	/** CRC32 of the ground and texture tables, which every region's picture depends on. */
 	private volatile long tablesCrc;
+	/** CRC32 of the map scenery sprite sheet (trees, rocks and the like drawn on the map). */
+	private volatile long spritesCrc;
+	/** CRC32 of each object definition read, by object id: a region's walls and scenery come from them. */
+	private final Map<Integer, Long> objectCrcs = new ConcurrentHashMap<>();
 	/** The map areas that are place names: a name and no icon. */
 	private final Map<Integer, AreaDefinition> labelAreas = new ConcurrentHashMap<>();
 	private volatile MapSprite[] mapScenes;
@@ -247,6 +252,7 @@ class ClientMapSource implements MapSource
 				throw new CacheNotReadyException();
 			}
 			mapScenes = sprites.get(SpriteID.MAPSCENE);
+			spritesCrc = crcOf(mapScenes);
 			areaSprites.forEach((id, sprite) ->
 			{
 				MapSprite[] frames = sprites.get(sprite);
@@ -299,7 +305,11 @@ class ClientMapSource implements MapSource
 			}
 			return out;
 		});
-		data.forEach((id, bytes) -> objects.put(id, decodeObject(id, bytes)));
+		data.forEach((id, bytes) ->
+		{
+			objectCrcs.put(id, crcOf(bytes));
+			objects.put(id, decodeObject(id, bytes));
+		});
 	}
 
 	private static ObjectDefinition decodeObject(int id, byte[] bytes)
@@ -335,7 +345,9 @@ class ClientMapSource implements MapSource
 		{
 			return known;
 		}
-		ObjectDefinition object = decodeObject(id, config(OBJECTS, id));
+		byte[] bytes = config(OBJECTS, id);
+		objectCrcs.put(id, crcOf(bytes));
+		ObjectDefinition object = decodeObject(id, bytes);
 		objects.put(id, object);
 		return object;
 	}
@@ -451,11 +463,88 @@ class ClientMapSource implements MapSource
 		});
 	}
 
+	/**
+	 * Everything a region's picture is drawn from: its own map files and its 8 neighbors' (their edges are blended
+	 * in, and their walls and scenery can reach across), every object placed in those 9 regions, and the ground,
+	 * texture and map scenery tables. When a game update changes any of it, the saved picture no longer matches.
+	 */
 	@Override
 	public long regionHash(int regionX, int regionY)
 	{
-		Long crc = regionCrcs.get(regionX << 8 | regionY);
-		return crc == null ? 0 : tablesCrc << 32 | crc;
+		if (region(regionX, regionY) == null || !regionCrcs.containsKey(regionX << 8 | regionY))
+		{
+			return 0;
+		}
+		ByteBuffer data = ByteBuffer.allocate(8);
+		CRC32 crc = new CRC32();
+		Set<Integer> placed = new TreeSet<>();
+		for (int dx = -1; dx <= 1; dx++)
+		{
+			for (int dy = -1; dy <= 1; dy++)
+			{
+				Region near = region(regionX + dx, regionY + dy);
+				Long nearCrc = regionCrcs.get(regionX + dx << 8 | regionY + dy);
+				update(crc, data, near == null || nearCrc == null ? -1 : nearCrc);
+				if (near != null)
+				{
+					for (Location location : near.getLocations())
+					{
+						placed.add(location.getId());
+					}
+				}
+			}
+		}
+		for (int id : placed)
+		{
+			if (!objectCrcs.containsKey(id))
+			{
+				object(id);
+			}
+			update(crc, data, id);
+			update(crc, data, objectCrcs.getOrDefault(id, 0L));
+		}
+		CRC32 tables = new CRC32();
+		update(tables, data, tablesCrc);
+		update(tables, data, spritesCrc);
+		return tables.getValue() << 32 | crc.getValue();
+	}
+
+	private static void update(CRC32 crc, ByteBuffer data, long value)
+	{
+		data.clear();
+		data.putLong(value);
+		crc.update(data.array());
+	}
+
+	private static long crcOf(byte[] bytes)
+	{
+		if (bytes == null)
+		{
+			return 0;
+		}
+		CRC32 crc = new CRC32();
+		crc.update(bytes);
+		return crc.getValue();
+	}
+
+	private static long crcOf(MapSprite[] sprites)
+	{
+		CRC32 crc = new CRC32();
+		ByteBuffer data = ByteBuffer.allocate(8);
+		for (MapSprite sprite : sprites)
+		{
+			if (sprite == null)
+			{
+				update(crc, data, -1);
+				continue;
+			}
+			update(crc, data, (long) sprite.getWidth() << 32 | sprite.getHeight());
+			for (int pixel : sprite.getPixels())
+			{
+				update(crc, data, pixel);
+			}
+		}
+		return crc.getValue();
 	}
 
 	/** One CRC32 over tables of files, in id order. */
