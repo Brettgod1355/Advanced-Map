@@ -300,8 +300,9 @@ public class AdvancedMapPlugin extends Plugin
 	private static final String ORB_TARGET = ColorUtil.wrapWithColorTag("Advanced Map", JagexColors.MENU_TARGET);
 
 	/**
-	 * Adds "Open Advanced Map" to the world map orb's menu, once the game has sorted it: at the bottom (above
-	 * Cancel), or at the top when it is to be the left click. The game's own entries stay as they are. It only opens
+	 * Adds "Open Advanced Map" to the world map orb's menu, once the game has sorted it: second, right under the
+	 * game's left-click option (the menu's top entry is always the left click), or at the top when it is to be the
+	 * left click. The game's own entries stay as they are. It only opens
 	 * this plugin's map; nothing is sent to the game.
 	 */
 	@Subscribe
@@ -326,7 +327,7 @@ public class AdvancedMapPlugin extends Plugin
 		{
 			return;
 		}
-		menu.createMenuEntry(left ? -1 : 1)
+		menu.createMenuEntry(left ? -1 : -2)
 			.setOption(ORB_OPTION)
 			.setTarget(ORB_TARGET)
 			.setType(MenuAction.RUNELITE)
