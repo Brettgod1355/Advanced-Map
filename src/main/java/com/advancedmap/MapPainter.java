@@ -26,6 +26,7 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.IntPredicate;
 import lombok.Value;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.client.ui.FontManager;
@@ -181,7 +182,7 @@ final class MapPainter
 		boolean loading = drawRegions(g, view, area, plane);
 		if (settings.isWildernessLines())
 		{
-			drawWilderness(g, view, area);
+			drawWilderness(g, view, area, id -> images.isAbsent(0, id));
 		}
 		if (settings.isPlaceNames())
 		{
@@ -294,11 +295,12 @@ final class MapPainter
 	}
 
 	/**
-	 * Draws the two Wilderness teleport limits as red dashed lines, where level 21 and level 31 begin (most teleports
-	 * work up to level 20, a few up to 30), each with its name at its east end. Only when zoomed in, and not across the
-	 * dungeon regions that have a level of their own ({@link Wilderness}).
+	 * Draws the two Wilderness teleport limits as red dashed lines, where level 21 and level 31 begin (teleports work up
+	 * to level 20, the members' few up to 30), each with its name at its east end. Only when zoomed in; only across
+	 * regions the game has (underground, the caves, not the empty space between them), and not across the dungeon
+	 * regions that have a level of their own ({@link Wilderness}). {@code absent} says which region ids have no map.
 	 */
-	static void drawWilderness(Graphics2D g, MapViewport.View view, MapArea area)
+	static void drawWilderness(Graphics2D g, MapViewport.View view, MapArea area, IntPredicate absent)
 	{
 		if (view.zoom < WILDERNESS_ZOOM)
 		{
@@ -314,16 +316,33 @@ final class MapPainter
 		{
 			own.add(new Area(screenRect(view, new Rectangle(region[0] << 6, region[1] << 6, 64, 64))));
 		}
-		Area lines = new Area(screenRect(view, counted));
-		lines.subtract(own);
-		g.clip(lines);
-
+		int firstColumn = Math.max(counted.x >> 6, (int) Math.floor(view.worldX(0) / 64));
+		int lastColumn = Math.min((counted.x + counted.width - 1) >> 6, (int) Math.floor(view.worldX(view.width) / 64));
 		double west = view.screenX(counted.x);
-		double east = view.screenX(counted.x + counted.width);
-		g.setStroke(TELEPORT_LIMIT_STROKE);
 		for (int level : Wilderness.TELEPORT_LIMITS)
 		{
-			int y = (int) Math.round(view.screenY(Wilderness.teleportLimitY(counted, level)));
+			int worldY = Wilderness.teleportLimitY(counted, level);
+			int row = worldY >> 6;
+			Area along = new Area();
+			int eastColumn = -1;
+			for (int column = firstColumn; column <= lastColumn; column++)
+			{
+				if (!absent.test(column << 8 | row))
+				{
+					along.add(new Area(screenRect(view, new Rectangle(column << 6, row << 6, 64, 64))));
+					eastColumn = column;
+				}
+			}
+			if (eastColumn < 0)
+			{
+				continue;
+			}
+			along.subtract(own);
+			g.setClip(clip);
+			g.clip(along);
+			int y = (int) Math.round(view.screenY(worldY));
+			double east = view.screenX(Math.min(counted.x + counted.width, (eastColumn + 1) << 6));
+			g.setStroke(TELEPORT_LIMIT_STROKE);
 			g.setColor(OUTLINE);
 			g.drawLine((int) west, y + 1, (int) east, y + 1);
 			g.setColor(TELEPORT_LIMIT);
@@ -345,7 +364,8 @@ final class MapPainter
 	}
 
 	/**
-	 * Text just above a line at screen row {@code y}, at its east end, kept on the screen while any of the line is. It is drawn whole, within the frame's {@code clip}, or not at all where it would cover {@code hidden}.
+	 * Text just above a line at screen row {@code y}, at its east end, kept on the screen while any of the line is. It
+	 * is drawn whole, within the frame's {@code clip}, or not at all where it would cover {@code hidden}.
 	 */
 	private static void drawLineLabel(Graphics2D g, String text, MapViewport.View view, double west, double east,
 		int y, Color color, Shape clip, Area hidden)

@@ -158,7 +158,7 @@ public class MapPainterTest
 	{
 		BufferedImage image = new BufferedImage(view.width, view.height, BufferedImage.TYPE_INT_RGB);
 		Graphics2D g = image.createGraphics();
-		MapPainter.drawWilderness(g, view, MapArea.SURFACE);
+		MapPainter.drawWilderness(g, view, MapArea.SURFACE, id -> false);
 		g.dispose();
 		return image;
 	}
@@ -169,7 +169,7 @@ public class MapPainterTest
 		MapViewport.View view = new MapViewport.View(3222, 3218, 4, 400, 300);
 		BufferedImage image = new BufferedImage(400, 300, BufferedImage.TYPE_INT_RGB);
 		Graphics2D g = image.createGraphics();
-		MapPainter.drawWilderness(g, view, MapArea.SURFACE);
+		MapPainter.drawWilderness(g, view, MapArea.SURFACE, id -> false);
 		g.dispose();
 		for (int y = 0; y < 300; y++)
 		{
@@ -184,5 +184,27 @@ public class MapPainterTest
 	{
 		Color c = new Color(rgb);
 		return c.getRed() > 60 && c.getRed() > 2 * c.getGreen();
+	}
+
+	@Test
+	public void inTheCavesTheLineCrossesOnlyRegionsTheGameHas()
+	{
+		// the Revenant Caves' level 20 limit (y 10080), the caves in region column 49 only
+		MapViewport.View view = new MapViewport.View(3170, 10080, 2, 600, 200);
+		int caves = 49;
+		BufferedImage image = new BufferedImage(600, 200, BufferedImage.TYPE_INT_RGB);
+		Graphics2D g = image.createGraphics();
+		MapPainter.drawWilderness(g, view, MapArea.UNDERGROUND, id -> (id >> 8) != caves);
+		g.dispose();
+		int row = (int) Math.round(view.screenY(Wilderness.teleportLimitY(Wilderness.UNDERGROUND, 20)));
+		int inside = (int) Math.round(view.screenX(caves * 64 + 20));
+		int outside = (int) Math.round(view.screenX(caves * 64 - 40));
+		boolean red = false;
+		for (int x = inside; x < inside + 20; x++)
+		{
+			red |= isReddish(image.getRGB(x, row));
+		}
+		assertTrue("a line across the caves", red);
+		assertEquals("none over empty space", Color.BLACK.getRGB(), image.getRGB(outside, row));
 	}
 }
