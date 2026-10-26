@@ -94,8 +94,6 @@ plugin runs. Which chests and banks there are, and whether a player has built or
 
 ## Behavior references (no code copied)
 
-- [Reimagined World Map](https://github.com/Maiz19/reimagined-world-map) was looked at for ideas only (a
-  full-screen map over the game view). No code, data or images from it are included.
 - [Shortest Path](https://github.com/Skretzo/shortest-path) (BSD 2-Clause) was read, at its Plugin Hub version
   1.22.1 (commit `50f30435f37d1d5c5e2af790925fa7aa70b7840d`), to learn which plugin messages it sends and takes.
   Nothing from it is included.
