@@ -129,6 +129,9 @@ public class AdvancedMapPlugin extends Plugin
 	private MapWindow window;
 	/** Where the player stands, kept by the client thread for the window to draw. */
 	private volatile WorldPoint player;
+	/** Stretched Mode's enlargement, for the pop-out window to match. */
+	private volatile double windowScale = 1;
+	private static final double MAX_WINDOW_SCALE = 4;
 	/** Where the player was last seen, map open or not, for the background drawing to start near them. */
 	private volatile WorldPoint lastSeen;
 	private volatile MapSettings settings;
@@ -292,6 +295,10 @@ public class AdvancedMapPlugin extends Plugin
 		if (mapOpen || windowOpen)
 		{
 			player = currentPlayerLocation();
+		}
+		if (windowOpen)
+		{
+			windowScale = stretchedScale();
 		}
 	}
 
@@ -491,6 +498,31 @@ public class AdvancedMapPlugin extends Plugin
 	boolean isMapOpen()
 	{
 		return mapOpen;
+	}
+
+	/**
+	 * How much Stretched Mode enlarges the game view (1 when it is off), so the pop-out window can draw at the same
+	 * size as the map over the game. Client thread.
+	 */
+	private double stretchedScale()
+	{
+		if (!client.isStretchedEnabled())
+		{
+			return 1;
+		}
+		java.awt.Dimension real = client.getRealDimensions();
+		java.awt.Dimension stretched = client.getStretchedDimensions();
+		if (real == null || stretched == null || real.width <= 0)
+		{
+			return 1;
+		}
+		return Math.max(1, Math.min(MAX_WINDOW_SCALE, stretched.width / (double) real.width));
+	}
+
+	/** The scale the pop-out window draws at, from Stretched Mode. */
+	double windowScale()
+	{
+		return windowScale;
 	}
 
 	/** Where the player stands, or null when logged out. */

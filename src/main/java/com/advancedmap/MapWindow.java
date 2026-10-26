@@ -198,28 +198,28 @@ final class MapWindow extends JFrame
 				{
 					requestFocusInWindow();
 					if (SwingUtilities.isLeftMouseButton(e)
-						&& plugin.pressFilters(e.getX(), e.getY(), getWidth(), getHeight(), true))
+						&& plugin.pressFilters(x(e), y(e), width(), height(), true))
 					{
 						repaint();
 						return;
 					}
 					if (SwingUtilities.isRightMouseButton(e))
 					{
-						plugin.rightClick(e.getX(), e.getY(), getWidth(), getHeight());
+						plugin.rightClick(x(e), y(e), width(), height());
 						repaint();
 						return;
 					}
 					MapPainter.Button button = SwingUtilities.isLeftMouseButton(e)
-						? MapPainter.buttonAt(e.getX(), e.getY(), getWidth(), getHeight(), true) : null;
+						? MapPainter.buttonAt(x(e), y(e), width(), height(), true) : null;
 					if (button != null)
 					{
 						plugin.pressButton(button, true);
 					}
-					else if (!plugin.pressMenu(e.getX(), e.getY(), getWidth(), getHeight())
+					else if (!plugin.pressMenu(x(e), y(e), width(), height())
 						&& SwingUtilities.isLeftMouseButton(e))
 					{
-						dragFrom = e.getPoint();
-						pressedAt = e.getPoint();
+						dragFrom = point(e);
+						pressedAt = point(e);
 					}
 					repaint();
 				}
@@ -227,11 +227,11 @@ final class MapWindow extends JFrame
 				@Override
 				public void mouseDragged(MouseEvent e)
 				{
-					mouse = e.getPoint();
+					mouse = point(e);
 					if (dragFrom != null)
 					{
-						plugin.viewport().drag(e.getX() - dragFrom.x, e.getY() - dragFrom.y);
-						dragFrom = e.getPoint();
+						plugin.viewport().drag(x(e) - dragFrom.x, y(e) - dragFrom.y);
+						dragFrom = point(e);
 					}
 					repaint();
 				}
@@ -239,10 +239,10 @@ final class MapWindow extends JFrame
 				@Override
 				public void mouseReleased(MouseEvent e)
 				{
-					if (pressedAt != null && Math.abs(e.getX() - pressedAt.x) <= AdvancedMapPlugin.CLICK_SLOP
-						&& Math.abs(e.getY() - pressedAt.y) <= AdvancedMapPlugin.CLICK_SLOP)
+					if (pressedAt != null && Math.abs(x(e) - pressedAt.x) <= AdvancedMapPlugin.CLICK_SLOP
+						&& Math.abs(y(e) - pressedAt.y) <= AdvancedMapPlugin.CLICK_SLOP)
 					{
-						plugin.leftClick(e.getX(), e.getY(), getWidth(), getHeight());
+						plugin.leftClick(x(e), y(e), width(), height());
 					}
 					dragFrom = null;
 					pressedAt = null;
@@ -252,7 +252,7 @@ final class MapWindow extends JFrame
 				@Override
 				public void mouseMoved(MouseEvent e)
 				{
-					mouse = e.getPoint();
+					mouse = point(e);
 					repaint();
 				}
 
@@ -266,10 +266,10 @@ final class MapWindow extends JFrame
 				@Override
 				public void mouseWheelMoved(MouseWheelEvent e)
 				{
-					if (!plugin.wheelFilters(e.getX(), e.getY(), e.getPreciseWheelRotation(), getWidth(), getHeight(), true))
+					if (!plugin.wheelFilters(x(e), y(e), e.getPreciseWheelRotation(), width(), height(), true))
 					{
 						double factor = Math.pow(MapInput.WHEEL_STEP, -e.getPreciseWheelRotation());
-						plugin.viewport().zoomAt(factor, e.getX(), e.getY(), getWidth(), getHeight());
+						plugin.viewport().zoomAt(factor, x(e), y(e), width(), height());
 					}
 					repaint();
 				}
@@ -306,8 +306,39 @@ final class MapWindow extends JFrame
 		@Override
 		protected void paintComponent(Graphics g)
 		{
-			painter.paint((Graphics2D) g, plugin.viewport().view(getWidth(), getHeight()), plugin.area(), plugin.plane(),
+			// drawn bigger by Stretched Mode's factor, as the map over the game is
+			Graphics2D scaled = (Graphics2D) g.create();
+			double scale = plugin.windowScale();
+			scaled.scale(scale, scale);
+			painter.paint(scaled, plugin.viewport().view(width(), height()), plugin.area(), plugin.plane(),
 				plugin.playerLocation(), mouse, true, plugin.settings(), plugin.progress(), plugin.selection());
+			scaled.dispose();
+		}
+
+		/** The panel's size and the mouse, in the map's units: real pixels divided by the scale it is drawn at. */
+		private int width()
+		{
+			return (int) Math.round(getWidth() / plugin.windowScale());
+		}
+
+		private int height()
+		{
+			return (int) Math.round(getHeight() / plugin.windowScale());
+		}
+
+		private int x(MouseEvent e)
+		{
+			return (int) Math.round(e.getX() / plugin.windowScale());
+		}
+
+		private int y(MouseEvent e)
+		{
+			return (int) Math.round(e.getY() / plugin.windowScale());
+		}
+
+		private Point point(MouseEvent e)
+		{
+			return new Point(x(e), y(e));
 		}
 	}
 }
