@@ -117,19 +117,50 @@ public class MapPainterTest
 	}
 
 	@Test
-	public void theWildernessLinesAreDrawnOnTheirRows()
+	public void theTeleportLimitIsARedDashedLineOnlyWhenZoomedIn()
 	{
-		// level 10 to 13 in the middle of a 400 x 300 view, 4 px a tile
-		MapViewport.View view = new MapViewport.View(3100, 3600, 4, 400, 300);
-		BufferedImage image = new BufferedImage(400, 300, BufferedImage.TYPE_INT_RGB);
+		// the level 20 limit across the middle of a 400 x 300 view, 4 px a tile
+		MapViewport.View view = new MapViewport.View(3100, 3680, 4, 400, 300);
+		BufferedImage image = draw(view);
+		int lineRow = (int) Math.round(view.screenY(Wilderness.teleportLimitY(Wilderness.SURFACE, 20)));
+		int red = 0;
+		int gaps = 0;
+		for (int x = 0; x < 300; x++)
+		{
+			if (isReddish(image.getRGB(x, lineRow)))
+			{
+				red++;
+			}
+			else
+			{
+				gaps++;
+			}
+		}
+		assertTrue("a red line", red > 100);
+		assertTrue("with gaps: dashed", gaps > 50);
+		// no line where an ordinary level starts
+		int levelRow = (int) Math.round(view.screenY(Wilderness.levelStartY(Wilderness.SURFACE, 19)));
+		assertEquals(Color.BLACK.getRGB(), image.getRGB(200, levelRow));
+
+		// zoomed out, nothing
+		MapViewport.View far = new MapViewport.View(3100, 3680, MapPainter.WILDERNESS_ZOOM / 2, 400, 300);
+		BufferedImage farImage = draw(far);
+		for (int y = 0; y < 300; y++)
+		{
+			for (int x = 0; x < 400; x++)
+			{
+				assertEquals(Color.BLACK.getRGB(), farImage.getRGB(x, y));
+			}
+		}
+	}
+
+	private static BufferedImage draw(MapViewport.View view)
+	{
+		BufferedImage image = new BufferedImage(view.width, view.height, BufferedImage.TYPE_INT_RGB);
 		Graphics2D g = image.createGraphics();
 		MapPainter.drawWilderness(g, view, MapArea.SURFACE);
 		g.dispose();
-
-		int x = 200;
-		int lineRow = (int) Math.round(view.screenY(Wilderness.levelStartY(Wilderness.SURFACE, 11)));
-		assertTrue("a line where level 11 starts", isReddish(image.getRGB(x, lineRow)));
-		assertEquals("nothing inside the level", Color.BLACK.getRGB(), image.getRGB(x, lineRow + 10));
+		return image;
 	}
 
 	@Test

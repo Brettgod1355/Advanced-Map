@@ -11,7 +11,8 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Where the Wilderness levels are, as the game works them out for the level it shows on screen. The rules were read
+ * Where the Wilderness levels are, as the game works them out for the level it shows on screen; the map draws only the
+ * level 20 and 30 teleport limits from them. The rules were read
  * from the game's client script that sets that text (RuneLite's published cs2 scripts, {@code wilderness_level}, at
  * runelite/cs2-scripts {@code 1d418ff}) and written here from scratch; they match all 471 ticks of a run through
  * levels 1 to 56 recorded by Black Box on 2026-10-25. Where the Wilderness starts (the ditch) and the Ferox Enclave's
@@ -88,26 +89,10 @@ final class Wilderness
 		return 0;
 	}
 
-	/**
-	 * Which level lines to draw at a zoom (screen pixels per tile): every level when they are far enough apart to
-	 * read, else every 5th, else every 10th. Levels 20 and 30 (the teleport limits) are always drawn.
-	 */
-	static int lineStep(double zoom)
-	{
-		if (zoom >= 2)
-		{
-			return 1;
-		}
-		return zoom >= 0.75 ? 5 : 10;
-	}
+	/** The levels most teleports stop working above: 20, and 30 for the few that go further. */
+	static final int[] TELEPORT_LIMITS = {20, 30};
 
-	/** True for the levels most teleports stop working above: 20, and 30 for the few that go further. */
-	static boolean isTeleportLimit(int level)
-	{
-		return level == 20 || level == 30;
-	}
-
-	/** The area a map's level lines count in: {@link #SURFACE} or {@link #UNDERGROUND}. */
+	/** The area a map's levels count in: {@link #SURFACE} or {@link #UNDERGROUND}. */
 	static Rectangle counted(MapArea area)
 	{
 		return area == MapArea.SURFACE ? SURFACE : UNDERGROUND;
@@ -119,26 +104,9 @@ final class Wilderness
 		return counted.y + 8 * (level - 1);
 	}
 
-	/** The highest level an area's count reaches before its north edge. */
-	static int topLevel(Rectangle counted)
+	/** Where a teleport limit's line goes: the row where the next level begins. */
+	static int teleportLimitY(Rectangle counted, int limit)
 	{
-		return (counted.height + 7) / 8;
-	}
-
-	/** True when a level's start gets a line at a step. Level 1 starts on the area's edge, drawn as the outline. */
-	static boolean drawsLine(int level, int step)
-	{
-		return level > 1 && level % step == 0;
-	}
-
-	/**
-	 * The text for a region in {@link #OWN_LEVEL}: "Level N", or "Level N-M" where it counts across the region.
-	 * The rules only ever count up northwards, so the bottom and top rows give the range.
-	 */
-	static String ownLevelLabel(int regionX, int regionY)
-	{
-		int low = levelAt(regionX << 6, regionY << 6);
-		int high = levelAt(regionX << 6, (regionY << 6) + 63);
-		return low == high ? "Level " + low : "Level " + low + "-" + high;
+		return levelStartY(counted, limit + 1);
 	}
 }

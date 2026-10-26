@@ -60,64 +60,23 @@ public class WildernessTest
 	}
 
 	@Test
-	public void linesThinOutWhenZoomedOut()
+	public void theTeleportLimitLinesSitWhereLevels21And31Begin()
 	{
-		assertEquals(1, Wilderness.lineStep(4));
-		assertEquals(5, Wilderness.lineStep(1));
-		assertEquals(10, Wilderness.lineStep(0.25));
-		assertTrue(Wilderness.isTeleportLimit(20));
-		assertTrue(Wilderness.isTeleportLimit(30));
-	}
-
-	@Test
-	public void eachLineSitsWhereTheLevelChanges()
-	{
+		assertEquals(3680, Wilderness.teleportLimitY(Wilderness.SURFACE, 20));
+		assertEquals(3760, Wilderness.teleportLimitY(Wilderness.SURFACE, 30));
 		for (MapArea area : MapArea.values())
 		{
 			java.awt.Rectangle counted = Wilderness.counted(area);
-			// west of the patches and regions with levels of their own
+			// west of the regions with levels of their own
 			int x = counted.x + 2;
-			for (int level = 2; level <= Wilderness.topLevel(counted); level++)
+			for (int limit : Wilderness.TELEPORT_LIMITS)
 			{
-				int y = Wilderness.levelStartY(counted, level);
-				assertEquals(area + " row " + y, level, Wilderness.levelAt(x, y));
-				assertEquals(area + " row " + (y - 1), level - 1, Wilderness.levelAt(x, y - 1));
+				int y = Wilderness.teleportLimitY(counted, limit);
+				assertEquals(area + " above the line", limit + 1, Wilderness.levelAt(x, y));
+				assertEquals(area + " below the line", limit, Wilderness.levelAt(x, y - 1));
 			}
-			assertEquals(0, Wilderness.levelAt(x, counted.y - 1));
 		}
-		assertEquals(56, Wilderness.topLevel(Wilderness.SURFACE));
-		// the run reached 56 at 3961, the last row of the surface count
-		assertEquals(56, Wilderness.levelAt(2974, Wilderness.SURFACE.y + Wilderness.SURFACE.height - 1));
-	}
-
-	@Test
-	public void theTeleportLimitLinesSitAboveLevels20And30()
-	{
-		// level 21 starts where the run first showed it, and 31 likewise
-		assertEquals(3681, Wilderness.levelStartY(Wilderness.SURFACE, 21) + 1);
-		assertEquals(21, Wilderness.levelAt(3062, Wilderness.levelStartY(Wilderness.SURFACE, 21)));
-		assertEquals(20, Wilderness.levelAt(3062, Wilderness.levelStartY(Wilderness.SURFACE, 21) - 1));
-		assertEquals(31, Wilderness.levelAt(3069, Wilderness.levelStartY(Wilderness.SURFACE, 31)));
-		assertEquals(30, Wilderness.levelAt(3069, Wilderness.levelStartY(Wilderness.SURFACE, 31) - 1));
-	}
-
-	@Test
-	public void onlyLevelsOnTheStepGetALine()
-	{
-		assertTrue(Wilderness.drawsLine(2, 1));
-		assertTrue(!Wilderness.drawsLine(1, 1));
-		assertTrue(Wilderness.drawsLine(15, 5));
-		assertTrue(!Wilderness.drawsLine(16, 5));
-		assertTrue(!Wilderness.drawsLine(15, 10));
-	}
-
-	@Test
-	public void regionsWithALevelOfTheirOwnAreLabeledWithTheirRange()
-	{
-		assertEquals("Level 35", Wilderness.ownLevelLabel(51, 159));
-		assertEquals("Level 40", Wilderness.ownLevelLabel(52, 161));
-		assertEquals("Level 33-40", Wilderness.ownLevelLabel(52, 160));
-		assertEquals("Level 23-30", Wilderness.ownLevelLabel(47, 158));
-		assertEquals("Level 29", Wilderness.ownLevelLabel(25, 180));
+		// the run first showed level 21 at y 3681, one tile past the line
+		assertEquals(21, Wilderness.levelAt(3062, 3681));
 	}
 }
