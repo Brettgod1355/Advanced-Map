@@ -36,7 +36,8 @@ public interface AdvancedMapConfig extends Config
 	@ConfigItem(
 		keyName = "toggleKey",
 		name = "Open or close the map",
-		description = "The key that opens the map, and closes it again. Escape closes it too.",
+		description = "The key that opens the map, and closes it again. Escape closes it too. Ctrl+M takes the place"
+			+ " of the game's own world map hotkey; pick another key here to keep the game's.",
 		position = 0
 	)
 	default Keybind toggleKey()
