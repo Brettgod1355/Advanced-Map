@@ -20,6 +20,7 @@ public interface AdvancedMapConfig extends Config
 {
 	String GROUP = "advancedmap";
 	String HIDDEN_ICONS = "hiddenIcons";
+	String WINDOW_BOUNDS = "windowBounds";
 	String SHOW_HIDDEN = "showHidden";
 	String ICONS_OFF = "iconsOff";
 	String HIDDEN_TYPES = "hiddenTypes";
@@ -420,6 +421,18 @@ public interface AdvancedMapConfig extends Config
 	default boolean prepareMap()
 	{
 		return true;
+	}
+
+	/** Where the pop-out window was last, and its size: "x,y,width,height" on the desktop, or empty. */
+	@ConfigItem(
+		keyName = WINDOW_BOUNDS,
+		name = "",
+		description = "",
+		hidden = true
+	)
+	default String windowBounds()
+	{
+		return "";
 	}
 
 	@ConfigItem(

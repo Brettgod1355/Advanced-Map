@@ -1022,7 +1022,8 @@ public class AdvancedMapPlugin extends Plugin
 		}
 		if (window == null)
 		{
-			window = new MapWindow(this, painter, this::windowClosed);
+			window = new MapWindow(this, painter, this::windowClosed, config.windowBounds(),
+				bounds -> configManager.setConfiguration(AdvancedMapConfig.GROUP, AdvancedMapConfig.WINDOW_BOUNDS, bounds));
 		}
 		window.setVisible(true);
 	}
