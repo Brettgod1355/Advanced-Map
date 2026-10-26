@@ -173,6 +173,16 @@ public class FoundIconsTest
 	}
 
 	@Test
+	public void aBankWithOnlyTheBankTutorsIconGetsNoOtherIcon()
+	{
+		// The Node: a bank chest and booth, and the game's bank tutor icon two tiles south (area 576)
+		MapSpot tutor = MapSpot.icon(3225, 3223, 0, 576, IconGroup.BANK_TUTOR);
+		List<MapSpot> found = FoundIcons.find(region(new int[]{BOOTH, 25, 25}, new int[]{BOOTH, 25, 26}), SOURCE,
+			Collections.singletonList(tutor));
+		assertEquals(Collections.singletonList(tutor), found);
+	}
+
+	@Test
 	public void aBuildableChestMarksTheGamesIconOnIt()
 	{
 		MapSpot icon = bankIcon(31, 31);

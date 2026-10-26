@@ -47,6 +47,8 @@ enum IconGroup
 	static final int BANK = 1055;
 	static final int QUEST = 1056;
 	static final int DUNGEON = 1062;
+	/** The bank tutor's icon, which the game puts on a bank with a tutor instead of (or beside) a bank icon. */
+	static final int BANK_TUTOR = 1251;
 	static final int AGILITY_SHORTCUT = 1117;
 	static final int AGILITY_SHORTCUT_ONE_WAY = 2505;
 

@@ -20,7 +20,7 @@ import lombok.AllArgsConstructor;
 /**
  * Advanced Map's own icons, found in a region's objects as it is drawn. A bank the game's map leaves out gets a bank
  * icon: its booths or chests (within a few tiles of each other) count as one bank, and a bank with a bank icon of the
- * game's near it already has one. A bank chest of a game event, which is something else on other days, shows only
+ * game's near it, or its bank tutor icon, already has one. A bank chest of a game event, which is something else on other days, shows only
  * while it is a bank. What a player builds or unlocks ({@link Unlockable}) marks the game's own icon on it, or gets an
  * icon where the game has none (the Culinaromancer's Chest, the hole from Lumbridge Castle's cellar).
  */
@@ -154,14 +154,18 @@ final class FoundIcons
 		return out;
 	}
 
-	/** True when a bank icon of the game's is within {@link #ICON_REACH} of a bank's tiles. */
+	/**
+	 * True when a bank icon of the game's, or its bank tutor icon (The Node has only that one), is within
+	 * {@link #ICON_REACH} of a bank's tiles.
+	 */
 	static boolean nearGameBank(List<MapSpot> spots, Rectangle tiles)
 	{
 		Rectangle reach = new Rectangle(tiles);
 		reach.grow(ICON_REACH, ICON_REACH);
 		for (MapSpot spot : spots)
 		{
-			if (spot.getGroup() == IconGroup.BANKS && spot.getCluster() == null && spot.getUnlockable() == null
+			boolean marksBank = spot.getGroup() == IconGroup.BANKS || spot.getCategory() == IconGroup.BANK_TUTOR;
+			if (marksBank && spot.getCluster() == null && spot.getUnlockable() == null
 				&& reach.contains(spot.getX(), spot.getY()))
 			{
 				return true;
