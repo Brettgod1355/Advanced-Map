@@ -21,7 +21,8 @@ import lombok.Value;
 import net.runelite.client.ui.FontManager;
 
 /**
- * The Filters list that drops down below the map's Filters button: a search box, "All on" and "All off", then every
+ * The Filters list that drops down below the map's Filters button: at the top the switch that shows the icons the
+ * player hid one by one (faded, so they can be unhidden), then a search box, "All on" and "All off", then every
  * group of icons with each kind of icon in it (the game's own picture and name, or Advanced Map's teleport mark), each
  * with a box that turns it on or off. It scrolls with the mouse wheel. Holds what is open, typed and scrolled; the
  * settings themselves are the plugin's. Laid out the same way for drawing and for clicks.
@@ -36,6 +37,9 @@ final class MapFilters
 	/** Room left under the list for the bar at the bottom of the map. */
 	private static final int BOTTOM_ROOM = 40;
 	private static final int INDENT = 18;
+	private static final int BOX = 12;
+	/** The line under "Show hidden icons" that says how to hide one. */
+	private static final int HINT = 14;
 
 	private static final Color PANEL = new Color(0x10, 0x18, 0x22, 240);
 	private static final Color EDGE = new Color(0x5A5040);
@@ -68,6 +72,7 @@ final class MapFilters
 	static class Layout
 	{
 		Rectangle panel;
+		Rectangle showHidden;
 		Rectangle search;
 		Rectangle allOn;
 		Rectangle allOff;
@@ -78,6 +83,7 @@ final class MapFilters
 	{
 		OUTSIDE,
 		PANEL,
+		SHOW_HIDDEN,
 		SEARCH,
 		ALL_ON,
 		ALL_OFF,
@@ -222,16 +228,18 @@ final class MapFilters
 	{
 		int x = button.x;
 		int y = button.y + button.height + 4;
-		int panelHeight = Math.max(ROW * 4, Math.min(MAX_HEIGHT, height - y - BOTTOM_ROOM));
+		int panelHeight = Math.max(ROW * 8, Math.min(MAX_HEIGHT, height - y - BOTTOM_ROOM));
 		Rectangle panel = new Rectangle(x, y, WIDTH, panelHeight);
-		Rectangle search = new Rectangle(x + PAD, y + PAD, WIDTH - PAD * 2, SEARCH_HEIGHT);
+		Rectangle showHidden = new Rectangle(x + PAD, y + PAD / 2, WIDTH - PAD * 2, ROW);
+		int searchY = showHidden.y + showHidden.height + HINT + PAD;
+		Rectangle search = new Rectangle(x + PAD, searchY, WIDTH - PAD * 2, SEARCH_HEIGHT);
 		int half = (WIDTH - PAD * 3) / 2;
 		int buttonsY = search.y + search.height + 6;
 		Rectangle allOn = new Rectangle(x + PAD, buttonsY, half, ROW);
 		Rectangle allOff = new Rectangle(x + PAD * 2 + half, buttonsY, half, ROW);
 		int listY = buttonsY + ROW + 6;
 		Rectangle list = new Rectangle(x, listY, WIDTH, y + panelHeight - PAD / 2 - listY);
-		return new Layout(panel, search, allOn, allOff, list);
+		return new Layout(panel, showHidden, search, allOn, allOff, list);
 	}
 
 	/** What a press at a point is on. */
@@ -240,6 +248,10 @@ final class MapFilters
 		if (!layout.getPanel().contains(x, y))
 		{
 			return new Hit(Part.OUTSIDE, null);
+		}
+		if (layout.getShowHidden().contains(x, y))
+		{
+			return new Hit(Part.SHOW_HIDDEN, null);
 		}
 		if (layout.getSearch().contains(x, y))
 		{
@@ -285,6 +297,7 @@ final class MapFilters
 
 		g.setFont(FontManager.getRunescapeSmallFont());
 		FontMetrics metrics = g.getFontMetrics();
+		drawShowHidden(g, layout.getShowHidden(), settings, metrics);
 		Rectangle search = layout.getSearch();
 		g.setColor(FIELD);
 		g.fillRect(search.x, search.y, search.width, search.height);
@@ -341,18 +354,8 @@ final class MapFilters
 		boolean on = isOn(entry, settings);
 		boolean groupOn = settings.shows(entry.getGroup());
 		int left = x + PAD + (entry.isGroup() ? 0 : INDENT);
-		int box = 12;
-		int boxY = y + (ROW - box) / 2;
-		g.setColor(on ? ON : new Color(0x2A333D));
-		g.fillRect(left, boxY, box, box);
-		g.setColor(TEXT);
-		g.drawRect(left, boxY, box, box);
-		if (on)
-		{
-			g.drawLine(left + 3, boxY + 6, left + 5, boxY + 9);
-			g.drawLine(left + 5, boxY + 9, left + 10, boxY + 3);
-		}
-		int textX = left + box + 8;
+		drawBox(g, left, y + (ROW - BOX) / 2, on);
+		int textX = left + BOX + 8;
 		if (!entry.isGroup())
 		{
 			Rectangle at = new Rectangle(textX, y + (ROW - 15) / 2, 15, 15);
@@ -375,6 +378,41 @@ final class MapFilters
 		g.setColor(entry.isGroup() || groupOn ? TEXT : QUIET);
 		g.drawString(entry.getName(), textX, y + (ROW + rowMetrics.getAscent() - rowMetrics.getDescent()) / 2);
 		g.setFont(metrics.getFont());
+	}
+
+	/**
+	 * "Show hidden icons", with how many the player has hidden, and under it how to hide one. A line under it sets it
+	 * apart from the filters.
+	 */
+	private static void drawShowHidden(Graphics2D g, Rectangle row, MapSettings settings, FontMetrics metrics)
+	{
+		drawBox(g, row.x, row.y + (ROW - BOX) / 2, settings.isShowHidden());
+		int textY = row.y + (ROW + metrics.getAscent() - metrics.getDescent()) / 2;
+		g.setColor(TEXT);
+		g.drawString("Show hidden icons", row.x + BOX + 8, textY);
+		int count = settings.getHidden().size();
+		String hidden = count == 0 ? "none hidden" : count + " hidden";
+		g.setColor(QUIET);
+		g.drawString(hidden, row.x + row.width - metrics.stringWidth(hidden), textY);
+		g.drawString("Right-click an icon on the map to hide or unhide it", row.x + BOX + 8,
+			row.y + row.height + metrics.getAscent() - 2);
+		int lineY = row.y + row.height + HINT + PAD / 2;
+		g.setColor(EDGE);
+		g.drawLine(row.x, lineY, row.x + row.width, lineY);
+	}
+
+	/** A tick box, green and ticked when on. */
+	private static void drawBox(Graphics2D g, int x, int y, boolean on)
+	{
+		g.setColor(on ? ON : new Color(0x2A333D));
+		g.fillRect(x, y, BOX, BOX);
+		g.setColor(TEXT);
+		g.drawRect(x, y, BOX, BOX);
+		if (on)
+		{
+			g.drawLine(x + 3, y + 6, x + 5, y + 9);
+			g.drawLine(x + 5, y + 9, x + 10, y + 3);
+		}
 	}
 
 	private static void drawButton(Graphics2D g, Rectangle button, String text, FontMetrics metrics)

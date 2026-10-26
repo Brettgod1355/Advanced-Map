@@ -41,7 +41,7 @@ final class MapIcons
 		STARTED,
 		/** A quest the player has finished. */
 		DONE,
-		/** Hidden by the player, shown faded while "Hidden icons" is on. */
+		/** Hidden by the player, shown faded while "Show hidden icons" is on. */
 		HIDDEN
 	}
 

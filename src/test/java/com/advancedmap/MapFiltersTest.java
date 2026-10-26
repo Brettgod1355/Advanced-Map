@@ -95,6 +95,10 @@ public class MapFiltersTest
 		assertEquals(MapFilters.Part.ALL_OFF, filters.hitAt(layout.getAllOff().x + 5, layout.getAllOff().y + 5, layout,
 			entries).getPart());
 		assertEquals(MapFilters.Part.OUTSIDE, filters.hitAt(5, 690, layout, entries).getPart());
+		Rectangle showHidden = layout.getShowHidden();
+		assertEquals(MapFilters.Part.SHOW_HIDDEN, filters.hitAt(showHidden.x + 5, showHidden.y + 5, layout, entries)
+			.getPart());
+		assertTrue(showHidden.y + showHidden.height < layout.getSearch().y);
 	}
 
 	@Test

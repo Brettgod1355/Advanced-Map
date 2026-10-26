@@ -46,8 +46,6 @@ final class MapPainter
 		MODE,
 		/** Shows or hides every icon at once; place names stay. */
 		ICONS,
-		/** Shows the icons the player hid, faded, so they can be unhidden. */
-		HIDDEN,
 		/** Opens the list that turns each group and kind of icon on or off. */
 		FILTERS,
 		/** Moves the map back to the player. */
@@ -95,7 +93,6 @@ final class MapPainter
 	private static final int AREA_WIDTH = 110;
 	private static final int MODE_WIDTH = 100;
 	private static final int ICONS_WIDTH = 76;
-	private static final int HIDDEN_WIDTH = 116;
 	private static final int FILTERS_WIDTH = 86;
 	private static final int MENU_ROW = 20;
 	private static final int PAD = 8;
@@ -135,15 +132,14 @@ final class MapPainter
 
 	/**
 	 * Where the buttons sit: right to left along the top, close (over the game only; a window has its own), the map
-	 * switch, and the button that moves the map between the game view and its own window; at the top left, the two
-	 * icon switches; at the bottom right, the button that finds the player.
+	 * switch, and the button that moves the map between the game view and its own window; at the top left, the Icons
+	 * switch and the Filters list's button; at the bottom right, the button that finds the player.
 	 */
 	static Map<Button, Rectangle> buttons(int width, int height, boolean window)
 	{
 		Map<Button, Rectangle> out = new EnumMap<>(Button.class);
 		out.put(Button.ICONS, new Rectangle(GAP, GAP, ICONS_WIDTH, BUTTON_HEIGHT));
-		out.put(Button.HIDDEN, new Rectangle(GAP * 2 + ICONS_WIDTH, GAP, HIDDEN_WIDTH, BUTTON_HEIGHT));
-		out.put(Button.FILTERS, new Rectangle(GAP * 3 + ICONS_WIDTH + HIDDEN_WIDTH, GAP, FILTERS_WIDTH, BUTTON_HEIGHT));
+		out.put(Button.FILTERS, new Rectangle(GAP * 2 + ICONS_WIDTH, GAP, FILTERS_WIDTH, BUTTON_HEIGHT));
 		out.put(Button.LOCATE, new Rectangle(width - GAP - LOCATE_SIZE, height - GAP - LOCATE_SIZE, LOCATE_SIZE,
 			LOCATE_SIZE));
 		int down = height - GAP - LOCATE_SIZE - GAP - FLOOR_HEIGHT;
@@ -906,9 +902,6 @@ final class MapPainter
 					break;
 				case ICONS:
 					drawSwitch(g, button, "Icons", !settings.isIconsOff());
-					break;
-				case HIDDEN:
-					drawSwitch(g, button, "Hidden icons", settings.isShowHidden());
 					break;
 				case FILTERS:
 					drawFiltersButton(g, button, filtersOpen, settings.getGroups().size() < IconGroup.values().length

@@ -28,8 +28,8 @@ public class MapPainterTest
 	{
 		assertTrue(MapPainter.buttons(1200, 800, false).containsKey(MapPainter.Button.CLOSE));
 		assertFalse(MapPainter.buttons(1200, 800, true).containsKey(MapPainter.Button.CLOSE));
-		assertEquals(9, MapPainter.buttons(1200, 800, false).size());
-		assertEquals(8, MapPainter.buttons(1200, 800, true).size());
+		assertEquals(8, MapPainter.buttons(1200, 800, false).size());
+		assertEquals(7, MapPainter.buttons(1200, 800, true).size());
 	}
 
 	@Test

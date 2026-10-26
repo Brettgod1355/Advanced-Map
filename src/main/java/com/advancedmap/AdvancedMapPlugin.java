@@ -434,9 +434,6 @@ public class AdvancedMapPlugin extends Plugin
 				setSwitch(AdvancedMapConfig.ICONS_OFF, !settings.isIconsOff());
 				selection = null;
 				break;
-			case HIDDEN:
-				setSwitch(AdvancedMapConfig.SHOW_HIDDEN, !settings.isShowHidden());
-				break;
 			case FILTERS:
 				filters.setOpen(!filters.isOpen());
 				selection = null;
@@ -609,6 +606,10 @@ public class AdvancedMapPlugin extends Plugin
 				{
 					configManager.setConfiguration(AdvancedMapConfig.GROUP, group.key, false);
 				}
+				break;
+			case SHOW_HIDDEN:
+				configManager.setConfiguration(AdvancedMapConfig.GROUP, AdvancedMapConfig.SHOW_HIDDEN,
+					!settings.isShowHidden());
 				break;
 			case ENTRY:
 				toggle(hit.getEntry());

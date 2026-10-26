@@ -3,7 +3,7 @@
 A full-screen world map for RuneLite, drawn from the game's own map data with smooth pan and zoom.
 
 - **Open it** from its sidebar tab or with **Ctrl+M** (change the key in the settings). **Escape**, Ctrl+M or the
-  close button close it.
+  close button close it. "How the map works" in the sidebar tab explains each part of the map.
 - **Drag** to move, **scroll** to zoom around the pointer. It opens on your character, on the surface or the
   underground map, whichever you are on; the button at the top switches between them.
 - **Pop it out** into a window of its own with the **Pop out** button (or the setting), to keep it beside the game's
@@ -17,8 +17,9 @@ A full-screen world map for RuneLite, drawn from the game's own map data with sm
   red mark, and finished quests can be left out.
 - **Filters**: the Filters button at the top left drops down a list of every kind of icon, with its picture and name,
   grouped (Banks, Quests, Shops ...) and searchable: tick or untick a whole group or a single kind, or all at once.
-- **Hide just one icon** by right-clicking it. "Hidden icons" at the top left shows the hidden ones again, faded,
-  so they can be unhidden the same way; "Icons" turns every icon off or on at once and keeps the place names.
+- **Hide just one icon** by right-clicking it. "Show hidden icons" at the top of the Filters list shows the hidden
+  ones again, faded, so they can be unhidden the same way; "Icons" turns every icon off or on at once and keeps the
+  place names.
 - **Back to you**: the round button at the bottom right moves the map to your character.
 - **Floors**: the arrows above it go up and down a floor. The floors below are shown darkened underneath, so you can
   see where you are. Basements and dungeons are on the underground map ("Show underground" at the top).
