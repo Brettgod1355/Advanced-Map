@@ -70,6 +70,44 @@ The other copied files carry the same license under their own holders, named in 
 
 The test-only `logback-test.xml` comes from the example plugin (same license, Adam's notice kept in the file).
 
+## Shortest Path's transport lists (BSD 2-Clause)
+
+`src/main/resources/com/advancedmap/transports.tsv`, where spirit trees, gnome gliders, fairy rings, hot air balloons,
+magic carpets, magic mushtrees, quetzals, minecarts, canoes, boats, ships and charter ships go, is derived from
+[Shortest Path](https://github.com/Skretzo/shortest-path)'s `src/main/resources/transports/` files of those names, at
+its Plugin Hub pin `50f30435f37d1d5c5e2af790925fa7aa70b7840d` (authors on the Plugin Hub: Skretzo, FIrgolitsch,
+wvanderp, mpickering). Kept: each origin and destination tile and its name; boarding tiles within 4 tiles of each other
+merged into one spot; everything else (items, quests, skills, durations, varbits) left out. Shortest Path's license,
+as published in that repository (its copyright line is the license template's, unfilled):
+
+```
+BSD 2-Clause License
+
+Copyright (c) <YEAR>, <COPYRIGHT HOLDER>
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this
+   list of conditions and the following disclaimer.
+
+2. Redistributions in binary form must reproduce the above copyright notice,
+   this list of conditions and the following disclaimer in the documentation
+   and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+```
+
 ## Gradle wrapper
 
 The wrapper scripts, JAR, and properties come from the RuneLite example plugin, commit
@@ -104,8 +142,8 @@ plugin runs. Which chests and banks there are, and whether a player has built or
   ([runelite/cs2-scripts](https://github.com/runelite/cs2-scripts), commit `1d418ff`). How a compiled script is laid
   out was learned from RuneLite's cache library (`ScriptLoader`, BSD 2-Clause, release 1.13.4); `MapLinks.java` is
   this project's own decoder, and no code or data from either is included.
-- [Shortest Path](https://github.com/Skretzo/shortest-path) (BSD 2-Clause) was read, at its Plugin Hub version
-  1.22.1 (commit `50f30435f37d1d5c5e2af790925fa7aa70b7840d`), to learn which plugin messages it sends and takes.
-  Nothing from it is included.
+- [Shortest Path](https://github.com/Skretzo/shortest-path) (BSD 2-Clause) was also read, at its Plugin Hub version
+  1.22.1 (commit `50f30435f37d1d5c5e2af790925fa7aa70b7840d`), to learn which plugin messages it sends and takes, so
+  its route can be drawn. Its transport data above is the only part of it included.
 - [Extended Render Distance](https://github.com/Conrad33/extended-render-distance) was read to confirm that a
   plugin can read map regions from the client's cache through `Client.getIndex`. Nothing from it is included.

@@ -163,6 +163,7 @@ public class AdvancedMapPlugin extends Plugin
 		viewports.get(MapArea.UNDERGROUND).centerOn(EDGEVILLE_DUNGEON.getX(), EDGEVILLE_DUNGEON.getY());
 		area = MapArea.SURFACE;
 		MiningSites.load();
+		Transports.load();
 		reader = new CacheReader(client);
 		shortestPathRoute = new ShortestPathRoute();
 		source = new ClientMapSource(reader);
@@ -731,12 +732,43 @@ public class AdvancedMapPlugin extends Plugin
 	void leftClick(int x, int y, int width, int height)
 	{
 		MapIcons.Shown icon = iconAt(x, y, width, height);
+		showTransport(null);
 		if (icon != null && followLink(icon.getSpot()))
 		{
 			selection = null;
 			return;
 		}
 		selection = icon == null ? null : new MapPainter.Selection(icon.getSpot(), false, x, y, null);
+		if (icon != null && (icon.getSpot().getGroup() == IconGroup.TRANSPORTATION
+			|| icon.getSpot().getGroup() == IconGroup.FARMING))
+		{
+			showTransport(icon.getSpot());
+		}
+	}
+
+	/**
+	 * Draws lines from a transport icon to every place it goes, each marked with its name; null takes them away. The
+	 * lines stay until another click or Escape.
+	 */
+	private void showTransport(MapSpot spot)
+	{
+		MapMessages layers = messages;
+		if (layers == null)
+		{
+			return;
+		}
+		if (spot == null)
+		{
+			layers.remove(Transports.LAYER);
+			return;
+		}
+		// a farming patch icon may be a spirit tree's: then only the spirit trees, never a nearby boat
+		List<Transports.Destination> destinations = Transports.from(spot.getX(), spot.getY(), spot.getPlane(),
+			spot.getGroup() == IconGroup.FARMING ? Transports.SPIRIT_TREE : null);
+		if (!destinations.isEmpty())
+		{
+			layers.put(Transports.layer(new WorldPoint(spot.getX(), spot.getY(), spot.getPlane()), destinations));
+		}
 	}
 
 	/**
@@ -796,6 +828,7 @@ public class AdvancedMapPlugin extends Plugin
 		else if (selection != null)
 		{
 			selection = null;
+			showTransport(null);
 		}
 		else
 		{
