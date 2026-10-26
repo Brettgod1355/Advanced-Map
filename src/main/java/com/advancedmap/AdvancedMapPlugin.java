@@ -203,18 +203,46 @@ public class AdvancedMapPlugin extends Plugin
 				open.dispose();
 			}
 		});
-		clientToolbar.removeNavigation(button);
+		// startUp may have stopped part way (it threw): undo only what it got to
+		if (button != null)
+		{
+			clientToolbar.removeNavigation(button);
+		}
 		AdvancedMapPanel stoppedPanel = panel;
-		SwingUtilities.invokeLater(stoppedPanel::stop);
-		preparer.stop();
-		keyManager.unregisterKeyListener(hotkey);
-		keyManager.unregisterKeyListener(input);
-		mouseManager.unregisterMouseWheelListener(input);
-		mouseManager.unregisterMouseListener(input);
-		overlayManager.remove(overlay);
-		reader.close();
-		executor.shutdownNow();
-		messages.clear();
+		if (stoppedPanel != null)
+		{
+			SwingUtilities.invokeLater(stoppedPanel::stop);
+		}
+		if (preparer != null)
+		{
+			preparer.stop();
+		}
+		if (hotkey != null)
+		{
+			keyManager.unregisterKeyListener(hotkey);
+		}
+		if (input != null)
+		{
+			keyManager.unregisterKeyListener(input);
+			mouseManager.unregisterMouseWheelListener(input);
+			mouseManager.unregisterMouseListener(input);
+		}
+		if (overlay != null)
+		{
+			overlayManager.remove(overlay);
+		}
+		if (reader != null)
+		{
+			reader.close();
+		}
+		if (executor != null)
+		{
+			executor.shutdownNow();
+		}
+		if (messages != null)
+		{
+			messages.clear();
+		}
 		executor = null;
 		reader = null;
 		source = null;

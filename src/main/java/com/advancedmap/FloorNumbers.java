@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
  * floor above it as the first, as in the UK and on the Old School wiki (Ground, 1, 2, 3).
  */
 @RequiredArgsConstructor
-enum FloorNumbers
+public enum FloorNumbers
 {
 	GROUND_IS_FIRST("Ground, 2, 3, 4", 1),
 	FIRST_ABOVE_GROUND("Ground, 1, 2, 3", 0);

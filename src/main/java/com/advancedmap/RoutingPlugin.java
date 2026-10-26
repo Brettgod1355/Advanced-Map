@@ -16,7 +16,7 @@ import lombok.RequiredArgsConstructor;
  */
 @Getter
 @RequiredArgsConstructor
-enum RoutingPlugin
+public enum RoutingPlugin
 {
 	NONE("None", null),
 	SHORTEST_PATH("Shortest Path", "shortestpath"),
