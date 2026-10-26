@@ -8,6 +8,8 @@ A full-screen world map for RuneLite, drawn from the game's own map data with sm
   underground map, whichever you are on; the button at the top switches between them.
 - **Pop it out** into a window of its own with the **Pop out** button (or the setting), to keep it beside the game's
   own world map or on another screen. **Over the game** brings it back.
+- **Wilderness levels** are drawn on the map: a line where each level starts, the level 20 and 30 teleport limits,
+  and the places with a level of their own. Turn them off with the "Wilderness lines" setting.
 - **No downloads.** The map is drawn on your computer from the game data your client already has, so it is
   always up to date with the game, and nothing is sent anywhere.
 

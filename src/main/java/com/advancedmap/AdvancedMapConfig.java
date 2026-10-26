@@ -50,4 +50,17 @@ public interface AdvancedMapConfig extends Config
 	{
 		return false;
 	}
+
+	@ConfigItem(
+		keyName = "wildernessLines",
+		name = "Wilderness lines",
+		description = "Draw the Wilderness levels on the map: a line where each level starts, stronger lines at the"
+			+ " level 20 and 30 teleport limits, and the areas with a level of their own. They follow the game's level"
+			+ " count, which starts a few tiles south of the ditch; Ferox Enclave is not marked.",
+		position = 3
+	)
+	default boolean wildernessLines()
+	{
+		return true;
+	}
 }

@@ -13,7 +13,9 @@ import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.awt.Shape;
 import java.awt.Stroke;
+import java.awt.geom.Area;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Path2D;
 import java.awt.image.BufferedImage;
@@ -27,8 +29,8 @@ import net.runelite.api.coords.WorldPoint;
 import net.runelite.client.ui.FontManager;
 
 /**
- * Draws the map: region pictures, other plugins' layers, the player, a bar with the tile under the mouse, and the
- * buttons. The same drawing goes over the game view and into the pop-out window. It touches no client state, so it
+ * Draws the map: region pictures, the Wilderness levels, other plugins' layers, the player, a bar with the tile under
+ * the mouse, and the buttons. The same drawing goes over the game view and into the pop-out window. It touches no client state, so it
  * runs on the client thread for the overlay and on the Swing thread for the window.
  */
 final class MapPainter
@@ -51,6 +53,12 @@ final class MapPainter
 	private static final Color TEXT = new Color(0xE8E2D0);
 	private static final Color PLAYER = new Color(0xFFFFFF);
 	private static final Color OUTLINE = new Color(0, 0, 0, 200);
+	private static final Color WILDERNESS_EDGE = new Color(0xE0, 0x30, 0x20, 230);
+	private static final Color WILDERNESS_LINE = new Color(0xE0, 0x30, 0x20, 190);
+	private static final Color WILDERNESS_TEXT = new Color(0xFF, 0xA0, 0x90);
+	private static final Color TELEPORT_LINE = new Color(0xFF, 0xB0, 0x20, 230);
+	private static final Stroke THIN = new BasicStroke(1);
+	private static final Stroke THICK = new BasicStroke(2);
 
 	private final RegionImages images;
 	private final MapMessages messages;
@@ -95,13 +103,18 @@ final class MapPainter
 
 	/**
 	 * Draws one frame. {@code player} is where the player stands (null when logged out), {@code mouse} where the
-	 * pointer is (null when it is elsewhere).
+	 * pointer is (null when it is elsewhere), {@code wilderness} whether to draw the Wilderness levels.
 	 */
-	void paint(Graphics2D g, MapViewport.View view, MapArea area, WorldPoint player, Point mouse, boolean window)
+	void paint(Graphics2D g, MapViewport.View view, MapArea area, WorldPoint player, Point mouse, boolean window,
+		boolean wilderness)
 	{
 		g.setColor(BACKGROUND);
 		g.fillRect(0, 0, view.width, view.height);
 		boolean loading = drawRegions(g, view, area);
+		if (wilderness)
+		{
+			drawWilderness(g, view, area);
+		}
 
 		Object antialiasing = g.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -177,6 +190,144 @@ final class MapPainter
 			g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, interpolation);
 		}
 		return loading;
+	}
+
+	/**
+	 * Draws the Wilderness levels as the game counts them ({@link Wilderness}): the counted area's outline, a line
+	 * where each level starts (thinned out when zoomed out) with "Level N" at its west end, stronger lines where the
+	 * level 20 and 30 teleport limits end, the level 5 patch, and the dungeon regions with a level of their own.
+	 */
+	static void drawWilderness(Graphics2D g, MapViewport.View view, MapArea area)
+	{
+		Shape clip = g.getClip();
+		Stroke stroke = g.getStroke();
+		g.setFont(FontManager.getRunescapeSmallFont());
+		FontMetrics metrics = g.getFontMetrics();
+
+		Rectangle counted = Wilderness.counted(area);
+		Area own = new Area();
+		for (int[] region : Wilderness.OWN_LEVEL)
+		{
+			own.add(new Area(screenRect(view, new Rectangle(region[0] << 6, region[1] << 6, 64, 64))));
+		}
+		Area lines = new Area(screenRect(view, counted));
+		lines.subtract(own);
+		g.clip(lines);
+
+		double west = view.screenX(counted.x);
+		double east = view.screenX(counted.x + counted.width);
+		int step = Wilderness.lineStep(view.zoom);
+		boolean labels = 8 * step * view.zoom >= metrics.getAscent() + 4;
+		for (int level = 2; level <= Wilderness.topLevel(counted); level++)
+		{
+			if (!Wilderness.drawsLine(level, step))
+			{
+				continue;
+			}
+			int y = (int) Math.round(view.screenY(Wilderness.levelStartY(counted, level)));
+			g.setStroke(THIN);
+			g.setColor(WILDERNESS_LINE);
+			g.drawLine((int) west, y, (int) east, y);
+			// a teleport limit line just above would run through the text; its own label names the level
+			boolean crossed = Wilderness.isTeleportLimit(level) && 8 * view.zoom < metrics.getAscent() + 4;
+			if (labels && !crossed)
+			{
+				drawLineLabel(g, "Level " + level, view, west, east, y, true, WILDERNESS_TEXT, clip, own);
+			}
+		}
+		for (int level = 1; level < Wilderness.topLevel(counted); level++)
+		{
+			if (!Wilderness.isTeleportLimit(level))
+			{
+				continue;
+			}
+			int y = (int) Math.round(view.screenY(Wilderness.levelStartY(counted, level + 1)));
+			g.setStroke(THICK);
+			g.setColor(TELEPORT_LINE);
+			g.drawLine((int) west, y, (int) east, y);
+			drawLineLabel(g, "Level " + level + " teleport limit", view, west, east, y, false, TELEPORT_LINE, clip,
+				own);
+		}
+		g.setClip(clip);
+
+		g.setStroke(THICK);
+		g.setColor(WILDERNESS_EDGE);
+		g.draw(screenRect(view, counted));
+		if (area == MapArea.SURFACE)
+		{
+			Area five = new Area(screenRect(view, Wilderness.FLAT_FIVE));
+			five.subtract(new Area(screenRect(view, Wilderness.FLAT_FIVE_HOLE)));
+			g.draw(five);
+			// in the lower half, clear of the hole in the middle
+			drawCenteredLabel(g, "Level 5", view.screenX(Wilderness.FLAT_FIVE.getCenterX()),
+				view.screenY(Wilderness.FLAT_FIVE.y + Wilderness.FLAT_FIVE.height / 4.0));
+		}
+		for (int[] region : Wilderness.OWN_LEVEL)
+		{
+			if (MapArea.of(region[1] << 6) != area)
+			{
+				continue;
+			}
+			Rectangle box = screenRect(view, new Rectangle(region[0] << 6, region[1] << 6, 64, 64));
+			if (!box.intersects(0, 0, view.width, view.height))
+			{
+				continue;
+			}
+			g.setColor(WILDERNESS_EDGE);
+			g.draw(box);
+			if (box.width >= metrics.stringWidth("Level 00-00") + 4)
+			{
+				drawCenteredLabel(g, Wilderness.ownLevelLabel(region[0], region[1]), box.getCenterX(), box.getCenterY());
+			}
+		}
+		g.setStroke(stroke);
+	}
+
+	/** A world rectangle (tiles, max ends exclusive) on the screen. */
+	private static Rectangle screenRect(MapViewport.View view, Rectangle world)
+	{
+		int x0 = (int) Math.round(view.screenX(world.x));
+		int x1 = (int) Math.round(view.screenX(world.x + world.width));
+		int y0 = (int) Math.round(view.screenY(world.y + world.height));
+		int y1 = (int) Math.round(view.screenY(world.y));
+		return new Rectangle(x0, y0, x1 - x0, y1 - y0);
+	}
+
+	/**
+	 * Text just above a line at screen row {@code y}, at its west or east end, kept on the screen while any of the
+	 * line is. It is drawn whole, within the frame's {@code clip}, or not at all where it would cover {@code hidden}.
+	 */
+	private static void drawLineLabel(Graphics2D g, String text, MapViewport.View view, double west, double east,
+		int y, boolean atWest, Color color, Shape clip, Area hidden)
+	{
+		FontMetrics metrics = g.getFontMetrics();
+		int width = metrics.stringWidth(text);
+		double x = atWest ? Math.max(west, 0) + 4 : Math.min(east, view.width) - width - 4;
+		x = Math.max(west + 4, Math.min(east - width - 4, x));
+		int baseline = y - 3;
+		if (hidden.intersects(x - 1, baseline - metrics.getAscent(), width + 2, metrics.getHeight()))
+		{
+			return;
+		}
+		Shape lines = g.getClip();
+		g.setClip(clip);
+		drawShadowed(g, text, (int) x, baseline, color);
+		g.setClip(lines);
+	}
+
+	private static void drawCenteredLabel(Graphics2D g, String text, double cx, double cy)
+	{
+		FontMetrics metrics = g.getFontMetrics();
+		drawShadowed(g, text, (int) Math.round(cx - metrics.stringWidth(text) / 2.0),
+			(int) Math.round(cy + (metrics.getAscent() - metrics.getDescent()) / 2.0), WILDERNESS_TEXT);
+	}
+
+	private static void drawShadowed(Graphics2D g, String text, int x, int y, Color color)
+	{
+		g.setColor(Color.BLACK);
+		g.drawString(text, x + 1, y + 1);
+		g.setColor(color);
+		g.drawString(text, x, y);
 	}
 
 	private static void drawLayer(Graphics2D g, MapViewport.View view, MapLayer layer)

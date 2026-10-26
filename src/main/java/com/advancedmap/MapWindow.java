@@ -152,7 +152,7 @@ final class MapWindow extends JFrame
 		protected void paintComponent(Graphics g)
 		{
 			painter.paint((Graphics2D) g, plugin.viewport().view(getWidth(), getHeight()), plugin.area(),
-				plugin.playerLocation(), mouse, true);
+				plugin.playerLocation(), mouse, true, plugin.wildernessLines());
 		}
 	}
 }

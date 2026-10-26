@@ -106,4 +106,39 @@ final class Wilderness
 	{
 		return level == 20 || level == 30;
 	}
+
+	/** The area a map's level lines count in: {@link #SURFACE} or {@link #UNDERGROUND}. */
+	static Rectangle counted(MapArea area)
+	{
+		return area == MapArea.SURFACE ? SURFACE : UNDERGROUND;
+	}
+
+	/** The first tile row of a level in an area's count; level 1 starts on the area's south edge. */
+	static int levelStartY(Rectangle counted, int level)
+	{
+		return counted.y + 8 * (level - 1);
+	}
+
+	/** The highest level an area's count reaches before its north edge. */
+	static int topLevel(Rectangle counted)
+	{
+		return (counted.height + 7) / 8;
+	}
+
+	/** True when a level's start gets a line at a step. Level 1 starts on the area's edge, drawn as the outline. */
+	static boolean drawsLine(int level, int step)
+	{
+		return level > 1 && level % step == 0;
+	}
+
+	/**
+	 * The text for a region in {@link #OWN_LEVEL}: "Level N", or "Level N-M" where it counts across the region.
+	 * The rules only ever count up northwards, so the bottom and top rows give the range.
+	 */
+	static String ownLevelLabel(int regionX, int regionY)
+	{
+		int low = levelAt(regionX << 6, regionY << 6);
+		int high = levelAt(regionX << 6, (regionY << 6) + 63);
+		return low == high ? "Level " + low : "Level " + low + "-" + high;
+	}
 }

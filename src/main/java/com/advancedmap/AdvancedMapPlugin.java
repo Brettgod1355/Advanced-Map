@@ -232,6 +232,12 @@ public class AdvancedMapPlugin extends Plugin
 		return player;
 	}
 
+	/** True when the Wilderness levels are drawn on the map. */
+	boolean wildernessLines()
+	{
+		return config.wildernessLines();
+	}
+
 	/** Which map is shown: the surface or underground. */
 	MapArea area()
 	{
