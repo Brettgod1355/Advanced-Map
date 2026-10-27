@@ -114,10 +114,12 @@ final class MarkerEditor
 		return editing;
 	}
 
-	/** The marker as the box has it now. */
-	MapPins.Marker result()
+	/** The marker as the box has it now: a changed marker keeps its id and account; a new one is made on {@code account}. */
+	MapPins.Marker result(String account)
 	{
-		return new MapPins.Marker(point, design, color, MapPins.cleanName(name));
+		MapPins.Marker old = editing;
+		return new MapPins.Marker(old != null ? old.getId() : MarkerStore.newId(), point, design, color,
+			MapPins.cleanName(name), old != null ? old.getAccount() : account == null ? "" : account);
 	}
 
 	String name()

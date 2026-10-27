@@ -49,6 +49,12 @@ class MapSettings
 	/** The settings, with routing only when the chosen routing plugin is installed and running. */
 	static MapSettings of(AdvancedMapConfig config, boolean routingRunning)
 	{
+		return of(config, routingRunning, parseHidden(config.hiddenIcons()));
+	}
+
+	/** As above, with the hidden icons' keys read from their own settings. */
+	static MapSettings of(AdvancedMapConfig config, boolean routingRunning, Set<String> hidden)
+	{
 		Set<IconGroup> groups = EnumSet.noneOf(IconGroup.class);
 		for (IconGroup group : IconGroup.values())
 		{
@@ -57,7 +63,7 @@ class MapSettings
 				groups.add(group);
 			}
 		}
-		return new MapSettings(Collections.unmodifiableSet(groups), parseHidden(config.hiddenIcons()),
+		return new MapSettings(Collections.unmodifiableSet(groups), Collections.unmodifiableSet(hidden),
 			parseHidden(config.hiddenTypes()),
 			config.hideCompletedQuests(), config.markLocked(), config.iconsOff(), config.showHidden(),
 			config.placeNames(), config.wildernessLines(), routingRunning ? config.routing() : RoutingPlugin.NONE, config.floorNumbers(),
@@ -123,20 +129,5 @@ class MapSettings
 			.filter(key -> !key.isEmpty())
 			.collect(Collectors.toCollection(LinkedHashSet::new));
 		return Collections.unmodifiableSet(keys);
-	}
-
-	/** The saved setting with one icon (or kind of icon) hidden or shown again. */
-	static String withHidden(Set<String> hidden, String key, boolean hide)
-	{
-		Set<String> out = new LinkedHashSet<>(hidden);
-		if (hide)
-		{
-			out.add(key);
-		}
-		else
-		{
-			out.remove(key);
-		}
-		return String.join(SEPARATOR, out);
 	}
 }

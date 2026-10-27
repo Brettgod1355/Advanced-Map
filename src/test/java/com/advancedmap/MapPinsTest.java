@@ -22,19 +22,46 @@ import static org.junit.Assert.assertTrue;
 
 public class MapPinsTest
 {
-	private static final MapPins.Marker HOME = new MapPins.Marker(new WorldPoint(3222, 3218, 0),
-		MarkerIcons.Design.HOUSE, 3, "Home base");
+	private static final MapPins.Marker HOME = new MapPins.Marker("18f-1", new WorldPoint(3222, 3218, 0),
+		MarkerIcons.Design.HOUSE, 3, "Home base", "rsprofile.abc");
 
 	@Test
-	public void markersSaveAndReadBack()
+	public void aMarkersFileReadsBack()
 	{
-		MapPins.Marker unnamed = new MapPins.Marker(new WorldPoint(2440, 3090, 1), MarkerIcons.Design.SKULL, 0, "");
-		String saved = MapPins.save(Arrays.asList(HOME, unnamed));
-		assertEquals(Arrays.asList(HOME, unnamed), MapPins.parse(saved));
-		// a damaged line is skipped, not the others
-		assertEquals(Collections.singletonList(HOME), MapPins.parse("x y\n" + MapPins.save(Collections.singletonList(HOME))));
+		MapPins.Marker unnamed = new MapPins.Marker("18f-2", new WorldPoint(2440, 3090, 1), MarkerIcons.Design.SKULL, 0,
+			"", "");
+		assertEquals(HOME, MapPins.fromLine("18f-1", MapPins.line(HOME)));
+		assertEquals(unnamed, MapPins.fromLine("18f-2", MapPins.line(unnamed)));
+		assertNull(MapPins.fromLine("x", "3222 3218"));
 		assertEquals("a b", MapPins.cleanName("a\nb"));
-		assertTrue(MapPins.parse("").isEmpty());
+	}
+
+	@Test
+	public void anEarlierVersionsMarkersMoveWithNewIds()
+	{
+		List<MapPins.Marker> old = MapPins.parseOld("3222 3218 0 7 3 Home base\nx y\n2440 3090 1 4 0");
+		assertEquals(2, old.size());
+		assertEquals("Home base", old.get(0).getName());
+		assertEquals(MarkerIcons.Design.HOUSE, old.get(0).getDesign());
+		assertEquals("", old.get(0).getAccount());
+		assertFalse(old.get(0).getId().equals(old.get(1).getId()));
+	}
+
+	@Test
+	public void unsharedMarkersShowOnlyOnTheirAccount()
+	{
+		MapPins pins = new MapPins();
+		MapPins.Marker other = new MapPins.Marker("18f-3", new WorldPoint(3000, 3000, 0), MarkerIcons.Design.PIN, 0,
+			"Alt's", "rsprofile.alt");
+		MapPins.Marker old = new MapPins.Marker("18f-4", new WorldPoint(3001, 3000, 0), MarkerIcons.Design.PIN, 0,
+			"Before", "");
+		pins.setMarkers(Arrays.asList(HOME, other, old));
+		assertEquals(3, pins.shown().size());
+		pins.setFilter(false, "rsprofile.abc");
+		assertEquals(Arrays.asList(HOME, old), pins.shown());
+		// logged out: no account to go by, so all
+		pins.setFilter(false, null);
+		assertEquals(3, pins.shown().size());
 	}
 
 	@Test
@@ -100,8 +127,14 @@ public class MapPinsTest
 		editor.choose(hit);
 		Rectangle blue = layout.getColors().get(5);
 		editor.choose(editor.hitAt(blue.x + 3, blue.y + 3, layout));
-		assertEquals(new MapPins.Marker(new WorldPoint(3000, 3000, 0), MarkerIcons.Design.STAR, 5, "Spo"),
-			editor.result());
+		MapPins.Marker made = editor.result("rsprofile.abc");
+		assertEquals(new MapPins.Marker(made.getId(), new WorldPoint(3000, 3000, 0), MarkerIcons.Design.STAR, 5, "Spo",
+			"rsprofile.abc"), made);
+		// a changed marker keeps its id and account
+		editor.edit(HOME);
+		assertEquals(HOME, editor.result("rsprofile.other"));
+		editor.close();
+		editor.create(new WorldPoint(3000, 3000, 0));
 		// a new marker has no Remove
 		Rectangle remove = layout.getRemove();
 		assertEquals(MarkerEditor.Part.PANEL, editor.hitAt(remove.x + 3, remove.y + 3, layout).getPart());

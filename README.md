@@ -17,7 +17,9 @@ A full-screen world map for RuneLite, drawn from the game's own map data with sm
   by catch ("lobster"), hunter areas by creature ("chinchompa") and kinds of icon ("bank", "anvil", "altar": every
   one, nearest first) are found too, and among equally good matches the nearest to you comes first.
 - **Your own markers**: right-click anywhere, "Add marker here", give it a name and pick one of 12 pictures and 9
-  colors. Right-click a marker to edit or remove it; markers are found by search too.
+  colors. Right-click a marker to edit or remove it; markers are found by search too. Markers are shared by every
+  account you play on this computer, two at once included (each is its own small file in RuneLite's plugin data
+  folder, read again whenever the map opens); turn "Share markers between accounts" off to keep each account's own.
 - **Other plugins' markers**: a clue scroll's spot, Quest Helper's next step and other plugins' world map markers
   show on this map as well (RuneLite's own World Map plugin's are left out: Advanced Map has those icons itself).
 - **Multi-combat areas**, in the Wilderness and everywhere else, tinted red with a solid edge when zoomed in.

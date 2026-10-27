@@ -66,10 +66,14 @@ public class MapIconsTest
 	{
 		MapSpot here = MapSpot.icon(3208, 3220, 0, 0, 1055);
 		MapSpot there = MapSpot.icon(3092, 3243, 0, 0, 1055);
-		Set<String> hidden = MapSettings.parseHidden(MapSettings.withHidden(Collections.emptySet(), here.getKey(), true));
-		assertTrue(hidden.contains(here.getKey()));
-		assertFalse(hidden.contains(there.getKey()));
-		assertTrue(MapSettings.parseHidden(MapSettings.withHidden(hidden, here.getKey(), false)).isEmpty());
+		// each hidden icon is its own setting, keyed by the icon: one bank hidden, not the other
+		MapSettings hidden = settings(Collections.singleton(here.getKey()), false, false, false);
+		assertTrue(hidden.isHidden(here));
+		assertFalse(hidden.isHidden(there));
+		// the key has no dot, so "hidden.<key>" reads back whole from the settings' names
+		assertFalse(here.getKey().contains("."));
+		// an earlier version's one setting reads as before, for the move to a setting each
+		assertEquals(2, MapSettings.parseHidden(here.getKey() + MapSettings.SEPARATOR + there.getKey()).size());
 	}
 
 	@Test

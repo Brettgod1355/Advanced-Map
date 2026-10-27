@@ -56,6 +56,7 @@ final class MapStore
 	{
 		MapStore store = new MapStore(pluginFolder.joinSegment("map-v" + VERSION));
 		store.folder.createDirectories();
+		SafeFiles.cleanUp(store.folder);
 		try (Stream<Filepath> files = store.folder.walk(1))
 		{
 			files.forEach(file -> store.remember(file.getFileName()));
@@ -204,14 +205,14 @@ final class MapStore
 		}
 	}
 
+	/** Writes a picture whole or not at all ({@link SafeFiles}): another client never reads half a picture. */
 	private static void write(Filepath file, BufferedImage image) throws IOException
 	{
-		try (java.io.OutputStream out = file.openOutputStream())
+		java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream();
+		if (!ImageIO.write(image, "png", out))
 		{
-			if (!ImageIO.write(image, "png", out))
-			{
-				throw new IOException("no PNG writer");
-			}
+			throw new IOException("no PNG writer");
 		}
+		SafeFiles.write(file, out.toByteArray());
 	}
 }

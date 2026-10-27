@@ -122,6 +122,8 @@ public class AdvancedMapPlugin extends Plugin
 	private final Map<MapArea, MapViewport> viewports = new EnumMap<>(MapArea.class);
 	private volatile MapArea area = MapArea.SURFACE;
 	private ExecutorService executor;
+	/** The markers' file work, one task after another, so a read never runs ahead of a save made before it. */
+	private ExecutorService markerFiles;
 	private CacheReader reader;
 	private ClientMapSource source;
 	private MapIcons icons;
@@ -131,6 +133,7 @@ public class AdvancedMapPlugin extends Plugin
 	private final MapSearch search = new MapSearch();
 	private final MapPins pins = new MapPins();
 	private final MarkerEditor editor = new MarkerEditor();
+	private volatile MarkerStore markerStore;
 	/** When the pins, farming patches and Slayer task were last read, in milliseconds. */
 	private long extrasRead;
 	private long farmingRead;
@@ -200,7 +203,6 @@ public class AdvancedMapPlugin extends Plugin
 		MultiCombat.load();
 		Farming.load();
 		SlayerTask.load();
-		pins.setMarkers(MapPins.parse(config.markers()));
 		reader = new CacheReader(client);
 		shortestPathRoute = new ShortestPathRoute();
 		source = new ClientMapSource(reader);
@@ -208,6 +210,7 @@ public class AdvancedMapPlugin extends Plugin
 		labels = new MapLabels();
 		filters = new MapFilters();
 		labelsLoading = false;
+		moveHiddenIcons();
 		settings = readSettings();
 		progress = Progress.NONE;
 		selection = null;
@@ -217,6 +220,13 @@ public class AdvancedMapPlugin extends Plugin
 		{
 			executor.execute(this::openStore);
 		}
+		markerFiles = Executors.newSingleThreadExecutor(task ->
+		{
+			Thread thread = new Thread(task, "Advanced Map markers");
+			thread.setDaemon(true);
+			return thread;
+		});
+		markerFiles.execute(this::openMarkers);
 		lastSeen = null;
 		preparer = new MapPreparer(images, source, () -> config.saveMap() && config.prepareMap(),
 			() -> lastSeen != null ? lastSeen : LUMBRIDGE);
@@ -305,6 +315,12 @@ public class AdvancedMapPlugin extends Plugin
 		{
 			executor.shutdownNow();
 		}
+		if (markerFiles != null)
+		{
+			// saves already asked for still finish
+			markerFiles.shutdown();
+		}
+		markerFiles = null;
 		if (messages != null)
 		{
 			messages.clear();
@@ -370,6 +386,7 @@ public class AdvancedMapPlugin extends Plugin
 			});
 		}
 		pins.setOthers(others);
+		pins.setFilter(config.shareMarkers(), account());
 		MapPainter drawing = painter;
 		if (drawing != null && now - farmingRead >= FARMING_MILLIS)
 		{
@@ -510,7 +527,7 @@ public class AdvancedMapPlugin extends Plugin
 
 	private MapSettings readSettings()
 	{
-		return MapSettings.of(config, routingRunning(config.routing()));
+		return MapSettings.of(config, routingRunning(config.routing()), readHiddenIcons());
 	}
 
 	/**
@@ -628,10 +645,6 @@ public class AdvancedMapPlugin extends Plugin
 			farmingRead = 0;
 			slayerShown = slayerShown == null ? null : "";
 		}
-		if (AdvancedMapConfig.MARKERS.equals(event.getKey()))
-		{
-			pins.setMarkers(MapPins.parse(config.markers()));
-		}
 		if ("saveMap".equals(event.getKey()) && images != null)
 		{
 			if (config.saveMap())
@@ -710,6 +723,84 @@ public class AdvancedMapPlugin extends Plugin
 		{
 			log.warn("Advanced Map could not open its saved map; it will be drawn each time", e);
 		}
+	}
+
+	/**
+	 * Opens the markers' folder, moves an earlier test version's markers (one setting) into it, and reads them. Off the
+	 * client thread.
+	 */
+	private void openMarkers()
+	{
+		try
+		{
+			MarkerStore store = MarkerStore.open(getPluginDirectory());
+			String old = config.markers();
+			if (old != null && !old.isEmpty())
+			{
+				for (MapPins.Marker marker : MapPins.parseOld(old))
+				{
+					store.save(marker);
+				}
+				configManager.unsetConfiguration(AdvancedMapConfig.GROUP, AdvancedMapConfig.MARKERS);
+			}
+			markerStore = store;
+			pins.setMarkers(store.read());
+		}
+		catch (IOException | RuntimeException e)
+		{
+			log.warn("Advanced Map could not open its markers", e);
+		}
+	}
+
+	/** Reads the markers again, with those another client (another account) added or changed. Off the client thread. */
+	private void reloadMarkers()
+	{
+		MarkerStore store = markerStore;
+		if (store != null)
+		{
+			pins.setMarkers(store.read());
+		}
+	}
+
+	/** Moves an earlier version's hidden icons (one setting holding them all) to a setting each. */
+	private void moveHiddenIcons()
+	{
+		Set<String> old = MapSettings.parseHidden(config.hiddenIcons());
+		if (old.isEmpty())
+		{
+			return;
+		}
+		for (String key : old)
+		{
+			configManager.setConfiguration(AdvancedMapConfig.GROUP, AdvancedMapConfig.HIDDEN_PREFIX + key, true);
+		}
+		configManager.unsetConfiguration(AdvancedMapConfig.GROUP, AdvancedMapConfig.HIDDEN_ICONS);
+	}
+
+	/**
+	 * The hidden icons' keys, each its own setting: two clients open at once (two accounts) hiding icons never undo each
+	 * other's.
+	 */
+	private Set<String> readHiddenIcons()
+	{
+		Set<String> out = new java.util.LinkedHashSet<>();
+		String prefix = AdvancedMapConfig.HIDDEN_PREFIX;
+		for (String key : configManager.getConfigurationKeys(AdvancedMapConfig.GROUP + "." + prefix))
+		{
+			// the whole key, "advancedmap.hidden.<icon>"; an icon's key has no dot
+			int at = key.lastIndexOf(prefix);
+			if (at >= 0)
+			{
+				out.add(key.substring(at + prefix.length()));
+			}
+		}
+		return out;
+	}
+
+	/** The account logged in (RuneLite's profile key for it), or null. */
+	private String account()
+	{
+		return configManager.getRSProfileKey();
 	}
 
 	/** Deletes the saved map, so every region is drawn again. */
@@ -1165,11 +1256,14 @@ public class AdvancedMapPlugin extends Plugin
 	/** Saves the marker in the box (in place of the one changed) and closes it. */
 	private void finishMarker()
 	{
-		saveMarkers(editor.editing(), editor.result());
+		saveMarkers(editor.editing(), editor.result(account()));
 		editor.close();
 	}
 
-	/** Replaces a marker ({@code old} null to add one) with another ({@code fresh} null to remove it), and saves. */
+	/**
+	 * Replaces a marker ({@code old} null to add one) with another ({@code fresh} null to remove it), at once on the map
+	 * and then on disk.
+	 */
 	private void saveMarkers(MapPins.Marker old, MapPins.Marker fresh)
 	{
 		List<MapPins.Marker> markers = new ArrayList<>(pins.markers());
@@ -1183,7 +1277,27 @@ public class AdvancedMapPlugin extends Plugin
 			markers.add(at >= 0 ? at : markers.size(), fresh);
 		}
 		pins.setMarkers(markers);
-		configManager.setConfiguration(AdvancedMapConfig.GROUP, AdvancedMapConfig.MARKERS, MapPins.save(markers));
+		ExecutorService files = markerFiles;
+		if (files != null)
+		{
+			files.execute(() ->
+			{
+				// the store is read here, after its opening (queued first) has run
+				MarkerStore store = markerStore;
+				if (store == null)
+				{
+					return;
+				}
+				if (fresh != null)
+				{
+					store.save(fresh);
+				}
+				else if (old != null)
+				{
+					store.remove(old);
+				}
+			});
+		}
 	}
 
 	private void setMenuPin(MapPins.Pin pin)
@@ -1249,7 +1363,7 @@ public class AdvancedMapPlugin extends Plugin
 	private List<MapSearch.Entry> extraEntries()
 	{
 		MapIcons known = icons;
-		List<MapPins.Marker> markers = pins.markers();
+		List<MapPins.Marker> markers = pins.shown();
 		List<MapSpot> spots = known == null ? Collections.emptyList() : known.allSpots();
 		Object key = Arrays.asList(markers, spots.size(), progress);
 		if (key.equals(extraKey))
@@ -1669,8 +1783,15 @@ public class AdvancedMapPlugin extends Plugin
 
 	private void setHidden(MapSpot spot, boolean hide)
 	{
-		configManager.setConfiguration(AdvancedMapConfig.GROUP, AdvancedMapConfig.HIDDEN_ICONS,
-			MapSettings.withHidden(settings.getHidden(), spot.getKey(), hide));
+		String key = AdvancedMapConfig.HIDDEN_PREFIX + spot.getKey();
+		if (hide)
+		{
+			configManager.setConfiguration(AdvancedMapConfig.GROUP, key, true);
+		}
+		else
+		{
+			configManager.unsetConfiguration(AdvancedMapConfig.GROUP, key);
+		}
 		settings = readSettings();
 	}
 
@@ -1728,6 +1849,12 @@ public class AdvancedMapPlugin extends Plugin
 	/** Opens the map on a point, or on the player when {@code at} is null; at a zoom, or the last one. */
 	void openMap(WorldPoint at, Double zoom)
 	{
+		// markers another client (another account) added, changed or removed since
+		ExecutorService files = markerFiles;
+		if (files != null && !isOpen())
+		{
+			files.execute(this::reloadMarkers);
+		}
 		clientThread.invokeLater(() ->
 		{
 			if (reader == null)

@@ -139,7 +139,8 @@ class AdvancedMapPanel extends PluginPanel
 			+ " (\"cks\"), fishing spots (\"lobster\"), hunter areas and kinds of icon (\"bank\": every one,"
 			+ " nearest first) are found too; the nearest comes first among equal matches.")
 			+ section("Markers", "Right-click anywhere and choose \"Add marker here\": name it, pick a picture and a"
-			+ " color, Save. Right-click a marker to edit or remove it. Other plugins' markers (a clue scroll's spot,"
+			+ " color, Save. Right-click a marker to edit or remove it. Markers show on all your accounts (a setting"
+			+ " keeps them apart). Other plugins' markers (a clue scroll's spot,"
 			+ " Quest Helper's next step) show too; click one for what it says.")
 			+ section("Farming, multi-combat, Slayer", "A dot on each farming patch icon says how it is doing (from"
 			+ " RuneLite's Time Tracking plugin); click it for each crop and when it is ready. Zoomed in, multi-combat"

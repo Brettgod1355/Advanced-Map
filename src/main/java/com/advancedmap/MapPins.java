@@ -33,14 +33,17 @@ final class MapPins
 	private static final Color NAME = new Color(0xFFF2C4);
 	private static final Color SHADOW = new Color(0, 0, 0, 200);
 
-	/** The player's own marker. */
+	/** The player's own marker: its own file in the shared folder ({@link MarkerStore}), named by its id. */
 	@Value
 	static class Marker
 	{
+		String id;
 		WorldPoint point;
 		MarkerIcons.Design design;
 		int color;
 		String name;
+		/** The account (RuneLite's profile key for it) the marker was made on; empty when not known. */
+		String account;
 	}
 
 	/** Something drawn at a tile: a marker, or another plugin's picture with its name and what it says on hover. */
@@ -71,10 +74,42 @@ final class MapPins
 	private volatile List<Marker> markers = Collections.emptyList();
 	private volatile List<Pin> others = Collections.emptyList();
 	private volatile Pin selected;
+	private volatile boolean shared = true;
+	private volatile String account;
 
+	/** Every marker saved, on any account. */
 	List<Marker> markers()
 	{
 		return markers;
+	}
+
+	/**
+	 * Which markers show: all when markers are shared between accounts; else those made on {@code account} (and those
+	 * of no known account). All while no account is known (logged out).
+	 */
+	void setFilter(boolean shared, String account)
+	{
+		this.shared = shared;
+		this.account = account;
+	}
+
+	/** The markers that show now ({@link #setFilter}). */
+	List<Marker> shown()
+	{
+		String now = account;
+		if (shared || now == null)
+		{
+			return markers;
+		}
+		List<Marker> out = new ArrayList<>();
+		for (Marker marker : markers)
+		{
+			if (marker.getAccount().isEmpty() || marker.getAccount().equals(now))
+			{
+				out.add(marker);
+			}
+		}
+		return out;
 	}
 
 	void setMarkers(List<Marker> markers)
@@ -107,7 +142,7 @@ final class MapPins
 	List<Pin> all()
 	{
 		List<Pin> out = new ArrayList<>();
-		for (Marker marker : markers)
+		for (Marker marker : shown())
 		{
 			out.add(new Pin(marker.getPoint(), null, marker, marker.getName(), "Your marker", null, false));
 		}
@@ -115,21 +150,40 @@ final class MapPins
 		return out;
 	}
 
-	/** The markers as Advanced Map saves them: one a line, "x y plane design color name". */
-	static String save(List<Marker> markers)
+	/** A marker as its file holds it: one line, "x y plane design color account name" ("-" for no account). */
+	static String line(Marker marker)
 	{
-		StringBuilder out = new StringBuilder();
-		for (Marker marker : markers)
-		{
-			WorldPoint at = marker.getPoint();
-			out.append(at.getX()).append(' ').append(at.getY()).append(' ').append(at.getPlane()).append(' ')
-				.append(marker.getDesign().ordinal()).append(' ').append(marker.getColor()).append(' ')
-				.append(cleanName(marker.getName())).append('\n');
-		}
-		return out.toString();
+		WorldPoint at = marker.getPoint();
+		return at.getX() + " " + at.getY() + " " + at.getPlane() + " " + marker.getDesign().ordinal() + " "
+			+ marker.getColor() + " " + (marker.getAccount().isEmpty() ? "-" : marker.getAccount()) + " "
+			+ cleanName(marker.getName()) + "\n";
 	}
 
-	static List<Marker> parse(String saved)
+	/** The marker a file holds, or null when the file is damaged. */
+	static Marker fromLine(String id, String line)
+	{
+		String[] f = line.trim().split(" ", 7);
+		if (f.length < 6)
+		{
+			return null;
+		}
+		try
+		{
+			return new Marker(id, new WorldPoint(Integer.parseInt(f[0]), Integer.parseInt(f[1]), Integer.parseInt(f[2])),
+				MarkerIcons.Design.of(Integer.parseInt(f[3])), Integer.parseInt(f[4]), f.length > 6 ? f[6] : "",
+				"-".equals(f[5]) ? "" : f[5]);
+		}
+		catch (NumberFormatException e)
+		{
+			return null;
+		}
+	}
+
+	/**
+	 * The markers of an earlier test version, saved in one setting as "x y plane design color name" lines; each gets a
+	 * new id and no account. Read once, to move them to their files.
+	 */
+	static List<Marker> parseOld(String saved)
 	{
 		List<Marker> out = new ArrayList<>();
 		if (saved == null)
@@ -145,8 +199,9 @@ final class MapPins
 			}
 			try
 			{
-				out.add(new Marker(new WorldPoint(Integer.parseInt(f[0]), Integer.parseInt(f[1]), Integer.parseInt(f[2])),
-					MarkerIcons.Design.of(Integer.parseInt(f[3])), Integer.parseInt(f[4]), f.length > 5 ? f[5] : ""));
+				out.add(new Marker(MarkerStore.newId(), new WorldPoint(Integer.parseInt(f[0]), Integer.parseInt(f[1]),
+					Integer.parseInt(f[2])), MarkerIcons.Design.of(Integer.parseInt(f[3])), Integer.parseInt(f[4]),
+					f.length > 5 ? f[5] : "", ""));
 			}
 			catch (NumberFormatException e)
 			{
