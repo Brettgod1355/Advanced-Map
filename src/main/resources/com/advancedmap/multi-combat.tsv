@@ -1,0 +1,1192 @@
+# Multi-combat areas, as rectangles of tiles on every floor: outside the Wilderness from the Multi Lines
+# plugin's data (github.com/tsbreuer/Multi-Lines, MultiLinesData.json, 2026-06-08), in the Wilderness from
+# the Wilderness Lines plugin (github.com/Nightfirecat/plugin-hub-plugins, d81bb4c); both BSD 2-Clause, see
+# THIRD_PARTY_NOTICES.md. name, x, y, width, height
+Weiss	2852	3922	40	25
+Weiss	2854	3947	40	1
+Weiss	2892	3934	2	13
+Weiss	2892	3933	1	1
+Weiss	2894	3936	1	10
+Weiss	2871	3948	9	1
+Weiss	2872	3949	6	1
+Weiss	2882	3948	11	1
+Weiss	2884	3949	5	1
+Weiss	2895	3937	1	8
+Weiss	2896	3941	1	3
+Weiss	2892	3927	1	3
+Weiss	2847	3921	36	1
+Weiss	2847	3922	5	7
+Weiss	2848	3929	4	1
+Weiss	2850	3930	2	1
+Weiss	2851	3931	1	13
+Weiss	2850	3939	1	4
+Weiss	2847	3920	31	1
+Weiss	2848	3919	15	1
+Weiss	2849	3918	9	1
+Weiss	2852	3917	5	1
+Weiss	2873	3919	3	1
+Weiss	2886	3921	5	1
+Weiss	2860	3948	8	1
+Troll Stronghold / GWD	2880	3742	32	22
+Troll Stronghold / GWD	2888	3718	24	24
+Troll Stronghold / GWD	2896	3688	18	30
+Troll Stronghold / GWD	2882	3696	14	22
+Troll Stronghold / GWD	2877	3696	5	8
+South of Yanille - West of Gu Tanoth	2560	3008	62	64
+Gemstone Crab	1345	3101	16	24
+Gemstone Crab	1267	3162	16	18
+Gemstone Crab south of talk teklan	1221	3011	17	60
+Gemstone Crab south of talk teklan	1238	3011	14	59
+Gemstone Crab south of talk teklan	1216	3034	5	34
+Gemstone Crab south of talk teklan	1227	3008	16	34
+Gemstone Crab south of talk teklan	1252	3015	13	52
+Gemstone Crab south of talk teklan	1265	3015	3	40
+Gemstone Crab south of talk teklan	1268	3020	1	35
+Gemstone Crab south of talk teklan	1269	3026	1	29
+Gemstone Crab south of talk teklan	1270	3028	1	27
+Gemstone Crab south of talk teklan	1271	3032	1	23
+Gemstone Crab south of talk teklan	1272	3036	1	19
+Gemstone Crab south of talk teklan	1273	3043	1	12
+Gemstone Crab south of talk teklan	1274	3045	2	9
+Gemstone Crab south of talk teklan	1276	3047	2	5
+Death Plateau	2848	3601	31	6
+Death Plateau	2872	3600	7	1
+Death Plateau	2871	3607	5	1
+Death Plateau	2879	3602	16	3
+West of Chasm of Fire	1422	3645	15	5
+West of Chasm of Fire	1417	3650	19	2
+West of Chasm of Fire	1414	3652	21	2
+West of Chasm of Fire	1412	3654	11	1
+West of Chasm of Fire	1411	3655	10	1
+West of Chasm of Fire	1408	3656	11	2
+West of Chasm of Fire	1407	3658	10	3
+West of Chasm of Fire	1409	3661	6	3
+Buthorpe / White Wolf Mountain	2880	3520	24	24
+Buthorpe / White Wolf Mountain	2816	3456	64	64
+ONE TILE IN MIDDLE OF SAVANNAH	1649	2994	1	1
+Falador chaos altar	2928	3512	16	8
+Falador	2944	3304	64	152
+Falador	3008	3303	8	25
+Falador	3007	3304	1	25
+Falador	3014	3299	7	4
+Falador	3016	3303	5	9
+Falador	3021	3297	11	15
+Falador	3021	3312	23	1
+Falador	3022	3313	21	1
+Falador	3032	3299	12	13
+Falador	3032	3298	11	1
+Falador	3038	3297	4	1
+Hammersprike hangout	2962	9805	14	15
+Northeast Priff	3289	6131	14	5
+Northeast Priff	3295	6136	8	1
+Northeast Priff	3296	6137	7	1
+Northeast Priff	3297	6138	5	1
+Northeast Priff	3294	6125	12	6
+Northeast Priff	3303	6131	1	3
+Northeast Priff	3304	6131	1	2
+Northeast Priff	3305	6131	1	1
+Northeast Priff	3297	6124	15	1
+Northeast Priff	3298	6122	16	2
+Northeast Priff	3306	6125	1	6
+Northeast Priff	3307	6125	1	5
+Northeast Priff	3308	6125	1	4
+Northeast Priff	3309	6125	1	3
+Northeast Priff	3310	6125	1	2
+Northeast Priff	3311	6125	1	1
+Northeast Priff	3312	6124	1	1
+Northeast Priff	3300	6119	13	3
+Northeast Priff	3312	6108	8	11
+Northeast Priff	3320	6111	1	8
+Northeast Priff	3321	6112	1	7
+Northeast Priff	3322	6113	1	5
+Northeast Priff	3303	6116	9	3
+Northeast Priff	3310	6109	2	7
+Northeast Priff	3308	6113	2	3
+Northeast Priff	3305	6114	3	2
+Northeast Priff	3314	6122	1	1
+Northeast Priff	3313	6119	3	3
+Northeast Priff	3316	6119	1	2
+Northeast Priff	3317	6119	1	1
+Southwest Priff	3233	6037	26	20
+Southwest Priff	3259	6045	2	9
+Southwest Priff	3238	6057	19	4
+Southwest Priff	3237	6057	1	3
+Southwest Priff	3236	6057	1	2
+Southwest Priff	3235	6057	1	1
+Southwest Priff	3243	6036	9	1
+Barbarian village	3072	3448	64	8
+Barbarian village	3056	3392	80	48
+Barbarian village	3064	3440	72	8
+Barbarian village	3048	3392	8	16
+Draynor Jail	3102	3248	2	3
+Draynor Jail	3104	3236	28	19
+Draynor Jail	3132	3236	1	15
+Draynor Jail	3133	3238	1	12
+Draynor Jail	3134	3239	1	7
+Draynor Jail	3113	3255	19	3
+Draynor Jail	3114	3258	18	1
+Draynor Jail	3119	3259	12	1
+Draynor Jail	3123	3260	4	1
+Draynor Jail	3106	3255	7	1
+Draynor Jail	3108	3256	5	2
+Draynor Jail	3103	3237	1	4
+Draynor Jail	3112	3235	21	1
+Draynor Jail	3117	3234	15	1
+Draynor Jail	3119	3233	9	1
+Wizard Tower	3094	3145	31	31
+Wizard Tower	3103	3176	5	1
+Al Kharid	3264	3136	64	64
+Desert Bandit Camp	3137	2953	35	55
+Desert Bandit Camp	3172	2953	3	54
+Desert Bandit Camp	3175	2953	3	53
+Desert Bandit Camp	3178	2953	3	52
+Desert Bandit Camp	3181	2953	7	51
+Desert Bandit Camp	3188	2954	1	50
+Desert Bandit Camp	3189	2956	1	48
+Desert Bandit Camp	3190	2958	1	46
+Desert Bandit Camp	3191	2960	1	42
+Desert Bandit Camp	3192	2962	1	38
+Desert Bandit Camp	3193	2964	1	35
+Desert Bandit Camp	3194	2966	1	31
+Desert Bandit Camp	3195	2968	1	12
+Desert Bandit Camp	3196	2970	1	9
+Desert Bandit Camp	3197	2972	1	4
+Desert Bandit Camp	3198	2974	1	1
+Mort Myre swamp	3456	3328	64	64
+Burgh de rott	3512	3232	8	16
+South east of port phasmatys	3694	3433	15	20
+South east of port phasmatys	3690	3433	4	20
+South east of port phasmatys	3692	3453	17	1
+South east of port phasmatys	3689	3450	1	3
+South east of port phasmatys	3684	3440	6	10
+South east of port phasmatys	3684	3439	6	1
+South east of port phasmatys	3683	3440	1	9
+South east of port phasmatys	3685	3433	5	6
+South east of port phasmatys	3682	3444	1	3
+South east of port phasmatys	3685	3450	4	1
+south west of port phasmatys	3589	3451	54	5
+south west of port phasmatys	3590	3448	53	3
+south west of port phasmatys	3592	3444	51	4
+south west of port phasmatys	3594	3441	49	3
+south west of port phasmatys	3596	3432	47	9
+south west of port phasmatys	3604	3426	39	6
+south west of port phasmatys	3621	3415	22	11
+south west of port phasmatys	3608	3420	13	6
+south west of port phasmatys	3643	3419	10	9
+south west of port phasmatys	3643	3428	9	2
+south west of port phasmatys	3643	3437	6	8
+south west of port phasmatys	3643	3445	5	2
+south west of port phasmatys	3643	3447	4	2
+south west of port phasmatys	3643	3449	3	4
+Past Bridge south of port phasmatys	3589	3408	19	4
+Past Bridge south of port phasmatys	3584	3407	5	5
+Past Bridge south of port phasmatys	3584	3406	2	1
+Past Bridge south of port phasmatys	3597	3412	10	11
+Past Bridge south of port phasmatys	3586	3423	19	4
+Past Bridge south of port phasmatys	3586	3427	15	4
+Past Bridge south of port phasmatys	3584	3412	13	11
+Past Bridge south of port phasmatys	3608	3411	1	1
+Top left of fossil island	3653	3868	10	17
+Top left of fossil island	3663	3872	1	10
+Bottom left of fossil island	3801	3751	2	11
+Bottom left of fossil island	3798	3748	3	11
+Bottom left of fossil island	3803	3752	23	10
+Bottom left of fossil island	3803	3762	23	1
+Bottom left of fossil island	3806	3763	20	1
+Bottom left of fossil island	3808	3764	18	1
+Bottom left of fossil island	3810	3765	16	1
+Bottom left of fossil island	3812	3766	12	1
+Bottom left of fossil island	3814	3767	6	1
+Top main beach of fossil island	3684	3896	2	1
+Top main beach of fossil island	3684	3897	4	1
+Top main beach of fossil island	3684	3898	8	1
+Top main beach of fossil island	3684	3899	58	5
+Top main beach of fossil island	3704	3898	38	1
+Top main beach of fossil island	3705	3897	37	1
+Top main beach of fossil island	3712	3896	30	1
+Top main beach of fossil island	3713	3895	29	1
+Top main beach of fossil island	3714	3894	28	1
+Top main beach of fossil island	3716	3893	26	1
+Top main beach of fossil island	3717	3892	25	1
+Top main beach of fossil island	3716	3891	26	1
+Top main beach of fossil island	3714	3890	28	1
+Top main beach of fossil island	3712	3888	30	2
+Top main beach of fossil island	3710	3881	32	7
+Top main beach of fossil island	3712	3876	14	5
+Top main beach of fossil island	3713	3873	13	3
+Top main beach of fossil island	3714	3870	12	3
+Top main beach of fossil island	3713	3866	13	4
+Top main beach of fossil island	3712	3861	14	5
+Top main beach of fossil island	3710	3860	16	1
+Top main beach of fossil island	3709	3859	17	1
+Top main beach of fossil island	3708	3848	18	11
+Top main beach of fossil island	3709	3847	17	1
+Top main beach of fossil island	3710	3846	16	1
+Top main beach of fossil island	3712	3842	5	4
+Top main beach of fossil island	3717	3843	7	3
+Top main beach of fossil island	3724	3842	6	4
+Top main beach of fossil island	3726	3846	22	11
+Top main beach of fossil island	3730	3843	2	3
+Top main beach of fossil island	3732	3844	8	2
+Top main beach of fossil island	3740	3845	2	1
+Top main beach of fossil island	3742	3844	3	2
+Top main beach of fossil island	3748	3850	6	7
+Top main beach of fossil island	3748	3847	1	3
+Top main beach of fossil island	3749	3848	1	2
+Top main beach of fossil island	3750	3849	1	1
+Top main beach of fossil island	3754	3851	1	6
+Top main beach of fossil island	3755	3852	1	4
+Rellekka	2650	3712	86	16
+Rellekka	2712	3728	24	8
+Rellekka	2650	3728	54	9
+Settlement Ruins Kourend	1536	3875	35	33
+Settlement Ruins Kourend	1543	3874	26	1
+Settlement Ruins Kourend	1544	3873	25	1
+Settlement Ruins Kourend	1545	3872	23	1
+Settlement Ruins Kourend	1546	3871	21	1
+Settlement Ruins Kourend	1547	3870	19	1
+Settlement Ruins Kourend	1548	3869	17	1
+Settlement Ruins Kourend	1549	3868	15	1
+Settlement Ruins Kourend	1554	3867	10	1
+Settlement Ruins Kourend	1558	3866	6	1
+Settlement Ruins Kourend	1560	3865	3	1
+Settlement Ruins Kourend	1561	3864	1	1
+Settlement Ruins Kourend	1569	3874	1	1
+Settlement Ruins Kourend	1571	3875	1	6
+Settlement Ruins Kourend	1572	3876	1	4
+Settlement Ruins Kourend	1535	3888	1	2
+Settlement Ruins Kourend	1534	3890	2	8
+Settlement Ruins Kourend	1533	3896	1	2
+Settlement Ruins Kourend	1532	3898	4	10
+Settlement Ruins Kourend	1531	3902	1	2
+Settlement Ruins Kourend	1529	3903	2	1
+Settlement Ruins Kourend	1528	3904	4	4
+Settlement Ruins Kourend	1527	3905	1	1
+Settlement Ruins Kourend	1529	3908	6	1
+Settlement Ruins Kourend	1530	3909	4	1
+Settlement Ruins Kourend	1530	3910	4	1
+Settlement Ruins Kourend	1556	3908	2	1
+Settlement Ruins Kourend	1557	3909	1	1
+Settlement Ruins Kourend	1558	3908	13	3
+Settlement Ruins Kourend	1562	3911	2	1
+Settlement Ruins Kourend	1564	3911	7	2
+Settlement Ruins Kourend	1568	3913	18	1
+Settlement Ruins Kourend	1572	3914	12	1
+Settlement Ruins Kourend	1574	3915	1	1
+Settlement Ruins Kourend	1575	3915	7	2
+Settlement Ruins Kourend	1582	3915	1	1
+Settlement Ruins Kourend	1571	3884	1	1
+Settlement Ruins Kourend	1571	3885	2	3
+Settlement Ruins Kourend	1573	3886	1	2
+Settlement Ruins Kourend	1574	3887	18	1
+Settlement Ruins Kourend	1571	3888	21	25
+Settlement Ruins Kourend	1591	3913	1	1
+Settlement Ruins Kourend	1592	3889	1	1
+Settlement Ruins Kourend	1592	3890	2	2
+Settlement Ruins Kourend	1592	3892	3	3
+Settlement Ruins Kourend	1592	3895	4	1
+Settlement Ruins Kourend	1592	3896	5	1
+Settlement Ruins Kourend	1592	3897	6	2
+Settlement Ruins Kourend	1592	3899	7	1
+Settlement Ruins Kourend	1592	3900	8	2
+Settlement Ruins Kourend	1592	3902	2	12
+Settlement Ruins Kourend	1594	3911	1	2
+Settlement Ruins Kourend	1595	3911	1	1
+Settlement Ruins Kourend	1594	3902	3	9
+Settlement Ruins Kourend	1597	3909	1	1
+Settlement Ruins Kourend	1597	3908	2	1
+Settlement Ruins Kourend	1597	3902	3	6
+Settlement Ruins Kourend	1600	3902	1	5
+Settlement Ruins Kourend	1601	3904	1	3
+Settlement Ruins Kourend	1602	3906	1	1
+Kharazi Jungle	2875	2890	5	49
+Kharazi Jungle	2874	2890	1	48
+Kharazi Jungle	2873	2890	1	46
+Kharazi Jungle	2755	2881	118	54
+Kharazi Jungle	2825	2935	33	2
+Kharazi Jungle	2858	2935	15	1
+Kharazi Jungle	2873	2936	1	1
+Kharazi Jungle	2764	2935	59	1
+Kharazi Jungle	2766	2936	57	1
+Kharazi Jungle	2767	2937	23	3
+Kharazi Jungle	2793	2937	6	2
+Kharazi Jungle	2802	2937	13	3
+Kharazi Jungle	2758	2935	6	1
+Ape Atoll	2688	2684	132	135
+Pest Control	2616	2557	80	67
+Ogre boat feldip hills to karamja	2648	2950	8	21
+Jiggig	2456	3035	37	24
+Necromancer	2664	3218	17	39
+Necromancer	2656	3232	8	25
+Gnome Battlefield	2504	3208	48	24
+Gnome Battlefield	2504	3232	40	16
+Ranging guild	2656	3408	24	40
+Ranging guild	2680	3416	8	24
+Ranging guild	2648	3416	8	24
+MM2 Area north of gnome stronghold	1984	5568	46	59
+MM2 Area north of gnome stronghold	2432	3520	46	59
+Arandar	2304	3328	64	64
+Arandar	2368	3312	24	16
+Piscatoris Fishing Colony	2303	3648	61	56
+Fremmenik Isles	2307	3824	15	80
+Fremmenik Isles	2322	3822	13	82
+Fremmenik Isles	2335	3821	33	83
+Fremmenik Isles	2368	3840	59	64
+AJS Fairy ring penguin island (North of Miscenallia)	2498	3892	10	9
+Pirate's cove	2180	3784	53	55
+Lunar Isle	2056	3843	115	116
+Zulrah Island	2261	3067	15	12
+Poison Waste	2263	3086	40	16
+Soul Wars island northern patch	2176	2987	47	19
+Soul Wars island northern patch	2177	2986	34	1
+Soul Wars island northern patch	2178	2985	33	1
+Soul Wars island northern patch	2179	2984	32	1
+Soul Wars island northern patch	2180	2981	27	3
+Soul Wars island northern patch	2180	2980	27	1
+Soul Wars island northern patch	2181	2979	26	1
+Soul Wars island northern patch	2183	2978	23	1
+Soul Wars island northern patch	2185	2977	20	1
+Soul Wars island northern patch	2186	2976	19	1
+Soul Wars island northern patch	2187	2975	18	1
+Soul Wars island northern patch	2192	2974	13	1
+Soul Wars island northern patch	2192	2973	9	1
+Soul Wars island northern patch	2192	2972	8	1
+Soul Wars island northern patch	2192	2971	7	1
+Kourend Sand crabs	1695	3401	190	67
+Kourend Sand crabs	1674	3468	34	28
+Kourend Sand crabs	1680	3451	15	17
+Kourend Sand crabs	1663	3463	11	25
+Kourend Sand crabs	1708	3468	2	18
+Kourend Sand crabs	1710	3468	3	15
+Kourend Sand crabs	1713	3468	7	14
+Kourend Sand crabs	1720	3468	1	13
+Kourend Sand crabs	1721	3468	1	12
+Kourend Sand crabs	1722	3468	1	11
+Kourend Sand crabs	1723	3468	6	10
+Kourend Sand crabs	1729	3468	2	12
+Kourend Sand crabs	1731	3468	1	11
+Kourend Sand crabs	1732	3468	2	10
+Kourend Sand crabs	1734	3468	6	9
+Kourend Sand crabs	1740	3468	1	10
+Kourend Sand crabs	1741	3468	4	11
+Kourend Sand crabs	1745	3468	6	12
+Kourend Sand crabs	1751	3468	1	11
+Kourend Sand crabs	1752	3468	1	10
+Kourend Sand crabs	1753	3468	1	9
+Kourend Sand crabs	1754	3468	1	9
+Kourend Sand crabs	1755	3468	2	8
+Kourend Sand crabs	1757	3468	1	7
+Kourend Sand crabs	1758	3468	1	6
+Kourend Sand crabs	1759	3468	20	5
+Kourend Sand crabs	1779	3468	2	6
+Kourend Sand crabs	1781	3468	5	7
+Kourend Sand crabs	1786	3468	13	8
+Kourend Sand crabs	1799	3468	10	7
+Kourend Sand crabs	1809	3468	3	5
+Kourend Sand crabs	1812	3468	1	4
+Kourend Sand crabs	1813	3468	2	3
+Kourend Sand crabs	1815	3468	1	2
+Kourend Sand crabs	1816	3468	3	1
+Kourend Sand crabs	1828	3468	1	2
+Kourend Sand crabs	1826	3468	2	1
+Kourend Sand crabs	1829	3468	1	3
+Kourend Sand crabs	1830	3468	55	4
+Kourend Sand crabs	1831	3472	54	1
+Kourend Sand crabs	1832	3473	53	2
+Kourend Sand crabs	1833	3475	52	2
+Kourend Sand crabs	1834	3477	51	2
+Kourend Sand crabs	1835	3479	50	1
+Kourend Sand crabs	1836	3480	49	1
+Kourend Sand crabs	1837	3481	48	1
+Kourend Sand crabs	1838	3482	47	1
+Kourend Sand crabs	1839	3483	46	1
+Kourend Sand crabs	1841	3484	44	2
+Kourend Sand crabs	1845	3486	40	4
+Kourend Sand crabs	1846	3490	39	3
+Kourend Sand crabs	1847	3493	38	1
+Kourend Sand crabs	1848	3494	37	1
+Kourend Sand crabs	1848	3495	37	1
+Kourend Sand crabs	1849	3496	36	5
+Kourend Sand crabs	1848	3501	37	2
+Kourend Sand crabs	1848	3503	37	1
+Kourend Sand crabs	1847	3504	38	1
+Kourend Sand crabs	1846	3505	39	2
+Kourend Sand crabs	1845	3506	40	2
+Kourend Sand crabs	1844	3508	41	5
+Kourend Sand crabs	1843	3513	42	2
+Kourend Sand crabs	1842	3515	43	1
+Kourend Sand crabs	1841	3516	44	1
+Kourend Sand crabs	1838	3517	47	1
+Kourend Sand crabs	1837	3518	48	1
+Kourend Sand crabs	1836	3519	49	2
+Kourend Sand crabs	1835	3521	50	1
+Kourend Sand crabs	1834	3522	51	2
+Kourend Sand crabs	1833	3524	52	11
+Kourend Sand crabs	1834	3535	51	3
+Kourend Sand crabs	1835	3538	50	1
+Kourend Sand crabs	1836	3539	49	1
+Kourend Sand crabs	1837	3540	48	1
+Kourend Sand crabs	1838	3541	47	1
+Kourend Sand crabs	1840	3542	45	1
+Kourend Sand crabs	1841	3543	44	1
+Kourend Sand crabs	1842	3544	43	3
+Kourend Sand crabs	1843	3547	43	2
+Kourend Sand crabs	1844	3549	42	2
+Kourend Sand crabs	1846	3551	40	2
+Kourend Sand crabs	1849	3553	36	5
+Kourend Sand crabs	1848	3558	37	2
+Kourend Sand crabs	1847	3560	38	2
+Kourend Sand crabs	1846	3562	39	2
+Kourend Sand crabs	1844	3564	41	5
+Kourend Sand crabs	1843	3569	42	2
+Kourend Sand crabs	1842	3571	43	2
+Kourend Sand crabs	1841	3573	44	2
+Kourend Sand crabs	1839	3575	46	1
+Kourend Sand crabs	1838	3576	47	1
+Kourend Sand crabs	1837	3577	24	1
+Kourend Sand crabs	1836	3578	25	1
+Kourend Sand crabs	1835	3579	22	2
+Kourend Sand crabs	1834	3581	21	4
+Kourend Sand crabs	1835	3585	20	1
+Kourend Sand crabs	1837	3586	14	1
+Kourend Sand crabs	1839	3587	11	1
+Kourend Sand crabs	1841	3588	6	1
+Altar north of sand crabs	1739	3503	11	1
+Altar north of sand crabs	1736	3486	15	17
+Altar north of sand crabs	1751	3486	4	16
+Altar north of sand crabs	1755	3487	2	14
+Altar north of sand crabs	1757	3490	1	6
+Altar north of sand crabs	1758	3491	1	5
+Altar north of sand crabs	1733	3489	4	11
+Altar north of sand crabs	1732	3491	1	7
+Hosidius Mine	1768	3500	16	10
+Hosidius Mine	1767	3501	1	9
+Hosidius Mine	1784	3506	1	4
+Hosidius Mine	1768	3510	16	2
+Hosidius Mine	1773	3512	4	2
+Hosidius Mine	1777	3512	4	1
+Hosidius Mine	1774	3499	7	1
+Random Hosidius Multi areas like square, kitchen and fields	1746	3521	13	5
+Random Hosidius Multi areas like square, kitchen and fields	1759	3522	1	3
+Random Hosidius Multi areas like square, kitchen and fields	1746	3526	10	1
+Random Hosidius Multi areas like square, kitchen and fields	1747	3527	8	1
+Random Hosidius Multi areas like square, kitchen and fields	1746	3544	7	13
+Random Hosidius Multi areas like square, kitchen and fields	1747	3543	8	1
+Random Hosidius Multi areas like square, kitchen and fields	1753	3545	5	11
+Random Hosidius Multi areas like square, kitchen and fields	1753	3544	3	1
+Random Hosidius Multi areas like square, kitchen and fields	1755	3591	16	16
+Random Hosidius Multi areas like square, kitchen and fields	1737	3610	8	3
+Random Hosidius Multi areas like square, kitchen and fields	1740	3613	5	10
+Random Hosidius Multi areas like square, kitchen and fields	1737	3619	3	4
+Random Hosidius Multi areas like square, kitchen and fields	1745	3618	5	3
+Random Hosidius Multi areas like square, kitchen and fields	1745	3612	2	6
+Random Hosidius Multi areas like square, kitchen and fields	1746	3612	4	3
+Random Hosidius Multi areas like square, kitchen and fields	1746	3636	19	10
+Random Hosidius Multi areas like square, kitchen and fields	1765	3636	1	9
+Random Hosidius Multi areas like square, kitchen and fields	1766	3637	1	8
+Random Hosidius Multi areas like square, kitchen and fields	1751	3634	5	1
+Random Hosidius Multi areas like square, kitchen and fields	1746	3635	12	1
+Random Hosidius Multi areas like square, kitchen and fields	1745	3639	1	5
+Random Hosidius Multi areas like square, kitchen and fields	1744	3640	1	3
+Random Hosidius Multi areas like square, kitchen and fields	1750	3646	10	1
+Random Hosidius Multi areas like square, kitchen and fields	1764	3635	2	1
+Random Hosidius Multi areas like square, kitchen and fields	1763	3619	6	5
+Random Hosidius Multi areas like square, kitchen and fields	1769	3621	2	3
+Piscarilius	1760	3662	19	1
+Piscarilius	1750	3663	29	1
+Piscarilius	1750	3664	35	1
+Piscarilius	1749	3665	36	1
+Piscarilius	1747	3666	40	1
+Piscarilius	1747	3667	41	1
+Piscarilius	1747	3668	42	1
+Piscarilius	1747	3669	43	1
+Piscarilius	1747	3670	44	1
+Piscarilius	1747	3671	46	1
+Piscarilius	1747	3672	41	17
+Piscarilius	1791	3672	4	7
+Piscarilius	1788	3672	3	10
+Piscarilius	1788	3682	2	6
+Piscarilius	1741	3688	47	4
+Piscarilius	1747	3692	43	7
+Piscarilius	1747	3699	45	10
+Piscarilius	1747	3709	49	3
+Piscarilius	1805	3708	4	4
+Piscarilius	1747	3712	107	53
+Piscarilius	1745	3679	2	30
+Piscarilius	1743	3682	2	24
+Piscarilius	1741	3684	2	19
+Piscarilius	1739	3688	48	12
+Piscarilius	1739	3692	2	3
+Piscarilius	1740	3723	7	77
+Piscarilius	1743	3800	22	3
+Piscarilius	1752	3803	10	3
+Piscarilius	1747	3765	27	32
+Piscarilius	1747	3797	26	3
+Arceus main area	1719	3777	6	10
+Arceus main area	1598	3771	30	9
+Arceus main area	1599	3780	7	4
+Arceus main area	1606	3780	22	3
+Arceus main area	1599	3770	129	1
+Arceus main area	1605	3769	123	1
+Arceus main area	1606	3768	122	1
+Arceus main area	1607	3767	121	1
+Arceus main area	1608	3766	120	1
+Arceus main area	1609	3765	119	1
+Arceus main area	1612	3764	116	1
+Arceus main area	1613	3763	115	1
+Arceus main area	1614	3759	114	4
+Arceus main area	1615	3758	113	1
+Arceus main area	1616	3757	112	1
+Arceus main area	1628	3771	15	8
+Arceus main area	1643	3771	76	7
+Arceus main area	1719	3771	9	6
+Arceus main area	1646	3778	73	1
+Arceus main area	1647	3779	72	1
+Arceus main area	1648	3780	71	1
+Arceus main area	1649	3781	70	1
+Arceus main area	1650	3782	69	1
+Arceus main area	1651	3783	68	1
+Arceus main area	1652	3784	67	1
+Arceus main area	1667	3785	52	17
+Arceus main area	1653	3785	7	1
+Arceus main area	1654	3786	5	1
+Arceus main area	1655	3787	3	1
+Arceus main area	1656	3788	1	1
+Arceus main area	1668	3802	51	1
+Arceus main area	1669	3803	50	1
+Arceus main area	1670	3804	49	2
+Arceus main area	1671	3806	23	5
+Arceus main area	1694	3806	1	4
+Arceus main area	1675	3811	18	1
+Arceus main area	1676	3812	16	1
+Arceus main area	1677	3813	14	1
+Arceus main area	1678	3814	12	1
+Arceus main area	1679	3815	11	1
+Arceus main area	1680	3816	10	1
+Arceus main area	1681	3817	9	1
+Arceus main area	1682	3818	8	1
+Arceus main area	1617	3756	111	1
+Arceus main area	1618	3731	110	25
+Arceus main area	1619	3730	112	1
+Arceus main area	1728	3731	1	6
+Arceus main area	1729	3731	1	5
+Arceus main area	1730	3731	1	4
+Arceus main area	1625	3718	110	4
+Arceus main area	1620	3729	111	1
+Arceus main area	1621	3725	110	4
+Arceus main area	1622	3724	113	1
+Arceus main area	1623	3723	112	1
+Arceus main area	1624	3722	111	1
+Arceus main area	1731	3725	1	3
+Arceus main area	1732	3725	1	2
+Arceus main area	1733	3725	1	1
+Arceus main area	1636	3717	99	1
+Arceus main area	1636	3716	99	1
+Arceus main area	1641	3711	94	1
+Arceus main area	1637	3715	98	1
+Arceus main area	1638	3714	97	1
+Arceus main area	1639	3713	96	1
+Arceus main area	1640	3712	95	1
+Arceus main area	1657	3710	48	1
+Arceus main area	1677	3709	27	1
+Arceus main area	1678	3708	25	1
+Arceus main area	1679	3707	12	1
+Arceus main area	1715	3710	20	1
+Arceus main area	1715	3709	20	1
+Arceus main area	1715	3708	20	1
+Tower of Magic Arceus	1563	3815	33	10
+Tower of Magic Arceus	1569	3825	21	6
+Tower of Magic Arceus	1575	3831	9	7
+Tower of Magic Arceus	1569	3809	21	6
+Tower of Magic Arceus	1575	3802	9	7
+Lovakengj	1513	3829	8	10
+Lovakengj	1551	3798	4	2
+Lovakengj	1550	3793	9	5
+Lovakengj	1552	3779	8	10
+Lovakengj	1539	3779	9	5
+Lovakengj	1498	3766	17	9
+Lovakengj	1504	3756	5	10
+Lovakengj	1501	3751	11	5
+Lovakengj	1561	3762	9	5
+Lovakengj	1561	3760	10	2
+Lovakengj	1561	3756	14	4
+Lovakengj	1564	3751	6	5
+Kourend Castle	1654	3666	1	15
+Kourend Castle	1611	3662	43	23
+Kourend Castle	1612	3685	41	1
+Kourend Castle	1613	3686	18	3
+Kourend Castle	1613	3689	6	1
+Kourend Castle	1614	3690	4	1
+Kourend Castle	1595	3661	3	25
+Kourend Castle	1594	3661	1	7
+Kourend Castle	1593	3662	1	5
+Kourend Castle	1594	3679	1	7
+Kourend Castle	1593	3680	1	5
+Kourend Castle	1598	3662	1	23
+Kourend Castle	1599	3663	12	21
+Kourend Castle	1612	3661	41	1
+Kourend Castle	1613	3658	18	3
+Kourend Castle	1613	3657	7	1
+Kourend Castle	1614	3656	5	1
+One weird hosidius house	1634	3606	14	8
+Forthos dungeon, saltpetre mine & woodcutting guild	1668	3496	15	96
+Forthos dungeon, saltpetre mine & woodcutting guild	1683	3503	3	82
+Forthos dungeon, saltpetre mine & woodcutting guild	1686	3503	3	64
+Forthos dungeon, saltpetre mine & woodcutting guild	1689	3501	3	61
+Forthos dungeon, saltpetre mine & woodcutting guild	1692	3497	18	63
+Forthos dungeon, saltpetre mine & woodcutting guild	1701	3560	12	3
+Forthos dungeon, saltpetre mine & woodcutting guild	1710	3508	6	52
+Forthos dungeon, saltpetre mine & woodcutting guild	1710	3505	5	3
+Forthos dungeon, saltpetre mine & woodcutting guild	1710	3502	3	3
+Forthos dungeon, saltpetre mine & woodcutting guild	1720	3549	3	5
+Forthos dungeon, saltpetre mine & woodcutting guild	1716	3510	4	48
+Forthos dungeon, saltpetre mine & woodcutting guild	1720	3510	3	20
+Forthos dungeon, saltpetre mine & woodcutting guild	1723	3512	3	15
+Forthos dungeon, saltpetre mine & woodcutting guild	1726	3514	2	9
+Forthos dungeon, saltpetre mine & woodcutting guild	1720	3530	2	3
+Forthos dungeon, saltpetre mine & woodcutting guild	1665	3491	3	92
+Forthos dungeon, saltpetre mine & woodcutting guild	1662	3491	3	81
+Forthos dungeon, saltpetre mine & woodcutting guild	1658	3491	4	70
+Forthos dungeon, saltpetre mine & woodcutting guild	1655	3491	3	69
+Forthos dungeon, saltpetre mine & woodcutting guild	1650	3491	5	66
+Forthos dungeon, saltpetre mine & woodcutting guild	1649	3490	1	66
+Forthos dungeon, saltpetre mine & woodcutting guild	1633	3489	16	67
+Forthos dungeon, saltpetre mine & woodcutting guild	1617	3556	25	2
+Forthos dungeon, saltpetre mine & woodcutting guild	1632	3492	1	64
+Forthos dungeon, saltpetre mine & woodcutting guild	1619	3558	18	2
+Forthos dungeon, saltpetre mine & woodcutting guild	1622	3560	12	4
+Forthos dungeon, saltpetre mine & woodcutting guild	1605	3497	2	40
+Forthos dungeon, saltpetre mine & woodcutting guild	1601	3497	4	25
+Forthos dungeon, saltpetre mine & woodcutting guild	1607	3493	25	63
+Forthos dungeon, saltpetre mine & woodcutting guild	1607	3492	16	1
+Forthos dungeon, saltpetre mine & woodcutting guild	1607	3491	15	1
+Forthos dungeon, saltpetre mine & woodcutting guild	1608	3490	13	1
+Forthos dungeon, saltpetre mine & woodcutting guild	1609	3489	11	1
+Forthos dungeon, saltpetre mine & woodcutting guild	1610	3488	9	1
+Forthos dungeon, saltpetre mine & woodcutting guild	1611	3487	7	1
+Forthos dungeon, saltpetre mine & woodcutting guild	1581	3503	20	1
+Forthos dungeon, saltpetre mine & woodcutting guild	1580	3502	21	1
+Forthos dungeon, saltpetre mine & woodcutting guild	1579	3501	22	1
+Forthos dungeon, saltpetre mine & woodcutting guild	1578	3500	23	1
+Forthos dungeon, saltpetre mine & woodcutting guild	1577	3499	24	1
+Forthos dungeon, saltpetre mine & woodcutting guild	1564	3484	37	15
+Forthos dungeon, saltpetre mine & woodcutting guild	1563	3478	1	20
+Forthos dungeon, saltpetre mine & woodcutting guild	1563	3477	33	1
+Forthos dungeon, saltpetre mine & woodcutting guild	1564	3478	32	6
+Forthos dungeon, saltpetre mine & woodcutting guild	1596	3483	4	1
+Forthos dungeon, saltpetre mine & woodcutting guild	1596	3482	3	1
+Forthos dungeon, saltpetre mine & woodcutting guild	1596	3481	2	1
+Forthos dungeon, saltpetre mine & woodcutting guild	1596	3480	1	1
+Forthos dungeon, saltpetre mine & woodcutting guild	1582	3476	14	1
+Forthos dungeon, saltpetre mine & woodcutting guild	1583	3475	13	1
+Forthos dungeon, saltpetre mine & woodcutting guild	1584	3474	12	1
+Forthos dungeon, saltpetre mine & woodcutting guild	1585	3473	11	1
+Forthos dungeon, saltpetre mine & woodcutting guild	1586	3472	10	1
+Barbarian Camp near land's end	1579	3429	3	10
+Barbarian Camp near land's end	1576	3431	3	7
+Barbarian Camp near land's end	1575	3433	1	4
+Barbarian Camp near land's end	1577	3429	2	2
+Barbarian Camp near land's end	1580	3428	5	1
+Barbarian Camp near land's end	1582	3429	4	9
+Barbarian Camp near land's end	1586	3430	1	7
+Barbarian Camp near land's end	1587	3431	1	5
+Land's End	1497	3410	26	5
+Land's End	1490	3415	34	6
+Land's End	1490	3421	35	3
+Land's End	1490	3424	34	1
+Land's End	1490	3425	33	1
+Land's End	1487	3426	35	1
+Land's End	1485	3427	36	1
+Land's End	1485	3428	35	1
+Land's End	1484	3429	35	1
+Land's End	1484	3430	34	1
+Land's End	1484	3431	33	1
+Land's End	1484	3432	32	1
+Land's End	1484	3433	31	1
+Land's End	1484	3434	30	1
+Land's End	1484	3435	29	1
+Land's End	1486	3436	26	2
+Land's End	1493	3442	10	2
+Land's End	1493	3444	7	1
+Land's End	1493	3445	5	1
+Land's End	1487	3438	20	1
+Land's End	1489	3439	17	1
+Land's End	1490	3440	14	2
+Land's End	1507	3406	14	4
+Graveyard of Heroes (Shayzien)	1475	3544	11	37
+Graveyard of Heroes (Shayzien)	1486	3564	8	16
+Graveyard of Heroes (Shayzien)	1494	3577	2	2
+Graveyard of Heroes (Shayzien)	1501	3577	1	3
+Graveyard of Heroes (Shayzien)	1502	3572	17	8
+Graveyard of Heroes (Shayzien)	1519	3571	1	8
+Graveyard of Heroes (Shayzien)	1504	3580	12	1
+Graveyard of Heroes (Shayzien)	1486	3544	7	20
+Graveyard of Heroes (Shayzien)	1493	3544	1	19
+Graveyard of Heroes (Shayzien)	1494	3544	2	17
+Graveyard of Heroes (Shayzien)	1496	3544	1	17
+Graveyard of Heroes (Shayzien)	1497	3544	19	16
+Graveyard of Heroes (Shayzien)	1516	3544	4	11
+Graveyard of Heroes (Shayzien)	1499	3560	18	1
+Graveyard of Heroes (Shayzien)	1502	3562	15	1
+Graveyard of Heroes (Shayzien)	1502	3561	15	1
+Graveyard of Heroes (Shayzien)	1503	3563	14	1
+Graveyard of Heroes (Shayzien)	1502	3564	15	8
+Building south of giant's pit	1435	3588	10	10
+Building south of giant's pit	1438	3587	7	1
+Building south of giant's pit	1439	3584	4	3
+Building south of giant's pit	1427	3591	8	5
+Building south of giant's pit	1428	3590	7	1
+Building south of giant's pit	1426	3591	1	4
+Building south of giant's pit	1425	3592	1	2
+Shayzien Lizardman Canyon	1414	3690	46	37
+Shayzien Lizardman Canyon	1471	3687	31	40
+Shayzien Lizardman Canyon	1502	3704	10	21
+Shayzien Lizardman Canyon	1502	3703	9	1
+Shayzien Lizardman Canyon	1502	3702	8	1
+Shayzien Lizardman Canyon	1502	3697	3	5
+Shayzien Lizardman Canyon	1505	3699	2	3
+Shayzien Lizardman Canyon	1502	3695	2	2
+Shayzien Wall	1359	3519	53	23
+Shayzien Wall	1360	3542	52	19
+Shayzien Wall	1358	3556	2	44
+Shayzien Wall	1356	3558	2	42
+Shayzien Wall	1354	3559	2	14
+Shayzien Wall	1352	3560	2	10
+Shayzien Wall	1350	3562	2	6
+Shayzien Wall	1354	3577	2	24
+Shayzien Wall	1351	3579	3	22
+Shayzien Wall	1339	3584	12	17
+Shayzien Wall	1345	3582	6	2
+Shayzien Wall	1337	3592	2	9
+Shayzien Wall	1335	3594	2	5
+Shayzien Wall	1337	3585	2	3
+Shayzien Wall	1360	3561	51	1
+Shayzien Wall	1360	3562	50	1
+Shayzien Wall	1360	3563	49	1
+Shayzien Wall	1360	3564	48	1
+Shayzien Wall	1360	3565	47	1
+Shayzien Wall	1360	3566	45	1
+Shayzien Wall	1360	3567	45	1
+Shayzien Wall	1360	3568	44	1
+Shayzien Wall	1360	3569	43	1
+Shayzien Wall	1360	3570	42	1
+Shayzien Wall	1360	3571	41	1
+Shayzien Wall	1360	3572	40	1
+Shayzien Wall	1360	3573	39	1
+Shayzien Wall	1360	3574	38	1
+Shayzien Wall	1360	3575	37	1
+Shayzien Wall	1360	3576	30	23
+Shayzien Wall	1359	3513	51	6
+Shayzien Wall	1410	3517	1	2
+Shayzien Wall	1364	3507	51	1
+Shayzien Wall	1364	3506	50	1
+Shayzien Wall	1364	3505	49	1
+Shayzien Wall	1364	3504	48	1
+Shayzien Wall	1364	3503	47	1
+Shayzien Wall	1365	3502	45	1
+Shayzien Wall	1366	3501	43	1
+Shayzien Wall	1366	3500	42	1
+Shayzien Wall	1366	3499	41	1
+Shayzien Wall	1366	3498	39	1
+Shayzien Wall	1366	3497	39	1
+Shayzien Wall	1366	3496	38	1
+Shayzien Wall	1366	3495	37	1
+Shayzien Wall	1367	3494	35	1
+Shayzien Wall	1368	3493	33	1
+Shayzien Wall	1370	3492	30	1
+Shayzien Wall	1372	3491	27	1
+Shayzien Wall	1373	3490	25	1
+Shayzien Wall	1376	3488	21	2
+Shayzien Wall	1379	3486	19	2
+Shayzien Wall	1382	3484	14	2
+Shayzien Wall	1362	3512	48	1
+Shayzien Wall	1363	3511	48	1
+Shayzien Wall	1364	3510	47	1
+Shayzien Wall	1364	3509	48	1
+Shayzien Wall	1364	3508	49	1
+Shayzien Wall	1412	3520	1	5
+Shayzien Wall	1413	3520	1	4
+Shayzien Wall	1414	3521	1	2
+Shayzien Wall	1412	3545	1	6
+Shayzien Wall	1413	3546	1	3
+Shayzien Wall	1414	3547	1	1
+Shayzien Wall	1412	3559	1	1
+South of Mount Quidamortem	1221	3524	6	12
+South of Mount Quidamortem	1227	3522	2	14
+South of Mount Quidamortem	1211	3525	10	10
+South of Mount Quidamortem	1211	3535	6	9
+South of Mount Quidamortem	1200	3544	14	3
+South of Mount Quidamortem	1200	3539	11	5
+South of Mount Quidamortem	1202	3535	9	4
+South of Mount Quidamortem	1205	3531	6	4
+South of Mount Quidamortem	1207	3529	4	2
+South of Mount Quidamortem	1208	3526	3	3
+South of Mount Quidamortem	1200	3547	11	3
+South of Mount Quidamortem	1199	3550	9	2
+South of Mount Quidamortem	1197	3552	10	3
+South of Mount Quidamortem	1194	3555	13	2
+South of Mount Quidamortem	1193	3557	17	3
+South of Mount Quidamortem	1194	3560	16	3
+South of Mount Quidamortem	1195	3563	15	2
+South of Mount Quidamortem	1197	3565	12	3
+South of Mount Quidamortem	1245	3525	4	6
+South of Mount Quidamortem	1241	3509	4	23
+South of Mount Quidamortem	1229	3532	15	1
+South of Mount Quidamortem	1240	3533	3	1
+South of Mount Quidamortem	1229	3533	7	1
+South of Mount Quidamortem	1229	3534	5	2
+South of Mount Quidamortem	1229	3520	12	12
+South of Mount Quidamortem	1231	3515	10	5
+South of Mount Quidamortem	1233	3513	8	2
+South of Mount Quidamortem	1235	3511	6	2
+South of Mount Quidamortem	1238	3510	3	1
+South of Mount Quidamortem	1245	3487	3	34
+South of Mount Quidamortem	1243	3490	2	19
+South of Mount Quidamortem	1241	3508	2	1
+South of Mount Quidamortem	1242	3492	1	10
+South of Mount Quidamortem	1214	3496	28	2
+South of Mount Quidamortem	1215	3498	19	4
+South of Mount Quidamortem	1207	3505	22	3
+South of Mount Quidamortem	1214	3502	19	3
+South of Mount Quidamortem	1221	3508	5	6
+South of Mount Quidamortem	1219	3508	2	4
+South of Mount Quidamortem	1212	3492	22	4
+South of Mount Quidamortem	1206	3490	29	2
+South of Mount Quidamortem	1205	3492	7	3
+South of Mount Quidamortem	1208	3488	25	2
+South of Mount Quidamortem	1210	3486	24	2
+South of Mount Quidamortem	1214	3484	21	2
+South of Mount Quidamortem	1222	3482	14	2
+South of Mount Quidamortem	1224	3479	5	3
+South of Mount Quidamortem	1248	3488	10	25
+South of Mount Quidamortem	1248	3513	5	2
+South of Mount Quidamortem	1248	3515	3	4
+South of Mount Quidamortem	1251	3515	1	2
+South of Mount Quidamortem	1248	3487	7	1
+South of Mount Quidamortem	1258	3488	1	24
+South of Mount Quidamortem	1259	3489	2	22
+South of Mount Quidamortem	1261	3491	5	20
+South of Mount Quidamortem	1266	3490	4	23
+South of Mount Quidamortem	1270	3490	2	22
+South of Mount Quidamortem	1272	3489	2	22
+South of Mount Quidamortem	1274	3489	2	21
+South of Mount Quidamortem	1276	3489	2	20
+South of Mount Quidamortem	1278	3490	3	18
+South of Mount Quidamortem	1281	3489	3	18
+South of Mount Quidamortem	1284	3491	2	16
+South of Mount Quidamortem	1286	3499	3	8
+South of Mount Quidamortem	1286	3507	17	6
+South of Mount Quidamortem	1289	3500	2	7
+South of Mount Quidamortem	1291	3501	3	6
+South of Mount Quidamortem	1294	3506	7	1
+South of Mount Quidamortem	1294	3504	4	2
+South of Mount Quidamortem	1294	3502	2	2
+Stranglewood (DT 2 Area)	1090	3263	76	192
+Stranglewood (DT 2 Area)	1166	3360	39	95
+Stranglewood (DT 2 Area)	1166	3354	36	6
+Stranglewood (DT 2 Area)	1166	3349	34	5
+Stranglewood (DT 2 Area)	1166	3345	32	4
+Stranglewood (DT 2 Area)	1184	3343	9	2
+Stranglewood (DT 2 Area)	1166	3342	10	3
+Stranglewood (DT 2 Area)	1166	3340	4	2
+Stranglewood (DT 2 Area)	1205	3364	4	68
+Stranglewood (DT 2 Area)	1209	3367	5	64
+Stranglewood (DT 2 Area)	1214	3372	5	49
+Stranglewood (DT 2 Area)	1219	3372	4	45
+Stranglewood (DT 2 Area)	1223	3372	5	38
+Stranglewood (DT 2 Area)	1235	3390	2	10
+Stranglewood (DT 2 Area)	1228	3390	7	13
+Stranglewood (DT 2 Area)	1228	3403	4	4
+Stranglewood (DT 2 Area)	1228	3370	4	20
+Stranglewood (DT 2 Area)	1166	3263	3	73
+Stranglewood (DT 2 Area)	1169	3263	3	70
+Stranglewood (DT 2 Area)	1172	3263	4	66
+Stranglewood (DT 2 Area)	1176	3263	2	63
+Stranglewood (DT 2 Area)	1178	3320	1	5
+Stranglewood (DT 2 Area)	1179	3321	1	3
+Stranglewood (DT 2 Area)	1178	3298	6	19
+Stranglewood (DT 2 Area)	1178	3317	5	1
+Stranglewood (DT 2 Area)	1184	3303	3	11
+Stranglewood (DT 2 Area)	1187	3304	1	5
+Stranglewood (DT 2 Area)	1178	3263	13	35
+Stranglewood (DT 2 Area)	1191	3263	2	33
+Stranglewood (DT 2 Area)	1193	3263	1	17
+Varlamore Wolf Den	1494	3119	13	16
+Varlamore Wolf Den	1493	3121	1	7
+Varlamore Wolf Den	1507	3119	1	15
+Varlamore Wolf Den	1508	3120	1	13
+Varlamore Wolf Den	1509	3121	1	11
+Varlamore Wolf Den	1510	3122	1	9
+Varlamore Main Palace Area	1637	3132	9	40
+Varlamore Main Palace Area	1635	3134	2	36
+Varlamore Main Palace Area	1633	3137	2	32
+Varlamore Main Palace Area	1646	3131	3	41
+Varlamore Main Palace Area	1649	3130	3	43
+Varlamore Main Palace Area	1652	3128	4	45
+Varlamore Main Palace Area	1656	3128	3	46
+Varlamore Main Palace Area	1659	3129	5	49
+Varlamore Main Palace Area	1664	3130	3	52
+Varlamore Main Palace Area	1667	3130	25	55
+Varlamore Main Palace Area	1692	3125	4	59
+Varlamore Main Palace Area	1696	3126	2	57
+Varlamore Main Palace Area	1698	3128	3	52
+Varlamore Main Palace Area	1701	3129	2	48
+Varlamore Main Palace Area	1703	3130	2	47
+Varlamore Main Palace Area	1705	3132	4	44
+Varlamore Main Palace Area	1709	3134	13	41
+Varlamore Main Palace Area	1722	3145	4	29
+Varlamore Main Palace Area	1726	3149	2	24
+Varlamore Main Palace Area	1728	3152	2	17
+Varlamore Main Palace Area	1675	3127	17	3
+Varlamore Main Palace Area	1674	3128	1	2
+Varlamore Main Palace Area	1687	3125	5	2
+Varlamore Main Palace Area	1705	3130	4	2
+Varlamore Main Palace Area	1722	3136	3	9
+Varlamore Main Palace Area	1730	3156	2	11
+Varlamore Main Palace Area	1732	3157	1	3
+Varlamore Colossal Remains Area	1663	2883	73	61
+Varlamore Colossal Remains Area	1736	2914	6	28
+Varlamore Colossal Remains Area	1736	2942	3	1
+Varlamore Colossal Remains Area	1736	2943	1	1
+Varlamore Colossal Remains Area	1742	2914	11	26
+Varlamore Colossal Remains Area	1742	2940	6	2
+Varlamore Colossal Remains Area	1753	2914	2	25
+Varlamore Colossal Remains Area	1755	2914	1	25
+Varlamore Colossal Remains Area	1756	2918	1	20
+Varlamore Colossal Remains Area	1757	2927	1	10
+Varlamore Colossal Remains Area	1758	2935	1	1
+Varlamore Colossal Remains Area	1583	2880	80	64
+Varlamore Colossal Remains Area	1583	2944	79	2
+Varlamore Colossal Remains Area	1583	2946	78	1
+Varlamore Colossal Remains Area	1583	2947	77	1
+Varlamore Colossal Remains Area	1583	2948	76	1
+Varlamore Colossal Remains Area	1583	2949	75	1
+Varlamore Colossal Remains Area	1583	2950	74	1
+Varlamore Colossal Remains Area	1583	2951	73	1
+Varlamore Colossal Remains Area	1583	2952	72	1
+Varlamore Colossal Remains Area	1585	2953	69	1
+Varlamore Colossal Remains Area	1585	2954	68	1
+Varlamore Colossal Remains Area	1585	2955	67	1
+Varlamore Colossal Remains Area	1585	2956	66	1
+Varlamore Colossal Remains Area	1585	2957	65	1
+Varlamore Colossal Remains Area	1586	2958	63	1
+Varlamore Colossal Remains Area	1587	2959	61	1
+Varlamore Colossal Remains Area	1587	2960	60	1
+Varlamore Colossal Remains Area	1587	2961	59	1
+Varlamore Colossal Remains Area	1588	2962	57	1
+Varlamore Colossal Remains Area	1589	2963	55	1
+Varlamore Colossal Remains Area	1590	2964	53	1
+Varlamore Colossal Remains Area	1591	2965	51	1
+Varlamore Colossal Remains Area	1592	2966	49	1
+Varlamore Colossal Remains Area	1593	2967	47	1
+Varlamore Colossal Remains Area	1594	2968	45	1
+Varlamore Colossal Remains Area	1595	2969	43	1
+Varlamore Colossal Remains Area	1596	2970	41	1
+Varlamore Colossal Remains Area	1597	2971	39	1
+Darkfrost (Hueycoatl)	1508	3272	22	14
+Darkfrost (Hueycoatl)	1509	3270	18	2
+Darkfrost (Hueycoatl)	1511	3269	8	1
+Darkfrost (Hueycoatl)	1514	3268	4	1
+Darkfrost (Hueycoatl)	1530	3274	1	11
+Darkfrost (Hueycoatl)	1531	3278	1	7
+Darkfrost (Hueycoatl)	1532	3280	1	5
+Darkfrost (Hueycoatl)	1533	3282	2	3
+Darkfrost (Hueycoatl)	1503	3286	17	3
+Darkfrost (Hueycoatl)	1505	3289	14	2
+Darkfrost (Hueycoatl)	1508	3291	8	2
+Darkfrost (Hueycoatl)	1507	3275	1	11
+Darkfrost (Hueycoatl)	1504	3276	3	10
+Darkfrost (Hueycoatl)	1503	3278	1	8
+Twilight temple / Tower of ascension (Varlamore)	1634	3213	16	29
+Twilight temple / Tower of ascension (Varlamore)	1633	3214	1	16
+Twilight temple / Tower of ascension (Varlamore)	1632	3214	1	10
+Twilight temple / Tower of ascension (Varlamore)	1631	3215	1	8
+Twilight temple / Tower of ascension (Varlamore)	1630	3217	1	6
+Twilight temple / Tower of ascension (Varlamore)	1629	3217	1	5
+Twilight temple / Tower of ascension (Varlamore)	1650	3214	1	1
+Twilight temple / Tower of ascension (Varlamore)	1650	3220	5	4
+Twilight temple / Tower of ascension (Varlamore)	1653	3217	6	1
+Twilight temple / Tower of ascension (Varlamore)	1654	3216	4	1
+Twilight temple / Tower of ascension (Varlamore)	1654	3218	1	6
+Twilight temple / Tower of ascension (Varlamore)	1637	3242	17	1
+Twilight temple / Tower of ascension (Varlamore)	1639	3243	2	1
+Twilight temple / Tower of ascension (Varlamore)	1644	3243	10	1
+Twilight temple / Tower of ascension (Varlamore)	1646	3245	5	2
+Twilight temple / Tower of ascension (Varlamore)	1644	3244	9	1
+Twilight temple / Tower of ascension (Varlamore)	1644	3245	8	1
+Twilight temple / Tower of ascension (Varlamore)	1650	3224	5	18
+Twilight temple / Tower of ascension (Varlamore)	1655	3218	1	18
+Twilight temple / Tower of ascension (Varlamore)	1655	3218	1	21
+Twilight temple / Tower of ascension (Varlamore)	1656	3218	1	20
+Twilight temple / Tower of ascension (Varlamore)	1657	3218	1	18
+Twilight temple / Tower of ascension (Varlamore)	1658	3218	1	18
+Twilight temple / Tower of ascension (Varlamore)	1659	3218	1	17
+Twilight temple / Tower of ascension (Varlamore)	1660	3219	1	16
+Twilight temple / Tower of ascension (Varlamore)	1661	3220	2	15
+Twilight temple / Tower of ascension (Varlamore)	1663	3221	1	14
+Twilight temple / Tower of ascension (Varlamore)	1664	3221	2	13
+Twilight temple / Tower of ascension (Varlamore)	1666	3219	4	9
+Twilight temple / Tower of ascension (Varlamore)	1670	3221	1	5
+Twilight temple / Tower of ascension (Varlamore)	1666	3231	32	3
+Twilight temple / Tower of ascension (Varlamore)	1674	3226	13	5
+Twilight temple / Tower of ascension (Varlamore)	1676	3225	2	1
+Twilight temple / Tower of ascension (Varlamore)	1673	3226	1	3
+Twilight temple / Tower of ascension (Varlamore)	1687	3227	1	4
+Twilight temple / Tower of ascension (Varlamore)	1688	3229	10	2
+Twilight temple / Tower of ascension (Varlamore)	1692	3227	5	2
+Twilight temple / Tower of ascension (Varlamore)	1691	3228	1	1
+Twilight temple / Tower of ascension (Varlamore)	1666	3234	33	22
+Twilight temple / Tower of ascension (Varlamore)	1699	3235	1	23
+Twilight temple / Tower of ascension (Varlamore)	1700	3236	1	22
+Twilight temple / Tower of ascension (Varlamore)	1701	3239	1	40
+Twilight temple / Tower of ascension (Varlamore)	1702	3240	1	39
+Twilight temple / Tower of ascension (Varlamore)	1703	3242	1	16
+Twilight temple / Tower of ascension (Varlamore)	1704	3254	1	6
+Twilight temple / Tower of ascension (Varlamore)	1705	3255	1	6
+Twilight temple / Tower of ascension (Varlamore)	1706	3255	1	7
+Twilight temple / Tower of ascension (Varlamore)	1707	3255	4	8
+Twilight temple / Tower of ascension (Varlamore)	1711	3256	1	5
+Twilight temple / Tower of ascension (Varlamore)	1704	3248	5	4
+Twilight temple / Tower of ascension (Varlamore)	1669	3256	30	2
+Twilight temple / Tower of ascension (Varlamore)	1667	3256	2	1
+Twilight temple / Tower of ascension (Varlamore)	1697	3262	3	18
+Twilight temple / Tower of ascension (Varlamore)	1700	3262	1	17
+Twilight temple / Tower of ascension (Varlamore)	1696	3261	3	1
+Twilight temple / Tower of ascension (Varlamore)	1693	3262	4	17
+Twilight temple / Tower of ascension (Varlamore)	1690	3262	3	16
+Twilight temple / Tower of ascension (Varlamore)	1689	3264	1	13
+Twilight temple / Tower of ascension (Varlamore)	1688	3265	1	12
+Twilight temple / Tower of ascension (Varlamore)	1687	3268	1	8
+Twilight temple / Tower of ascension (Varlamore)	1686	3270	1	6
+Twilight temple / Tower of ascension (Varlamore)	1703	3262	1	16
+Twilight temple / Tower of ascension (Varlamore)	1704	3263	1	13
+Twilight temple / Tower of ascension (Varlamore)	1705	3264	1	11
+Twilight temple / Tower of ascension (Varlamore)	1706	3265	1	10
+Twilight temple / Tower of ascension (Varlamore)	1707	3266	1	9
+Twilight temple / Tower of ascension (Varlamore)	1708	3266	1	8
+Twilight temple / Tower of ascension (Varlamore)	1709	3267	1	6
+Twilight temple / Tower of ascension (Varlamore)	1710	3267	6	5
+Twilight temple / Tower of ascension (Varlamore)	1716	3268	1	3
+Twilight temple / Tower of ascension (Varlamore)	1711	3266	5	1
+Twilight temple / Tower of ascension (Varlamore)	1713	3265	1	1
+Twilight temple / Tower of ascension (Varlamore)	1665	3241	1	16
+Twilight temple / Tower of ascension (Varlamore)	1664	3243	1	14
+Twilight temple / Tower of ascension (Varlamore)	1663	3244	1	12
+Twilight temple / Tower of ascension (Varlamore)	1662	3246	1	9
+Twilight temple / Tower of ascension (Varlamore)	1661	3248	1	6
+Twilight temple / Tower of ascension (Varlamore)	1660	3249	1	4
+Twilight temple / Tower of ascension (Varlamore)	1673	3258	21	1
+Twilight temple / Tower of ascension (Varlamore)	1673	3259	19	1
+Twilight temple / Tower of ascension (Varlamore)	1672	3260	16	1
+Twilight temple / Tower of ascension (Varlamore)	1671	3261	17	1
+Twilight temple / Tower of ascension (Varlamore)	1670	3262	18	1
+Twilight temple / Tower of ascension (Varlamore)	1669	3263	18	1
+Twilight temple / Tower of ascension (Varlamore)	1669	3264	17	2
+Twilight temple / Tower of ascension (Varlamore)	1668	3265	1	1
+Twilight temple / Tower of ascension (Varlamore)	1666	3266	19	1
+Twilight temple / Tower of ascension (Varlamore)	1678	3267	5	5
+Twilight temple / Tower of ascension (Varlamore)	1677	3267	1	4
+Twilight temple / Tower of ascension (Varlamore)	1676	3267	1	1
+Twilight temple / Tower of ascension (Varlamore)	1664	3267	11	5
+Twilight temple / Tower of ascension (Varlamore)	1663	3268	1	8
+Twilight temple / Tower of ascension (Varlamore)	1664	3272	7	1
+Twilight temple / Tower of ascension (Varlamore)	1664	3273	4	1
+Twilight temple / Tower of ascension (Varlamore)	1664	3274	2	1
+Twilight temple / Tower of ascension (Varlamore)	1662	3271	1	6
+Twilight temple / Tower of ascension (Varlamore)	1659	3271	3	11
+Twilight temple / Tower of ascension (Varlamore)	1651	3270	10	1
+Twilight temple / Tower of ascension (Varlamore)	1651	3268	9	2
+Twilight temple / Tower of ascension (Varlamore)	1652	3267	5	1
+Twilight temple / Tower of ascension (Varlamore)	1653	3266	3	1
+Twilight temple / Tower of ascension (Varlamore)	1651	3271	8	1
+Twilight temple / Tower of ascension (Varlamore)	1652	3272	7	1
+Twilight temple / Tower of ascension (Varlamore)	1653	3273	6	2
+Twilight temple / Tower of ascension (Varlamore)	1654	3275	5	2
+Twilight temple / Tower of ascension (Varlamore)	1655	3277	4	2
+Twilight temple / Tower of ascension (Varlamore)	1657	3279	2	1
+Twilight temple / Tower of ascension (Varlamore)	1658	3280	1	1
+The teomat	1445	3213	7	5
+The teomat	1442	3211	11	3
+The teomat	1431	3208	26	4
+The teomat	1433	3212	4	1
+The teomat	1432	3206	25	2
+The teomat	1436	3202	20	4
+The teomat	1436	3194	33	9
+The teomat	1435	3186	32	8
+The teomat	1427	3186	8	5
+The teomat	1425	3180	40	6
+The teomat	1423	3171	41	9
+The teomat	1419	3167	45	4
+The teomat	1421	3165	40	2
+The teomat	1422	3164	37	1
+The teomat	1426	3163	32	1
+The teomat	1428	3162	29	1
+The teomat	1429	3160	22	2
+The teomat	1427	3157	23	3
+The teomat	1423	3155	28	2
+The teomat	1421	3152	33	3
+The teomat	1419	3149	34	3
+The teomat	1416	3147	34	2
+The teomat	1416	3144	33	3
+The teomat	1419	3143	30	1
+The teomat	1420	3142	30	1
+The teomat	1420	3139	44	3
+The teomat	1419	3136	45	3
+The teomat	1418	3134	44	2
+The teomat	1417	3129	9	5
+The teomat	1418	3127	6	2
+The teomat	1420	3123	5	4
+The teomat	1448	3124	6	10
+The teomat	1445	3132	3	2
+The teomat	1447	3127	1	5
+The teomat	1454	3131	8	3
+The teomat	1454	3130	4	1
+The teomat	1454	3126	3	4
+The teomat	1449	3119	4	5
+Sunset Coast	1491	2978	54	15
+Sunset Coast	1491	2975	50	3
+Sunset Coast	1491	2965	48	10
+Sunset Coast	1491	2993	53	1
+Sunset Coast	1491	2994	52	1
+Sunset Coast	1491	2995	51	1
+Sunset Coast	1491	2996	50	1
+Sunset Coast	1491	2997	49	1
+Sunset Coast	1503	2998	36	1
+Sunset Coast	1504	2999	34	1
+Sunset Coast	1505	3000	30	1
+Sunset Coast	1508	3001	25	1
+Sunset Coast	1510	3002	21	1
+Sunset Coast	1514	3003	12	3
+Line north of Grand Exchange	3136	3520	56	5
+Wilderness: Dark warrior's palace	3008	3600	64	112
+Wilderness: Two tiles next to southern rev caves entrance which used to be a BH "singles" lure spot	3072	3654	1	2
+Wilderness: Chaos altar	2946	3816	14	16
+Wilderness: Balance crossing to wilderness agility course	2984	3912	24	16
+Wilderness: North of kbd entrance	3008	3856	40	48
+Wilderness: Two tiles NE of kbd entrance cage	3021	3855	2	1
+Wilderness: North of rune rocks	3048	3896	24	8
+Wilderness: North of lava maze	3072	3880	64	24
+Wilderness: Northeast of lava maze	3112	3872	24	8
+Wilderness: Northeast f2p wilderness	3136	3840	256	64
+Wilderness: Northeast p2p wilderness	3200	3904	192	64
+Wilderness: North-mid east f2p wilderness	3152	3752	176	88
+Wilderness: East f2p wilderness	3192	3525	136	227
+Wilderness: Small east f2p wilderness strip NE of lumberyard	3328	3525	17	8
+Wilderness: One silly tile that used to be a BH "singles" lure spot	3191	3689	1	1
+Wilderness: Wilderness north of Grand Exchange	3136	3525	56	59
+Wilderness: SE of Ferox 1	3152	3584	40	36
+Wilderness: SE of Ferox 2	3146	3598	6	22
+Wilderness: SE of Ferox 2 extension 1	3147	3596	5	2
+Wilderness: SE of Ferox 2 extension 2	3149	3595	3	1
+Wilderness: SE of Ferox 2 extension 3	3150	3594	2	1
+Wilderness: SE of Ferox 2 extension 4	3151	3593	1	1
+Wilderness: SE of Ferox 3	3152	3620	10	6
+Wilderness: East of Ferox 1	3187	3620	5	28
+Wilderness: East of Ferox 2, south of bridge	3179	3636	8	4
+Wilderness: East of Ferox 2, bridge and north of bridge	3176	3640	11	8
+Wilderness: Two dumb tiles north of bridge east of Ferox	3174	3647	2	1
+Wilderness: Slayer dungeon, Vet'ion, Venenatis, Callisto, and escape caves	3264	10048	192	320
+Wilderness: Scorpia's cave	3218	10330	31	24
+Wilderness: Wilderness God Wars Dungeon south portion	3008	10112	64	28
+Wilderness: Wilderness God Wars Dungeon middle portion	3008	10140	51	12
+Wilderness: Wilderness God Wars Dungeon north portion	3008	10152	39	24

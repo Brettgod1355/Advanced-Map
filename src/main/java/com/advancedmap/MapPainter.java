@@ -21,6 +21,7 @@ import java.awt.geom.Path2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.List;
@@ -73,7 +74,10 @@ final class MapPainter
 		HIDE,
 		UNHIDE,
 		ROUTE,
-		CLEAR_ROUTE
+		CLEAR_ROUTE,
+		ADD_MARKER,
+		EDIT_MARKER,
+		REMOVE_MARKER
 	}
 
 	@Value
@@ -128,6 +132,13 @@ final class MapPainter
 	private final MapFilters filters;
 	private final SideList sideList;
 	private final MapSearch search;
+	private volatile MapPins pins = new MapPins();
+	private volatile MarkerEditor editor = new MarkerEditor();
+	private volatile boolean multiCombat;
+	/** Each farming site's patches as Time Tracking last saved them; null while farming status is off. */
+	private volatile Map<Farming.Site, List<Farming.Reading>> farming;
+	/** The pin a right-click menu is for, or null. */
+	private volatile MapPins.Pin menuPin;
 
 	MapPainter(RegionImages images, MapMessages messages, MapIcons icons, MapLabels labels, MapFilters filters,
 		SideList sideList, MapSearch search)
@@ -139,6 +150,27 @@ final class MapPainter
 		this.labels = labels;
 		this.filters = filters;
 		this.sideList = sideList;
+	}
+
+	void setPins(MapPins pins, MarkerEditor editor)
+	{
+		this.pins = pins;
+		this.editor = editor;
+	}
+
+	void setMultiCombat(boolean on)
+	{
+		multiCombat = on;
+	}
+
+	void setFarming(Map<Farming.Site, List<Farming.Reading>> readings)
+	{
+		farming = readings;
+	}
+
+	void setMenuPin(MapPins.Pin pin)
+	{
+		menuPin = pin;
 	}
 
 	/**
@@ -197,12 +229,21 @@ final class MapPainter
 		{
 			drawWilderness(g, view, area, id -> images.isAbsent(0, id));
 		}
+		if (multiCombat)
+		{
+			MultiCombat.draw(g, view);
+		}
 		if (settings.isPlaceNames())
 		{
 			drawLabels(g, view, area, labels.all(), buttons(view.width, view.height, window).values());
 		}
 		List<MapIcons.Shown> shown = icons.visible(view, area, plane, settings, progress);
 		drawIcons(g, shown, selection);
+		Map<Farming.Site, List<Farming.Reading>> farms = farming;
+		if (farms != null)
+		{
+			drawFarming(g, shown, farms);
+		}
 		if (settings.isTransportNames() && view.zoom >= MapLabels.PLACE_ZOOM)
 		{
 			drawStopNames(g, shown);
@@ -214,17 +255,31 @@ final class MapPainter
 		{
 			drawLayer(g, view, layer);
 		}
+		List<MapPins.Shown> pinsShown = pins.visible(view, area, plane, settings.getIconScale());
+		MapPins.draw(g, pinsShown, view.zoom);
 		drawPlayer(g, view, area, player);
+		MapPins.Pin pin = pins.selected();
+		if (pin != null)
+		{
+			for (MapPins.Shown each : pinsShown)
+			{
+				if (each.getPin().equals(pin))
+				{
+					drawBox(g, view, each.getBounds(), pin.getName().isEmpty() ? "Marker" : pin.getName(),
+						pinLines(pin, settings.getFloorNumbers()));
+				}
+			}
+		}
 		if (selection != null)
 		{
 			MapIcons.Shown selected = find(shown, selection.getSpot());
 			if (selection.isMenu())
 			{
-				drawMenu(g, view, selection, settings, progress);
+				drawMenu(g, view, selection, settings, progress, menuPin);
 			}
 			else if (selected != null)
 			{
-				drawInfo(g, view, selected, settings, progress);
+				drawInfo(g, view, selected, settings, progress, farmingLines(selected.getSpot(), farms));
 			}
 		}
 		drawBar(g, view, mouse, loading, window, !shown.isEmpty());
@@ -234,7 +289,11 @@ final class MapPainter
 			Rectangle button = buttons(view.width, view.height, window).get(Button.FILTERS);
 			filters.draw(g, MapFilters.layout(button, view.height), filters.entries(progress), settings, icons);
 		}
-		if (sideList.isOpen())
+		if (editor.isOpen())
+		{
+			editor.draw(g, MarkerEditor.layout(buttons(view.width, view.height, window)), mouse);
+		}
+		else if (sideList.isOpen())
 		{
 			sideList.draw(g, sideList.layout(buttons(view.width, view.height, window)), mouse);
 		}
@@ -689,11 +748,18 @@ final class MapPainter
 
 	/** The info box beside an icon: its name, then what the player needs to know about it. Never cut short. */
 	private static void drawInfo(Graphics2D g, MapViewport.View view, MapIcons.Shown icon, MapSettings settings,
-		Progress progress)
+		Progress progress, List<MapIcons.Line> extra)
 	{
-		String title = MapIcons.name(icon.getSpot(), progress);
-		List<MapIcons.Line> lines = MapIcons.info(icon.getSpot(), progress, settings.isHidden(icon.getSpot()),
-			settings.getFloorNumbers());
+		List<MapIcons.Line> lines = new ArrayList<>(MapIcons.info(icon.getSpot(), progress,
+			settings.isHidden(icon.getSpot()), settings.getFloorNumbers()));
+		lines.addAll(extra);
+		drawBox(g, view, icon.getBounds(), MapIcons.name(icon.getSpot(), progress), lines);
+	}
+
+	/** An info box beside {@code at}: a title and lines, kept on the screen. */
+	private static void drawBox(Graphics2D g, MapViewport.View view, Rectangle at, String title,
+		List<MapIcons.Line> lines)
+	{
 		java.awt.Font titleFont = FontManager.getRunescapeBoldFont();
 		java.awt.Font font = FontManager.getRunescapeSmallFont();
 		FontMetrics titleMetrics = g.getFontMetrics(titleFont);
@@ -705,7 +771,6 @@ final class MapPainter
 		}
 		width += PAD * 2;
 		int height = PAD * 2 + titleMetrics.getHeight() + metrics.getHeight() * lines.size();
-		Rectangle at = icon.getBounds();
 		int x = at.x + at.width + 8;
 		if (x + width > view.width - GAP)
 		{
@@ -728,26 +793,141 @@ final class MapPainter
 		}
 	}
 
-	/** The right-click menu's entries: hide or unhide for an icon, and route entries when a routing plugin is chosen. */
+	/** A dot on each farming patch icon with its site's state: ready, diseased or dead, growing, empty. */
+	private static void drawFarming(Graphics2D g, List<MapIcons.Shown> shown, Map<Farming.Site, List<Farming.Reading>> farms)
+	{
+		for (MapIcons.Shown icon : shown)
+		{
+			MapSpot spot = icon.getSpot();
+			if (spot.getGroup() != IconGroup.FARMING || icon.getLook() == MapIcons.Look.HIDDEN)
+			{
+				continue;
+			}
+			Farming.Site site = Farming.siteNear(spot.getX(), spot.getY());
+			Farming.Status status = site == null ? null : Farming.summary(farms.getOrDefault(site,
+				Collections.emptyList()));
+			if (status == null)
+			{
+				continue;
+			}
+			Rectangle at = icon.getBounds();
+			int size = Math.max(7, at.width / 3);
+			int x = at.x + at.width - size + 2;
+			int y = at.y - 2;
+			g.setColor(OUTLINE);
+			g.fillOval(x - 1, y - 1, size + 2, size + 2);
+			g.setColor(status.color);
+			g.fillOval(x, y, size, size);
+		}
+	}
+
+	/** A farming icon's info box lines: each patch of its site, what grows there and when it is ready. */
+	static List<MapIcons.Line> farmingLines(MapSpot spot, Map<Farming.Site, List<Farming.Reading>> farms)
+	{
+		List<MapIcons.Line> lines = new ArrayList<>();
+		if (farms == null || spot.getGroup() != IconGroup.FARMING)
+		{
+			return lines;
+		}
+		Farming.Site site = Farming.siteNear(spot.getX(), spot.getY());
+		List<Farming.Reading> readings = site == null ? null : farms.get(site);
+		if (readings == null || readings.isEmpty())
+		{
+			if (site != null)
+			{
+				lines.add(new MapIcons.Line("Not known yet: visit it with Time Tracking on", MapIcons.QUIET));
+			}
+			return lines;
+		}
+		long now = System.currentTimeMillis() / 1000;
+		for (Farming.Reading reading : readings)
+		{
+			Farming.Patch patch = reading.getPatch();
+			String where = patch.getName().isEmpty() ? kindName(patch.getKind()) : patch.getName() + " "
+				+ kindName(patch.getKind()).toLowerCase(Locale.ROOT);
+			String what = "Weeds".equals(reading.getProduce()) ? "empty" : reading.getProduce();
+			String state = reading.getStatus() == Farming.Status.GROWING
+				? "ready in " + Farming.timeLeft(reading.getDone() - now)
+				: reading.getStatus().label.toLowerCase(Locale.ROOT);
+			lines.add(new MapIcons.Line(where + ": " + what + (reading.getStatus() == Farming.Status.EMPTY ? ""
+				: ", " + state), reading.getStatus().color));
+		}
+		return lines;
+	}
+
+	/** "HARDWOOD_TREE" as "Hardwood tree". */
+	static String kindName(String kind)
+	{
+		String words = kind.toLowerCase(Locale.ROOT).replace('_', ' ');
+		return words.isEmpty() ? words : Character.toUpperCase(words.charAt(0)) + words.substring(1);
+	}
+
+	/** A pin's info box lines: what another plugin says of it, or that it is the player's marker, and its tile. */
+	static List<MapIcons.Line> pinLines(MapPins.Pin pin, FloorNumbers floors)
+	{
+		List<MapIcons.Line> lines = new ArrayList<>();
+		if (pin.getDetail() != null && !pin.getDetail().isEmpty() && !pin.getDetail().equals(pin.getName()))
+		{
+			lines.add(new MapIcons.Line(pin.getDetail(), MapIcons.PLAIN));
+		}
+		WorldPoint at = Prifddinas.toCity(pin.getPoint());
+		lines.add(new MapIcons.Line(at.getX() + ", " + at.getY() + (at.getPlane() > 0 ? ", " + floors.name(at.getPlane())
+			: ""), MapIcons.QUIET));
+		if (pin.getMarker() != null)
+		{
+			lines.add(new MapIcons.Line("Right-click to edit or remove", MapIcons.QUIET));
+		}
+		return lines;
+	}
+
+	/**
+	 * The right-click menu's entries: hide or unhide for an icon, route entries when a routing plugin is chosen, and
+	 * Add marker here.
+	 */
 	static List<MenuEntry> menuEntries(Selection selection, MapSettings settings)
+	{
+		return menuEntries(selection, settings, null);
+	}
+
+	/** As above, for a menu opened on a pin when {@code pin} is set: a marker's Edit and Remove. */
+	static List<MenuEntry> menuEntries(Selection selection, MapSettings settings, MapPins.Pin pin)
 	{
 		List<MenuEntry> entries = new ArrayList<>();
 		MapSpot spot = selection.getSpot();
-		if (spot != null)
+		if (pin != null && pin.getMarker() != null)
+		{
+			entries.add(new MenuEntry(Action.EDIT_MARKER, "Edit marker"));
+			entries.add(new MenuEntry(Action.REMOVE_MARKER, "Remove marker"));
+		}
+		else if (spot != null)
 		{
 			entries.add(settings.isHidden(spot) ? new MenuEntry(Action.UNHIDE, "Unhide this icon")
 				: new MenuEntry(Action.HIDE, "Hide this icon"));
 		}
+
 		RoutingPlugin routing = settings.getRouting();
 		if (routing != null && routing != RoutingPlugin.NONE)
 		{
 			entries.add(new MenuEntry(Action.ROUTE, "Route here (" + routing.getLabel() + ")"));
 			entries.add(new MenuEntry(Action.CLEAR_ROUTE, "Clear route"));
 		}
+		if (pin == null)
+		{
+			entries.add(new MenuEntry(Action.ADD_MARKER, "Add marker here"));
+		}
 		return entries;
 	}
 
 	/** The menu's name row: the icon's name, or the tile with no icon. */
+	static String menuTitle(Selection selection, Progress progress, FloorNumbers floors, MapPins.Pin pin)
+	{
+		if (pin != null)
+		{
+			return pin.getName().isEmpty() ? "Marker" : pin.getName();
+		}
+		return menuTitle(selection, progress, floors);
+	}
+
 	static String menuTitle(Selection selection, Progress progress, FloorNumbers floors)
 	{
 		if (selection.getSpot() != null)
@@ -783,10 +963,10 @@ final class MapPainter
 	}
 
 	private static void drawMenu(Graphics2D g, MapViewport.View view, Selection selection, MapSettings settings,
-		Progress progress)
+		Progress progress, MapPins.Pin pin)
 	{
-		String title = menuTitle(selection, progress, settings.getFloorNumbers());
-		List<MenuEntry> entries = menuEntries(selection, settings);
+		String title = menuTitle(selection, progress, settings.getFloorNumbers(), pin);
+		List<MenuEntry> entries = menuEntries(selection, settings, pin);
 		Rectangle menu = menuBounds(selection, title, entries, view.width, view.height);
 		drawPanel(g, menu);
 		g.setFont(FontManager.getRunescapeSmallFont());

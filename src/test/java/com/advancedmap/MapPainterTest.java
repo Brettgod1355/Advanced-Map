@@ -85,9 +85,10 @@ public class MapPainterTest
 		MapSpot varrock = MapSpot.teleport(Teleport.VARROCK);
 		MapPainter.Selection near = new MapPainter.Selection(varrock, true, 790, 590, Teleport.VARROCK.getLocation());
 		List<MapPainter.MenuEntry> entries = MapPainter.menuEntries(near, settings(RoutingPlugin.SHORTEST_PATH));
-		assertEquals(3, entries.size());
+		assertEquals(4, entries.size());
 		assertEquals(MapPainter.Action.HIDE, entries.get(0).getAction());
 		assertEquals("Route here (Shortest Path)", entries.get(1).getText());
+		assertEquals(MapPainter.Action.ADD_MARKER, entries.get(3).getAction());
 		Rectangle menu = MapPainter.menuBounds(near, "Varrock Teleport", entries, 800, 600);
 		assertTrue(menu.x + menu.width <= 800 && menu.y + menu.height <= 600);
 		for (int i = 0; i < entries.size(); i++)
@@ -99,17 +100,19 @@ public class MapPainterTest
 	}
 
 	@Test
-	public void aTileWithNoIconOnlyRoutes()
+	public void aTileWithNoIconRoutesAndTakesAMarker()
 	{
 		MapPainter.Selection tile = new MapPainter.Selection(null, true, 10, 10, new WorldPoint(3222, 3218, 1));
 		List<MapPainter.MenuEntry> entries = MapPainter.menuEntries(tile, settings(RoutingPlugin.GPS));
-		assertEquals(2, entries.size());
+		assertEquals(3, entries.size());
 		assertEquals(MapPainter.Action.ROUTE, entries.get(0).getAction());
 		assertEquals("Route here (GPS)", entries.get(0).getText());
 		assertEquals("3222, 3218, Floor 2", MapPainter.menuTitle(tile, Progress.NONE, FloorNumbers.GROUND_IS_FIRST));
 		assertEquals("3222, 3218, Floor 1", MapPainter.menuTitle(tile, Progress.NONE,
 			FloorNumbers.FIRST_ABOVE_GROUND));
-		assertTrue(MapPainter.menuEntries(tile, settings(RoutingPlugin.NONE)).isEmpty());
+		List<MapPainter.MenuEntry> plain = MapPainter.menuEntries(tile, settings(RoutingPlugin.NONE));
+		assertEquals(1, plain.size());
+		assertEquals("Add marker here", plain.get(0).getText());
 	}
 
 	@Test

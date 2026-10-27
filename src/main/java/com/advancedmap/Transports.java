@@ -305,6 +305,12 @@ final class Transports
 		return CODE_SPACE.matcher(out).replaceAll("").replace(" - ", ", ");
 	}
 
+	/** Every stop of a network ("Fairy ring", "Spirit tree"), or none. */
+	static List<Destination> network(String kind)
+	{
+		return data.networks.getOrDefault(kind, Collections.emptyList());
+	}
+
 	/**
 	 * Where the transport at or near a map icon goes: the one whose boarding spot is nearest, within {@link #REACH}
 	 * tiles. A network's every other stop, or every place a boat, ship, canoe or carpet there sails to. Empty when no

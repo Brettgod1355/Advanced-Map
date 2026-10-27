@@ -135,7 +135,15 @@ class AdvancedMapPanel extends PluginPanel
 			+ section("Search", "Click the box at the top and type: a place, a dungeon, a shop, anything a shop"
 			+ " sells or a monster. Loose spelling works (\"d scim\", \"dragon sim\", \"kbd\"). Up, Down and"
 			+ " Enter pick a result, or click one. A place or shop moves the map there; an item lists the shops"
-			+ " that sell it, nearest first; a monster marks every spawn and lists them by area.")
+			+ " that sell it, nearest first; a monster marks every spawn and lists them by area. Fairy ring codes"
+			+ " (\"cks\"), fishing spots (\"lobster\"), hunter areas and kinds of icon (\"bank\": every one,"
+			+ " nearest first) are found too; the nearest comes first among equal matches.")
+			+ section("Markers", "Right-click anywhere and choose \"Add marker here\": name it, pick a picture and a"
+			+ " color, Save. Right-click a marker to edit or remove it. Other plugins' markers (a clue scroll's spot,"
+			+ " Quest Helper's next step) show too; click one for what it says.")
+			+ section("Farming, multi-combat, Slayer", "A dot on each farming patch icon says how it is doing (from"
+			+ " RuneLite's Time Tracking plugin); click it for each crop and when it is ready. Zoomed in, multi-combat"
+			+ " areas are tinted red. The Slayer task setting marks every spawn of your task's monsters.")
 			+ section("Surface and underground", "The button at the top right switches between the two maps."
 			+ " Basements, caves and dungeons are on the underground map.")
 			+ section("Floors", "The arrows at the bottom right go up and down a floor. The floors below are shown"

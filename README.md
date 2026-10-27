@@ -13,7 +13,18 @@ A full-screen world map for RuneLite, drawn from the game's own map data with sm
 - **Search** with the box at the top: places, dungeon and minigame entrances, shops, everything shops sell and
   monsters, matched loosely as the Grand Exchange does ("d scim" and "dragon sim" find the dragon scimitar, "kbd"
   the King Black Dragon). A place or shop moves the map there; an item lists the shops that sell it and the price,
-  nearest first; a monster or NPC marks every spawn and lists them by area.
+  nearest first; a monster or NPC marks every spawn and lists them by area. Fairy ring codes ("cks"), fishing spots
+  by catch ("lobster"), hunter areas by creature ("chinchompa") and kinds of icon ("bank", "anvil", "altar": every
+  one, nearest first) are found too, and among equally good matches the nearest to you comes first.
+- **Your own markers**: right-click anywhere, "Add marker here", give it a name and pick one of 12 pictures and 9
+  colors. Right-click a marker to edit or remove it; markers are found by search too.
+- **Other plugins' markers**: a clue scroll's spot, Quest Helper's next step and other plugins' world map markers
+  show on this map as well (RuneLite's own World Map plugin's are left out: Advanced Map has those icons itself).
+- **Multi-combat areas**, in the Wilderness and everywhere else, tinted red with a solid edge when zoomed in.
+- **Farming patches**: a dot on each patch icon, green ready, yellow growing, red diseased or dead, gray empty; click
+  one for each patch's crop and when it is ready. Read from what RuneLite's Time Tracking plugin saved.
+- **Slayer task** (off by default): every spawn of your task's monsters marked, with how many are left, from the
+  task RuneLite's Slayer plugin keeps.
 - **Shops**: click a shop, general stores included, for what it sells and for how much.
 - **Fares**: click a charter ship, the Shilo Village cart or another transport for where it goes, the fare and what
   the trip needs (a quest, a level, the Karamja elite diary that makes the cart free).

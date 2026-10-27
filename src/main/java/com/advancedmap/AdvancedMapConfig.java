@@ -24,6 +24,11 @@ public interface AdvancedMapConfig extends Config
 	String SHOW_HIDDEN = "showHidden";
 	String ICONS_OFF = "iconsOff";
 	String HIDDEN_TYPES = "hiddenTypes";
+	String MARKERS = "markers";
+	String MULTI_COMBAT = "multiCombat";
+	String FARMING_STATUS = "farmingStatus";
+	String PLUGIN_MARKERS = "pluginMarkers";
+	String SLAYER_TASK = "slayerTask";
 
 	@ConfigSection(
 		name = "Icons",
@@ -102,6 +107,55 @@ public interface AdvancedMapConfig extends Config
 	default boolean wildernessLines()
 	{
 		return true;
+	}
+
+	@ConfigItem(
+		keyName = MULTI_COMBAT,
+		name = "Multi-combat areas",
+		description = "When zoomed in, tint the areas where combat is multi-way (several can attack one), in the Wilderness"
+			+ " and everywhere else, with a red edge.",
+		position = 4
+	)
+	default boolean multiCombat()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = FARMING_STATUS,
+		name = "Farming patch status",
+		description = "Put a dot on farming patch icons: green ready, yellow growing, red diseased or dead, gray empty."
+			+ " Read from what RuneLite's Time Tracking plugin saved; click a patch for what is growing and when it is"
+			+ " ready.",
+		position = 5
+	)
+	default boolean farmingStatus()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = PLUGIN_MARKERS,
+		name = "Other plugins' markers",
+		description = "Show the markers other plugins put on the world map, such as a clue scroll's spot or Quest"
+			+ " Helper's next step. RuneLite's own World Map plugin's icons are left out (Advanced Map has its own).",
+		position = 6
+	)
+	default boolean pluginMarkers()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = SLAYER_TASK,
+		name = "Slayer task",
+		description = "Mark every spawn of your Slayer task's monsters, with what is left of the task. Uses the task"
+			+ " RuneLite's Slayer plugin keeps, so that plugin must be on.",
+		position = 7
+	)
+	default boolean slayerTask()
+	{
+		return false;
 	}
 
 	@ConfigItem(
@@ -456,6 +510,18 @@ public interface AdvancedMapConfig extends Config
 		hidden = true
 	)
 	default String hiddenIcons()
+	{
+		return "";
+	}
+
+	/** The player's markers, one a line ({@link MapPins#save}). */
+	@ConfigItem(
+		keyName = MARKERS,
+		name = "",
+		description = "",
+		hidden = true
+	)
+	default String markers()
 	{
 		return "";
 	}

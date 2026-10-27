@@ -13,6 +13,23 @@ in the plugin JAR.
 names and tiles of RuneLite's world map plugin's `DungeonLocation` and `MinigameLocation` lists
 (`runelite-client/src/main/java/net/runelite/client/plugins/worldmap/`, release 1.13.4, the same commit as below).
 
+More data from the same RuneLite release (BSD 2-Clause), kept as tables in `src/main/resources/com/advancedmap/`:
+
+- `fishing-hunter.tsv`: the fishing spots and hunter areas of the world map plugin's `FishingSpotLocation` and
+  `HunterAreaLocation` (names, tiles, creatures and Hunter levels), with what each spot catches from
+  `net.runelite.client.game.FishingSpot`.
+- `farming.tsv`: the farming patches of the Time Tracking plugin's `FarmingWorld` (region, patch, varbit, kind), what a
+  patch's game value means from its `PatchImplementation` and `Produce` (what grows, its state, stage and tick rate,
+  written out once by a tool run against the 1.13.4 client; no RuneLite code is included), and where each farming site
+  is from the world map plugin's `FarmingPatchLocation`. How `Farming.java` estimates when a patch is ready follows
+  Time Tracking's `FarmingTracker` (`predictPatch`, `getTickTime`), written anew.
+- `slayer-tasks.tsv`: the Slayer plugin's `Task` names and the other monsters each covers. `SlayerTask.java` matches
+  monsters the way that plugin does (`targetNamePattern`: whole words, the task's name without its last "s"),
+  written anew.
+
+Advanced Map reads, and never changes, what the Time Tracking and Slayer plugins saved for the player, under their
+own setting names, and the markers other plugins put on the world map (through `WorldMapPointManager`).
+
 The map is drawn with code from RuneLite's cache library (`net.runelite:cache`), taken from the
 `runelite-parent-1.13.4` release of [runelite/runelite](https://github.com/runelite/runelite) (commit
 `ad137adad1cb5052a5fef6e391888a8895d09830`, the published `cache-1.13.4-sources.jar`). The files keep their
@@ -129,6 +146,45 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ```
 
+## Multi Lines and Wilderness Lines (BSD 2-Clause)
+
+`src/main/resources/com/advancedmap/multi-combat.tsv`, where combat is multi-way, is taken from two Plugin Hub plugins:
+outside the Wilderness, the areas of [Multi Lines](https://github.com/tsbreuer/Multi-Lines) (its
+`MultiLinesData.json` on the `geoJSON` branch at `694b258744a4dcb2c9d19b18a7aae38875eb9113`, 2026-06-08: the areas
+it marks enabled and not removed); in the Wilderness, the rectangles of
+[Wilderness Lines](https://github.com/Nightfirecat/plugin-hub-plugins) (`WILDERNESS_MULTI_AREAS` in
+`WildernessLinesPlugin.java` at its Plugin Hub pin `d81bb4c444c3772b1563be8a8fcc2252c84a0a4f`). Only the areas' names
+and tiles are kept; no code is included, and nothing is downloaded while the plugin runs. Both repositories publish
+the same license, with the same copyright line:
+
+```
+BSD 2-Clause License
+
+Copyright (c) 2022, Jordan
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this
+   list of conditions and the following disclaimer.
+
+2. Redistributions in binary form must reproduce the above copyright notice,
+   this list of conditions and the following disclaimer in the documentation
+   and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+```
+
 ## Gradle wrapper
 
 The wrapper scripts, JAR, and properties come from the RuneLite example plugin, commit
@@ -145,7 +201,8 @@ The game and its data are Jagex's; this plugin is not affiliated with or endorse
 ## Images
 
 `icon.png` and the sidebar icon are this project's own drawing, made in code (`MapIcon.java`) and licensed with
-the rest of the project under the BSD 2-Clause License. No game artwork or wiki image is included.
+the rest of the project under the BSD 2-Clause License. So are the pictures a player's markers can have
+(`MarkerIcons.java`). No game artwork or wiki image is included.
 
 ## Facts from the Old School RuneScape Wiki
 

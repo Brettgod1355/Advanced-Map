@@ -485,6 +485,24 @@ class RegionImages
 	}
 
 	/**
+	 * Finds a region's icons without drawing it, once: search lists every bank or anvil, also of regions not looked
+	 * at yet. Low-priority thread.
+	 */
+	void scanIcons(int regionId)
+	{
+		if (iconsFound.contains(regionId))
+		{
+			return;
+		}
+		Region region = source.region(regionId >> 8, regionId & 0xFF);
+		if (region != null)
+		{
+			findIcons(region);
+		}
+		iconsFound.add(regionId);
+	}
+
+	/**
 	 * Hands the icons a region's objects put on the game's map, on every floor, to {@link MapIcons}, with Advanced
 	 * Map's own ({@link FoundIcons}). An icon is on the floor it is drawn on: an object over a bridge tile is stored a
 	 * floor up but drawn a floor lower, as the map is.

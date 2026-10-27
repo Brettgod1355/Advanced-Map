@@ -50,6 +50,8 @@ import net.runelite.client.ui.ClientToolbar;
 import net.runelite.client.ui.JagexColors;
 import net.runelite.client.ui.NavigationButton;
 import net.runelite.client.ui.overlay.OverlayManager;
+import net.runelite.client.ui.overlay.worldmap.WorldMapPoint;
+import net.runelite.client.ui.overlay.worldmap.WorldMapPointManager;
 import net.runelite.client.util.ColorUtil;
 import net.runelite.client.util.HotkeyListener;
 
@@ -78,6 +80,10 @@ public class AdvancedMapPlugin extends Plugin
 	static final String SEARCH_LAYER = "advancedmap:search";
 	/** A search result is shown at least this close (pixels per tile). */
 	static final double SEARCH_ZOOM = 4;
+	static final long EXTRAS_MILLIS = 1000;
+	static final long FARMING_MILLIS = 10_000;
+	/** The package of RuneLite's World Map plugin, whose world map markers are the game's icons again. */
+	static final String CORE_WORLD_MAP = "net.runelite.client.plugins.worldmap.";
 
 	@Inject
 	private Client client;
@@ -109,6 +115,9 @@ public class AdvancedMapPlugin extends Plugin
 	@Inject
 	private PluginManager pluginManager;
 
+	@Inject
+	private WorldMapPointManager worldMapPointManager;
+
 	/** One view per map, each remembering where it was left. */
 	private final Map<MapArea, MapViewport> viewports = new EnumMap<>(MapArea.class);
 	private volatile MapArea area = MapArea.SURFACE;
@@ -120,6 +129,18 @@ public class AdvancedMapPlugin extends Plugin
 	private MapFilters filters;
 	private final SideList sideList = new SideList();
 	private final MapSearch search = new MapSearch();
+	private final MapPins pins = new MapPins();
+	private final MarkerEditor editor = new MarkerEditor();
+	/** When the pins, farming patches and Slayer task were last read, in milliseconds. */
+	private long extrasRead;
+	private long farmingRead;
+	/** The Slayer task drawn now ("Goblins:24"), or null. */
+	private String slayerShown;
+	/** The search's extra entries and what they were built from. */
+	private List<MapSearch.Entry> extraEntries = Collections.emptyList();
+	private Object extraKey;
+	/** The pin a right-click menu is open on, or null. */
+	private volatile MapPins.Pin menuPin;
 	private volatile boolean labelsLoading;
 	private RegionImages images;
 	private MapPreparer preparer;
@@ -176,6 +197,10 @@ public class AdvancedMapPlugin extends Plugin
 		Shops.load();
 		Spawns.load();
 		search.load();
+		MultiCombat.load();
+		Farming.load();
+		SlayerTask.load();
+		pins.setMarkers(MapPins.parse(config.markers()));
 		reader = new CacheReader(client);
 		shortestPathRoute = new ShortestPathRoute();
 		source = new ClientMapSource(reader);
@@ -198,6 +223,8 @@ public class AdvancedMapPlugin extends Plugin
 		preparer.start();
 		messages = new MapMessages(this::openMap);
 		painter = new MapPainter(images, messages, icons, labels, filters, sideList, search);
+		painter.setPins(pins, editor);
+		painter.setMultiCombat(config.multiCombat());
 		overlay = new MapOverlay(client, this, painter);
 		input = new MapInput(this, client::getCanvasWidth, client::getCanvasHeight);
 		hotkey = new HotkeyListener(() -> config.toggleKey())
@@ -314,6 +341,117 @@ public class AdvancedMapPlugin extends Plugin
 		{
 			windowScale = stretchedScale();
 		}
+		long now = System.currentTimeMillis();
+		if ((mapOpen || windowOpen) && now - extrasRead >= EXTRAS_MILLIS)
+		{
+			extrasRead = now;
+			readExtras(now);
+		}
+	}
+
+	/**
+	 * Reads what other plugins and RuneLite keep that the map shows: other plugins' world map markers, the farming
+	 * patches Time Tracking saved (every {@link #FARMING_MILLIS}), the Slayer task. Client thread.
+	 */
+	private void readExtras(long now)
+	{
+		List<MapPins.Pin> others = new ArrayList<>();
+		if (config.pluginMarkers())
+		{
+			// RuneLite lists the markers only to plugins of its own; a check that keeps every marker reads them all
+			worldMapPointManager.removeIf(point ->
+			{
+				MapPins.Pin pin = pinOf(point);
+				if (pin != null)
+				{
+					others.add(pin);
+				}
+				return false;
+			});
+		}
+		pins.setOthers(others);
+		MapPainter drawing = painter;
+		if (drawing != null && now - farmingRead >= FARMING_MILLIS)
+		{
+			farmingRead = now;
+			drawing.setFarming(config.farmingStatus() ? readFarming(now / 1000) : null);
+		}
+		showSlayerTask();
+	}
+
+	/**
+	 * Another plugin's world map marker as a pin; null for RuneLite's World Map plugin's (Advanced Map has those icons
+	 * itself) and for a marker with no picture.
+	 */
+	static MapPins.Pin pinOf(WorldMapPoint point)
+	{
+		if (point.getImage() == null || point.getWorldPoint() == null
+			|| point.getClass().getName().startsWith(CORE_WORLD_MAP))
+		{
+			return null;
+		}
+		String name = point.getName() != null ? point.getName() : point.getTooltip() != null ? point.getTooltip() : "";
+		return new MapPins.Pin(point.getWorldPoint(), point.getImage(), null, name, point.getTooltip(),
+			point.isJumpOnClick() ? point.getTarget() : null, point.isSnapToEdge());
+	}
+
+	/** Each farming site's patches as Time Tracking saved them for this account. */
+	private Map<Farming.Site, List<Farming.Reading>> readFarming(long now)
+	{
+		Map<Farming.Site, List<Farming.Reading>> out = new java.util.HashMap<>();
+		java.util.function.Function<String, String> saved = key ->
+			configManager.getRSProfileConfiguration(Farming.GROUP, key);
+		for (Farming.Site site : Farming.sites())
+		{
+			out.put(site, Farming.readings(site, saved, now));
+		}
+		return out;
+	}
+
+	/** Marks the Slayer task's spawns while the setting is on and RuneLite's Slayer plugin has a task saved. */
+	private void showSlayerTask()
+	{
+		MapMessages layers = messages;
+		if (layers == null)
+		{
+			return;
+		}
+		String task = config.slayerTask() ? configManager.getRSProfileConfiguration(SlayerTask.GROUP,
+			SlayerTask.TASK_NAME) : null;
+		String amount = task == null ? null : configManager.getRSProfileConfiguration(SlayerTask.GROUP,
+			SlayerTask.AMOUNT);
+		boolean active = task != null && !task.isEmpty() && amount != null && !"0".equals(amount);
+		String key = active ? task + ":" + amount : null;
+		if (java.util.Objects.equals(key, slayerShown))
+		{
+			return;
+		}
+		slayerShown = key;
+		if (!active)
+		{
+			layers.remove(SlayerTask.LAYER);
+			return;
+		}
+		List<WorldPoint> spawns = SlayerTask.spawns(task);
+		if (spawns.isEmpty())
+		{
+			layers.remove(SlayerTask.LAYER);
+			return;
+		}
+		String location = configManager.getRSProfileConfiguration(SlayerTask.GROUP, SlayerTask.LOCATION);
+		List<SearchSpots.Area> areas = SearchSpots.areas(spawns, player != null ? player : LUMBRIDGE, labelsNow());
+		if (location != null && !location.isEmpty())
+		{
+			// a Konar task names its place: only areas named for it, when any are
+			List<SearchSpots.Area> there = new ArrayList<>(areas);
+			there.removeIf(area -> !area.getName().toLowerCase(java.util.Locale.ROOT)
+				.contains(location.toLowerCase(java.util.Locale.ROOT)));
+			if (!there.isEmpty())
+			{
+				areas = there;
+			}
+		}
+		layers.put(SlayerTask.layer(areas, spawns, task + " (" + amount + " left)"));
 	}
 
 	/** The world map orb, in each of the game's minimap layouts. */
@@ -483,6 +621,17 @@ public class AdvancedMapPlugin extends Plugin
 			return;
 		}
 		settings = readSettings();
+		MapPainter drawing = painter;
+		if (drawing != null)
+		{
+			drawing.setMultiCombat(config.multiCombat());
+			farmingRead = 0;
+			slayerShown = slayerShown == null ? null : "";
+		}
+		if (AdvancedMapConfig.MARKERS.equals(event.getKey()))
+		{
+			pins.setMarkers(MapPins.parse(config.markers()));
+		}
 		if ("saveMap".equals(event.getKey()) && images != null)
 		{
 			if (config.saveMap())
@@ -683,23 +832,39 @@ public class AdvancedMapPlugin extends Plugin
 			return false;
 		}
 		selection = null;
-		List<MapPainter.MenuEntry> entries = MapPainter.menuEntries(open, settings);
-		java.awt.Rectangle menu = MapPainter.menuBounds(open, MapPainter.menuTitle(open, progress, settings.getFloorNumbers()), entries, width,
-			height);
+		MapPins.Pin pin = menuPin;
+		setMenuPin(null);
+		List<MapPainter.MenuEntry> entries = MapPainter.menuEntries(open, settings, pin);
+		java.awt.Rectangle menu = MapPainter.menuBounds(open, MapPainter.menuTitle(open, progress,
+			settings.getFloorNumbers(), pin), entries, width, height);
 		for (int i = 0; i < entries.size(); i++)
 		{
 			if (MapPainter.menuEntryBounds(menu, i).contains(x, y))
 			{
-				act(entries.get(i).getAction(), open);
+				act(entries.get(i).getAction(), open, pin);
 			}
 		}
 		return menu.contains(x, y);
 	}
 
-	private void act(MapPainter.Action action, MapPainter.Selection on)
+	private void act(MapPainter.Action action, MapPainter.Selection on, MapPins.Pin pin)
 	{
 		switch (action)
 		{
+			case ADD_MARKER:
+				search.setFocused(false);
+				filters.setOpen(false);
+				editor.create(on.getPoint());
+				break;
+			case EDIT_MARKER:
+				search.setFocused(false);
+				filters.setOpen(false);
+				editor.edit(pin.getMarker());
+				break;
+			case REMOVE_MARKER:
+				saveMarkers(pin.getMarker(), null);
+				pins.select(null);
+				break;
 			case HIDE:
 				setHidden(on.getSpot(), true);
 				break;
@@ -743,6 +908,17 @@ public class AdvancedMapPlugin extends Plugin
 	/** A left click (pressed and released in place): opens the info box of the icon under it, or closes it. */
 	void leftClick(int x, int y, int width, int height)
 	{
+		MapPins.Pin pin = pinAt(x, y, width, height);
+		pins.select(pin);
+		if (pin != null)
+		{
+			selection = null;
+			if (pin.getJump() != null)
+			{
+				goTo(Prifddinas.toSurface(pin.getJump()));
+			}
+			return;
+		}
 		MapIcons.Shown icon = iconAt(x, y, width, height);
 		showTransport(null);
 		if (icon != null && (followLink(icon.getSpot()) || followTransport(icon.getSpot())))
@@ -878,6 +1054,14 @@ public class AdvancedMapPlugin extends Plugin
 	 */
 	void rightClick(int x, int y, int width, int height)
 	{
+		pins.select(null);
+		MapPins.Pin pin = pinAt(x, y, width, height);
+		setMenuPin(pin);
+		if (pin != null)
+		{
+			selection = new MapPainter.Selection(null, true, x, y, pin.getPoint());
+			return;
+		}
 		MapIcons.Shown icon = iconAt(x, y, width, height);
 		if (icon != null)
 		{
@@ -886,11 +1070,7 @@ public class AdvancedMapPlugin extends Plugin
 				spot.getPlane()));
 			return;
 		}
-		if (settings.getRouting() == RoutingPlugin.NONE)
-		{
-			selection = null;
-			return;
-		}
+		// a tile's menu: Add marker here, and the route entries when a routing plugin is chosen
 		MapViewport.View view = viewport().view(width, height);
 		selection = new MapPainter.Selection(null, true, x, y, new WorldPoint((int) Math.floor(view.worldX(x)),
 			(int) Math.floor(view.worldY(y)), plane));
@@ -899,9 +1079,17 @@ public class AdvancedMapPlugin extends Plugin
 	/** Escape: leaves the search bar, closes the Filters list, an info box or a menu first, then the map. */
 	void escape()
 	{
-		if (search.isFocused())
+		if (editor.isOpen())
+		{
+			editor.close();
+		}
+		else if (search.isFocused())
 		{
 			search.setFocused(false);
+		}
+		else if (pins.selected() != null)
+		{
+			pins.select(null);
 		}
 		else if (filters.isOpen())
 		{
@@ -921,7 +1109,7 @@ public class AdvancedMapPlugin extends Plugin
 	/** True while the list on the right is open, so Escape closes it before the map. */
 	boolean sideListOpen()
 	{
-		return sideList.isOpen();
+		return sideList.isOpen() || editor.isOpen() || pins.selected() != null;
 	}
 
 	/** True while the Filters list is open, so keys go to its search box. */
@@ -938,8 +1126,80 @@ public class AdvancedMapPlugin extends Plugin
 	 */
 	boolean pressPanels(int x, int y, int width, int height, boolean window)
 	{
-		return pressSearch(x, y, width, height, window) || pressSideList(x, y, width, height, window)
-			|| pressFilters(x, y, width, height, window);
+		return pressEditor(x, y, width, height, window) || pressSearch(x, y, width, height, window)
+			|| pressSideList(x, y, width, height, window) || pressFilters(x, y, width, height, window);
+	}
+
+	/** A left press on the marker box: a picture or color is chosen, Save, Remove or Cancel. True when on the box. */
+	private boolean pressEditor(int x, int y, int width, int height, boolean window)
+	{
+		if (!editor.isOpen())
+		{
+			return false;
+		}
+		MarkerEditor.Hit hit = editor.hitAt(x, y, MarkerEditor.layout(MapPainter.buttons(width, height, window)));
+		switch (hit.getPart())
+		{
+			case OUTSIDE:
+				return false;
+			case DESIGN:
+			case COLOR:
+				editor.choose(hit);
+				break;
+			case SAVE:
+				finishMarker();
+				break;
+			case REMOVE:
+				saveMarkers(editor.editing(), null);
+				editor.close();
+				break;
+			case CANCEL:
+				editor.close();
+				break;
+			default:
+				break;
+		}
+		return true;
+	}
+
+	/** Saves the marker in the box (in place of the one changed) and closes it. */
+	private void finishMarker()
+	{
+		saveMarkers(editor.editing(), editor.result());
+		editor.close();
+	}
+
+	/** Replaces a marker ({@code old} null to add one) with another ({@code fresh} null to remove it), and saves. */
+	private void saveMarkers(MapPins.Marker old, MapPins.Marker fresh)
+	{
+		List<MapPins.Marker> markers = new ArrayList<>(pins.markers());
+		int at = old == null ? -1 : markers.indexOf(old);
+		if (at >= 0)
+		{
+			markers.remove(at);
+		}
+		if (fresh != null)
+		{
+			markers.add(at >= 0 ? at : markers.size(), fresh);
+		}
+		pins.setMarkers(markers);
+		configManager.setConfiguration(AdvancedMapConfig.GROUP, AdvancedMapConfig.MARKERS, MapPins.save(markers));
+	}
+
+	private void setMenuPin(MapPins.Pin pin)
+	{
+		menuPin = pin;
+		MapPainter drawing = painter;
+		if (drawing != null)
+		{
+			drawing.setMenuPin(pin);
+		}
+	}
+
+	private MapPins.Pin pinAt(int x, int y, int width, int height)
+	{
+		MapViewport.View view = viewport().view(width, height);
+		return MapPins.at(pins.visible(view, area, plane, settings.getIconScale()), x, y);
 	}
 
 	/**
@@ -973,8 +1233,57 @@ public class AdvancedMapPlugin extends Plugin
 	/** Everything the search bar finds, built again once the place names are read. */
 	private List<MapSearch.Entry> searchIndex()
 	{
-		MapLabels names = labels;
-		return search.index(names == null ? Collections.emptyList() : names.all());
+		return search.index(labelsNow(), extraEntries());
+	}
+
+	/** Where search measures "nearest" from: the player, or the middle of the map while logged out. */
+	private WorldPoint here()
+	{
+		return player != null ? player : center();
+	}
+
+	/**
+	 * The search entries that change while the plugin runs: the player's markers, and each kind of map icon found so
+	 * far ("Bank", "Anvil": every one of them, to list the nearest). Built again when either changes.
+	 */
+	private List<MapSearch.Entry> extraEntries()
+	{
+		MapIcons known = icons;
+		List<MapPins.Marker> markers = pins.markers();
+		List<MapSpot> spots = known == null ? Collections.emptyList() : known.allSpots();
+		Object key = Arrays.asList(markers, spots.size(), progress);
+		if (key.equals(extraKey))
+		{
+			return extraEntries;
+		}
+		List<MapSearch.Entry> out = new ArrayList<>();
+		for (MapPins.Marker marker : markers)
+		{
+			out.add(new MapSearch.Entry(MapSearch.Kind.MARKER, marker.getName().isEmpty() ? "Marker"
+				: marker.getName(), MapSearch.Kind.MARKER.label, Collections.singletonList(marker.getPoint()),
+				Collections.emptyList(), null));
+		}
+		Map<Integer, List<WorldPoint>> byCategory = new java.util.TreeMap<>();
+		for (MapSpot spot : spots)
+		{
+			if (spot.getTeleport() == null && spot.getCategory() >= 0 && spot.getCategory() != IconGroup.MAP_LINK)
+			{
+				byCategory.computeIfAbsent(spot.getCategory(), k -> new ArrayList<>())
+					.add(new WorldPoint(spot.getX(), spot.getY(), spot.getPlane()));
+			}
+		}
+		byCategory.forEach((category, points) ->
+		{
+			String name = progress.categoryName(category);
+			if (name != null)
+			{
+				out.add(new MapSearch.Entry(MapSearch.Kind.ICON, name, points.size() == 1 ? "Map icon"
+					: points.size() + " on the map", points, Collections.emptyList(), null));
+			}
+		});
+		extraEntries = Collections.unmodifiableList(out);
+		extraKey = key;
+		return extraEntries;
 	}
 
 	/**
@@ -1001,14 +1310,31 @@ public class AdvancedMapPlugin extends Plugin
 			case ITEM:
 				sideList.open(entry.getName(), sellerRows(entry, from), entry);
 				break;
+			case FAIRY_RING:
+			{
+				List<Transports.Destination> to = Transports.from(nearest.getX(), nearest.getY(), nearest.getPlane(),
+					"Fairy ring");
+				if (!to.isEmpty())
+				{
+					messages.put(Transports.layer(nearest, to));
+					sideList.open(entry.getName(), transportRows(nearest, to), entry);
+				}
+				break;
+			}
+			case ICON:
+				sideList.open("Nearest: " + entry.getName(), nearestRows(entry.getPoints(), from), entry);
+				break;
 			case MONSTER:
 			case NPC:
+			case FISHING:
+			case HUNTER:
 				List<SearchSpots.Area> areas = SearchSpots.areas(entry.getPoints(), from, labelsNow());
 				nearest = areas.get(0).getPoint();
 				messages.put(SearchSpots.layer(SEARCH_LAYER, entry.getPoints()));
 				sideList.open(entry.getName() + (entry.getKind() == MapSearch.Kind.MONSTER
 					? " (" + entry.getNote().toLowerCase(java.util.Locale.ROOT) + ")" : ""),
-					SearchSpots.rows(areas), entry);
+					SearchSpots.rows(areas, entry.getKind() == MapSearch.Kind.FISHING ? "spot"
+					: entry.getKind() == MapSearch.Kind.HUNTER ? "area" : "spawn"), entry);
 				break;
 			default:
 				if (entry.getPoints().size() > 1)
@@ -1023,6 +1349,21 @@ public class AdvancedMapPlugin extends Plugin
 		{
 			viewport.setZoom(SEARCH_ZOOM);
 		}
+	}
+
+	/** Every place of a kind of map icon, nearest first: named by the game's nearest place name, with how far. */
+	private List<SideList.Row> nearestRows(List<WorldPoint> points, WorldPoint from)
+	{
+		List<WorldPoint> sorted = new ArrayList<>(points);
+		sorted.sort(java.util.Comparator.comparingInt(point -> SearchSpots.distance(point, from)));
+		List<SideList.Row> rows = new ArrayList<>();
+		for (WorldPoint point : sorted)
+		{
+			int tiles = SearchSpots.distance(point, from);
+			rows.add(new SideList.Row(SearchSpots.name(point, labelsNow()), tiles >= 1000 ? "far" : tiles + " tiles",
+				null, null, point, null));
+		}
+		return rows;
 	}
 
 	/** An item's sellers, nearest first: the shop, the price there; a click opens the shop's stock. */
@@ -1076,7 +1417,7 @@ public class AdvancedMapPlugin extends Plugin
 	/** True while a search box has the keys: the search bar's, or the open Filters list's. */
 	boolean typing()
 	{
-		return search.isFocused() || filtersOpen();
+		return editor.isOpen() || search.isFocused() || filtersOpen();
 	}
 
 	/** A key typed while {@link #typing}: into the search bar, else the Filters list's search box. */
@@ -1086,9 +1427,13 @@ public class AdvancedMapPlugin extends Plugin
 		{
 			return;
 		}
-		if (search.isFocused())
+		if (editor.isOpen())
 		{
-			search.type(c, searchIndex());
+			editor.type(c);
+		}
+		else if (search.isFocused())
+		{
+			search.type(c, searchIndex(), here());
 		}
 		else
 		{
@@ -1099,6 +1444,18 @@ public class AdvancedMapPlugin extends Plugin
 	/** A key pressed while {@link #typing}: Backspace, and in the search bar Up, Down and Enter to pick a result. */
 	void typingKey(int keyCode)
 	{
+		if (editor.isOpen())
+		{
+			if (keyCode == KeyEvent.VK_BACK_SPACE)
+			{
+				editor.backspace();
+			}
+			else if (keyCode == KeyEvent.VK_ENTER)
+			{
+				finishMarker();
+			}
+			return;
+		}
 		if (!search.isFocused())
 		{
 			if (keyCode == KeyEvent.VK_BACK_SPACE)
@@ -1110,7 +1467,7 @@ public class AdvancedMapPlugin extends Plugin
 		switch (keyCode)
 		{
 			case KeyEvent.VK_BACK_SPACE:
-				search.backspace(searchIndex());
+				search.backspace(searchIndex(), here());
 				break;
 			case KeyEvent.VK_UP:
 				search.move(-1);

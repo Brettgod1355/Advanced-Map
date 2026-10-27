@@ -58,12 +58,17 @@ final class MapSearch
 	enum Kind
 	{
 		PLACE("Place"),
+		MARKER("Your marker"),
 		DUNGEON("Dungeon"),
 		MINIGAME("Minigame"),
+		FAIRY_RING("Fairy ring"),
+		ICON("Map icon"),
 		SHOP("Shop"),
 		ITEM("Item"),
 		MONSTER("Monster"),
-		NPC("NPC");
+		NPC("NPC"),
+		FISHING("Fishing"),
+		HUNTER("Hunter");
 
 		final String label;
 
@@ -135,20 +140,81 @@ final class MapSearch
 	private volatile List<Entry> results = Collections.emptyList();
 	private volatile int highlighted;
 
-	/** Reads the dungeon and minigame entrances from the plugin's resources. Off the client thread. */
+	/** Reads the entrances, fishing spots and hunter areas from the plugin's resources. Off the client thread. */
 	void load()
 	{
+		List<Entry> out = new ArrayList<>();
 		try (InputStream in = MapSearch.class.getResourceAsStream("places.tsv"))
 		{
 			if (in != null)
 			{
-				places = parsePlaces(in);
+				out.addAll(parsePlaces(in));
 			}
 		}
 		catch (IOException | RuntimeException e)
 		{
 			log.debug("could not read the places", e);
 		}
+		try (InputStream in = MapSearch.class.getResourceAsStream("fishing-hunter.tsv"))
+		{
+			if (in != null)
+			{
+				out.addAll(parseSkilling(in));
+			}
+		}
+		catch (IOException | RuntimeException e)
+		{
+			log.debug("could not read the fishing and hunter spots", e);
+		}
+		places = Collections.unmodifiableList(out);
+	}
+
+	/**
+	 * Fishing spots by what they catch ("Lobster fishing spots": every spot with lobsters) and hunter areas by
+	 * creature ("Chinchompa hunting", with its Hunter level).
+	 */
+	static List<Entry> parseSkilling(InputStream in) throws IOException
+	{
+		Map<String, List<WorldPoint>> fishing = new java.util.TreeMap<>();
+		Map<String, List<WorldPoint>> hunting = new java.util.TreeMap<>();
+		Map<String, String> levels = new LinkedHashMap<>();
+		BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
+		String line;
+		while ((line = reader.readLine()) != null)
+		{
+			if (line.isEmpty() || line.startsWith("#"))
+			{
+				continue;
+			}
+			String[] f = line.split("\t");
+			if ("F".equals(f[0]))
+			{
+				List<WorldPoint> tiles = new ArrayList<>();
+				for (String tile : f[3].split(";"))
+				{
+					String[] xyz = tile.split(",");
+					tiles.add(Prifddinas.toSurface(new WorldPoint(Integer.parseInt(xyz[0]), Integer.parseInt(xyz[1]),
+						Integer.parseInt(xyz[2]))));
+				}
+				for (String fish : f[2].split(", "))
+				{
+					fishing.computeIfAbsent(fish, k -> new ArrayList<>()).addAll(tiles);
+				}
+			}
+			else if ("H".equals(f[0]))
+			{
+				String[] xyz = f[4].split(",");
+				hunting.computeIfAbsent(f[2], k -> new ArrayList<>()).add(Prifddinas.toSurface(new WorldPoint(
+					Integer.parseInt(xyz[0]), Integer.parseInt(xyz[1]), Integer.parseInt(xyz[2]))));
+				levels.put(f[2], f[3]);
+			}
+		}
+		List<Entry> out = new ArrayList<>();
+		fishing.forEach((fish, tiles) -> out.add(new Entry(Kind.FISHING, fish + " fishing spots", Kind.FISHING.label,
+			tiles, Collections.emptyList(), null)));
+		hunting.forEach((creature, tiles) -> out.add(new Entry(Kind.HUNTER, creature + " hunting",
+			"Lvl " + levels.get(creature) + " Hunter", tiles, Collections.emptyList(), null)));
+		return out;
 	}
 
 	static List<Entry> parsePlaces(InputStream in) throws IOException
@@ -184,6 +250,28 @@ final class MapSearch
 		{
 			return index;
 		}
+		List<Entry> out = new ArrayList<>(build(labels));
+		index = Collections.unmodifiableList(out);
+		indexedLabels = labels.size();
+		return index;
+	}
+
+	/** {@link #index(List)} and {@code extra} (the player's markers, the kinds of map icon found so far). */
+	List<Entry> index(List<MapLabels.Label> labels, List<Entry> extra)
+	{
+		List<Entry> base = index(labels);
+		if (extra.isEmpty())
+		{
+			return base;
+		}
+		List<Entry> out = new ArrayList<>(base.size() + extra.size());
+		out.addAll(base);
+		out.addAll(extra);
+		return out;
+	}
+
+	private List<Entry> build(List<MapLabels.Label> labels)
+	{
 		Map<String, List<WorldPoint>> names = new LinkedHashMap<>();
 		for (MapLabels.Label label : labels)
 		{
@@ -219,13 +307,27 @@ final class MapSearch
 			String note = creature.getLevels().isEmpty() ? kind.label : "Lvl " + creature.getLevels();
 			out.add(new Entry(kind, creature.getName(), note, creature.getTiles(), Collections.emptyList(), creature));
 		}
-		index = Collections.unmodifiableList(out);
-		indexedLabels = labels.size();
-		return index;
+		for (Transports.Destination ring : Transports.network("Fairy ring"))
+		{
+			// "Fairy ring CKS", noted with the place it is at
+			out.add(new Entry(Kind.FAIRY_RING, "Fairy ring " + ringName(ring.label()),
+				SearchSpots.name(ring.getPoint(), labels), Collections.singletonList(ring.getPoint()),
+				Collections.emptyList(), null));
+		}
+		return out;
 	}
 
-	/** The best matches for a query, at most {@link #MAX_RESULTS}: best score first, then by kind, then shortest. */
 	static List<Entry> search(List<Entry> entries, String query)
+	{
+		return search(entries, query, null);
+	}
+
+	/**
+	 * The best matches for a query, at most {@link #MAX_RESULTS}: by how well they match (whole name, start, words,
+	 * initials, loosely), and among as good matches the nearest to {@code from} first (when known), then by kind,
+	 * then shortest.
+	 */
+	static List<Entry> search(List<Entry> entries, String query, WorldPoint from)
 	{
 		String wanted = normalize(query);
 		if (wanted.isEmpty())
@@ -241,7 +343,13 @@ final class MapSearch
 				scored.add(new Object[]{entry, score});
 			}
 		}
-		scored.sort(Comparator.<Object[]>comparingInt(s -> -(Integer) s[1])
+		Comparator<Object[]> order = Comparator.<Object[]>comparingInt(s -> -(Integer) s[1] / 1000);
+		if (from != null)
+		{
+			Map<Entry, Integer> distances = new java.util.IdentityHashMap<>();
+			order = order.thenComparingInt(s -> distances.computeIfAbsent((Entry) s[0], e -> nearest(e, from)));
+		}
+		scored.sort(order.thenComparingInt(s -> -(Integer) s[1])
 			.thenComparingInt(s -> ((Entry) s[0]).getKind().ordinal())
 			.thenComparingInt(s -> ((Entry) s[0]).getName().length()));
 		List<Entry> out = new ArrayList<>();
@@ -252,7 +360,29 @@ final class MapSearch
 		return out;
 	}
 
-	/** Lower case, apostrophes dropped, anything else that is not a letter or digit a single space. */
+	/** A ring's codes as written ("CKS", "AIR / DLR"); a named one as a name ("ZANARIS" as "Zanaris"). */
+	static String ringName(String label)
+	{
+		List<String> parts = new ArrayList<>();
+		for (String part : label.split(", "))
+		{
+			parts.add(part.length() == 3 ? part : part.charAt(0) + part.substring(1).toLowerCase(Locale.ROOT));
+		}
+		return String.join(" / ", parts);
+	}
+
+	/** How far an entry's nearest place is from a tile ({@link SearchSpots#distance}). */
+	static int nearest(Entry entry, WorldPoint from)
+	{
+		int best = Integer.MAX_VALUE;
+		for (WorldPoint point : entry.getPoints())
+		{
+			best = Math.min(best, SearchSpots.distance(point, from));
+		}
+		return best;
+	}
+
+		/** Lower case, apostrophes dropped, anything else that is not a letter or digit a single space. */
 	static String normalize(String text)
 	{
 		return text.toLowerCase(Locale.ROOT).replace("'", "").replaceAll("[^a-z0-9]+", " ").trim();
@@ -396,15 +526,15 @@ final class MapSearch
 		return highlighted;
 	}
 
-	void type(char c, List<Entry> entries)
+	void type(char c, List<Entry> entries, WorldPoint from)
 	{
-		setQuery(query + c, entries);
+		setQuery(query + c, entries, from);
 	}
 
-	void backspace(List<Entry> entries)
+	void backspace(List<Entry> entries, WorldPoint from)
 	{
 		String now = query;
-		setQuery(now.isEmpty() ? now : now.substring(0, now.length() - 1), entries);
+		setQuery(now.isEmpty() ? now : now.substring(0, now.length() - 1), entries, from);
 	}
 
 	void clear()
@@ -414,10 +544,10 @@ final class MapSearch
 		highlighted = 0;
 	}
 
-	private void setQuery(String text, List<Entry> entries)
+	private void setQuery(String text, List<Entry> entries, WorldPoint from)
 	{
 		query = text;
-		results = search(entries, text);
+		results = search(entries, text, from);
 		highlighted = 0;
 	}
 
@@ -516,7 +646,7 @@ final class MapSearch
 		if (text.isEmpty() && !focused)
 		{
 			g.setColor(QUIET);
-			g.drawString(SideList.fit("Search places, shops, items, monsters", metrics, room), textX, baseline);
+			g.drawString(SideList.fit("Search places, shops, items, monsters, fairy rings", metrics, room), textX, baseline);
 		}
 		else
 		{

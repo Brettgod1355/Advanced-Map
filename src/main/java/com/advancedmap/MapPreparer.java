@@ -40,6 +40,8 @@ final class MapPreparer
 	private final ScheduledExecutorService worker;
 	/** Floors of regions still to prepare, in order; ticker thread, and {@link #restart} and {@link #remaining}. */
 	private final List<Integer> todo = new ArrayList<>();
+	/** Regions whose icons are still to be found, nearest the player first; null until listed. */
+	private List<Integer> iconTodo;
 	private boolean listed;
 	/** The region the list was last sorted around. */
 	private int sortedFor = -1;
@@ -74,6 +76,7 @@ final class MapPreparer
 	{
 		todo.clear();
 		listed = false;
+		iconTodo = null;
 	}
 
 	private synchronized void requeue(int key)
@@ -92,11 +95,11 @@ final class MapPreparer
 		try
 		{
 			MapStore store = images.store();
-			if (!enabled.getAsBoolean() || store == null || images.isBusy())
+			if (images.isBusy())
 			{
 				return;
 			}
-			Integer key = next(store);
+			Integer key = enabled.getAsBoolean() && store != null ? next(store) : null;
 			if (key != null)
 			{
 				try
@@ -107,6 +110,20 @@ final class MapPreparer
 				{
 					// the client has not downloaded this part of the cache yet: last in the queue, not forgotten
 					requeue(key);
+				}
+				return;
+			}
+			// with nothing (more) to draw, the icons of the regions not drawn in this session, for search
+			Integer region = nextIconRegion();
+			if (region != null)
+			{
+				try
+				{
+					images.scanIcons(region);
+				}
+				catch (CacheNotReadyException e)
+				{
+					requeueIcons(region);
 				}
 			}
 		}
@@ -121,6 +138,30 @@ final class MapPreparer
 	}
 
 	/** The next floor of a region to prepare, listing them first and sorting again when the player has moved. */
+	private synchronized Integer nextIconRegion()
+	{
+		if (iconTodo == null)
+		{
+			List<Integer> regions = source.regionIds();
+			if (regions.isEmpty())
+			{
+				return null;
+			}
+			WorldPoint around = focus.get();
+			iconTodo = new ArrayList<>(regions);
+			iconTodo.sort(Comparator.comparingLong(region -> order(RegionImages.key(0, region), around)));
+		}
+		return iconTodo.isEmpty() ? null : iconTodo.remove(0);
+	}
+
+	private synchronized void requeueIcons(int region)
+	{
+		if (iconTodo != null)
+		{
+			iconTodo.add(region);
+		}
+	}
+
 	private synchronized Integer next(MapStore store)
 	{
 		if (!listed)

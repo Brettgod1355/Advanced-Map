@@ -175,10 +175,16 @@ final class SearchSpots
 	/** The areas as list rows: the name, how many spawns, the floor when it is not the ground. */
 	static List<SideList.Row> rows(List<Area> areas)
 	{
+		return rows(areas, "spawn");
+	}
+
+	/** As {@link #rows(List)}, counting {@code what} ("spawn", "spot"). */
+	static List<SideList.Row> rows(List<Area> areas, String what)
+	{
 		List<SideList.Row> rows = new ArrayList<>();
 		for (Area area : areas)
 		{
-			String count = area.getCount() == 1 ? "1 spawn" : area.getCount() + " spawns";
+			String count = area.getCount() + " " + what + (area.getCount() == 1 ? "" : "s");
 			String floor = area.getPoint().getPlane() > 0 ? "Floor up " + area.getPoint().getPlane() : null;
 			rows.add(new SideList.Row(area.getName(), count, floor, null, area.getPoint(), null));
 		}
@@ -191,7 +197,7 @@ final class SearchSpots
 		List<MapLayer.Marker> marks = new ArrayList<>();
 		for (WorldPoint spawn : spawns)
 		{
-			marks.add(new MapLayer.Marker(spawn, MARK, MapLayer.Shape.CIRCLE, 8, null));
+			marks.add(new MapLayer.Marker(spawn, MARK, MapLayer.Shape.CIRCLE, 10, null));
 		}
 		return new MapLayer(id, 80, Collections.emptyList(), Collections.unmodifiableList(marks));
 	}

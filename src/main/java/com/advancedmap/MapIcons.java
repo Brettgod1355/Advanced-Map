@@ -105,6 +105,17 @@ final class MapIcons
 		byRegion.put(regionId, Collections.unmodifiableList(new ArrayList<>(spots)));
 	}
 
+	/** Every icon found so far, on every map and floor (not the teleports). */
+	List<MapSpot> allSpots()
+	{
+		List<MapSpot> out = new ArrayList<>();
+		for (List<MapSpot> spots : byRegion.values())
+		{
+			out.addAll(spots);
+		}
+		return out;
+	}
+
 	/** The variables of the unlocks found so far. */
 	Set<Integer> watchedVars()
 	{

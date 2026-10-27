@@ -34,6 +34,7 @@ public class MapSearchTest
 	{
 		Shops.load();
 		Spawns.load();
+		Transports.load();
 		SEARCH.load();
 		index = SEARCH.index(Collections.singletonList(new MapLabels.Label(Collections.singletonList("Lumbridge"),
 			3239, 3234, 2, Color.WHITE)));
@@ -109,7 +110,7 @@ public class MapSearchTest
 		search.setFocused(true);
 		for (char c : "rune".toCharArray())
 		{
-			search.type(c, index);
+			search.type(c, index, null);
 		}
 		assertEquals(MapSearch.MAX_RESULTS, search.results().size());
 		search.move(1);
@@ -175,5 +176,38 @@ public class MapSearchTest
 			new WorldPoint(1, 1, 1), 2, 0))).get(0).getNote());
 		// far from any name: the tile
 		assertEquals("100, 100", SearchSpots.name(new WorldPoint(100, 100, 0), labels));
+	}
+
+	@Test
+	public void fairyRingsAreFoundByTheirCodes()
+	{
+		MapSearch.Entry cks = MapSearch.search(index, "cks").get(0);
+		assertEquals(MapSearch.Kind.FAIRY_RING, cks.getKind());
+		assertEquals("Fairy ring CKS", cks.getName());
+		assertTrue(MapSearch.search(index, "fairy ring").size() == MapSearch.MAX_RESULTS);
+	}
+
+	@Test
+	public void fishingAndHunterSpotsAreFoundByWhatTheyCatch()
+	{
+		assertTrue(names("lobster").contains("Lobster fishing spots"));
+		MapSearch.Entry chins = MapSearch.search(index, "carnivorous chinchompa hunting").get(0);
+		assertEquals(MapSearch.Kind.HUNTER, chins.getKind());
+		assertEquals("Lvl 63 Hunter", chins.getNote());
+	}
+
+	@Test
+	public void asGoodMatchesListTheNearestFirst()
+	{
+		MapSearch.Entry far = new MapSearch.Entry(MapSearch.Kind.ICON, "Bank", "", Collections.singletonList(
+			new WorldPoint(2000, 3000, 0)), Collections.emptyList(), null);
+		MapSearch.Entry near = new MapSearch.Entry(MapSearch.Kind.ICON, "Banker", "", Collections.singletonList(
+			new WorldPoint(3220, 3220, 0)), Collections.emptyList(), null);
+		List<MapSearch.Entry> both = Arrays.asList(far, near);
+		WorldPoint lumbridge = new WorldPoint(3222, 3218, 0);
+		// "ban": both start with it, so the nearer comes first; "bank" is the whole of one name, which wins
+		assertEquals(near, MapSearch.search(both, "ban", lumbridge).get(0));
+		assertEquals(far, MapSearch.search(both, "bank", lumbridge).get(0));
+		assertEquals(far, MapSearch.search(both, "ban", null).get(0));
 	}
 }
