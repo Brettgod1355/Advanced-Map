@@ -31,7 +31,7 @@ public class MapIconsTest
 	private static MapSettings settings(Set<String> hidden, boolean hideCompleted, boolean showHidden, boolean iconsOff)
 	{
 		return new MapSettings(EnumSet.allOf(IconGroup.class), hidden, Collections.emptySet(), hideCompleted, true,
-			iconsOff, showHidden, true, true, RoutingPlugin.SHORTEST_PATH, FloorNumbers.GROUND_IS_FIRST, 100, true);
+			iconsOff, showHidden, true, true, RoutingPlugin.SHORTEST_PATH, FloorNumbers.GROUND_IS_FIRST, 100, true, false, true);
 	}
 
 	private static Progress progress(int agility, int magic, QuestState cooksAssistant)
@@ -208,6 +208,10 @@ public class MapIconsTest
 		assertEquals("Floor 4", FloorNumbers.GROUND_IS_FIRST.name(3));
 		assertEquals("Ground floor", FloorNumbers.FIRST_ABOVE_GROUND.name(0));
 		assertEquals("Floor 1", FloorNumbers.FIRST_ABOVE_GROUND.name(1));
+		// the floor buttons' short names
+		assertEquals("G", FloorNumbers.GROUND_IS_FIRST.shortName(0));
+		assertEquals("2", FloorNumbers.GROUND_IS_FIRST.shortName(1));
+		assertEquals("1", FloorNumbers.FIRST_ABOVE_GROUND.shortName(1));
 	}
 
 	private static boolean has(List<MapIcons.Shown> shown, MapSpot spot)

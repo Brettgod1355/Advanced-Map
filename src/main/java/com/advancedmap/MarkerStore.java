@@ -50,6 +50,16 @@ final class MarkerStore
 			.nextInt(0x10000000, Integer.MAX_VALUE));
 	}
 
+	/**
+	 * The id of a marker moved over from an earlier version's single setting: the same in every client that moves it
+	 * (two clients starting together write the same files, not every marker twice), and sorted before every new id,
+	 * as those markers are older.
+	 */
+	static String movedId(int index, String line)
+	{
+		return String.format("0-%04x-%08x", index, line.hashCode());
+	}
+
 	/** Every marker saved, oldest first. */
 	List<MapPins.Marker> read()
 	{
@@ -85,15 +95,18 @@ final class MarkerStore
 		return out;
 	}
 
-	void save(MapPins.Marker marker)
+	/** Saves a marker, replacing it if it was saved before. False when it could not be saved. */
+	boolean save(MapPins.Marker marker)
 	{
 		try
 		{
 			SafeFiles.write(file(marker), MapPins.line(marker).getBytes(StandardCharsets.UTF_8));
+			return true;
 		}
 		catch (IOException e)
 		{
 			log.warn("Advanced Map could not save a marker", e);
+			return false;
 		}
 	}
 

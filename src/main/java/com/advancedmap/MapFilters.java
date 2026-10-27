@@ -104,6 +104,12 @@ final class MapFilters
 	private volatile String search = "";
 	private volatile int scroll;
 
+	/** The map area whose picture stands for an icon category, or null while not read or for no such category. */
+	Integer areaOf(int category)
+	{
+		return categoryIcons.get(category);
+	}
+
 	void setCategoryIcons(Map<Integer, Integer> icons)
 	{
 		categoryIcons = Collections.unmodifiableMap(icons);

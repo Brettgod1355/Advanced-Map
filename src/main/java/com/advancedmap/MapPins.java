@@ -190,8 +190,10 @@ final class MapPins
 		{
 			return out;
 		}
-		for (String line : saved.split("\n"))
+		String[] lines = saved.split("\n");
+		for (int i = 0; i < lines.length; i++)
 		{
+			String line = lines[i];
 			String[] f = line.split(" ", 6);
 			if (f.length < 5)
 			{
@@ -199,7 +201,7 @@ final class MapPins
 			}
 			try
 			{
-				out.add(new Marker(MarkerStore.newId(), new WorldPoint(Integer.parseInt(f[0]), Integer.parseInt(f[1]),
+				out.add(new Marker(MarkerStore.movedId(i, line), new WorldPoint(Integer.parseInt(f[0]), Integer.parseInt(f[1]),
 					Integer.parseInt(f[2])), MarkerIcons.Design.of(Integer.parseInt(f[3])), Integer.parseInt(f[4]),
 					f.length > 5 ? f[5] : "", ""));
 			}
@@ -227,8 +229,16 @@ final class MapPins
 	{
 		List<Shown> out = new ArrayList<>();
 		boolean allFloors = plane == 0 && view.zoom < MapIcons.OWN_FLOOR_ZOOM;
+		boolean iconsHidden = view.zoom < MapIcons.ICON_ZOOM;
 		for (Pin pin : all())
 		{
+			// another plugin's pins of places (the Sailing plugin's hundreds of charting spots) go with the game's icons
+			// when zoomed far out; one it keeps to the edge or jumps to (a clue's dig spot) is where the player is
+			// headed, and stays, as do the player's own markers
+			if (iconsHidden && pin.getMarker() == null && !pin.isSnap() && pin.getJump() == null)
+			{
+				continue;
+			}
 			WorldPoint at = Prifddinas.toSurface(pin.getPoint());
 			if (MapArea.of(at.getY()) != area || at.getPlane() != plane && !allFloors)
 			{

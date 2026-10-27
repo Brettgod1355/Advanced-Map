@@ -397,6 +397,11 @@ final class MapSearch
 	 */
 	static int score(String query, String name)
 	{
+		// a name of no English letters or digits at all (Cyrillic, or only symbols) normalizes to nothing: never a match
+		if (name.isEmpty() || query.isEmpty())
+		{
+			return 0;
+		}
 		if (name.equals(query))
 		{
 			return 10000;
@@ -462,7 +467,32 @@ final class MapSearch
 		{
 			return 3;
 		}
-		return token.length() >= 3 && word.charAt(0) == token.charAt(0) && inOrder(token, word) ? 3 : 0;
+		if (token.length() >= 3 && word.charAt(0) == token.charAt(0) && inOrder(token, word))
+		{
+			return 3;
+		}
+		// one letter wrong, missing or extra in a longer word: "zenaris" for "zanaris"
+		return token.length() >= 5 && oneEdit(token, word) ? 3 : 0;
+	}
+
+	/** True when two words differ by one letter changed, added or left out. */
+	static boolean oneEdit(String a, String b)
+	{
+		if (Math.abs(a.length() - b.length()) > 1)
+		{
+			return false;
+		}
+		String shorter = a.length() <= b.length() ? a : b;
+		String longer = shorter == a ? b : a;
+		int i = 0;
+		while (i < shorter.length() && shorter.charAt(i) == longer.charAt(i))
+		{
+			i++;
+		}
+		// the rest matches once the first difference is skipped: in both (a changed letter), or in the longer only
+		return shorter.length() == longer.length()
+			? shorter.substring(Math.min(i + 1, shorter.length())).equals(longer.substring(Math.min(i + 1, longer.length())))
+			: shorter.substring(i).equals(longer.substring(i + 1));
 	}
 
 	/** True when every letter of {@code part} appears in {@code whole} in the same order. */

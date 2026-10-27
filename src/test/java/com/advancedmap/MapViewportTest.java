@@ -14,6 +14,32 @@ public class MapViewportTest
 	private static final double EPSILON = 1e-9;
 
 	@Test
+	public void downFromLumbridgeCastleLooksAtItsCellar()
+	{
+		MapViewport ground = MapArea.SURFACE.newViewport();
+		ground.centerOn(3210, 3218);
+		ground.setZoom(6);
+		MapViewport under = MapArea.UNDERGROUND.newViewport();
+		under.follow(ground, MapArea.UNDERGROUND_SHIFT);
+		MapViewport.View view = under.view(800, 600);
+		// the cellar under the castle, 3210, 9618
+		assertEquals(400, view.screenX(3210.5), EPSILON);
+		assertEquals(300, view.screenY(9618.5), EPSILON);
+		assertEquals(6, view.zoom, EPSILON);
+	}
+
+	@Test
+	public void onlyADungeonUnderTheGroundLeadsBackUp()
+	{
+		// Lumbridge Castle's cellar lies under the castle
+		org.junit.Assert.assertTrue(MapArea.underTheGround(3210.5, 9618.5));
+		// Zanaris (2400, 4440) is under nothing
+		org.junit.Assert.assertFalse(MapArea.underTheGround(2400.5, 4440.5));
+		// a surface tile is not underground at all
+		org.junit.Assert.assertFalse(MapArea.underTheGround(3210.5, 3218.5));
+	}
+
+	@Test
 	public void theCenteredTileIsInTheMiddleOfTheScreen()
 	{
 		MapViewport viewport = new MapViewport();

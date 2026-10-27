@@ -7,6 +7,7 @@ package com.advancedmap;
 
 import com.advancedmap.cache.AreaDefinition;
 import com.advancedmap.cache.AreaLoader;
+import com.advancedmap.cache.InputStream;
 import com.advancedmap.cache.Location;
 import com.advancedmap.cache.LocationsLoader;
 import com.advancedmap.cache.MapLinks;
@@ -36,9 +37,11 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.zip.CRC32;
+import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.IndexDataBase;
 import net.runelite.api.SpritePixels;
+import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.gameval.SpriteID;
 
 /**
@@ -46,6 +49,7 @@ import net.runelite.api.gameval.SpriteID;
  * player's client already holds the whole map. In the current cache each map region is one group of the maps
  * index, numbered by its region id, with the terrain in file 0 and the objects in file 1.
  */
+@Slf4j
 class ClientMapSource implements MapSource
 {
 	private static final int MAPS = 5;
@@ -57,6 +61,8 @@ class ClientMapSource implements MapSource
 	/** The world map's index, and its group of composite maps: one file per map, each with its labels and icons. */
 	private static final int WORLD_MAP = 19;
 	private static final int COMPOSITE_MAPS = 1;
+	/** The world map index's group of each map's name and opening tile. */
+	private static final int MAP_DETAILS = 0;
 	/** Regions kept decoded; each is read again for its neighbors' edges. */
 	private static final int REGIONS_KEPT = 160;
 	/** How far around a missing region its neighbors are read with it: 1 is a 3x3 block. */
@@ -204,12 +210,23 @@ class ClientMapSource implements MapSource
 				}
 				regionCrcs.put(id, crc.getValue());
 				Region region = new Region(id);
-				region.loadTerrain(new MapLoader().load(id >> 8, id & 0xFF, data[0]));
-				if (data[1] != null)
+				try
 				{
-					region.loadLocations(new LocationsLoader().load(id >> 8, id & 0xFF, data[1]));
-					placed.addAll(region.getLocations());
+					region.loadTerrain(new MapLoader().load(id >> 8, id & 0xFF, data[0]));
+					if (data[1] != null)
+					{
+						region.loadLocations(new LocationsLoader().load(id >> 8, id & 0xFF, data[1]));
+					}
 				}
+				catch (RuntimeException e)
+				{
+					// one region the readers cannot make sense of (seen: 25287, at the underground's far edge) is left
+					// off the map, instead of taking its neighbors with it and being asked again every few seconds
+					log.debug("could not read region {}", id, e);
+					regions.put(id, Optional.empty());
+					continue;
+				}
+				placed.addAll(region.getLocations());
 				loaded.put(id, region);
 			}
 		}
@@ -672,6 +689,52 @@ class ClientMapSource implements MapSource
 			}
 		}
 		return labels;
+	}
+
+	/**
+	 * The game's own world maps other than the surface, by name, each at the tile it opens on: "Zanaris",
+	 * "Keldagrim", "Ancient Cavern". Read from the world map's details (each file: a short name, the name, then the
+	 * packed tile). Read in one wait for the client thread; empty while the client has no world map data yet.
+	 */
+	Map<String, WorldPoint> gameMaps()
+	{
+		List<byte[]> details = reader.read(client ->
+		{
+			List<byte[]> out = new ArrayList<>();
+			IndexDataBase index = client.getIndex(WORLD_MAP);
+			int[] files = index == null ? null : index.getFileIds(MAP_DETAILS);
+			if (files != null)
+			{
+				for (int file : files)
+				{
+					// file 0 is the surface, the map Advanced Map shows already
+					byte[] data = file == 0 ? null : index.loadData(MAP_DETAILS, file);
+					if (data != null)
+					{
+						out.add(data);
+					}
+				}
+			}
+			return out;
+		});
+		Map<String, WorldPoint> maps = new LinkedHashMap<>();
+		for (byte[] data : details)
+		{
+			try
+			{
+				InputStream in = new InputStream(data);
+				in.readString();
+				String name = in.readString();
+				int packed = in.readInt();
+				maps.putIfAbsent(name, Prifddinas.toSurface(new WorldPoint(packed >> 14 & 0x3FFF, packed & 0x3FFF,
+					packed >>> 28)));
+			}
+			catch (RuntimeException e)
+			{
+				// a file in a format not known yet is skipped
+			}
+		}
+		return maps;
 	}
 
 	private byte[] config(int group, int id)

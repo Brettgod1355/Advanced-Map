@@ -29,6 +29,7 @@ public interface AdvancedMapConfig extends Config
 	String FARMING_STATUS = "farmingStatus";
 	String PLUGIN_MARKERS = "pluginMarkers";
 	String SLAYER_TASK = "slayerTask";
+	String SLAYER_SHOWN = "slayerShown";
 	String SHARE_MARKERS = "shareMarkers";
 	/** Before each hidden icon's own setting: "hidden.a1234@3222,3218" = true. */
 	String HIDDEN_PREFIX = "hidden.";
@@ -403,7 +404,7 @@ public interface AdvancedMapConfig extends Config
 	)
 	default boolean hideCompletedQuests()
 	{
-		return false;
+		return true;
 	}
 
 	@ConfigItem(
@@ -562,6 +563,18 @@ public interface AdvancedMapConfig extends Config
 	default boolean showHidden()
 	{
 		return false;
+	}
+
+	/** The map's Slayer button: the task's spawns shown (on) or not, while "Slayer task" is on. */
+	@ConfigItem(
+		keyName = SLAYER_SHOWN,
+		name = "",
+		description = "",
+		hidden = true
+	)
+	default boolean slayerShown()
+	{
+		return true;
 	}
 
 	@ConfigItem(

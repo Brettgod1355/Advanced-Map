@@ -54,6 +54,34 @@ public class MapSearchTest
 	}
 
 	@Test
+	public void aNameOfNoLatinLettersNeverMatchesAndBreaksNothing()
+	{
+		// a marker named in Cyrillic ("Home" in Russian here) or only symbols normalizes to nothing; scoring it threw
+		// for every query
+		String home = "\u0414\u043e\u043c\u043e\u0439";
+		assertEquals("", MapSearch.normalize(home));
+		assertEquals(0, MapSearch.score("bank", MapSearch.normalize(home)));
+		assertEquals(0, MapSearch.score("bank", MapSearch.normalize("\u2605")));
+		assertEquals(0, MapSearch.score("ab", ""));
+	}
+
+	@Test
+	public void oneLetterWrongStillFindsAPlace()
+	{
+		// "zenaris" for Zanaris: one letter changed
+		assertTrue(MapSearch.score("zenaris", "zanaris") > 0);
+		assertTrue(MapSearch.oneEdit("zenaris", "zanaris"));
+		// one left out, one added
+		assertTrue(MapSearch.oneEdit("zanris", "zanaris"));
+		assertTrue(MapSearch.oneEdit("zanariss", "zanaris"));
+		// two wrong is too far, and short words are not guessed at
+		assertFalse(MapSearch.oneEdit("zenarus", "zanaris"));
+		assertEquals(0, MapSearch.score("bonk", "bank"));
+		// the exact name still beats a near one
+		assertTrue(MapSearch.score("zanaris", "zanaris") > MapSearch.score("zenaris", "zanaris"));
+	}
+
+	@Test
 	public void theDragonScimitarIsSoldAtDagasSmithy()
 	{
 		MapSearch.Entry scimitar = MapSearch.search(index, "dragon scimitar").get(0);

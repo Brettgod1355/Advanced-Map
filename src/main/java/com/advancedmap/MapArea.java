@@ -35,6 +35,21 @@ enum MapArea
 		this.maxRegionY = maxRegionY;
 	}
 
+	/** How far north of the ground most dungeons are: Lumbridge Castle's cellar lies 6,400 tiles north of the castle. */
+	static final int UNDERGROUND_SHIFT = 6400;
+
+	/**
+	 * True for an underground tile that lies under the surface map (a dungeon under a town); false for the scattered
+	 * places that are under nothing (Zanaris, minigames).
+	 */
+	static boolean underTheGround(double x, double y)
+	{
+		int regionX = (int) Math.floor(x) >> 6;
+		int regionY = (int) Math.floor(y - UNDERGROUND_SHIFT) >> 6;
+		return of((int) Math.floor(y)) == UNDERGROUND && regionX >= SURFACE.minRegionX && regionX <= SURFACE.maxRegionX
+			&& regionY >= SURFACE.minRegionY && regionY <= SURFACE.maxRegionY;
+	}
+
 	/** The map that holds a world tile's row. */
 	static MapArea of(int worldY)
 	{

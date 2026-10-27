@@ -210,7 +210,7 @@ final class MapPreparer
 		int y = around.getY();
 		if (area != aroundArea)
 		{
-			y += area == MapArea.UNDERGROUND ? 6400 : -6400;
+			y += area == MapArea.UNDERGROUND ? MapArea.UNDERGROUND_SHIFT : -MapArea.UNDERGROUND_SHIFT;
 		}
 		long dx = ((region >> 8) << 6) + 32 - x;
 		long dy = ((region & 0xFF) << 6) + 32 - y;

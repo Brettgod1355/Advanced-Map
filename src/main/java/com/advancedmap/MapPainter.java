@@ -52,7 +52,9 @@ final class MapPainter
 		/** Moves the map back to the player. */
 		LOCATE,
 		FLOOR_UP,
-		FLOOR_DOWN
+		FLOOR_DOWN,
+		/** Shows or hides the Slayer task's spawns; there only while the "Slayer task" setting is on. */
+		SLAYER
 	}
 
 	/**
@@ -95,8 +97,8 @@ final class MapPainter
 	private static final Color LOCATED = new Color(0x5AA9FF);
 	/** The names beside transport icons. */
 	private static final Color STOP_NAME = Transports.LINE;
-	static final int FLOOR_WIDTH = 64;
-	static final int FLOOR_HEIGHT = 26;
+	static final int FLOOR_WIDTH = LOCATE_SIZE;
+	static final int FLOOR_HEIGHT = 24;
 	/** Room for the floor's name between its two buttons. */
 	private static final int FLOOR_LABEL = 22;
 	private static final int GAP = 8;
@@ -189,6 +191,8 @@ final class MapPainter
 		out.put(Button.FLOOR_DOWN, new Rectangle(width - GAP - FLOOR_WIDTH, down, FLOOR_WIDTH, FLOOR_HEIGHT));
 		out.put(Button.FLOOR_UP, new Rectangle(width - GAP - FLOOR_WIDTH, down - FLOOR_LABEL - FLOOR_HEIGHT, FLOOR_WIDTH,
 			FLOOR_HEIGHT));
+		out.put(Button.SLAYER, new Rectangle(width - GAP - FLOOR_WIDTH, down - FLOOR_LABEL - FLOOR_HEIGHT - GAP - FLOOR_WIDTH,
+			FLOOR_WIDTH, FLOOR_WIDTH));
 		int right = width - GAP;
 		if (!window)
 		{
@@ -202,10 +206,15 @@ final class MapPainter
 	}
 
 	/** The button under a point, or null. */
-	static Button buttonAt(int x, int y, int width, int height, boolean window)
+	static Button buttonAt(int x, int y, int width, int height, boolean window, MapSettings settings)
 	{
 		for (Map.Entry<Button, Rectangle> button : buttons(width, height, window).entrySet())
 		{
+			// the Slayer button is not there while the setting is off: the map under it takes the press
+			if (button.getKey() == Button.SLAYER && (settings == null || !settings.isSlayerButton()))
+			{
+				continue;
+			}
 			if (button.getValue().contains(x, y))
 			{
 				return button.getKey();
@@ -283,7 +292,9 @@ final class MapPainter
 			}
 		}
 		drawBar(g, view, mouse, loading, window, !shown.isEmpty());
-		drawButtons(g, view, area, plane, window, settings, player != null, filters.isOpen());
+		Integer slayerArea = settings.isSlayerButton() ? filters.areaOf(IconGroup.SLAYER_MASTER) : null;
+		drawButtons(g, view, area, plane, window, settings, player != null, filters.isOpen(),
+			slayerArea == null ? null : icons.image(slayerArea, false));
 		if (filters.isOpen())
 		{
 			Rectangle button = buttons(view.width, view.height, window).get(Button.FILTERS);
@@ -1146,7 +1157,7 @@ final class MapPainter
 	}
 
 	private static void drawButtons(Graphics2D g, MapViewport.View view, MapArea area, int plane, boolean window,
-		MapSettings settings, boolean located, boolean filtersOpen)
+		MapSettings settings, boolean located, boolean filtersOpen, BufferedImage slayerIcon)
 	{
 		for (Map.Entry<Button, Rectangle> entry : buttons(view.width, view.height, window).entrySet())
 		{
@@ -1157,13 +1168,23 @@ final class MapPainter
 				drawLocate(g, button, located);
 				continue;
 			}
+			if (entry.getKey() == Button.SLAYER)
+			{
+				if (settings.isSlayerButton())
+				{
+					drawSlayerButton(g, button, slayerIcon, settings.isSlayerShown());
+				}
+				continue;
+			}
 			if (entry.getKey() == Button.FLOOR_UP || entry.getKey() == Button.FLOOR_DOWN)
 			{
 				boolean up = entry.getKey() == Button.FLOOR_UP;
-				drawFloorButton(g, button, up, up ? plane < RegionImages.PLANES - 1 : plane > 0);
+				// down from the ground leads underground
+				boolean enabled = up ? plane < RegionImages.PLANES - 1 : plane > 0 || area == MapArea.SURFACE;
+				drawFloorButton(g, button, up, enabled);
 				if (up)
 				{
-					drawFloorName(g, button, plane, settings.getFloorNumbers());
+					drawFloorName(g, button, area, plane, settings.getFloorNumbers());
 				}
 				continue;
 			}
@@ -1190,6 +1211,33 @@ final class MapPainter
 		}
 	}
 
+	/** The Slayer button: the game's Slayer master icon, lit while the task's spawns show, faded while hidden. */
+	private static void drawSlayerButton(Graphics2D g, Rectangle button, BufferedImage icon, boolean shown)
+	{
+		g.setColor(shown ? new Color(0x4A3A1C) : BAR);
+		g.fillRoundRect(button.x, button.y, button.width, button.height, 8, 8);
+		if (shown)
+		{
+			g.setColor(new Color(0xC8A050));
+			g.drawRoundRect(button.x, button.y, button.width - 1, button.height - 1, 8, 8);
+		}
+		java.awt.Composite composite = g.getComposite();
+		if (!shown)
+		{
+			g.setComposite(java.awt.AlphaComposite.getInstance(java.awt.AlphaComposite.SRC_OVER, 0.4f));
+		}
+		if (icon != null)
+		{
+			g.drawImage(icon, button.x + (button.width - icon.getWidth()) / 2, button.y + (button.height - icon.getHeight()) / 2,
+				null);
+		}
+		else
+		{
+			drawLabel(g, button, "S");
+		}
+		g.setComposite(composite);
+	}
+
 	/** An arrow button that moves up or down a floor, dimmed when there is no floor that way. */
 	private static void drawFloorButton(Graphics2D g, Rectangle button, boolean up, boolean enabled)
 	{
@@ -1210,14 +1258,17 @@ final class MapPainter
 		}
 	}
 
-	/** The floor's name between the floor buttons: "Ground floor", "Floor 2" and so on. */
-	private static void drawFloorName(Graphics2D g, Rectangle up, int plane, FloorNumbers floors)
+	/**
+	 * The floor's short name between the floor buttons: "G", "2" and so on; on the underground map "U", then "U2" for a
+	 * floor above a dungeon's lowest.
+	 */
+	private static void drawFloorName(Graphics2D g, Rectangle up, MapArea area, int plane, FloorNumbers floors)
 	{
 		g.setFont(FontManager.getRunescapeSmallFont());
 		FontMetrics metrics = g.getFontMetrics();
-		String text = floors.name(plane);
-		int width = metrics.stringWidth(text) + 10;
-		int x = up.x + up.width - width;
+		String text = area == MapArea.UNDERGROUND ? plane == 0 ? "U" : "U" + floors.shortName(plane) : floors.shortName(plane);
+		int width = Math.max(FLOOR_LABEL - 4, metrics.stringWidth(text) + 10);
+		int x = up.x + (up.width - width) / 2;
 		int y = up.y + up.height + 2;
 		g.setColor(BAR);
 		g.fillRoundRect(x, y, width, FLOOR_LABEL - 4, 8, 8);

@@ -81,6 +81,23 @@ public class MapPinsTest
 	}
 
 	@Test
+	public void anotherPluginsPlacesGoWithTheIconsWhenZoomedFarOut()
+	{
+		// the Sailing plugin marks hundreds of charting spots: zoomed out to the whole world they would cover it
+		MapPins pins = new MapPins();
+		BufferedImage picture = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
+		MapPins.Pin chart = new MapPins.Pin(new WorldPoint(3222, 3218, 0), picture, null, "Charting spot", "", null, false);
+		MapPins.Pin clue = new MapPins.Pin(new WorldPoint(3222, 3218, 0), picture, null, "Clue", "", null, true);
+		pins.setOthers(Arrays.asList(chart, clue));
+		MapViewport.View far = new MapViewport.View(3222.5, 3218.5, MapIcons.ICON_ZOOM / 2, 800, 600);
+		List<MapPins.Shown> shown = pins.visible(far, MapArea.SURFACE, 0, 100);
+		assertEquals(1, shown.size());
+		assertSame(clue, shown.get(0).getPin());
+		MapViewport.View near = new MapViewport.View(3222.5, 3218.5, MapIcons.ICON_ZOOM, 800, 600);
+		assertEquals(2, pins.visible(near, MapArea.SURFACE, 0, 100).size());
+	}
+
+	@Test
 	public void anotherPluginsPinKeepsToTheEdgeWhenAsked()
 	{
 		MapPins pins = new MapPins();

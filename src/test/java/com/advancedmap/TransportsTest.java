@@ -14,6 +14,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -110,6 +111,21 @@ public class TransportsTest
 		MapLayer layer = Transports.layer(new WorldPoint(3140, 3504, 0), Arrays.asList(keldagrim, falador));
 		assertEquals(1, layer.getLines().size());
 		assertTrue(layer.getMarkers().stream().noneMatch(m -> "Keldagrim".equals(m.getLabel())));
+	}
+
+	@Test
+	public void theHousesFairyRingDoesNotTakeTheHousesSpiritTreeNeeds()
+	{
+		// the house's fairy ring (DIQ) and spirit tree land on the same tile, 1858, 7051; the tree's row needs Tree
+		// Gnome Village, the ring's trip does not
+		Transports.Destination ring = Transports.from(2996, 3114, 0).stream()
+			.filter(d -> d.getPoint().getX() == 1858 && d.getPoint().getY() == 7051).findFirst().orElse(null);
+		assertNotNull(ring);
+		assertFalse(ring.getNeeds().contains("Tree Gnome Village"));
+		Transports.Destination tree = Transports.from(3185, 3508, 0).stream()
+			.filter(d -> d.getPoint().getX() == 1858 && d.getPoint().getY() == 7051).findFirst().orElse(null);
+		assertNotNull(tree);
+		assertTrue(tree.getNeeds().contains("Tree Gnome Village"));
 	}
 
 	@Test

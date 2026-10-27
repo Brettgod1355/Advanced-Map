@@ -44,6 +44,8 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 	@Override
 	public MouseEvent mousePressed(MouseEvent e)
 	{
+		// whatever the mouse or keys do, the map over the game is drawn again at once
+		plugin.touched();
 		if (!plugin.isMapOpen())
 		{
 			return e;
@@ -62,7 +64,7 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 			return e;
 		}
 		MapPainter.Button button = SwingUtilities.isLeftMouseButton(e)
-			? MapPainter.buttonAt(e.getX(), e.getY(), w, h, false) : null;
+			? MapPainter.buttonAt(e.getX(), e.getY(), w, h, false, plugin.settings()) : null;
 		if (button != null)
 		{
 			plugin.pressButton(button, false);
@@ -82,6 +84,8 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 	@Override
 	public MouseEvent mouseDragged(MouseEvent e)
 	{
+		// whatever the mouse or keys do, the map over the game is drawn again at once
+		plugin.touched();
 		if (!plugin.isMapOpen())
 		{
 			return e;
@@ -99,6 +103,8 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 	@Override
 	public MouseEvent mouseReleased(MouseEvent e)
 	{
+		// whatever the mouse or keys do, the map over the game is drawn again at once
+		plugin.touched();
 		if (!plugin.isMapOpen())
 		{
 			dragging = false;
@@ -117,30 +123,40 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 	@Override
 	public MouseEvent mouseClicked(MouseEvent e)
 	{
+		// whatever the mouse or keys do, the map over the game is drawn again at once
+		plugin.touched();
 		return swallow(e);
 	}
 
 	@Override
 	public MouseEvent mouseEntered(MouseEvent e)
 	{
+		// whatever the mouse or keys do, the map over the game is drawn again at once
+		plugin.touched();
 		return e;
 	}
 
 	@Override
 	public MouseEvent mouseExited(MouseEvent e)
 	{
+		// whatever the mouse or keys do, the map over the game is drawn again at once
+		plugin.touched();
 		return e;
 	}
 
 	@Override
 	public MouseEvent mouseMoved(MouseEvent e)
 	{
+		// whatever the mouse or keys do, the map over the game is drawn again at once
+		plugin.touched();
 		return swallow(e);
 	}
 
 	@Override
 	public MouseWheelEvent mouseWheelMoved(MouseWheelEvent e)
 	{
+		// whatever the mouse or keys do, the map over the game is drawn again at once
+		plugin.touched();
 		if (!plugin.isMapOpen())
 		{
 			return e;
@@ -158,6 +174,8 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 	@Override
 	public void keyTyped(KeyEvent e)
 	{
+		// whatever the mouse or keys do, the map over the game is drawn again at once
+		plugin.touched();
 		if (plugin.isMapOpen() && plugin.typing() && !hasShortcutKey(e))
 		{
 			plugin.type(e.getKeyChar());
@@ -168,6 +186,8 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 	@Override
 	public void keyPressed(KeyEvent e)
 	{
+		// whatever the mouse or keys do, the map over the game is drawn again at once
+		plugin.touched();
 		if (plugin.isMapOpen() && e.getKeyCode() == KeyEvent.VK_ESCAPE)
 		{
 			plugin.escape();
@@ -184,16 +204,22 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 	@Override
 	public void keyReleased(KeyEvent e)
 	{
+		// whatever the mouse or keys do, the map over the game is drawn again at once
+		plugin.touched();
 		if (plugin.isMapOpen() && plugin.typing() && !hasShortcutKey(e))
 		{
 			e.consume();
 		}
 	}
 
-	/** Keys held with Ctrl, Alt or Meta stay shortcuts (Ctrl+M closes the map) even while typing a search. */
+	/**
+	 * Keys held with Ctrl, Alt or Meta stay shortcuts (Ctrl+M closes the map) even while typing a search. AltGr, which
+	 * Windows reports as Ctrl and Alt together, types "@" and accented letters on many keyboards: that is typing.
+	 */
 	private static boolean hasShortcutKey(KeyEvent e)
 	{
-		return e.isControlDown() || e.isAltDown() || e.isMetaDown();
+		boolean altGraph = e.isAltGraphDown() || e.isControlDown() && e.isAltDown();
+		return !altGraph && (e.isControlDown() || e.isAltDown()) || e.isMetaDown();
 	}
 
 	private MouseEvent swallow(MouseEvent e)

@@ -45,6 +45,8 @@ enum IconGroup
 	/** The game's category for the arrows that jump to another map; left out, as the map has no such jumps. */
 	static final int MAP_LINK = 1063;
 	static final int BANK = 1055;
+	/** The Slayer masters' icon, on the map's Slayer button too. */
+	static final int SLAYER_MASTER = 1099;
 	static final int QUEST = 1056;
 	static final int DUNGEON = 1062;
 	/** The bank tutor's icon, which the game puts on a bank with a tutor instead of (or beside) a bank icon. */

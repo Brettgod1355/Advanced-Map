@@ -156,6 +156,26 @@ class RegionImages
 		return absent.contains(key(plane, regionId)) || absent.contains(key(0, regionId));
 	}
 
+	/**
+	 * True when a region's floor is known to have something on it: drawn, or saved with something on it. False while
+	 * nothing is known yet, as for a floor known to be empty.
+	 */
+	boolean hasFloor(int plane, int regionId)
+	{
+		int key = key(plane, regionId);
+		if (isAbsent(plane, regionId))
+		{
+			return false;
+		}
+		if (get(plane, regionId, Level.SMALL) != null)
+		{
+			return true;
+		}
+		MapStore saved = store;
+		Long hash = saved == null ? null : saved.savedHash(key);
+		return hash != null && !saved.isEmpty(key, hash);
+	}
+
 	/** True while pictures asked for are still being made. */
 	boolean isBusy()
 	{

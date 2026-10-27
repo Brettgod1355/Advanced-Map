@@ -229,7 +229,7 @@ final class MapWindow extends JFrame
 						return;
 					}
 					MapPainter.Button button = SwingUtilities.isLeftMouseButton(e)
-						? MapPainter.buttonAt(x(e), y(e), width(), height(), true) : null;
+						? MapPainter.buttonAt(x(e), y(e), width(), height(), true, plugin.settings()) : null;
 					if (button != null)
 					{
 						plugin.pressButton(button, true);

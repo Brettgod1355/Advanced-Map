@@ -21,6 +21,12 @@ public enum FloorNumbers
 	/** The number the ground floor would have. */
 	private final int ground;
 
+	/** A floor's short name, for the floor buttons: "G", then "2" (or "1") and up. */
+	String shortName(int plane)
+	{
+		return plane == 0 ? "G" : String.valueOf(plane + ground);
+	}
+
 	/** A floor's name: "Ground floor", then "Floor 2" (or "Floor 1") and up. */
 	String name(int plane)
 	{

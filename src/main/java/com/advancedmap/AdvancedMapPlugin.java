@@ -133,6 +133,7 @@ public class AdvancedMapPlugin extends Plugin
 	private final MapSearch search = new MapSearch();
 	private final MapPins pins = new MapPins();
 	private final MarkerEditor editor = new MarkerEditor();
+	private final java.util.concurrent.atomic.AtomicInteger touches = new java.util.concurrent.atomic.AtomicInteger();
 	private volatile MarkerStore markerStore;
 	/** When the pins, farming patches and Slayer task were last read, in milliseconds. */
 	private long extrasRead;
@@ -141,6 +142,8 @@ public class AdvancedMapPlugin extends Plugin
 	private String slayerShown;
 	/** The search's extra entries and what they were built from. */
 	private List<MapSearch.Entry> extraEntries = Collections.emptyList();
+	/** The game's own world maps by name (Zanaris, Keldagrim), for the search; read with the place names. */
+	private volatile Map<String, WorldPoint> gameMaps = Collections.emptyMap();
 	private Object extraKey;
 	/** The pin a right-click menu is open on, or null. */
 	private volatile MapPins.Pin menuPin;
@@ -437,8 +440,11 @@ public class AdvancedMapPlugin extends Plugin
 			SlayerTask.TASK_NAME) : null;
 		String amount = task == null ? null : configManager.getRSProfileConfiguration(SlayerTask.GROUP,
 			SlayerTask.AMOUNT);
-		boolean active = task != null && !task.isEmpty() && amount != null && !"0".equals(amount);
-		String key = active ? task + ":" + amount : null;
+		// the map's Slayer button hides the spawns without turning the setting off
+		boolean active = task != null && !task.isEmpty() && amount != null && !"0".equals(amount)
+			&& config.slayerShown();
+		// the place names narrow a Konar task to its area: drawn again once they have loaded
+		String key = active ? task + ":" + amount + ":" + !labelsNow().isEmpty() : null;
 		if (java.util.Objects.equals(key, slayerShown))
 		{
 			return;
@@ -676,6 +682,18 @@ public class AdvancedMapPlugin extends Plugin
 		return mapOpen;
 	}
 
+	/** Counts the mouse and key events on the map over the game, for {@link MapOverlay} to draw again at once. */
+	void touched()
+	{
+		touches.incrementAndGet();
+	}
+
+	/** How many mouse and key events there have been: a change means the map over the game is drawn again. */
+	int touches()
+	{
+		return touches.get();
+	}
+
 	/**
 	 * How much Stretched Mode enlarges the game view (1 when it is off), so the pop-out window can draw at the same
 	 * size as the map over the game. Client thread.
@@ -737,11 +755,16 @@ public class AdvancedMapPlugin extends Plugin
 			String old = config.markers();
 			if (old != null && !old.isEmpty())
 			{
+				boolean allSaved = true;
 				for (MapPins.Marker marker : MapPins.parseOld(old))
 				{
-					store.save(marker);
+					allSaved &= store.save(marker);
 				}
-				configManager.unsetConfiguration(AdvancedMapConfig.GROUP, AdvancedMapConfig.MARKERS);
+				// the old list stays until every marker has its own file, so none is lost when a save fails
+				if (allSaved)
+				{
+					configManager.unsetConfiguration(AdvancedMapConfig.GROUP, AdvancedMapConfig.MARKERS);
+				}
 			}
 			markerStore = store;
 			pins.setMarkers(store.read());
@@ -893,16 +916,43 @@ public class AdvancedMapPlugin extends Plugin
 				setSwitch(AdvancedMapConfig.ICONS_OFF, !settings.isIconsOff());
 				selection = null;
 				break;
+			case SLAYER:
+				setSwitch(AdvancedMapConfig.SLAYER_SHOWN, !settings.isSlayerShown());
+				clientThread.invokeLater(this::showSlayerTask);
+				break;
 			case FILTERS:
 				filters.setOpen(!filters.isOpen());
 				selection = null;
 				break;
 			case FLOOR_UP:
-				plane = Math.min(RegionImages.PLANES - 1, plane + 1);
+				MapViewport.View under = viewports.get(MapArea.UNDERGROUND).view(1, 1);
+				if (area == MapArea.UNDERGROUND && MapArea.underTheGround(under.centerX, under.centerY)
+					&& highestFloor(under) <= plane)
+				{
+					// up from a dungeon's highest floor: out to the ground above it, as down from the ground leads in
+					viewports.get(MapArea.SURFACE).follow(viewports.get(MapArea.UNDERGROUND), -MapArea.UNDERGROUND_SHIFT);
+					area = MapArea.SURFACE;
+					plane = 0;
+				}
+				else
+				{
+					plane = Math.min(RegionImages.PLANES - 1, plane + 1);
+				}
 				selection = null;
 				break;
 			case FLOOR_DOWN:
-				plane = Math.max(0, plane - 1);
+				if (area == MapArea.SURFACE && plane == 0)
+				{
+					// below the ground: the underground map where it lies under this spot (a castle's cellar)
+					viewports.get(MapArea.UNDERGROUND).follow(viewports.get(MapArea.SURFACE), MapArea.UNDERGROUND_SHIFT);
+					area = MapArea.UNDERGROUND;
+					// into the dungeon on its lowest floor, where its entrance usually leads; up climbs its other floors
+					plane = 0;
+				}
+				else
+				{
+					plane = Math.max(0, plane - 1);
+				}
 				selection = null;
 				break;
 			default:
@@ -1131,6 +1181,24 @@ public class AdvancedMapPlugin extends Plugin
 		return true;
 	}
 
+	/**
+	 * The highest floor known to have something in the region in the middle of a view: 0 when only the lowest does, or
+	 * nothing is known yet (the floors are known once drawn, or saved by "Save the map").
+	 */
+	private int highestFloor(MapViewport.View view)
+	{
+		RegionImages known = images;
+		int regionId = ((int) Math.floor(view.centerX) >> 6) << 8 | (int) Math.floor(view.centerY) >> 6;
+		for (int floor = RegionImages.PLANES - 1; floor > 0 && known != null; floor--)
+		{
+			if (known.hasFloor(floor, regionId))
+			{
+				return floor;
+			}
+		}
+		return 0;
+	}
+
 	/** Moves the map to a tile: onto its map and floor, centered there. */
 	private void goTo(WorldPoint to)
 	{
@@ -1217,8 +1285,10 @@ public class AdvancedMapPlugin extends Plugin
 	 */
 	boolean pressPanels(int x, int y, int width, int height, boolean window)
 	{
-		return pressEditor(x, y, width, height, window) || pressSearch(x, y, width, height, window)
-			|| pressSideList(x, y, width, height, window) || pressFilters(x, y, width, height, window);
+		// while the marker box is open it is drawn over the side list and takes the keys: neither the list nor the
+		// search box under it takes a press
+		return pressEditor(x, y, width, height, window) || !editor.isOpen() && (pressSearch(x, y, width, height, window)
+			|| pressSideList(x, y, width, height, window)) || pressFilters(x, y, width, height, window);
 	}
 
 	/** A left press on the marker box: a picture or color is chosen, Save, Remove or Cancel. True when on the box. */
@@ -1267,7 +1337,15 @@ public class AdvancedMapPlugin extends Plugin
 	private void saveMarkers(MapPins.Marker old, MapPins.Marker fresh)
 	{
 		List<MapPins.Marker> markers = new ArrayList<>(pins.markers());
-		int at = old == null ? -1 : markers.indexOf(old);
+		// by id: the list may have been read again meanwhile, with another client's change to this marker
+		int at = -1;
+		for (int i = 0; old != null && i < markers.size() && at < 0; i++)
+		{
+			if (markers.get(i).getId().equals(old.getId()))
+			{
+				at = i;
+			}
+		}
 		if (at >= 0)
 		{
 			markers.remove(at);
@@ -1365,7 +1443,8 @@ public class AdvancedMapPlugin extends Plugin
 		MapIcons known = icons;
 		List<MapPins.Marker> markers = pins.shown();
 		List<MapSpot> spots = known == null ? Collections.emptyList() : known.allSpots();
-		Object key = Arrays.asList(markers, spots.size(), progress);
+		Map<String, WorldPoint> maps = gameMaps;
+		Object key = Arrays.asList(markers, spots.size(), progress, maps);
 		if (key.equals(extraKey))
 		{
 			return extraEntries;
@@ -1377,6 +1456,21 @@ public class AdvancedMapPlugin extends Plugin
 				: marker.getName(), MapSearch.Kind.MARKER.label, Collections.singletonList(marker.getPoint()),
 				Collections.emptyList(), null));
 		}
+		// the game's own maps by name: Zanaris has no place name of its own on any map; a name that is one already is
+		// found that way
+		java.util.Set<String> placeNames = new java.util.HashSet<>();
+		for (MapLabels.Label label : labelsNow())
+		{
+			placeNames.add(MapSearch.normalize(String.join(" ", label.getLines())));
+		}
+		maps.forEach((name, at) ->
+		{
+			if (!placeNames.contains(MapSearch.normalize(name)))
+			{
+				out.add(new MapSearch.Entry(MapSearch.Kind.PLACE, name, "The game's " + name + " map",
+					Collections.singletonList(at), Collections.emptyList(), null));
+			}
+		});
 		Map<Integer, List<WorldPoint>> byCategory = new java.util.TreeMap<>();
 		for (MapSpot spot : spots)
 		{
@@ -1713,7 +1807,7 @@ public class AdvancedMapPlugin extends Plugin
 	/** The mouse wheel over the Filters list or a transport's places scrolls it. True when it did. */
 	boolean wheelPanels(int x, int y, double notches, int width, int height, boolean window)
 	{
-		if (sideList.isOpen())
+		if (sideList.isOpen() && !editor.isOpen())
 		{
 			SideList.Layout places = sideList.layout(MapPainter.buttons(width, height, window));
 			if (places.getPanel().contains(x, y))
@@ -1911,6 +2005,7 @@ public class AdvancedMapPlugin extends Plugin
 				categories.values().forEach(areaId -> pictures.addSprite(areaId, from.areaIcon(areaId)));
 				list.setCategoryIcons(categories);
 				into.set(from.labels());
+				gameMaps = from.gameMaps();
 			}
 			catch (RuntimeException e)
 			{
@@ -2007,6 +2102,9 @@ public class AdvancedMapPlugin extends Plugin
 	private void closed()
 	{
 		selection = null;
+		// keys go back to the game: an open search box or marker box would otherwise take them when the map opens again
+		search.setFocused(false);
+		editor.close();
 		RegionImages current = images;
 		if (current != null)
 		{

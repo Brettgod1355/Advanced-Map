@@ -95,6 +95,19 @@ final class MapViewport
 		keepInside();
 	}
 
+	/** Looks where another view looks, {@code shiftY} tiles further north, at its zoom. */
+	void follow(MapViewport other, int shiftY)
+	{
+		View there = other.view(1, 1);
+		synchronized (this)
+		{
+			centerX = there.centerX;
+			centerY = there.centerY + shiftY;
+			zoom = there.zoom;
+			keepInside();
+		}
+	}
+
 	synchronized void setZoom(double zoom)
 	{
 		this.zoom = clamp(zoom);

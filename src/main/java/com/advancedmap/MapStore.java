@@ -7,6 +7,7 @@ package com.advancedmap;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
@@ -61,7 +62,24 @@ final class MapStore
 		{
 			files.forEach(file -> store.remember(file.getFileName()));
 		}
+		store.forgetCityCopy();
 		return store;
+	}
+
+	/**
+	 * Deletes what an older version saved of Prifddinas's copy (the city is drawn into Tirannwn now and its copy left
+	 * off the map), which would otherwise show for a moment on the underground map every session.
+	 */
+	private void forgetCityCopy()
+	{
+		for (int key : new ArrayList<>(saved.keySet()))
+		{
+			int region = RegionImages.region(key);
+			if (Prifddinas.isCopyRegion(region >> 8, region & 0xFF))
+			{
+				forget(key);
+			}
+		}
 	}
 
 	/** A saved file's name: floor, region id, hash and kind, for example {@code 0_12850_3f2a...e1_f.png}. */

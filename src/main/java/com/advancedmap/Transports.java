@@ -94,10 +94,14 @@ final class Transports
 		}
 	}
 
-	/** A trip's fare and needs from {@code transport-costs.tsv}: from a boarding tile (null for any) to a place. */
+	/**
+	 * A trip's fare and needs from {@code transport-costs.tsv}: of a kind of transport, from a boarding tile (null for
+	 * any stop of a network) to a place.
+	 */
 	@Value
 	private static class Cost
 	{
+		String kind;
 		WorldPoint from;
 		WorldPoint to;
 		String fare;
@@ -198,7 +202,7 @@ final class Transports
 	{
 		for (String[] f : rows(in))
 		{
-			out.costs.add(new Cost(spacedPoint(f[1]), spacedPoint(f[2]), f.length > 3 ? f[3] : "",
+			out.costs.add(new Cost(f[0], spacedPoint(f[1]), spacedPoint(f[2]), f.length > 3 ? f[3] : "",
 				f.length > 4 ? f[4] : ""));
 		}
 	}
@@ -213,8 +217,10 @@ final class Transports
 			{
 				continue;
 			}
-			if (cost.from == null || from != null && distance(cost.from, from.getX(), from.getY(), from.getPlane())
-				<= REACH)
+			// a network's row holds for any of its stops, so only for that network: the house's fairy ring stands where
+			// the house's spirit tree lands, and is not the spirit tree
+			if (cost.from == null ? cost.kind.equals(kind)
+				: from != null && distance(cost.from, from.getX(), from.getY(), from.getPlane()) <= REACH)
 			{
 				best = cost;
 				if (cost.from != null)

@@ -141,9 +141,10 @@ final class SideList
 	{
 		Rectangle area = buttons.get(MapPainter.Button.AREA);
 		Rectangle locate = buttons.get(MapPainter.Button.LOCATE);
-		Rectangle floorUp = buttons.get(MapPainter.Button.FLOOR_UP);
+		// above the Slayer button (whether it is there or not), which sits above the floor buttons
+		Rectangle below = buttons.get(MapPainter.Button.SLAYER);
 		int top = area.y + area.height + 6;
-		int room = Math.max(HEADER + ROW * 3, floorUp.y - 6 - top);
+		int room = Math.max(HEADER + ROW * 3, below.y - 6 - top);
 		int height = Math.min(room, HEADER + content + PAD / 2);
 		int x = locate.x + locate.width - WIDTH;
 		Rectangle panel = new Rectangle(x, top, WIDTH, height);

@@ -28,8 +28,9 @@ public class MapPainterTest
 	{
 		assertTrue(MapPainter.buttons(1200, 800, false).containsKey(MapPainter.Button.CLOSE));
 		assertFalse(MapPainter.buttons(1200, 800, true).containsKey(MapPainter.Button.CLOSE));
-		assertEquals(8, MapPainter.buttons(1200, 800, false).size());
-		assertEquals(7, MapPainter.buttons(1200, 800, true).size());
+		// with the Slayer button's place, kept whether the button shows or not
+		assertEquals(9, MapPainter.buttons(1200, 800, false).size());
+		assertEquals(8, MapPainter.buttons(1200, 800, true).size());
 	}
 
 	@Test
@@ -54,7 +55,7 @@ public class MapPainterTest
 	{
 		Rectangle locate = MapPainter.buttons(1000, 700, false).get(MapPainter.Button.LOCATE);
 		assertTrue(locate.x > 900 && locate.y > 600);
-		assertEquals(MapPainter.Button.LOCATE, MapPainter.buttonAt(985, 685 - 10, 1000, 700, false));
+		assertEquals(MapPainter.Button.LOCATE, MapPainter.buttonAt(985, 685 - 10, 1000, 700, false, null));
 	}
 
 	@Test
@@ -63,9 +64,17 @@ public class MapPainterTest
 		for (Map.Entry<MapPainter.Button, Rectangle> button : MapPainter.buttons(800, 600, false).entrySet())
 		{
 			Rectangle r = button.getValue();
-			assertEquals(button.getKey(), MapPainter.buttonAt(r.x + r.width / 2, r.y + r.height / 2, 800, 600, false));
+			MapPainter.Button found = MapPainter.buttonAt(r.x + r.width / 2, r.y + r.height / 2, 800, 600, false, null);
+			// the Slayer button is only there while the Slayer task setting is on
+			assertEquals(button.getKey() == MapPainter.Button.SLAYER ? null : button.getKey(), found);
 		}
-		assertNull(MapPainter.buttonAt(400, 300, 800, 600, false));
+		assertNull(MapPainter.buttonAt(400, 300, 800, 600, false, null));
+		Rectangle slayer = MapPainter.buttons(800, 600, false).get(MapPainter.Button.SLAYER);
+		MapSettings on = new MapSettings(EnumSet.allOf(IconGroup.class), Collections.emptySet(), Collections.emptySet(),
+			false, true, false, false, true, true, RoutingPlugin.NONE, FloorNumbers.GROUND_IS_FIRST, 100, true, true, true);
+		assertEquals(MapPainter.Button.SLAYER, MapPainter.buttonAt(slayer.x + 5, slayer.y + 5, 800, 600, false, on));
+		// it sits above the floor buttons, clear of them
+		assertFalse(slayer.intersects(MapPainter.buttons(800, 600, false).get(MapPainter.Button.FLOOR_UP)));
 	}
 
 	@Test
@@ -132,7 +141,7 @@ public class MapPainterTest
 	private static MapSettings settings(RoutingPlugin routing)
 	{
 		return new MapSettings(EnumSet.allOf(IconGroup.class), Collections.emptySet(), Collections.emptySet(), false,
-			true, false, false, true, true, routing, FloorNumbers.GROUND_IS_FIRST, 100, true);
+			true, false, false, true, true, routing, FloorNumbers.GROUND_IS_FIRST, 100, true, false, true);
 	}
 
 	@Test

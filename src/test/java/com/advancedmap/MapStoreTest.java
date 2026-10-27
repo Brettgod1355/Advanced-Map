@@ -69,6 +69,21 @@ public class MapStoreTest
 	}
 
 	@Test
+	public void picturesOfPrifddinassCopyAreDeletedOnOpening() throws Exception
+	{
+		// region 50, 94: inside the city's copy, which is drawn into Tirannwn now and left off the underground map
+		int copy = RegionImages.key(0, 50 << 8 | 94);
+		int surface = RegionImages.key(0, 12850);
+		MapStore store = MapStore.open(root());
+		store.save(copy, 5, picture(0xFF000000, 8), picture(0xFF000000, 2));
+		store.save(surface, 5, picture(0xFF000000, 8), picture(0xFF000000, 2));
+		MapStore again = MapStore.open(root());
+		assertFalse(again.has(copy));
+		assertTrue(again.has(surface));
+		assertEquals(2, folder.getRoot().toPath().resolve("map-v" + MapStore.VERSION).toFile().list().length);
+	}
+
+	@Test
 	public void anEmptyFloorIsRemembered() throws Exception
 	{
 		int key = RegionImages.key(3, 12850);
