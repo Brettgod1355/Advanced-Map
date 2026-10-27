@@ -467,7 +467,7 @@ class ClientMapSource implements MapSource
 		if (links == null)
 		{
 			byte[] script = reader.read(client -> client.getIndexScripts().loadData(MapLinks.SCRIPT, 0));
-			links = Prifddinas.moveLinks(MapLinks.decode(script));
+			links = DungeonLinks.withExtra(Prifddinas.moveLinks(MapLinks.decode(script)));
 			// kept once read; a script the client has not got yet is asked for again
 			mapLinks = script == null ? null : links;
 		}

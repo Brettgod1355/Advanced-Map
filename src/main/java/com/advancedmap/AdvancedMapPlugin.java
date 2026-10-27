@@ -789,6 +789,11 @@ public class AdvancedMapPlugin extends Plugin
 		}
 		int to = MapLinks.destinationNear(links.knownMapLinks(), spot.getX(), spot.getY(), spot.getPlane(),
 			RegionImages.LINK_REACH);
+		for (int floor = 0; to < 0 && floor < RegionImages.PLANES; floor++)
+		{
+			// a few of the game's links name the entrance a floor up from its icon (Slepe's trapdoor)
+			to = MapLinks.destinationNear(links.knownMapLinks(), spot.getX(), spot.getY(), floor, 0);
+		}
 		if (to < 0)
 		{
 			return false;
