@@ -7,8 +7,10 @@ package com.advancedmap;
 
 import com.advancedmap.cache.MapLinks;
 import com.google.inject.Provides;
+import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashSet;
@@ -72,6 +74,10 @@ public class AdvancedMapPlugin extends Plugin
 	private static final int ROUTE_TICKS = 3;
 	/** How far the mouse may move between press and release for it to count as a click, in pixels. */
 	static final int CLICK_SLOP = 4;
+	/** The layer marking a searched monster's spawns, or a place's spots when it has several. */
+	static final String SEARCH_LAYER = "advancedmap:search";
+	/** A search result is shown at least this close (pixels per tile). */
+	static final double SEARCH_ZOOM = 4;
 
 	@Inject
 	private Client client;
@@ -112,7 +118,8 @@ public class AdvancedMapPlugin extends Plugin
 	private MapIcons icons;
 	private MapLabels labels;
 	private MapFilters filters;
-	private final TransportList transportList = new TransportList();
+	private final SideList sideList = new SideList();
+	private final MapSearch search = new MapSearch();
 	private volatile boolean labelsLoading;
 	private RegionImages images;
 	private MapPreparer preparer;
@@ -166,6 +173,9 @@ public class AdvancedMapPlugin extends Plugin
 		MiningSites.load();
 		RareTrees.load();
 		Transports.load();
+		Shops.load();
+		Spawns.load();
+		search.load();
 		reader = new CacheReader(client);
 		shortestPathRoute = new ShortestPathRoute();
 		source = new ClientMapSource(reader);
@@ -187,7 +197,7 @@ public class AdvancedMapPlugin extends Plugin
 			() -> lastSeen != null ? lastSeen : LUMBRIDGE);
 		preparer.start();
 		messages = new MapMessages(this::openMap);
-		painter = new MapPainter(images, messages, icons, labels, filters, transportList);
+		painter = new MapPainter(images, messages, icons, labels, filters, sideList, search);
 		overlay = new MapOverlay(client, this, painter);
 		input = new MapInput(this, client::getCanvasWidth, client::getCanvasHeight);
 		hotkey = new HotkeyListener(() -> config.toggleKey())
@@ -745,6 +755,34 @@ public class AdvancedMapPlugin extends Plugin
 		{
 			showTransport(icon.getSpot());
 		}
+		else if (icon != null && icon.getSpot().getGroup() == IconGroup.SHOPS)
+		{
+			MapSpot spot = icon.getSpot();
+			Shops.Shop shop = Shops.near(spot.getX(), spot.getY(), spot.getPlane());
+			if (shop != null)
+			{
+				showShop(shop);
+			}
+		}
+	}
+
+	/** Lists what a shop sells and for how much, and any other shops beside it, which a click opens in turn. */
+	private void showShop(Shops.Shop shop)
+	{
+		List<SideList.Row> rows = new ArrayList<>();
+		for (Shops.Item item : shop.getItems())
+		{
+			rows.add(new SideList.Row(item.getName(), item.priceText(), null, null, null, null));
+		}
+		WorldPoint at = shop.getPoint();
+		for (Shops.Shop other : Shops.within(at.getX(), at.getY(), at.getPlane()))
+		{
+			if (other != shop)
+			{
+				rows.add(new SideList.Row("Also here: " + other.getName(), "", null, null, other.getPoint(), other));
+			}
+		}
+		sideList.open(shop.getName(), rows, shop);
 	}
 
 	/**
@@ -761,7 +799,8 @@ public class AdvancedMapPlugin extends Plugin
 		if (spot == null)
 		{
 			layers.remove(Transports.LAYER);
-			transportList.close();
+			layers.remove(SEARCH_LAYER);
+			sideList.close();
 			return;
 		}
 		List<Transports.Destination> destinations = Transports.from(spot);
@@ -769,11 +808,22 @@ public class AdvancedMapPlugin extends Plugin
 		if (!destinations.isEmpty())
 		{
 			layers.put(Transports.layer(from, destinations));
+			sideList.open(MapIcons.name(spot, progress), transportRows(from, destinations), spot);
 		}
-		if (destinations.size() > 1)
+	}
+
+	/** A transport's places as list rows: the place, its fare (or the other map it is on), what the trip needs. */
+	static List<SideList.Row> transportRows(WorldPoint from, List<Transports.Destination> destinations)
+	{
+		List<SideList.Row> rows = new ArrayList<>();
+		for (Transports.Destination to : destinations)
 		{
-			transportList.open(MapIcons.name(spot, progress), from, destinations);
+			String note = MapArea.of(to.getPoint().getY()) != MapArea.of(from.getY())
+				? MapArea.of(to.getPoint().getY()).label : to.fareText();
+			rows.add(new SideList.Row(to.label(), note, to.getNeeds().isEmpty() ? null : to.getNeeds(), null,
+				to.getPoint(), null));
 		}
+		return rows;
 	}
 
 	/**
@@ -846,14 +896,18 @@ public class AdvancedMapPlugin extends Plugin
 			(int) Math.floor(view.worldY(y)), plane));
 	}
 
-	/** Escape: closes the Filters list, an info box or a menu first, then the map. */
+	/** Escape: leaves the search bar, closes the Filters list, an info box or a menu first, then the map. */
 	void escape()
 	{
-		if (filters.isOpen())
+		if (search.isFocused())
+		{
+			search.setFocused(false);
+		}
+		else if (filters.isOpen())
 		{
 			filters.setOpen(false);
 		}
-		else if (selection != null || transportList.isOpen())
+		else if (selection != null || sideList.isOpen())
 		{
 			selection = null;
 			showTransport(null);
@@ -864,10 +918,10 @@ public class AdvancedMapPlugin extends Plugin
 		}
 	}
 
-	/** True while a transport's list of places is open, so Escape closes it before the map. */
-	boolean transportListOpen()
+	/** True while the list on the right is open, so Escape closes it before the map. */
+	boolean sideListOpen()
 	{
-		return transportList.isOpen();
+		return sideList.isOpen();
 	}
 
 	/** True while the Filters list is open, so keys go to its search box. */
@@ -884,35 +938,227 @@ public class AdvancedMapPlugin extends Plugin
 	 */
 	boolean pressPanels(int x, int y, int width, int height, boolean window)
 	{
-		return pressTransportList(x, y, width, height, window) || pressFilters(x, y, width, height, window);
+		return pressSearch(x, y, width, height, window) || pressSideList(x, y, width, height, window)
+			|| pressFilters(x, y, width, height, window);
+	}
+
+	/**
+	 * A left press on the search bar takes the keys (and closes the Filters list), its x empties it, a result is
+	 * chosen; a press anywhere else leaves the bar. True when the press was on the bar or its results.
+	 */
+	private boolean pressSearch(int x, int y, int width, int height, boolean window)
+	{
+		MapSearch.Layout layout = search.layout(MapPainter.buttons(width, height, window), width);
+		MapSearch.Hit hit = search.hitAt(x, y, layout);
+		switch (hit.getPart())
+		{
+			case BOX:
+				search.setFocused(true);
+				filters.setOpen(false);
+				selection = null;
+				return true;
+			case CLEAR:
+				search.clear();
+				search.setFocused(true);
+				return true;
+			case RESULT:
+				choose(search.results().get(hit.getIndex()));
+				return true;
+			default:
+				search.setFocused(false);
+				return false;
+		}
+	}
+
+	/** Everything the search bar finds, built again once the place names are read. */
+	private List<MapSearch.Entry> searchIndex()
+	{
+		MapLabels names = labels;
+		return search.index(names == null ? Collections.emptyList() : names.all());
+	}
+
+	/**
+	 * Shows a search result: moves the map to the nearest of its places (to the player, or the map's middle) and, for
+	 * a shop, lists its stock; for an item, its sellers, nearest first; for a monster or NPC, marks every spawn and
+	 * lists them by area, nearest first.
+	 */
+	private void choose(MapSearch.Entry entry)
+	{
+		if (entry == null || entry.getPoints().isEmpty())
+		{
+			return;
+		}
+		search.setFocused(false);
+		selection = null;
+		showTransport(null);
+		WorldPoint from = player != null ? player : center();
+		WorldPoint nearest = nearest(entry.getPoints(), from);
+		switch (entry.getKind())
+		{
+			case SHOP:
+				showShop(entry.getShops().get(0));
+				break;
+			case ITEM:
+				sideList.open(entry.getName(), sellerRows(entry, from), entry);
+				break;
+			case MONSTER:
+			case NPC:
+				List<SearchSpots.Area> areas = SearchSpots.areas(entry.getPoints(), from, labelsNow());
+				nearest = areas.get(0).getPoint();
+				messages.put(SearchSpots.layer(SEARCH_LAYER, entry.getPoints()));
+				sideList.open(entry.getName() + (entry.getKind() == MapSearch.Kind.MONSTER
+					? " (" + entry.getNote().toLowerCase(java.util.Locale.ROOT) + ")" : ""),
+					SearchSpots.rows(areas), entry);
+				break;
+			default:
+				if (entry.getPoints().size() > 1)
+				{
+					messages.put(SearchSpots.layer(SEARCH_LAYER, entry.getPoints()));
+				}
+				break;
+		}
+		goTo(nearest);
+		MapViewport viewport = viewports.get(area);
+		if (viewport.view(1, 1).zoom < SEARCH_ZOOM)
+		{
+			viewport.setZoom(SEARCH_ZOOM);
+		}
+	}
+
+	/** An item's sellers, nearest first: the shop, the price there; a click opens the shop's stock. */
+	private static List<SideList.Row> sellerRows(MapSearch.Entry item, WorldPoint from)
+	{
+		List<Shops.Shop> shops = new ArrayList<>(item.getShops());
+		shops.sort(java.util.Comparator.comparingInt(shop -> SearchSpots.distance(shop.getPoint(), from)));
+		List<SideList.Row> rows = new ArrayList<>();
+		for (Shops.Shop shop : shops)
+		{
+			String price = "";
+			for (Shops.Item sold : shop.getItems())
+			{
+				if (sold.getName().equals(item.getName()))
+				{
+					price = sold.priceText();
+					break;
+				}
+			}
+			rows.add(new SideList.Row(shop.getName(), price, null, null, shop.getPoint(), shop));
+		}
+		return rows;
+	}
+
+	private static WorldPoint nearest(List<WorldPoint> points, WorldPoint from)
+	{
+		WorldPoint best = points.get(0);
+		for (WorldPoint point : points)
+		{
+			if (SearchSpots.distance(point, from) < SearchSpots.distance(best, from))
+			{
+				best = point;
+			}
+		}
+		return best;
+	}
+
+	/** The tile at the middle of the map as it is shown now. */
+	private WorldPoint center()
+	{
+		MapViewport.View view = viewport().view(2, 2);
+		return new WorldPoint((int) view.worldX(1), (int) view.worldY(1), plane);
+	}
+
+	private List<MapLabels.Label> labelsNow()
+	{
+		MapLabels names = labels;
+		return names == null ? Collections.emptyList() : names.all();
+	}
+
+	/** True while a search box has the keys: the search bar's, or the open Filters list's. */
+	boolean typing()
+	{
+		return search.isFocused() || filtersOpen();
+	}
+
+	/** A key typed while {@link #typing}: into the search bar, else the Filters list's search box. */
+	void type(char c)
+	{
+		if (Character.isISOControl(c))
+		{
+			return;
+		}
+		if (search.isFocused())
+		{
+			search.type(c, searchIndex());
+		}
+		else
+		{
+			typeFilters(c);
+		}
+	}
+
+	/** A key pressed while {@link #typing}: Backspace, and in the search bar Up, Down and Enter to pick a result. */
+	void typingKey(int keyCode)
+	{
+		if (!search.isFocused())
+		{
+			if (keyCode == KeyEvent.VK_BACK_SPACE)
+			{
+				backspaceFilters();
+			}
+			return;
+		}
+		switch (keyCode)
+		{
+			case KeyEvent.VK_BACK_SPACE:
+				search.backspace(searchIndex());
+				break;
+			case KeyEvent.VK_UP:
+				search.move(-1);
+				break;
+			case KeyEvent.VK_DOWN:
+				search.move(1);
+				break;
+			case KeyEvent.VK_ENTER:
+				choose(search.chosen());
+				break;
+			default:
+				break;
+		}
 	}
 
 	/**
 	 * A left press while a transport's places are listed: a place moves the map there, the close box closes the list
 	 * and the lines. True when the press was on the list.
 	 */
-	private boolean pressTransportList(int x, int y, int width, int height, boolean window)
+	private boolean pressSideList(int x, int y, int width, int height, boolean window)
 	{
-		if (!transportList.isOpen())
+		if (!sideList.isOpen())
 		{
 			return false;
 		}
-		TransportList.Layout layout = TransportList.layout(MapPainter.buttons(width, height, window),
-			transportList.places().size());
-		TransportList.Hit hit = transportList.hitAt(x, y, layout);
-		if (hit.getIndex() == TransportList.Hit.OUTSIDE)
+		SideList.Layout layout = sideList.layout(MapPainter.buttons(width, height, window));
+		SideList.Hit hit = sideList.hitAt(x, y, layout);
+		if (hit.getIndex() == SideList.Hit.OUTSIDE)
 		{
 			return false;
 		}
-		if (hit.getIndex() == TransportList.Hit.CLOSE)
+		if (hit.getIndex() == SideList.Hit.CLOSE)
 		{
 			selection = null;
 			showTransport(null);
 		}
 		else if (hit.getIndex() >= 0)
 		{
-			selection = null;
-			goTo(transportList.places().get(hit.getIndex()).getPoint());
+			SideList.Row row = sideList.rows().get(hit.getIndex());
+			if (row.getPoint() != null)
+			{
+				selection = null;
+				goTo(row.getPoint());
+			}
+			if (row.getTarget() instanceof Shops.Shop)
+			{
+				showShop((Shops.Shop) row.getTarget());
+			}
 		}
 		return true;
 	}
@@ -996,13 +1242,12 @@ public class AdvancedMapPlugin extends Plugin
 	/** The mouse wheel over the Filters list or a transport's places scrolls it. True when it did. */
 	boolean wheelPanels(int x, int y, double notches, int width, int height, boolean window)
 	{
-		if (transportList.isOpen())
+		if (sideList.isOpen())
 		{
-			TransportList.Layout places = TransportList.layout(MapPainter.buttons(width, height, window),
-				transportList.places().size());
+			SideList.Layout places = sideList.layout(MapPainter.buttons(width, height, window));
 			if (places.getPanel().contains(x, y))
 			{
-				transportList.scroll(notches, places);
+				sideList.scroll(notches, places);
 				return true;
 			}
 		}
@@ -1022,7 +1267,7 @@ public class AdvancedMapPlugin extends Plugin
 	}
 
 	/** A key typed while the Filters list is open: into its search box. */
-	void typeFilters(char c)
+	private void typeFilters(char c)
 	{
 		MapFilters list = filters;
 		if (list != null && !Character.isISOControl(c))
@@ -1031,7 +1276,7 @@ public class AdvancedMapPlugin extends Plugin
 		}
 	}
 
-	void backspaceFilters()
+	private void backspaceFilters()
 	{
 		MapFilters list = filters;
 		if (list != null)

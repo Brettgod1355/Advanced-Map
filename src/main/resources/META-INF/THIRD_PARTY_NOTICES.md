@@ -9,6 +9,10 @@ The build and launcher follow the official [example plugin](https://github.com/r
 commit `46e14f2c448fab6cbc599df1015b9631dcf1fc52`. RuneLite is a build/runtime dependency and is not bundled
 in the plugin JAR.
 
+`src/main/resources/com/advancedmap/places.tsv`, the dungeon and minigame entrances the search finds by name, is the
+names and tiles of RuneLite's world map plugin's `DungeonLocation` and `MinigameLocation` lists
+(`runelite-client/src/main/java/net/runelite/client/plugins/worldmap/`, release 1.13.4, the same commit as below).
+
 The map is drawn with code from RuneLite's cache library (`net.runelite:cache`), taken from the
 `runelite-parent-1.13.4` release of [runelite/runelite](https://github.com/runelite/runelite) (commit
 `ad137adad1cb5052a5fef6e391888a8895d09830`, the published `cache-1.13.4-sources.jar`). The files keep their
@@ -89,7 +93,10 @@ magic carpets, magic mushtrees, quetzals, minecarts, canoes, boats, ships and ch
 [Shortest Path](https://github.com/Skretzo/shortest-path)'s `src/main/resources/transports/` files of those names, at
 its Plugin Hub pin `50f30435f37d1d5c5e2af790925fa7aa70b7840d` (authors on the Plugin Hub: Skretzo, FIrgolitsch,
 wvanderp, mpickering). Kept: each origin and destination tile and its name; boarding tiles within 4 tiles of each other
-merged into one spot; everything else (items, quests, skills, durations, varbits) left out. 28 rows of
+merged into one spot; everything else (items, quests, skills, durations, varbits) left out.
+`src/main/resources/com/advancedmap/transport-costs.tsv` takes from the same files at the same pin each trip's fare
+(the coins it needs) and what it needs to be taken (quests, skill levels, other items), by origin and destination
+tile; durations and varbits are left out. 28 rows of
 `src/main/resources/com/advancedmap/dungeon-links.tsv`, where surface dungeon entrances the game's own map does not
 link lead, are taken from its `transports.tsv` at the same pin (origin and destination tiles only). Shortest Path's license,
 as published in that repository (its copyright line is the license template's, unfilled):
@@ -150,6 +157,20 @@ underground tiles of the Tonali Cavern, Shayzien Prison, Scabaras Dungeon, Ogre 
 `dungeon-links.tsv` are those pages' map coordinates, checked on 2026-10-27. Only those
 game facts are written in `Unlockable.java`; no wiki text or image is included, and nothing is fetched while the
 plugin runs. Which chests and banks there are, and whether a player has built or opened one, come from the game.
+
+## Data from the Old School RuneScape Wiki (CC BY-NC-SA 3.0)
+
+`src/main/resources/com/advancedmap/shops.tsv` (shops, where they are, what they sell, the price, currency and
+stock) and `src/main/resources/com/advancedmap/spawns.tsv` (where monsters and NPCs are, and monsters' combat
+levels) are adapted from the [Old School RuneScape Wiki](https://oldschool.runescape.wiki/)'s structured data
+(its Bucket tables `infobox_shop`, `storeline`, `map`, `locline`, `infobox_monster` and `infobox_npc`), read on
+2026-10-27. The wiki's content is licensed under
+[CC BY-NC-SA 3.0](https://creativecommons.org/licenses/by-nc-sa/3.0/); these two files are adaptations and are
+shared under the same license, credited to the Old School RuneScape Wiki's contributors. Changes: only names,
+tiles, prices and levels kept; each shop placed by its page's map, else its owner's spawn; prices and stock as
+the wiki gave them that day (they can be out of date). The Shilo Village cart's fare, and that the Karamja elite
+diary makes it free, are from the wiki's "Shilo Village cart system", "Hajedy" and "Vigroy" pages, checked the same day.
+Nothing is fetched from the wiki while the plugin runs.
 
 ## Behavior references (no code copied)
 

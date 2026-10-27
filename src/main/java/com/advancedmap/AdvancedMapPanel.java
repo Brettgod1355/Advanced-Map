@@ -132,6 +132,10 @@ class AdvancedMapPanel extends PluginPanel
 		return section("Moving around", "Drag to move, scroll to zoom around the pointer. The map opens on you, on"
 			+ " the surface or the underground map, whichever you are on. The round button at the bottom right brings"
 			+ " you back into view.")
+			+ section("Search", "Click the box at the top and type: a place, a dungeon, a shop, anything a shop"
+			+ " sells or a monster. Loose spelling works (\"d scim\", \"dragon sim\", \"kbd\"). Up, Down and"
+			+ " Enter pick a result, or click one. A place or shop moves the map there; an item lists the shops"
+			+ " that sell it, nearest first; a monster marks every spawn and lists them by area.")
 			+ section("Surface and underground", "The button at the top right switches between the two maps."
 			+ " Basements, caves and dungeons are on the underground map.")
 			+ section("Floors", "The arrows at the bottom right go up and down a floor. The floors below are shown"
@@ -143,6 +147,9 @@ class AdvancedMapPanel extends PluginPanel
 			+ " out with a red mark, and so are bank chests you haven't built yet and banks a quest hasn't opened"
 			+ " for you; click one for what it needs. \"Icons\" at the top left turns every icon off or on at once;"
 			+ " place names stay.")
+			+ section("Shops and transports", "Click a shop for what it sells and for how much, in a list on the"
+			+ " right. Click a spirit tree, fairy ring, charter ship or other transport for lines to where it goes and"
+			+ " a list of the places with each fare and what the trip needs; click a place to go there.")
 			+ section("Filters", "\"Filters\" at the top left drops down a list of every kind of icon with its"
 			+ " picture and name, grouped (Banks, Quests, Shops ...). Tick or untick a whole group or a single kind, or"
 			+ " type to search; the mouse wheel scrolls it. An orange dot on the button means some icons are"

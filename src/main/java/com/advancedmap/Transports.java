@@ -56,11 +56,52 @@ final class Transports
 		WorldPoint point;
 		String kind;
 		String name;
+		/** The fare in coins ("2500"), or empty when free or not known. */
+		String fare;
+		/** What the trip needs (quests, levels, things to bring), or empty. */
+		String needs;
+
+		Destination(WorldPoint point, String kind, String name)
+		{
+			this(point, kind, name, "", "");
+		}
+
+		Destination(WorldPoint point, String kind, String name, String fare, String needs)
+		{
+			this.point = point;
+			this.kind = kind;
+			this.name = name;
+			this.fare = fare;
+			this.needs = needs;
+		}
 
 		String label()
 		{
 			return name.isEmpty() ? kind : name;
 		}
+
+		/** The fare as shown: "2,500 gp", or empty. */
+		String fareText()
+		{
+			try
+			{
+				return fare.isEmpty() ? "" : String.format("%,d gp", Long.parseLong(fare));
+			}
+			catch (NumberFormatException e)
+			{
+				return fare;
+			}
+		}
+	}
+
+	/** A trip's fare and needs from {@code transport-costs.tsv}: from a boarding tile (null for any) to a place. */
+	@Value
+	private static class Cost
+	{
+		WorldPoint from;
+		WorldPoint to;
+		String fare;
+		String needs;
 	}
 
 	/** A place to board: a network's spot, a boat's or ship's spot, or a RuneLite transport icon that names its stop. */
@@ -86,6 +127,7 @@ final class Transports
 		final List<Station> stations = new ArrayList<>();
 		final Map<String, List<Destination>> networks = new LinkedHashMap<>();
 		final List<Named> names = new ArrayList<>();
+		final List<Cost> costs = new ArrayList<>();
 	}
 
 	private static volatile Data data = new Data();
@@ -98,11 +140,16 @@ final class Transports
 	static void load()
 	{
 		try (InputStream transports = Transports.class.getResourceAsStream("transports.tsv");
-			InputStream points = Transports.class.getResourceAsStream("transport-points.tsv"))
+			InputStream points = Transports.class.getResourceAsStream("transport-points.tsv");
+			InputStream costs = Transports.class.getResourceAsStream("transport-costs.tsv"))
 		{
 			if (transports != null && points != null)
 			{
 				Data out = new Data();
+				if (costs != null)
+				{
+					parseCosts(costs, out);
+				}
 				parseTransports(transports, out);
 				parsePoints(points, out);
 				data = out;
@@ -136,6 +183,50 @@ final class Transports
 			Integer.parseInt(f[at + 2])));
 	}
 
+	private static WorldPoint spacedPoint(String text)
+	{
+		if (text.trim().isEmpty())
+		{
+			return null;
+		}
+		String[] f = text.trim().split(" ");
+		return Prifddinas.toSurface(new WorldPoint(Integer.parseInt(f[0]), Integer.parseInt(f[1]),
+			Integer.parseInt(f[2])));
+	}
+
+	private static void parseCosts(InputStream in, Data out) throws IOException
+	{
+		for (String[] f : rows(in))
+		{
+			out.costs.add(new Cost(spacedPoint(f[1]), spacedPoint(f[2]), f.length > 3 ? f[3] : "",
+				f.length > 4 ? f[4] : ""));
+		}
+	}
+
+	/** A trip's fare and needs: boarding near {@code from} (or anywhere, for a network) to {@code to}. */
+	private static Destination priced(Data data, WorldPoint from, WorldPoint to, String kind, String name)
+	{
+		Cost best = null;
+		for (Cost cost : data.costs)
+		{
+			if (distance(cost.to, to.getX(), to.getY(), to.getPlane()) > 1)
+			{
+				continue;
+			}
+			if (cost.from == null || from != null && distance(cost.from, from.getX(), from.getY(), from.getPlane())
+				<= REACH)
+			{
+				best = cost;
+				if (cost.from != null)
+				{
+					break;
+				}
+			}
+		}
+		return best == null ? new Destination(to, kind, name)
+			: new Destination(to, kind, name, best.fare, best.needs);
+	}
+
 	private static void parseTransports(InputStream in, Data out) throws IOException
 	{
 		// a boat's or ship's spot sails to each of its own places: one station per spot and kind
@@ -151,12 +242,14 @@ final class Transports
 					out.stations.add(new Station(first, kind, null));
 					break;
 				case "D":
-					out.networks.computeIfAbsent(kind, k -> new ArrayList<>()).add(new Destination(first, kind, clean(f[5])));
+					out.networks.computeIfAbsent(kind, k -> new ArrayList<>()).add(priced(out, null, first, kind,
+						clean(f[5])));
 					break;
 				case "P":
 					String key = kind + "@" + first;
 					pairSpots.put(key, first);
-					pairs.computeIfAbsent(key, k -> new ArrayList<>()).add(new Destination(point(f, 5), kind, clean(f[8])));
+					pairs.computeIfAbsent(key, k -> new ArrayList<>()).add(priced(out, first, point(f, 5), kind,
+						clean(f[8])));
 					break;
 				default:
 					break;
@@ -188,7 +281,7 @@ final class Transports
 			{
 				int split = name.indexOf(" to ");
 				String place = split < 0 ? "" : name.substring(split + 4);
-				out.stations.add(new Station(at, name, Collections.singletonList(new Destination(to, name, place))));
+				out.stations.add(new Station(at, name, Collections.singletonList(priced(out, at, to, name, place))));
 			}
 			if (TO_KELDAGRIM.equals(name))
 			{

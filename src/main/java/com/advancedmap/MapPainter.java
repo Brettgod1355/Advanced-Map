@@ -126,17 +126,19 @@ final class MapPainter
 	private final MapIcons icons;
 	private final MapLabels labels;
 	private final MapFilters filters;
-	private final TransportList transportList;
+	private final SideList sideList;
+	private final MapSearch search;
 
 	MapPainter(RegionImages images, MapMessages messages, MapIcons icons, MapLabels labels, MapFilters filters,
-		TransportList transportList)
+		SideList sideList, MapSearch search)
 	{
+		this.search = search;
 		this.images = images;
 		this.messages = messages;
 		this.icons = icons;
 		this.labels = labels;
 		this.filters = filters;
-		this.transportList = transportList;
+		this.sideList = sideList;
 	}
 
 	/**
@@ -232,11 +234,11 @@ final class MapPainter
 			Rectangle button = buttons(view.width, view.height, window).get(Button.FILTERS);
 			filters.draw(g, MapFilters.layout(button, view.height), filters.entries(progress), settings, icons);
 		}
-		if (transportList.isOpen())
+		if (sideList.isOpen())
 		{
-			transportList.draw(g, TransportList.layout(buttons(view.width, view.height, window),
-				transportList.places().size()), mouse);
+			sideList.draw(g, sideList.layout(buttons(view.width, view.height, window)), mouse);
 		}
+		search.draw(g, search.layout(buttons(view.width, view.height, window), view.width), mouse);
 		if (antialiasing != null)
 		{
 			g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, antialiasing);

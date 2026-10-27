@@ -178,7 +178,7 @@ final class MapWindow extends JFrame
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent e)
 			{
-				if (plugin.selection() != null || plugin.filtersOpen() || plugin.transportListOpen())
+				if (plugin.selection() != null || plugin.typing() || plugin.sideListOpen())
 				{
 					plugin.escape();
 				}
@@ -296,16 +296,16 @@ final class MapWindow extends JFrame
 			addMouseListener(input);
 			addMouseMotionListener(input);
 			addMouseWheelListener(input);
-			// the Filters list's search box types here
+			// the search bar and the Filters list's search box type here
 			setFocusable(true);
 			addKeyListener(new java.awt.event.KeyAdapter()
 			{
 				@Override
 				public void keyTyped(KeyEvent e)
 				{
-					if (plugin.filtersOpen())
+					if (plugin.typing())
 					{
-						plugin.typeFilters(e.getKeyChar());
+						plugin.type(e.getKeyChar());
 						repaint();
 					}
 				}
@@ -313,9 +313,9 @@ final class MapWindow extends JFrame
 				@Override
 				public void keyPressed(KeyEvent e)
 				{
-					if (plugin.filtersOpen() && e.getKeyCode() == KeyEvent.VK_BACK_SPACE)
+					if (plugin.typing() && e.getKeyCode() != KeyEvent.VK_ESCAPE)
 					{
-						plugin.backspaceFilters();
+						plugin.typingKey(e.getKeyCode());
 						repaint();
 					}
 				}

@@ -1,0 +1,6177 @@
+# Shops and what they sell, from the OSRS Wiki's infobox_shop and storeline buckets (2026-10-27); each
+# placed by its page's {{Map}} (map bucket), else its owner's. CC BY-NC-SA 3.0, see THIRD_PARTY_NOTICES.md. Records:
+#   S name x y plane owner      a shop
+#   I item price currency stock  an item the shop above sells
+S	Aaron's Archery Appendages	2670	3435	0	Armour salesman
+I	Leather body	21	Coins	10
+I	Hardleather body	170	Coins	10
+I	Studded body	850	Coins	10
+I	Leather chaps	20	Coins	20
+I	Studded chaps	750	Coins	15
+I	Coif	200	Coins	10
+I	Leather cowl	24	Coins	10
+I	Leather vambraces	18	Coins	10
+I	Ranging cape	99000	Coins	1
+I	Ranging cape(t)	99000	Coins	1
+S	Aemad's Adventuring Supplies	2614	3293	0	Aemad
+I	Vial of water	2	Coins	500
+I	Water-filled vial pack	261	Coins	250
+I	Bronze pickaxe	1	Coins	2
+I	Iron axe	72	Coins	2
+I	Cooked meat	5	Coins	2
+I	Tinderbox	1	Coins	2
+I	Ball of wool	2	Coins	30
+I	Bronze arrow	1	Coins	500
+I	Rope	23	Coins	20
+I	Papyrus	13	Coins	50
+I	Knife	7	Coins	2
+S	Agelus' Farm Shop	1596	3103	0	Agelus
+I	Rake	6	Coins	10
+I	Seed dibber	6	Coins	10
+I	Secateurs	5	Coins	10
+I	Spade	3	Coins	10
+I	Gardening trowel	12	Coins	10
+I	Watering can	8	Coins	10
+I	Filled plant pot	1	Coins	30
+I	Plant pot pack	100	Coins	30
+I	Compost	20	Coins	30
+I	Compost pack	2000	Coins	30
+I	Empty sack	1	Coins	30
+I	Sack pack	100	Coins	30
+I	Basket	1	Coins	30
+I	Basket pack	100	Coins	30
+I	Bucket	2	Coins	30
+I	Empty bucket pack	500	Coins	30
+I	Plant cure	40	Coins	50
+I	Grain	2	Coins	0
+I	Potato	1	Coins	0
+I	Onion	3	Coins	0
+I	Cabbage	1	Coins	0
+I	Tomato	4	Coins	0
+I	Sweetcorn	9	Coins	0
+I	Barley	4	Coins	0
+S	Agility Arena Store	2809	3193	0	Pirate Jackie the Fruit
+I	Toadflax	3	Brimhaven voucher	∞
+I	Snapdragon	10	Brimhaven voucher	∞
+I	Graceful outfit	250	Brimhaven voucher	∞
+I	Pirate's hook	800	Brimhaven voucher	∞
+I	Amylase pack	60	Brimhaven voucher	∞
+I	Agility	1	Agility arena ticket	∞
+S	Agmundi Quality Clothes	2868	10209	0	Agmundi
+I	Skirt (lilac)	715	Coins	3
+I	Skirt (blue)	812	Coins	3
+I	Trousers (lilac)	910	Coins	3
+I	Trousers (blue)	975	Coins	3
+I	Shorts (yellow)	468	Coins	3
+I	Shorts (blue)	507	Coins	3
+I	Woven top (yellow)	812	Coins	3
+I	Woven top (blue)	845	Coins	3
+I	Shirt (yellow)	780	Coins	3
+I	Shirt (lilac)	812	Coins	3
+S	Ajjat	2851	3553	0	Ajjat
+I	Attack cape	99000	Coins	∞
+I	Attack cape(t)	99000	Coins	∞
+S	Ak-Haranu's Exotic Shop	3691	3496	0	Ak-Haranu
+I	Bolt rack	50	Coins	500
+S	Al Kharid General Store	3316	3182	0	Shop keeper (Al Kharid)
+I	Pot	1	Coins	5
+I	Jug	1	Coins	2
+I	Empty jug pack	182	Coins	5
+I	Shears	1	Coins	2
+I	Bucket	2	Coins	3
+I	Empty bucket pack	650	Coins	15
+I	Bowl	5	Coins	2
+I	Cake tin	13	Coins	2
+I	Tinderbox	1	Coins	2
+I	Chisel	1	Coins	2
+I	Hammer	1	Coins	5
+I	Newcomer map	1	Coins	5
+I	Security book	2	Coins	5
+S	Alain	2937	3439	0	Alain
+I	Plant cure	40	Coins	∞
+I	Compost	20	Coins	∞
+I	Rake	6	Coins	∞
+I	Empty plant pot	1	Coins	∞
+I	Watering can	8	Coins	∞
+I	Gardening trowel	12	Coins	∞
+I	Seed dibber	6	Coins	∞
+S	Alan (Farming Guild)	1264	3734	0	Alan (Farming Guild)
+I	Plant cure	40	Coins	∞
+I	Compost	20	Coins	∞
+I	Rake	6	Coins	∞
+I	Empty plant pot	1	Coins	∞
+I	Watering can	8	Coins	∞
+I	Gardening trowel	12	Coins	∞
+I	Seed dibber	6	Coins	∞
+S	Aldarin General Store	1414	2972	0	Shopkeeper (Aldarin)
+I	Chisel	1	Coins	5
+I	Spade	3	Coins	5
+I	Hammer	1	Coins	5
+I	Knife	7	Coins	5
+I	Tinderbox	1	Coins	5
+I	Pestle and mortar	5	Coins	5
+I	Needle	1	Coins	5
+I	Thread	1	Coins	30
+I	Rope	23	Coins	10
+I	Pot	1	Coins	15
+I	Jug	1	Coins	15
+I	Bucket	2	Coins	15
+I	Bowl	5	Coins	15
+I	Cake tin	13	Coins	15
+I	Vial	2	Coins	15
+I	Empty jug pack	182	Coins	5
+I	Empty bucket pack	650	Coins	5
+I	Empty vial pack	260	Coins	5
+S	Aleck's Hunter Emporium	2568	3082	0	Aleck
+I	Butterfly net	24	Coins	5
+I	Butterfly jar	1	Coins	100
+I	Magic box	720	Coins	30
+I	Noose wand	4	Coins	50
+I	Bird snare	6	Coins	50
+I	Box trap	38	Coins	25
+I	Teasing stick	60	Coins	5
+I	Unlit torch	4	Coins	20
+I	Rabbit snare	18	Coins	10
+I	Net trap (item)	38	Coins	25
+I	Bird snare pack	606	Coins	3
+I	Box trap pack	3840	Coins	3
+I	Magic imp box pack	72000	Coins	3
+S	Alexandra	1236	3753	0	Alexandra
+I	Plant cure	40	Coins	∞
+I	Compost	20	Coins	∞
+I	Rake	6	Coins	∞
+I	Empty plant pot	1	Coins	∞
+I	Watering can	8	Coins	∞
+I	Gardening trowel	12	Coins	∞
+I	Seed dibber	6	Coins	∞
+S	Ali the Carter	3421	2914	0	Ali the Carter
+I	Waterskin(4)	1000	Coins	∞
+S	Ali the Kebab seller	3354	2976	0	Ali the Kebab seller
+I	Kebab	3	Coins	∞
+I	Super kebab	5	Coins	∞
+I	Red hot sauce	0	Coins	∞
+S	Ali's Discount Wares	3302	3211	0	Ali Morrisane
+I	Pot	1	Coins	3
+I	Jug	1	Coins	2
+I	Empty jug pack	140	Coins	4
+I	Waterskin(3)	27	Coins	10
+I	Desert shirt	40	Coins	3
+I	Desert boots	20	Coins	2
+I	Bucket	2	Coins	19
+I	Empty bucket pack	500	Coins	10
+I	Fake beard	1	Coins	11
+I	Kharidian headpiece	1	Coins	12
+I	Papyrus	10	Coins	50
+I	Knife	6	Coins	5
+I	Tinderbox	1	Coins	11
+I	Bronze pickaxe	1	Coins	23
+I	Raw chicken	1	Coins	15
+I	Oak blackjack(o)	400	Coins	25
+I	Willow blackjack(o)	800	Coins	25
+I	Maple blackjack(o)	1600	Coins	25
+I	Maple blackjack	1200	Coins	25
+I	Willow blackjack	600	Coins	25
+I	Oak blackjack(d)	400	Coins	25
+I	Willow blackjack(d)	800	Coins	25
+I	Maple blackjack(d)	1600	Coins	25
+I	Water rune	5	Coins	20
+I	Fire rune	5	Coins	20
+I	Air rune	5	Coins	20
+I	Earth rune	5	Coins	20
+I	Fire rune pack	559	Coins	3
+I	Water rune pack	559	Coins	3
+I	Air rune pack	559	Coins	3
+I	Earth rune pack	559	Coins	3
+I	Nature rune	225	Coins	100
+I	Law rune	300	Coins	100
+I	Chaos rune	112	Coins	100
+I	Death rune	225	Coins	100
+I	Mind rune	3	Coins	100
+I	Body rune	3	Coins	100
+I	Blood rune	500	Coins	100
+I	Cosmic rune	62	Coins	10
+I	Soul rune	375	Coins	100
+I	Mind rune pack	412	Coins	5
+I	Chaos rune pack	12437	Coins	5
+I	Fez	20	Coins	25
+I	Desert top	15	Coins	25
+I	Desert top (overcoat)	35	Coins	25
+I	Desert legs	25	Coins	25
+I	Desert robes	25	Coins	25
+I	Menaphite purple hat	35	Coins	25
+I	Menaphite purple top	20	Coins	25
+I	Menaphite purple robe	40	Coins	25
+I	Menaphite purple kilt	20	Coins	25
+I	Menaphite red hat	35	Coins	25
+I	Menaphite red top	20	Coins	25
+I	Menaphite red robe	40	Coins	25
+I	Menaphite red kilt	20	Coins	25
+S	Alice's Farming shop	3628	3526	0	Alice
+I	Rake	6	Coins	500
+I	Seed dibber	6	Coins	500
+I	Secateurs	5	Coins	500
+I	Spade	3	Coins	500
+I	Gardening trowel	12	Coins	500
+I	Watering can	8	Coins	500
+I	Filled plant pot	1	Coins	500
+I	Plant pot pack	100	Coins	30
+I	Compost	20	Coins	500
+I	Compost pack	2000	Coins	10
+I	Empty sack	1	Coins	500
+I	Sack pack	100	Coins	30
+I	Basket	1	Coins	500
+I	Basket pack	100	Coins	30
+I	Bucket	2	Coins	100
+I	Empty bucket pack	500	Coins	15
+I	Potato	1	Coins	0
+I	Onion	3	Coins	0
+I	Cabbage	1	Coins	0
+I	Tomato	4	Coins	0
+I	Sweetcorn	9	Coins	0
+I	Strawberry	17	Coins	0
+I	Watermelon	48	Coins	0
+I	Hammerstone hops	4	Coins	0
+I	Asgarnian hops	5	Coins	0
+I	Yanillian hops	7	Coins	0
+I	Krandorian hops	10	Coins	0
+I	Wildblood hops	15	Coins	0
+I	Jute fibre	6	Coins	0
+I	Barley	4	Coins	0
+I	Plant cure	40	Coins	100
+S	Allanna's Farming Shop	1250	3736	0	Allanna
+I	Rake	6	Coins	5
+I	Seed dibber	6	Coins	5
+I	Secateurs	5	Coins	5
+I	Spade	3	Coins	5
+I	Gardening trowel	12	Coins	3
+I	Watering can	8	Coins	30
+I	Empty plant pot	1	Coins	100
+I	Filled plant pot	1	Coins	100
+I	Plant pot pack	100	Coins	10
+I	Compost	20	Coins	100
+I	Compost pack	2000	Coins	10
+I	Bucket	2	Coins	100
+I	Empty bucket pack	500	Coins	15
+I	Empty sack	1	Coins	100
+I	Sack pack	100	Coins	30
+I	Basket	1	Coins	100
+I	Basket pack	100	Coins	30
+I	Plant cure	40	Coins	40
+S	Alry the Angler's Angling Accessories	1367	3635	0	Alry the Angler
+I	Pearl fishing rod	100	Molch pearl	1000
+I	Pearl fly fishing rod	120	Molch pearl	1000
+I	Fish sack	500	Molch pearl	1000
+I	Angler hat	50	Molch pearl	1000
+I	Angler top	50	Molch pearl	1000
+I	Angler waders	50	Molch pearl	1000
+I	Angler boots	50	Molch pearl	1000
+I	Shark lure pack	1	Molch pearl	10000
+I	Pearl barbarian rod	150	Molch pearl	1000
+S	Alwyn	3219	6057	0	Alwyn
+I	Construct. cape	99000	Coins	∞
+I	Construct. cape(t)	99000	Coins	∞
+S	Amelia's Seed Shop	1246	3740	0	Amelia (Farming Guild)
+I	Potato seed	2	Coins	20
+I	Onion seed	3	Coins	10
+I	Cabbage seed	3	Coins	5
+I	Tomato seed	4	Coins	0
+I	Sweetcorn seed	8	Coins	0
+I	Strawberry seed	18	Coins	0
+I	Watermelon seed	56	Coins	0
+I	Barley seed	2	Coins	20
+I	Jute seed	5	Coins	5
+I	Rosemary seed	4	Coins	20
+I	Marigold seed	2	Coins	20
+I	Hammerstone seed	2	Coins	20
+I	Asgarnian seed	3	Coins	10
+I	Yanillian seed	6	Coins	5
+I	Krandorian seed	8	Coins	0
+I	Wildblood seed	14	Coins	0
+S	Amlodd's Magical Supplies	3222	6115	0	Efa
+I	Air rune	4	Coins	5000
+I	Water rune	4	Coins	5000
+I	Earth rune	4	Coins	5000
+I	Fire rune	4	Coins	5000
+I	Mind rune	3	Coins	5000
+I	Body rune	3	Coins	5000
+I	Chaos rune	90	Coins	250
+I	Nature rune	180	Coins	250
+I	Cosmic rune	50	Coins	250
+I	Law rune	240	Coins	250
+I	Death rune	180	Coins	250
+I	Blood rune	400	Coins	250
+I	Fire rune pack	430	Coins	80
+I	Water rune pack	430	Coins	80
+I	Air rune pack	430	Coins	80
+I	Earth rune pack	430	Coins	80
+I	Mind rune pack	330	Coins	40
+I	Chaos rune pack	9950	Coins	35
+S	Aneirin's Armour	3252	6060	0	Aneirin
+I	Mithril platebody	5200	Coins	4
+I	Adamant platebody	16640	Coins	3
+I	Rune chainbody	50000	Coins	1
+I	Mithril platelegs	2600	Coins	4
+I	Adamant platelegs	6400	Coins	3
+I	Rune platelegs	64000	Coins	1
+I	Mithril plateskirt	2600	Coins	4
+I	Adamant plateskirt	6400	Coins	3
+I	Rune plateskirt	64000	Coins	1
+I	Mithril full helm	1430	Coins	4
+I	Adamant full helm	3520	Coins	3
+I	Rune full helm	35200	Coins	1
+S	Anwen	3280	6095	0	Anwen
+I	Silk	10000000000	Coins	N/A
+S	Arcuani's Archery Supplies	1210	3096	0	Arcuani
+I	Shortbow	50	Coins	4
+I	Longbow	80	Coins	4
+I	Oak shortbow	100	Coins	3
+I	Oak longbow	160	Coins	3
+I	Willow shortbow	200	Coins	2
+I	Willow longbow	320	Coins	2
+I	Maple shortbow	400	Coins	1
+I	Maple longbow	640	Coins	1
+I	Bronze arrow	1	Coins	2000
+I	Iron arrow	3	Coins	1500
+I	Steel arrow	12	Coins	1000
+I	Mithril arrow	32	Coins	800
+I	Adamant arrow	80	Coins	600
+I	Rune arrow	400	Coins	200
+I	Bronze knife	1	Coins	2000
+I	Iron knife	3	Coins	1000
+I	Steel knife	11	Coins	800
+S	Ardougne Baker's Stall	2656	3310	0	Baker
+I	Bread	12	Coins	10
+I	Cake	50	Coins	3
+I	Chocolate slice	30	Coins	6
+I	Chocolate bar	10	Coins	9
+S	Ardougne Fur Stall	2664	3296	0	Fur trader (East Ardougne)
+I	Bear fur	12	Coins	3
+I	Grey wolf fur	60	Coins	3
+I	Polar kebbit fur	12	Coins	0
+I	Common kebbit fur	14	Coins	0
+I	Feldip weasel fur	16	Coins	0
+I	Desert devil fur	20	Coins	0
+I	Tatty larupia fur	72	Coins	0
+I	Larupia fur	96	Coins	0
+I	Tatty graahk fur	108	Coins	0
+I	Graahk fur	144	Coins	0
+I	Tatty kyatt fur	144	Coins	0
+I	Kyatt fur	192	Coins	0
+S	Ardougne Gem Stall	2668	3303	0	Gem merchant
+I	Sapphire	375	Coins	2
+I	Emerald	750	Coins	1
+I	Ruby	1500	Coins	1
+I	Diamond	3000	Coins	0
+S	Ardougne Silver Stall	2658	3314	0	Silver merchant
+I	Unstrung symbol	200	Coins	2
+I	Silver ore	75	Coins	1
+I	Silver bar	150	Coins	1
+S	Ardougne Spice Stall	2659	3297	0	Spice seller
+I	Spice	230	Coins	1
+I	Knife	6	Coins	1
+I	Garlic	3	Coins	2
+S	Argo	2471	2706	0	Argo
+I	Plant cure	40	Coins	∞
+I	Compost	20	Coins	∞
+I	Rake	6	Coins	∞
+I	Empty plant pot	1	Coins	∞
+I	Watering can	8	Coins	∞
+I	Gardening trowel	12	Coins	∞
+I	Seed dibber	6	Coins	∞
+S	Arhein's General Goods	2803	3432	0	Arhein
+I	Bucket	2	Coins	10
+I	Empty bucket pack	650	Coins	15
+I	Bronze pickaxe	1	Coins	2
+I	Bowl	5	Coins	2
+I	Cake tin	13	Coins	2
+I	Tinderbox	1	Coins	2
+I	Chisel	1	Coins	2
+I	Hammer	1	Coins	5
+I	Rope	23	Coins	2
+I	Pot	1	Coins	2
+I	Knife	7	Coins	2
+S	Armour Shop	2397	3798	0	Raum Urda-Stein
+I	Mithril chainbody	2145	Coins	4
+I	Mithril med helm	858	Coins	4
+I	Mithril full helm	1573	Coins	4
+I	Mithril sq shield	1716	Coins	4
+I	Mithril kiteshield	2431	Coins	4
+I	Mithril platelegs	2860	Coins	4
+I	Mithril plateskirt	2860	Coins	4
+I	Mithril platebody	5720	Coins	4
+S	Armour store	1939	4968	0	Jorzik
+I	Rune med helm	19200	Coins	0
+I	Rune full helm	35200	Coins	0
+I	Rune platebody	65000	Coins	0
+I	Rune plateskirt	64000	Coins	0
+I	Rune sq shield	38400	Coins	0
+I	Rune kiteshield	54400	Coins	0
+I	Rune chainbody	50000	Coins	0
+I	Rune platelegs	64000	Coins	0
+I	Adamant med helm	1920	Coins	0
+I	Adamant full helm	3520	Coins	0
+I	Adamant platebody	16640	Coins	0
+I	Adamant plateskirt	6400	Coins	0
+I	Adamant sq shield	3840	Coins	0
+I	Adamant kiteshield	5440	Coins	0
+I	Adamant chainbody	4800	Coins	0
+I	Adamant platelegs	6400	Coins	0
+I	Mithril med helm	780	Coins	0
+I	Mithril full helm	1430	Coins	0
+I	Mithril platebody	5200	Coins	0
+I	Mithril plateskirt	2600	Coins	0
+I	Mithril sq shield	1560	Coins	0
+I	Mithril kiteshield	2210	Coins	0
+I	Mithril chainbody	1950	Coins	0
+I	Mithril platelegs	2600	Coins	0
+S	Armoury	2513	3384	0	Shop keeper (Combat Training Camp)
+I	Bronze arrow	1	Coins	200
+I	Bronze bolts	1	Coins	200
+I	Shortbow	75	Coins	4
+I	Longbow	120	Coins	2
+I	Crossbow	105	Coins	2
+I	Bronze arrowtips	1	Coins	800
+I	Iron arrowtips	3	Coins	800
+I	Steel arrowtips	9	Coins	800
+I	Mithril arrowtips	24	Coins	800
+I	Iron axe	84	Coins	5
+I	Steel axe	300	Coins	3
+I	Iron battleaxe	273	Coins	5
+I	Steel battleaxe	975	Coins	2
+I	Mithril battleaxe	2535	Coins	1
+I	Bronze 2h sword	120	Coins	4
+I	Iron 2h sword	420	Coins	3
+I	Steel 2h sword	1500	Coins	2
+I	Black 2h sword	2880	Coins	1
+I	Mithril 2h sword	3900	Coins	1
+I	Adamant 2h sword	9600	Coins	1
+S	Arnold's Eclectic Supplies	2329	3689	0	Arnold Lydspor
+I	Small fishing net	5	Coins	2
+I	Harpoon	5	Coins	2
+I	Raw monkfish	241	Coins	1
+I	Monkfish	241	Coins	0
+I	Bread	12	Coins	1
+I	Pot	1	Coins	4
+I	Bucket of milk	6	Coins	1
+I	Needle	1	Coins	3
+I	Thread	1	Coins	15
+I	Beer	2	Coins	10
+I	Glassblowing pipe	2	Coins	2
+I	Knife	6	Coins	1
+S	Artima's Crafting Supplies	1766	3101	0	Artima
+I	Chisel	1	Coins	5
+I	Hammer	1	Coins	5
+I	Needle	1	Coins	5
+I	Thread	1	Coins	50
+I	Shears	1	Coins	5
+I	Glassblowing pipe	2	Coins	5
+I	Ring mould	5	Coins	4
+I	Necklace mould	5	Coins	4
+I	Amulet mould	5	Coins	4
+I	Bracelet mould	5	Coins	4
+I	Tiara mould	100	Coins	4
+I	Bolt mould	25	Coins	4
+S	Atlazora's Rest	1723	3076	0	Bartender (Atlazora's Rest)
+I	Beer	2	Coins	∞
+I	Cider	2	Coins	∞
+I	Sunbeam ale	8	Coins	∞
+I	Vodka	5	Coins	∞
+I	Rum	5	Coins	∞
+I	Whisky	5	Coins	∞
+I	Gin	5	Coins	∞
+I	Moon-lite	15	Coins	∞
+I	Jug of wine	1	Coins	∞
+I	Stew	20	Coins	∞
+I	Meat pie	15	Coins	∞
+S	Aub	1366	3321	0	Aub
+I	Plant cure	40	Coins	∞
+I	Compost	20	Coins	∞
+I	Rake	6	Coins	∞
+I	Empty plant pot	1	Coins	∞
+I	Watering can	8	Coins	∞
+I	Gardening trowel	12	Coins	∞
+I	Seed dibber	6	Coins	∞
+S	Auburn Pub	1396	3354	0	Bartender (Auburn Pub)
+I	Beer	2	Coins	∞
+I	Cider	2	Coins	∞
+I	Sunbeam ale	8	Coins	∞
+I	Axeman's folly	2	Coins	∞
+I	Vodka	5	Coins	∞
+I	Rum	5	Coins	∞
+I	Whisky	5	Coins	∞
+I	Gin	5	Coins	∞
+I	Moon-lite	15	Coins	∞
+I	Jug of wine	1	Coins	∞
+I	Stew	20	Coins	∞
+I	Meat pie	15	Coins	∞
+S	Auburnvale General Store	1379	3350	0	Shopkeeper (Auburnvale)
+I	Chisel	1	Coins	5
+I	Spade	3	Coins	5
+I	Hammer	1	Coins	5
+I	Knife	7	Coins	5
+I	Bronze axe	20	Coins	5
+I	Tinderbox	1	Coins	5
+I	Pestle and mortar	5	Coins	5
+I	Unlit torch	5	Coins	5
+I	Needle	1	Coins	5
+I	Thread	1	Coins	30
+I	Rope	23	Coins	10
+I	Pot	1	Coins	15
+I	Bucket	2	Coins	15
+I	Bowl	5	Coins	15
+I	Vial	2	Coins	15
+S	Aubury's Rune Shop	3253	3402	0	Aubury
+I	Air rune	4	Coins	5000
+I	Fire rune	4	Coins	5000
+I	Water rune	4	Coins	5000
+I	Earth rune	4	Coins	5000
+I	Mind rune	3	Coins	5000
+I	Body rune	3	Coins	5000
+I	Chaos rune	90	Coins	250
+I	Death rune	180	Coins	250
+I	Fire rune pack	430	Coins	80
+I	Water rune pack	430	Coins	80
+I	Air rune pack	430	Coins	80
+I	Earth rune pack	430	Coins	80
+I	Mind rune pack	330	Coins	40
+I	Chaos rune pack	9950	Coins	35
+I	Runecraft cape	99000	Coins	1
+I	Runecraft cape(t)	99000	Coins	1
+S	Aurel	3516	3242	0	Aurel
+I	Gadderhammer	3000	Coins	∞
+S	Aurel's Supplies	3516	3242	0	Aurel
+I	Bronze axe	20	Coins	10
+I	Tinderbox	1	Coins	10
+I	Thin snail	6	Coins	10
+I	Raw mackerel	19	Coins	10
+S	Authentic Throwing Weapons	2663	3420	0	Tribal Weapon Salesman
+I	Bronze javelin	5	Coins	900
+I	Iron javelin	7	Coins	800
+I	Steel javelin	31	Coins	700
+I	Mithril javelin	83	Coins	600
+I	Adamant javelin	208	Coins	500
+I	Rune javelin	520	Coins	400
+I	Bronze thrownaxe	3	Coins	900
+I	Iron thrownaxe	9	Coins	800
+I	Steel thrownaxe	33	Coins	700
+I	Mithril thrownaxe	91	Coins	600
+I	Adamant thrownaxe	228	Coins	500
+I	Rune thrownaxe	572	Coins	400
+S	Ava	3094	3357	0	Ava
+I	Locator orb	0	Coins	∞
+I	Ava's attractor	999	Coins	∞
+S	Ava's Odds and Ends	3094	3358	0	Ava
+I	Feather	2	Coins	1000
+I	Feather pack	260	Coins	100
+I	Iron arrow	3	Coins	40
+I	Steel arrow	15	Coins	10
+I	Iron arrowtips	2	Coins	30
+I	Steel arrowtips	7	Coins	20
+S	Ayesha	3314	3201	0	Ayesha
+I	Plant cure	40	Coins	∞
+I	Compost	20	Coins	∞
+I	Rake	6	Coins	∞
+I	Empty plant pot	1	Coins	∞
+I	Watering can	8	Coins	∞
+I	Gardening trowel	12	Coins	∞
+I	Seed dibber	6	Coins	∞
+S	Baba Yaga's Magic Shop	2086	3931	0	Baba Yaga
+I	Air rune	4	Coins	5000
+I	Water rune	4	Coins	5000
+I	Earth rune	4	Coins	5000
+I	Fire rune	4	Coins	5000
+I	Mind rune	3	Coins	5000
+I	Body rune	3	Coins	5000
+I	Chaos rune	90	Coins	250
+I	Nature rune	180	Coins	250
+I	Death rune	180	Coins	250
+I	Law rune	240	Coins	250
+I	Blood rune	400	Coins	250
+I	Soul rune	300	Coins	250
+I	Astral rune	50	Coins	250
+I	Fire rune pack	430	Coins	80
+I	Water rune pack	430	Coins	80
+I	Air rune pack	430	Coins	80
+I	Earth rune pack	430	Coins	80
+I	Mind rune pack	330	Coins	40
+I	Chaos rune pack	9950	Coins	35
+I	Battlestaff	7000	Coins	5
+I	Staff of fire	1500	Coins	2
+I	Staff of water	1500	Coins	2
+I	Staff of air	1500	Coins	2
+I	Staff of earth	1500	Coins	2
+I	Lunar signet	2	Coins	5
+I	Moonclan manual	1	Coins	100
+S	Bandit Bargains	3177	2988	0	Bandit shopkeeper
+I	Waterskin(4)	30	Coins	5
+I	Waterskin(0)	15	Coins	5
+I	Jug of water	1	Coins	5
+I	Bowl of water	4	Coins	5
+I	Bucket of water	6	Coins	5
+I	Jug	1	Coins	5
+I	Empty jug pack	140	Coins	8
+I	Bowl	4	Coins	5
+I	Bucket	2	Coins	5
+I	Empty bucket pack	500	Coins	15
+I	Desert boots	20	Coins	5
+I	Desert shirt	40	Coins	5
+I	Desert robe	40	Coins	5
+I	Knife	6	Coins	5
+S	Bandit Duty Free	3026	3702	0	Noterazzo
+I	Pot	1	Coins	5
+I	Jug	1	Coins	2
+I	Empty jug pack	126	Coins	5
+I	Tinderbox	1	Coins	2
+I	Chisel	1	Coins	2
+I	Hammer	1	Coins	5
+I	Bronze pickaxe	1	Coins	5
+I	Bronze axe	14	Coins	10
+S	Baraek	3217	3435	0	Baraek
+I	Fur	10000000000	Coins	N/A
+I	Bear fur	20	Coins	N/A
+I	Grey wolf fur	10000000000	Coins	N/A
+S	Bardur	1850	4392	1	Bardur
+I	Fremennik shield	150000	Coins	1
+S	Barkers' Haberdashery	3500	3506	0	Barker
+I	Grey boots	650	Coins	5
+I	Grey robe top	650	Coins	5
+I	Grey robe bottoms	650	Coins	5
+I	Grey hat	650	Coins	5
+I	Grey gloves	650	Coins	5
+I	Red boots	650	Coins	5
+I	Red robe top	650	Coins	5
+I	Red robe bottoms	650	Coins	5
+I	Red hat	650	Coins	5
+I	Red gloves	650	Coins	5
+I	Yellow boots	650	Coins	5
+I	Yellow robe top	650	Coins	5
+I	Yellow robe bottoms	650	Coins	5
+I	Yellow hat	650	Coins	5
+I	Yellow gloves	650	Coins	5
+I	Teal boots	650	Coins	5
+I	Teal robe top	650	Coins	5
+I	Teal robe bottoms	650	Coins	5
+I	Teal hat	650	Coins	5
+I	Teal gloves	650	Coins	5
+I	Purple boots	650	Coins	5
+I	Purple robe top	650	Coins	5
+I	Purple robe bottoms	650	Coins	5
+I	Purple hat	650	Coins	5
+I	Purple gloves	650	Coins	5
+I	Red cape	2	Coins	5
+I	Black cape	9	Coins	5
+I	Blue cape	41	Coins	5
+I	Yellow cape	41	Coins	5
+I	Green cape	41	Coins	5
+S	Barmaid	2916	10194	0	Barmaid
+I	Beer	2	Coins	∞
+I	Stew	20	Coins	∞
+S	Barman (Blurberry Bar)	2482	3487	1	Barman (Blurberry Bar)
+I	Lemon	20	Coins	∞
+I	Orange	20	Coins	∞
+I	Cocktail shaker	20	Coins	∞
+S	Bartender (The Warrens)	1825	10131	0	Bartender (The Warrens)
+I	Beer	2	Coins	∞
+S	Battle Runes	3105	3558	0	Mage of Zamorak
+I	Fire rune	4	Coins	1000
+I	Water rune	4	Coins	1000
+I	Air rune	4	Coins	1000
+I	Earth rune	4	Coins	1000
+I	Mind rune	3	Coins	1000
+I	Chaos rune	90	Coins	500
+I	Death rune	180	Coins	500
+I	Blood rune	400	Coins	500
+I	Fire rune pack	430	Coins	50
+I	Water rune pack	430	Coins	50
+I	Air rune pack	430	Coins	50
+I	Earth rune pack	430	Coins	50
+I	Mind rune pack	330	Coins	35
+I	Chaos rune pack	9950	Coins	35
+I	Body rune	3	Coins	100
+S	Bedabin Village Bartering	3172	3028	0	Bedabin Nomad
+I	Waterskin(4)	36	Coins	5
+I	Waterskin(0)	18	Coins	5
+I	Jug of water	1	Coins	5
+I	Bowl of water	4	Coins	5
+I	Bucket of water	7	Coins	5
+I	Knife	7	Coins	5
+I	Hammer	1	Coins	5
+S	Benny	3220	3431	0	Benny
+I	Newspaper	50	Coins	∞
+S	Betty	3014	3260	0	Betty
+I	Pink dye	20	Coins	∞
+S	Betty's Magic Emporium	3014	3259	0	Betty
+I	Fire rune	4	Coins	5000
+I	Water rune	4	Coins	5000
+I	Air rune	4	Coins	5000
+I	Earth rune	4	Coins	5000
+I	Mind rune	3	Coins	5000
+I	Body rune	3	Coins	5000
+I	Chaos rune	90	Coins	250
+I	Death rune	180	Coins	250
+I	Fire rune pack	430	Coins	80
+I	Water rune pack	430	Coins	80
+I	Air rune pack	430	Coins	80
+I	Earth rune pack	430	Coins	80
+I	Mind rune pack	330	Coins	40
+I	Chaos rune pack	9950	Coins	35
+I	Eye of newt	3	Coins	300
+I	Eye of newt pack	300	Coins	60
+I	Blue wizard hat	2	Coins	1
+I	Wizard hat	2	Coins	1
+S	Blackjack seller	3350	2971	0	Blackjack seller
+I	Willow blackjack	600	Coins	∞
+S	Blades by Urbi	3297	2806	0	Urbi
+I	Bronze dagger	15	Coins	1
+I	Iron dagger	52	Coins	1
+I	Steel dagger	187	Coins	1
+I	Black dagger	360	Coins	0
+I	Mithril dagger	487	Coins	1
+I	Adamant dagger	1200	Coins	1
+I	Rune dagger	12000	Coins	1
+I	Dragon dagger	45000	Coins	0
+I	Bronze scimitar	48	Coins	1
+I	Iron scimitar	168	Coins	1
+I	Steel scimitar	600	Coins	1
+S	Blair's Armour	1565	3569	0	Blair
+I	Bronze chainbody	60	Coins	5
+I	Iron chainbody	210	Coins	3
+I	Steel chainbody	750	Coins	3
+I	Bronze platelegs	80	Coins	3
+I	Iron platelegs	280	Coins	2
+I	Steel platelegs	1000	Coins	2
+I	Bronze plateskirt	80	Coins	3
+I	Iron plateskirt	280	Coins	2
+I	Steel plateskirt	1000	Coins	2
+I	Bronze med helm	24	Coins	5
+I	Iron med helm	84	Coins	3
+I	Steel med helm	300	Coins	3
+S	Blandebir	2916	10194	1	Blandebir
+I	Ale yeast	25	Coins	∞
+S	Blue Moon Inn	3224	3398	0	Bartender (Blue Moon Inn)
+I	Beer	2	Coins	∞
+S	Blurberry Bar	2482	3488	1	Barman (Blurberry Bar)
+I	Premade blurb' sp.	30	Coins	10
+I	Premade choc s'dy	30	Coins	10
+I	Premade dr' dragon	30	Coins	10
+I	Premade fr' blast	30	Coins	10
+I	Premade p' punch	30	Coins	10
+I	Premade sgg	30	Coins	10
+I	Premade wiz blz'd	30	Coins	10
+S	Bob's Brilliant Axes	3229	3204	0	Bob
+I	Bronze pickaxe	1	Coins	5
+I	Bronze axe	16	Coins	10
+I	Iron axe	56	Coins	5
+I	Steel axe	200	Coins	3
+I	Iron battleaxe	182	Coins	5
+I	Steel battleaxe	650	Coins	2
+I	Mithril battleaxe	1690	Coins	1
+S	Bolkoy's Village Shop	2527	3161	0	Bolkoy
+I	Pot	1	Coins	3
+I	Bronze pickaxe	1	Coins	5
+I	Jug	1	Coins	2
+I	Empty jug pack	182	Coins	5
+I	Shears	1	Coins	2
+I	Bucket	2	Coins	2
+I	Empty bucket pack	650	Coins	15
+I	Tinderbox	1	Coins	2
+I	Chisel	1	Coins	2
+I	Hammer	1	Coins	5
+I	Bronze arrow	1	Coins	30
+I	Cooked meat	5	Coins	2
+S	Bolongo	2477	3447	0	Bolongo
+I	Plant cure	40	Coins	∞
+I	Compost	20	Coins	∞
+I	Rake	6	Coins	∞
+I	Empty plant pot	1	Coins	∞
+I	Watering can	8	Coins	∞
+I	Gardening trowel	12	Coins	∞
+I	Seed dibber	6	Coins	∞
+S	Branwen's Farming Shop	3295	6089	0	Branwen
+I	Rake	6	Coins	500
+I	Seed dibber	6	Coins	500
+I	Secateurs	5	Coins	500
+I	Spade	3	Coins	500
+I	Gardening trowel	12	Coins	500
+I	Watering can	8	Coins	500
+I	Empty plant pot	1	Coins	500
+I	Filled plant pot	1	Coins	500
+I	Plant pot pack	100	Coins	30
+I	Compost	20	Coins	500
+I	Compost pack	2000	Coins	10
+I	Empty sack	1	Coins	500
+I	Sack pack	100	Coins	30
+I	Basket	1	Coins	500
+I	Basket pack	100	Coins	30
+I	Bucket	2	Coins	100
+I	Empty bucket pack	500	Coins	15
+S	Brian's Archery Supplies	2957	3204	0	Brian (Rimmington)
+I	Steel arrow	12	Coins	1500
+I	Mithril arrow	32	Coins	1000
+I	Adamant arrow	80	Coins	800
+I	Oak shortbow	100	Coins	4
+I	Oak longbow	160	Coins	4
+I	Willow shortbow	200	Coins	3
+I	Willow longbow	320	Coins	3
+I	Maple shortbow	400	Coins	2
+I	Maple longbow	640	Coins	2
+S	Brian's Battleaxe Bazaar	3027	3250	0	Brian
+I	Bronze battleaxe	52	Coins	4
+I	Iron battleaxe	182	Coins	3
+I	Steel battleaxe	650	Coins	2
+I	Black battleaxe	1248	Coins	1
+I	Mithril battleaxe	1690	Coins	1
+I	Adamant battleaxe	4160	Coins	1
+S	Briget's Weapons	1568	3546	0	Briget
+I	Iron battleaxe	182	Coins	5
+I	Steel battleaxe	650	Coins	2
+I	Mithril battleaxe	1690	Coins	1
+I	Bronze sword	26	Coins	5
+I	Iron sword	91	Coins	4
+I	Steel sword	325	Coins	4
+I	Black sword	624	Coins	3
+I	Mithril sword	845	Coins	3
+I	Adamant sword	2080	Coins	2
+I	Bronze longsword	40	Coins	4
+I	Iron longsword	140	Coins	3
+I	Steel longsword	500	Coins	3
+I	Black longsword	960	Coins	2
+I	Mithril longsword	1300	Coins	2
+I	Adamant longsword	3200	Coins	1
+I	Bronze dagger	10	Coins	10
+I	Iron dagger	35	Coins	6
+I	Steel dagger	125	Coins	5
+I	Black dagger	240	Coins	4
+I	Mithril dagger	325	Coins	3
+I	Adamant dagger	800	Coins	2
+I	Bronze mace	18	Coins	5
+I	Iron mace	63	Coins	4
+I	Steel mace	225	Coins	4
+I	Mithril mace	585	Coins	3
+I	Adamant mace	1440	Coins	2
+I	Bronze 2h sword	80	Coins	4
+I	Iron 2h sword	280	Coins	3
+I	Steel 2h sword	1000	Coins	2
+I	Black 2h sword	1920	Coins	1
+I	Mithril 2h sword	2600	Coins	1
+I	Adamant 2h sword	6400	Coins	1
+I	Bronze scimitar	32	Coins	5
+I	Iron scimitar	112	Coins	4
+I	Steel scimitar	400	Coins	4
+I	Black scimitar	768	Coins	3
+I	Mithril scimitar	1040	Coins	3
+S	Brother Jered	3052	3491	1	Brother Jered
+I	Prayer cape	99000	Coins	∞
+I	Prayer cape(t)	99000	Coins	∞
+S	Burthorpe Supplies	2927	3547	0	Wistan
+I	Pot	1	Coins	3
+I	Jug	1	Coins	2
+I	Empty jug pack	182	Coins	3
+I	Shears	1	Coins	2
+I	Bucket	2	Coins	2
+I	Empty bucket pack	650	Coins	15
+I	Tinderbox	1	Coins	2
+I	Chisel	1	Coins	2
+I	Hammer	1	Coins	5
+I	Knife	7	Coins	2
+I	Empty cup	2	Coins	20
+S	Cam Torum Blacksmith	1449	9584	0	Blacksmith (Cam Torum)
+I	Bronze dagger	10	Coins	5
+I	Iron dagger	35	Coins	4
+I	Steel dagger	125	Coins	4
+I	Mithril dagger	325	Coins	3
+I	Adamant dagger	800	Coins	2
+I	Bronze sword	26	Coins	5
+I	Iron sword	91	Coins	4
+I	Steel sword	325	Coins	4
+I	Mithril sword	845	Coins	3
+I	Adamant sword	2080	Coins	2
+I	Bronze warhammer	47	Coins	5
+I	Iron warhammer	173	Coins	4
+I	Steel warhammer	640	Coins	4
+I	Mithril warhammer	1660	Coins	3
+I	Adamant warhammer	4120	Coins	2
+I	Bronze sq shield	48	Coins	5
+I	Iron sq shield	168	Coins	4
+I	Steel sq shield	600	Coins	4
+I	Mithril sq shield	1560	Coins	3
+I	Adamant sq shield	3840	Coins	2
+S	Cam Torum General Store	1426	9556	1	Shopkeeper (Cam Torum)
+I	Chisel	1	Coins	5
+I	Spade	3	Coins	5
+I	Hammer	1	Coins	5
+I	Knife	7	Coins	5
+I	Bronze pickaxe	1	Coins	5
+I	Tinderbox	1	Coins	5
+I	Pestle and mortar	5	Coins	5
+I	Needle	1	Coins	5
+I	Thread	1	Coins	30
+I	Unlit torch	5	Coins	5
+I	Rope	23	Coins	10
+I	Charcoal	58	Coins	10
+I	Jug	1	Coins	15
+I	Bucket	2	Coins	15
+I	Bowl	5	Coins	15
+I	Pie dish	3	Coins	15
+I	Empty jug pack	182	Coins	5
+I	Empty bucket pack	650	Coins	5
+S	Candle Shop	2798	3440	0	Candle maker
+I	Candle	3	Coins	10
+S	Candle seller	3170	3176	0	Candle seller
+I	Candle	1000	Coins	∞
+S	Cap'n Izzy No-Beard	2809	3193	0	Cap'n Izzy No-Beard
+I	Agility cape	99000	Coins	∞
+I	Agility cape(t)	99000	Coins	∞
+S	Carefree Crafting Stall	2887	10207	0	Nolar
+I	Chisel	1	Coins	2
+I	Ring mould	7	Coins	4
+I	Necklace mould	7	Coins	2
+I	Needle	1	Coins	3
+I	Thread	1	Coins	100
+I	Ball of wool	3	Coins	100
+S	Cart conductor	2920	10180	0	Cart conductor
+I	Minecart ticket (Keldagrim to Ice Mountain)	150	Coins	∞
+I	Minecart ticket (Keldagrim to White Wolf Mountain)	100	Coins	∞
+S	Cart conductor (Dwarven Mine)	2996	9837	0	Cart conductor (Dwarven Mine)
+I	Minecart ticket (Ice Mountain to Keldagrim)	150	Coins	∞
+S	Cart conductor (White Wolf Mountain)	2875	9873	0	Cart conductor (White Wolf Mountain)
+I	Minecart ticket (White Wolf Mountain to Keldagrim)	100	Coins	∞
+S	Cassie's Shield Shop	2975	3385	0	Cassie
+I	Wooden shield	20	Coins	5
+I	Bronze sq shield	48	Coins	3
+I	Bronze kiteshield	68	Coins	3
+I	Iron sq shield	168	Coins	2
+I	Iron kiteshield	238	Coins	0
+I	Steel sq shield	600	Coins	0
+I	Steel kiteshield	850	Coins	0
+I	Mithril sq shield	1560	Coins	0
+S	Castle Wars Ticket Exchange	2441	3089	0	Lanthus
+I	Decorative helm (red)	4	Castle wars ticket	∞
+I	Decorative full helm (red)	5	Castle wars ticket	∞
+I	Decorative armour (red platebody)	8	Castle wars ticket	∞
+I	Decorative armour (red platelegs)	6	Castle wars ticket	∞
+I	Decorative armour (red plateskirt)	6	Castle wars ticket	∞
+I	Decorative boots (red)	4	Castle wars ticket	∞
+I	Decorative shield (red)	6	Castle wars ticket	∞
+I	Decorative sword (red)	5	Castle wars ticket	∞
+I	Decorative helm (white)	40	Castle wars ticket	∞
+I	Decorative full helm (white)	40	Castle wars ticket	∞
+I	Decorative armour (white platebody)	80	Castle wars ticket	∞
+I	Decorative armour (white platelegs)	60	Castle wars ticket	∞
+I	Decorative armour (white plateskirt)	60	Castle wars ticket	∞
+I	Decorative boots (white)	40	Castle wars ticket	∞
+I	Decorative shield (white)	60	Castle wars ticket	∞
+I	Decorative sword (white)	50	Castle wars ticket	∞
+I	Decorative helm (gold)	400	Castle wars ticket	∞
+I	Decorative full helm (gold)	500	Castle wars ticket	∞
+I	Decorative armour (gold platebody)	800	Castle wars ticket	∞
+I	Decorative armour (gold platelegs)	600	Castle wars ticket	∞
+I	Decorative armour (gold plateskirt)	600	Castle wars ticket	∞
+I	Decorative boots (gold)	400	Castle wars ticket	∞
+I	Decorative shield (gold)	600	Castle wars ticket	∞
+I	Decorative sword (gold)	500	Castle wars ticket	∞
+I	Castlewars hood (Zamorak)	10	Castle wars ticket	∞
+I	Castlewars cloak (Zamorak)	10	Castle wars ticket	∞
+I	Castlewars hood (Saradomin)	10	Castle wars ticket	∞
+I	Castlewars cloak (Saradomin)	10	Castle wars ticket	∞
+I	Saradomin banner	100	Castle wars ticket	∞
+I	Zamorak banner	100	Castle wars ticket	∞
+I	Decorative armour (magic hat)	20	Castle wars ticket	∞
+I	Decorative armour (magic top)	40	Castle wars ticket	∞
+I	Decorative armour (magic legs)	30	Castle wars ticket	∞
+I	Decorative armour (ranged top)	40	Castle wars ticket	∞
+I	Decorative armour (ranged legs)	30	Castle wars ticket	∞
+I	Decorative armour (quiver)	40	Castle wars ticket	∞
+I	Saradomin halo	75	Castle wars ticket	∞
+I	Zamorak halo	75	Castle wars ticket	∞
+I	Guthix halo	75	Castle wars ticket	∞
+S	Chest (Theatre of Blood)	3270	4450	0	Chest (Theatre of Blood)
+I	Stamina potion(4)	1	Points	∞
+I	Prayer potion(4)	2	Points	∞
+I	Saradomin brew(4)	3	Points	∞
+I	Super restore(4)	3	Points	∞
+I	Mushroom potato	1	Points	∞
+I	Shark	1	Points	∞
+I	Sea turtle	2	Points	∞
+I	Manta ray	2	Points	∞
+I	Message (Theatre of Blood)	10000000000	Points	∞
+I	Onion	10000000000	Points	∞
+I	Bandages (Theatre of Blood)	10000000000	Points	∞
+S	Chet	3297	8863	1	Chet
+I	Plant cure	40	Coins	∞
+I	Compost	20	Coins	∞
+I	Rake	6	Coins	∞
+I	Empty plant pot	1	Coins	∞
+I	Watering can	8	Coins	∞
+I	Gardening trowel	12	Coins	∞
+I	Seed dibber	6	Coins	∞
+S	Civilian	2468	3304	0	Civilian
+I	Cat	10000000000	death runes	
+I	Overgrown cat	10000000000	death runes	
+I	Wily cat	10000000000	death runes	
+I	Lazy cat	10000000000	death runes	
+S	Cobado's Groceries	1702	3115	0	Cobado
+I	Cooking apple	1	Coins	20
+I	Pineapple	2	Coins	15
+I	Banana	2	Coins	10
+I	Tomato	4	Coins	10
+I	Potato	1	Coins	10
+I	Onion	3	Coins	10
+I	Cabbage	1	Coins	10
+I	Orange	2	Coins	2
+I	Papaya fruit	64	Coins	0
+I	Coconut	87	Coins	0
+I	Strawberry	17	Coins	0
+I	Watermelon	48	Coins	0
+I	Sweetcorn	9	Coins	0
+I	Redberries	3	Coins	2
+I	Cheese	4	Coins	10
+I	Chocolate bar	10	Coins	10
+I	Raw chicken	1	Coins	5
+I	Raw beef	1	Coins	5
+I	Raw rabbit	20	Coins	5
+I	Raw herring	10	Coins	5
+I	Raw cod	10	Coins	5
+I	Raw tuna	40	Coins	5
+I	Raw bass	40	Coins	3
+I	Raw swordfish	80	Coins	2
+S	Conara's Jewels	1437	9560	1	Conara
+I	Sapphire	250	Coins	3
+I	Emerald	500	Coins	2
+I	Ruby	1000	Coins	2
+I	Diamond	2000	Coins	0
+I	Gold ring	350	Coins	3
+I	Gold necklace	450	Coins	3
+I	Gold amulet	350	Coins	3
+I	Gold bracelet	550	Coins	3
+I	Sapphire ring	900	Coins	0
+I	Emerald ring	1275	Coins	0
+I	Ruby ring	2025	Coins	0
+I	Diamond ring	3525	Coins	0
+I	Sapphire necklace	1050	Coins	0
+I	Emerald necklace	1425	Coins	0
+I	Ruby necklace	2175	Coins	0
+I	Diamond necklace	3675	Coins	0
+I	Sapphire amulet	900	Coins	0
+I	Emerald amulet	1275	Coins	0
+I	Ruby amulet	2025	Coins	0
+I	Diamond amulet	3525	Coins	0
+I	Sapphire bracelet	1150	Coins	0
+I	Emerald bracelet	1525	Coins	0
+I	Ruby bracelet	2325	Coins	0
+I	Diamond bracelet	3825	Coins	0
+S	Construction supplies	1396	3370	0	Sawmill operator
+I	Saw	13	Coins	1000
+I	Bolt of cloth	650	Coins	1000
+I	Bronze nails	2	Coins	1000
+I	Iron nails	5	Coins	1000
+I	Steel nails	3	Coins	1000
+S	Contraband yak produce	2407	3815	0	Vanligga Gastfrihet
+I	Yak-hide	55	Coins	25
+I	Raw yak meat	2	Coins	50
+I	Hair	2	Coins	50
+I	Cured yak-hide	110	Coins	10
+S	Cook (Blue Moon Inn)	3230	3400	0	Cook (Blue Moon Inn)
+I	Cabbage	1	Coins	∞
+S	Crossbow Shop	3004	9799	0	Hura
+I	Wooden stock	72	Coins	5
+I	Oak stock	97	Coins	5
+I	Willow stock	190	Coins	5
+I	Teak stock	277	Coins	5
+I	Maple stock	360	Coins	5
+I	Mahogany stock	478	Coins	0
+I	Yew stock	601	Coins	0
+I	Bronze limbs	72	Coins	5
+I	Iron limbs	252	Coins	5
+I	Steel limbs	900	Coins	5
+I	Mithril limbs	2340	Coins	5
+I	Adamantite limbs	5760	Coins	0
+I	Runite limbs	57600	Coins	0
+I	Bronze crossbow	262	Coins	0
+I	Iron crossbow	565	Coins	0
+I	Steel crossbow	1296	Coins	0
+I	Mithril crossbow	2818	Coins	0
+I	Adamant crossbow	6361	Coins	0
+I	Rune crossbow	58320	Coins	0
+S	Crossbow Shop	2887	10203	0	Hirko
+I	Wooden stock	60	Coins	5
+I	Oak stock	81	Coins	5
+I	Willow stock	159	Coins	5
+I	Teak stock	231	Coins	5
+I	Maple stock	300	Coins	5
+I	Mahogany stock	399	Coins	5
+I	Yew stock	501	Coins	0
+I	Bronze limbs	60	Coins	5
+I	Iron limbs	210	Coins	5
+I	Steel limbs	750	Coins	5
+I	Mithril limbs	1950	Coins	5
+I	Adamantite limbs	4800	Coins	5
+I	Runite limbs	48000	Coins	0
+I	Bronze crossbow	219	Coins	0
+I	Iron crossbow	471	Coins	0
+I	Steel crossbow	1080	Coins	0
+I	Mithril crossbow	2349	Coins	0
+I	Adamant crossbow	5301	Coins	0
+I	Rune crossbow	48600	Coins	0
+S	Crossbow Shop	2866	9872	0	Holoy
+I	Wooden stock	72	Coins	5
+I	Oak stock	97	Coins	5
+I	Willow stock	190	Coins	5
+I	Teak stock	277	Coins	5
+I	Maple stock	360	Coins	5
+I	Mahogany stock	478	Coins	0
+I	Yew stock	601	Coins	0
+I	Bronze limbs	72	Coins	5
+I	Iron limbs	252	Coins	5
+I	Steel limbs	900	Coins	5
+I	Mithril limbs	2340	Coins	5
+I	Adamantite limbs	5760	Coins	0
+I	Runite limbs	57600	Coins	0
+I	Bronze crossbow	262	Coins	0
+I	Iron crossbow	565	Coins	0
+I	Steel crossbow	1296	Coins	0
+I	Mithril crossbow	2818	Coins	0
+I	Adamant crossbow	6361	Coins	0
+I	Rune crossbow	58320	Coins	0
+S	Culinaromancer's Chest	3220	9624	0	None
+I	Chocolate bar	13	Coins	50
+I	Cheese	5	Coins	50
+I	Tomato	5	Coins	50
+I	Cooking apple	1	Coins	50
+I	Grapes	1	Coins	10
+I	Pot of flour	13	Coins	10
+I	Pizza base	5	Coins	1
+I	Egg	5	Coins	50
+I	Bucket of milk	7	Coins	50
+I	Pot of cream	2	Coins	50
+I	Pat of butter	5	Coins	10
+I	Spice	299	Coins	50
+I	Pie dish	3	Coins	50
+I	Cake tin	13	Coins	50
+I	Bowl	5	Coins	50
+I	Jug	1	Coins	50
+I	Empty jug pack	182	Coins	8
+I	Pot	1	Coins	50
+I	Empty cup	2	Coins	50
+I	Bucket	2	Coins	50
+I	Empty bucket pack	650	Coins	50
+I	Hardleather gloves	65	Coins	60
+I	Bronze gloves	130	Coins	60
+I	Iron gloves	325	Coins	60
+I	Steel gloves	650	Coins	60
+I	Black gloves	1300	Coins	60
+I	Mithril gloves	1950	Coins	60
+I	Adamant gloves	3250	Coins	60
+I	Rune gloves	6500	Coins	60
+I	Dragon gloves	130000	Coins	60
+I	Barrows gloves	130000	Coins	60
+I	Wooden spoon	45	Coins	10
+I	Egg whisk	65	Coins	10
+I	Spork	422	Coins	10
+I	Spatula	2496	Coins	10
+I	Frying pan	2158	Coins	10
+I	Skewer	4160	Coins	10
+I	Rolling pin	18720	Coins	10
+I	Kitchen knife	10400	Coins	10
+I	Meat tenderiser	53950	Coins	10
+I	Cleaver	33280	Coins	10
+S	Daga's Scimitar Smithy	2759	2774	0	Daga
+I	Bronze scimitar	32	Coins	10
+I	Iron scimitar	112	Coins	10
+I	Steel scimitar	400	Coins	8
+I	Mithril scimitar	1040	Coins	6
+I	Dragon scimitar	100000	Coins	0
+S	Dal's General Ogre Supplies	2521	3036	0	Dal
+I	Pot	1	Coins	3
+I	Jug	1	Coins	2
+I	Empty jug pack	182	Coins	5
+I	Knife	7	Coins	2
+I	Bucket	2	Coins	2
+I	Empty bucket pack	650	Coins	15
+I	Tinderbox	1	Coins	2
+I	Chisel	1	Coins	2
+I	Hammer	1	Coins	5
+S	Dancing Donkey Inn	3270	3392	0	Bartender (Dancing Donkey Inn)
+I	Beer	2	Coins	∞
+S	Dantaera	2810	3464	0	Dantaera
+I	Plant cure	40	Coins	∞
+I	Compost	20	Coins	∞
+I	Rake	6	Coins	∞
+I	Empty plant pot	1	Coins	∞
+I	Watering can	8	Coins	∞
+I	Gardening trowel	12	Coins	∞
+I	Seed dibber	6	Coins	∞
+S	Dargaud's Bow and Arrows	2672	3434	0	Bow and Arrow salesman
+I	Arrow shaft	1	Coins	1000
+I	Bronze arrowtips	1	Coins	500
+I	Iron arrowtips	2	Coins	400
+I	Steel arrowtips	6	Coins	300
+I	Mithril arrowtips	16	Coins	200
+I	Adamant arrowtips	40	Coins	200
+I	Rune arrowtips	200	Coins	150
+I	Bronze arrow	1	Coins	1000
+I	Iron arrow	3	Coins	500
+I	Steel arrow	12	Coins	500
+I	Mithril arrow	32	Coins	500
+I	Adamant arrow	80	Coins	450
+I	Rune arrow	400	Coins	400
+I	Bronze brutal	5	Coins	0
+I	Iron brutal	10	Coins	0
+I	Steel brutal	20	Coins	0
+I	Black brutal	35	Coins	0
+I	Mithril brutal	50	Coins	0
+I	Adamant brutal	95	Coins	0
+I	Rune brutal	450	Coins	0
+I	Shortbow	50	Coins	20
+I	Oak shortbow	100	Coins	20
+I	Willow shortbow	200	Coins	20
+I	Longbow	80	Coins	20
+I	Oak longbow	160	Coins	20
+I	Comp ogre bow	180	Coins	0
+I	Willow longbow	320	Coins	20
+S	Darkmeyer General Store	3642	3336	0	Drasdan Ranor
+I	Pot	1	Coins	10
+I	Jug	1	Coins	10
+I	Bucket	2	Coins	10
+I	Bowl	5	Coins	10
+I	Tinderbox	1	Coins	5
+I	Chisel	1	Coins	5
+I	Hammer	1	Coins	5
+I	Knife	7	Coins	5
+I	Spade	3	Coins	5
+I	Needle	1	Coins	5
+I	Thread	1	Coins	20
+I	Rope	23	Coins	5
+I	Long rope	52000	Coins	5
+S	Darkmeyer Lantern Shop	3646	3360	0	Grinka Krast
+I	Tinderbox	1	Coins	5
+I	Candle	3	Coins	20
+I	Unlit torch	4	Coins	10
+I	Empty oil lamp	30	Coins	5
+I	Empty oil lantern	144	Coins	5
+I	Bullseye lantern (empty)	480	Coins	5
+S	Darkmeyer Meat Shop	3620	3388	0	Lenyig Karna
+I	Raw beef	1	Coins	15
+I	Raw chicken	1	Coins	15
+I	Raw rat meat	1	Coins	20
+I	Raw mystery meat	1	Coins	25
+I	Raw bear meat	1	Coins	10
+S	Darkmeyer Seamstress	3602	3380	0	Varrian Sobak
+I	Needle	1	Coins	8
+I	Thread	1	Coins	50
+I	Ball of wool	2	Coins	20
+I	Silk	39	Coins	5
+I	Fur	13	Coins	3
+I	Vyre noble shoes	130	Coins	10
+I	Vyre noble legs	130	Coins	10
+I	Vyre noble top	130	Coins	10
+I	Vyre noble coat tails (red)	6500	Coins	10
+I	Vyre noble coat tails (purple)	6500	Coins	10
+I	Vyre noble coat tails (grey)	6500	Coins	10
+I	Vyre noble blazer (red)	6500	Coins	10
+I	Vyre noble blazer (purple)	6500	Coins	10
+I	Vyre noble blazer (grey)	6500	Coins	10
+I	Vyre noble pants (red)	6500	Coins	10
+I	Vyre noble pants (purple)	6500	Coins	10
+I	Vyre noble pants (grey)	6500	Coins	10
+I	Vyre noble vest (red)	6500	Coins	10
+I	Vyre noble vest (purple)	6500	Coins	10
+I	Vyre noble vest (grey)	6500	Coins	10
+I	Vyre noble skirt (red)	6500	Coins	10
+I	Vyre noble skirt (purple)	6500	Coins	10
+I	Vyre noble skirt (grey)	6500	Coins	10
+I	Vyre noble corset (red)	6500	Coins	10
+I	Vyre noble corset (purple)	6500	Coins	10
+I	Vyre noble corset (grey)	6500	Coins	10
+I	Vyre noble dress bottom (red)	6500	Coins	10
+I	Vyre noble dress bottom (purple)	6500	Coins	10
+I	Vyre noble dress bottom (grey)	6500	Coins	10
+I	Vyre noble dress top (red)	6500	Coins	10
+I	Vyre noble dress top (purple)	6500	Coins	10
+I	Vyre noble dress top (grey)	6500	Coins	10
+S	Darren's Wilderness Cape Shop	3016	3944	0	Darren
+I	Team-4 cape	50	Coins	100
+I	Team-14 cape	50	Coins	100
+I	Team-24 cape	50	Coins	100
+I	Team-34 cape	50	Coins	100
+I	Team-44 cape	50	Coins	100
+S	Daryl's Ranging Surplus	1541	3557	0	Daryl
+I	Shortbow	50	Coins	4
+I	Longbow	80	Coins	4
+I	Oak shortbow	100	Coins	3
+I	Oak longbow	160	Coins	3
+I	Willow shortbow	200	Coins	2
+I	Willow longbow	320	Coins	2
+I	Maple shortbow	400	Coins	1
+I	Maple longbow	640	Coins	1
+I	Crossbow	70	Coins	2
+I	Bronze arrow	1	Coins	2000
+I	Iron arrow	3	Coins	1500
+I	Steel arrow	12	Coins	1000
+I	Mithril arrow	32	Coins	800
+I	Adamant arrow	80	Coins	600
+I	Rune arrow	400	Coins	200
+I	Bronze bolts	1	Coins	2000
+I	Iron bolts	2	Coins	1500
+S	Davon's Amulet Store	2803	3152	0	Davon
+I	Holy symbol	360	Coins	0
+I	Amulet of magic	1080	Coins	0
+I	Amulet of defence	1530	Coins	0
+I	Amulet of strength	2430	Coins	0
+I	Amulet of power	4230	Coins	0
+S	Dead Man's Chest	2795	3162	0	Bartender (Dead Man's Chest)
+I	Grog	3	Coins	∞
+I	Karamjan rum	27	Coins	∞
+S	Deadman Reward Store	3245	3200	0	Nigel
+I	Armageddon weapon scroll	12000	Deadman Points	∞
+I	Armageddon cape fabric	6000	Deadman Points	∞
+I	Armageddon teleport scroll	9000	Deadman Points	∞
+I	Armageddon rug	3000	Deadman Points	∞
+I	Annihilation weapon scroll	12000	Deadman Points	∞
+I	Annihilation blueprints	15000	Deadman Points	∞
+I	Annihilation teleport scroll	10000	Deadman Points	∞
+S	Deepfin Inn	1940	2761	0	Brikka
+I	Beer	2	Coins	∞
+I	Cider	2	Coins	∞
+I	Dwarven stout	2	Coins	∞
+I	Vodka	5	Coins	∞
+I	Whisky	5	Coins	∞
+I	Jug of wine	1	Coins	∞
+I	Stew	20	Coins	∞
+I	Meat pie	15	Coins	∞
+I	Kebab	3	Coins	∞
+S	Deepfin Point Ore Exchange	1946	2762	0	Korgan
+I	Copper ore	3	Coins	40
+I	Tin ore	3	Coins	40
+I	Iron ore	18	Coins	20
+I	Silver ore	82	Coins	10
+I	Lead ore	38	Coins	10
+I	Gold ore	165	Coins	10
+I	Mithril ore	178	Coins	5
+I	Adamantite ore	440	Coins	0
+I	Nickel ore	440	Coins	0
+I	Runite ore	3520	Coins	0
+I	Coal	49	Coins	20
+S	Diango	3081	3247	0	Diango
+I	War ship	0	Coins	∞
+I	Bunny ears	0	Coins	∞
+I	Scythe (Halloween event)	0	Coins	∞
+I	Yo-yo	0	Coins	∞
+I	Rubber chicken	0	Coins	∞
+I	Black partyhat	0	Coins	∞
+I	Zombie head	0	Coins	∞
+I	Easter ring	0	Coins	∞
+I	Jack lantern mask	0	Coins	∞
+I	Skeleton boots	0	Coins	∞
+I	Skeleton gloves	0	Coins	∞
+I	Skeleton leggings	0	Coins	∞
+I	Skeleton shirt	0	Coins	∞
+I	Skeleton mask	0	Coins	∞
+I	Reindeer hat	0	Coins	∞
+I	Wintumber tree	0	Coins	∞
+I	Chicken feet	0	Coins	∞
+I	Chicken legs	0	Coins	∞
+I	Chicken wings	0	Coins	∞
+I	Chicken head	0	Coins	∞
+I	Bobble hat	0	Coins	∞
+I	Jester hat	0	Coins	∞
+I	Tri-jester hat	0	Coins	∞
+I	Woolly hat	0	Coins	∞
+I	Bobble scarf	0	Coins	∞
+I	Jester scarf	0	Coins	∞
+I	Tri-jester scarf	0	Coins	∞
+I	Woolly scarf	0	Coins	∞
+I	Red marionette	0	Coins	∞
+I	Blue marionette	0	Coins	∞
+I	Green marionette	0	Coins	∞
+I	Black h'ween mask	0	Coins	∞
+I	Rainbow partyhat	0	Coins	∞
+I	Cow mask	0	Coins	∞
+I	Easter basket	0	Coins	∞
+I	Druidic wreath	0	Coins	∞
+I	Grim reaper hood	0	Coins	∞
+I	Santa mask	0	Coins	∞
+I	Santa jacket	0	Coins	∞
+I	Santa pantaloons	0	Coins	∞
+I	Santa gloves	0	Coins	∞
+I	Santa boots	0	Coins	∞
+I	Antisanta mask	0	Coins	∞
+I	Antisanta jacket	0	Coins	∞
+I	Antisanta pantaloons	0	Coins	∞
+I	Antisanta gloves	0	Coins	∞
+I	Antisanta boots	0	Coins	∞
+I	Cow top	0	Coins	∞
+I	Cow trousers	0	Coins	∞
+I	Cow gloves	0	Coins	∞
+I	Cow shoes	0	Coins	∞
+I	Bunny feet	0	Coins	∞
+I	Mask of Balance	0	Coins	∞
+I	Tiger toy	0	Coins	∞
+I	Lion toy	0	Coins	∞
+I	Snow leopard toy	0	Coins	∞
+I	Amur leopard toy	0	Coins	∞
+I	Anti-panties	0	Coins	∞
+I	Gravedigger mask	0	Coins	∞
+I	Gravedigger top	0	Coins	∞
+I	Gravedigger leggings	0	Coins	∞
+I	Gravedigger boots	0	Coins	∞
+I	Gravedigger gloves	0	Coins	∞
+I	Black santa hat	0	Coins	∞
+I	Inverted santa hat	0	Coins	∞
+I	Gnome child hat	0	Coins	∞
+I	Bunny top	0	Coins	∞
+I	Bunny legs	0	Coins	∞
+I	Bunny paws	0	Coins	∞
+I	Cabbage cape	0	Coins	∞
+I	Cruciferous codex	0	Coins	∞
+I	Hornwood helm	0	Coins	∞
+I	Banshee mask	0	Coins	∞
+I	Banshee top	0	Coins	∞
+I	Banshee robe	0	Coins	∞
+I	Hunting knife	0	Coins	∞
+I	Snow globe	0	Coins	∞
+I	Sack of presents	0	Coins	∞
+I	Giant present	0	Coins	∞
+I	4th birthday hat	0	Coins	∞
+I	Birthday balloons	0	Coins	∞
+I	Easter egg helm	0	Coins	∞
+I	Rainbow scarf	0	Coins	∞
+I	Hand fan	0	Coins	∞
+I	Runefest shield	0	Coins	∞
+I	Jonas mask	0	Coins	∞
+I	Snow imp costume head	0	Coins	∞
+I	Snow imp costume body	0	Coins	∞
+I	Snow imp costume legs	0	Coins	∞
+I	Snow imp costume tail	0	Coins	∞
+I	Snow imp costume gloves	0	Coins	∞
+I	Snow imp costume feet	0	Coins	∞
+I	Wise old man's santa hat	0	Coins	∞
+I	Prop sword	0	Coins	∞
+I	Eggshell platebody	0	Coins	∞
+I	Eggshell platelegs	0	Coins	∞
+I	Oculus orb	0	Coins	∞
+I	Clown mask	0	Coins	∞
+I	Clown gown	0	Coins	∞
+I	Clown bow tie	0	Coins	∞
+I	Clown trousers	0	Coins	∞
+I	Clown shoes	0	Coins	∞
+I	Eek	0	Coins	∞
+I	Star-face	0	Coins	∞
+I	Tree top	0	Coins	∞
+I	Tree skirt	0	Coins	∞
+I	Candy cane	0	Coins	∞
+I	Birthday cake	0	Coins	∞
+I	Giant easter egg	0	Coins	∞
+I	Bunnyman mask	0	Coins	∞
+I	Spooky hood	0	Coins	∞
+I	Spooky robe	0	Coins	∞
+I	Spooky skirt	0	Coins	∞
+I	Spooky gloves	0	Coins	∞
+I	Spooky boots	0	Coins	∞
+I	Pumpkin lantern	0	Coins	∞
+I	Skeleton lantern	0	Coins	∞
+I	Spookier hood	0	Coins	∞
+I	Spookier robe	0	Coins	∞
+I	Spookier skirt	0	Coins	∞
+I	Spookier gloves	0	Coins	∞
+I	Spookier boots	0	Coins	∞
+I	Green gingerbread shield	0	Coins	∞
+I	Cat ears	0	Coins	∞
+I	Magic egg ball	0	Coins	∞
+I	Carrot sword	0	Coins	∞
+I	'24-carat' sword	0	Coins	∞
+I	Headless head	0	Coins	∞
+I	Magical pumpkin	0	Coins	∞
+I	Giant boulder	0	Coins	∞
+I	Goblin decorations	0	Coins	∞
+I	20th anniversary necklace	0	Coins	∞
+I	20th anniversary hat	0	Coins	∞
+I	20th anniversary top	0	Coins	∞
+I	20th anniversary bottom	0	Coins	∞
+I	20th anniversary boots	0	Coins	∞
+I	20th anniversary gloves	0	Coins	∞
+I	20th anniversary cape	0	Coins	∞
+I	Gnome child icon	0	Coins	∞
+I	Gnome child mask	0	Coins	∞
+I	Cursed banana	0	Coins	∞
+I	Banana cape	0	Coins	∞
+I	Gregg's eastdoor	0	Coins	∞
+I	Propeller hat	0	Coins	∞
+I	Banana hat	0	Coins	∞
+I	Saucepan	0	Coins	∞
+I	Ugly halloween jumper (orange)	0	Coins	∞
+I	Haunted wine bottle	0	Coins	∞
+I	Festive elf slippers	0	Coins	∞
+I	Festive elf hat	0	Coins	∞
+I	Snowman ring	0	Coins	∞
+I	Secret santa present (red)	0	Coins	∞
+I	Skis	0	Coins	∞
+I	Easter hat	0	Coins	∞
+I	Crate ring	0	Coins	∞
+I	Flower crown	0	Coins	∞
+I	Treat cauldron	0	Coins	∞
+I	Witch hat	0	Coins	∞
+I	Witch top	0	Coins	∞
+I	Witch robes	0	Coins	∞
+I	Witch boots	0	Coins	∞
+I	Witch cape	0	Coins	∞
+I	Halloween wig	0	Coins	∞
+I	Santa's list	0	Coins	∞
+I	Christmas jumper	0	Coins	∞
+I	Snow goggles & hat	0	Coins	∞
+I	Sack of coal	0	Coins	∞
+I	Festive nutcracker hat	0	Coins	∞
+I	Festive nutcracker top	0	Coins	∞
+I	Festive nutcracker trousers	0	Coins	∞
+I	Festive nutcracker boots	0	Coins	∞
+I	Festive nutcracker staff	0	Coins	∞
+I	Festive games crown	0	Coins	∞
+I	Mystic cards	0	Coins	∞
+I	10th birthday cape	0	Coins	∞
+I	Gnome child backpack	0	Coins	∞
+I	Cake hat	0	Coins	∞
+I	Bob the cat slippers	0	Coins	∞
+I	Gnome child plush	0	Coins	∞
+I	Oldschool jumper	0	Coins	∞
+I	Dragon candle dagger	0	Coins	∞
+I	Silver partyhat	0	Coins	∞
+I	10th birthday balloons	0	Coins	∞
+I	Giant bronze dagger	0	Coins	∞
+I	Eastfloor spade	0	Coins	∞
+I	Nest hat	0	Coins	∞
+I	Rainbow jumper	0	Coins	∞
+I	Poet's jacket	0	Coins	∞
+I	Love crossbow	0	Coins	∞
+I	Cobweb cape	0	Coins	∞
+I	Spider hat	0	Coins	∞
+I	Snowglobe helmet	0	Coins	∞
+I	Icy jumper	0	Coins	∞
+I	Book of Egg	0	Coins	∞
+I	Egg priest robe top	0	Coins	∞
+I	Egg priest robe	0	Coins	∞
+I	Egg priest mitre	0	Coins	∞
+I	Egg priest necklace	0	Coins	∞
+I	Rainbow cape	0	Coins	∞
+I	Rainbow crown shirt	0	Coins	∞
+I	Carved pumpkin head	0	Coins	∞
+I	Scarecrow shirt	0	Coins	∞
+I	Halloween scarecrow	0	Coins	∞
+I	Dog boots	0	Coins	∞
+I	Dog disguise	0	Coins	∞
+I	Festive scarf	0	Coins	∞
+I	Present box hat	0	Coins	∞
+I	Classic imp hood	0	Coins	∞
+I	Classic imp tail	0	Coins	∞
+I	Carrot costume hat	0	Coins	∞
+I	Carrot costume body	0	Coins	∞
+I	Carrot costume tights	0	Coins	∞
+I	Carrot costume gloves	0	Coins	∞
+I	Spooky pumpkin lantern	0	Coins	∞
+I	Spooky chair	0	Coins	∞
+I	Grim reaper top	0	Coins	∞
+I	Grim reaper bottoms	0	Coins	∞
+I	Grim reaper gloves	0	Coins	∞
+I	Lovley jubbly bib	0	Coins	∞
+I	Christmas dinner	0	Coins	∞
+I	Beer belly sweater	0	Coins	∞
+I	Jad jumper	0	Coins	∞
+I	25th anniversary helmet	0	Coins	∞
+I	25th anniversary warrior tabard	0	Coins	∞
+I	25th anniversary skeleton tabard	0	Coins	∞
+I	25th anniversary 5x5 hat	0	Coins	∞
+I	Archibald	0	Coins	∞
+S	Diango's Toy Store	3081	3246	0	Diango
+I	Brown toy horsey	150	Coins	5
+I	White toy horsey	150	Coins	5
+I	Black toy horsey	150	Coins	5
+I	Grey toy horsey	150	Coins	5
+I	Spinning plate	75	Coins	250
+I	Beach boxing gloves (yellow)	75	Coins	5
+I	Beach boxing gloves (pink)	75	Coins	5
+I	Cursed goblin hammer	45	Coins	3
+I	Cursed goblin bow	45	Coins	3
+I	Cursed goblin staff	45	Coins	3
+I	Goblin paint cannon	225	Coins	100
+I	Diango's claws	750	Coins	5
+I	Green banner	73	Coins	5
+I	Chronicle	300	Coins	1
+I	Teleport card	150	Coins	100
+I	Cabbage cape	150	Coins	10
+I	Cruciferous codex	300	Coins	15
+I	Tiger toy	150	Coins	15
+I	Lion toy	150	Coins	15
+I	Snow leopard toy	150	Coins	15
+I	Amur leopard toy	150	Coins	15
+I	Rainbow scarf	120	Coins	5
+I	Holy handegg	1	Coins	100
+I	Peaceful handegg	1	Coins	100
+I	Chaotic handegg	1	Coins	100
+I	Hornwood helm	15	Coins	100
+I	Hand fan	1	Coins	100
+I	Mask of Balance	1	Coins	100
+I	Druidic wreath	1	Coins	100
+I	Disk of Returning	21000	Coins	7
+I	Oculus orb	60	Coins	100
+S	Dodgy Mike's Second Hand Clothing	3691	2978	0	Mike
+I	Pirate boots	350	Coins	15
+I	Stripy pirate shirt (beige)	300	Coins	10
+I	Pirate bandana (white)	100	Coins	20
+I	Pirate leggings (beige)	350	Coins	10
+I	Stripy pirate shirt (red)	300	Coins	10
+I	Pirate bandana (red)	100	Coins	20
+I	Pirate leggings (red)	350	Coins	10
+I	Stripy pirate shirt (blue)	300	Coins	10
+I	Pirate bandana (blue)	100	Coins	20
+I	Pirate leggings (blue)	350	Coins	10
+I	Stripy pirate shirt (brown)	300	Coins	10
+I	Pirate bandana (brown)	100	Coins	20
+I	Pirate leggings (brown)	350	Coins	10
+S	Dom Onion's Reward Shop	2610	3116	0	Dominic Onion
+I	Flax	75	NMZ	∞
+I	Bucket of sand	200	NMZ	∞
+I	Seaweed	200	NMZ	∞
+I	Compost potion(4)	5000	NMZ	∞
+I	Air rune	25	NMZ	∞
+I	Water rune	25	NMZ	∞
+I	Earth rune	25	NMZ	∞
+I	Fire rune	25	NMZ	∞
+I	Rune essence	60	NMZ	∞
+I	Pure essence	70	NMZ	∞
+I	Herb box	9500	NMZ	∞
+I	Vial of water	145	NMZ	∞
+I	Scroll of Redirection	775	NMZ	∞
+I	Super ranging (1)	250	NMZ	∞
+I	Super magic potion (1)	250	NMZ	∞
+I	Overload (1) (Nightmare Zone)	1500	NMZ	∞
+I	Absorption (1)	1000	NMZ	∞
+S	Dommik's Crafting Store	3321	3194	0	Dommik
+I	Chisel	1	Coins	2
+I	Ring mould	5	Coins	4
+I	Necklace mould	5	Coins	2
+I	Amulet mould	5	Coins	2
+I	Needle	1	Coins	3
+I	Thread	1	Coins	100
+I	Holy mould	5	Coins	3
+I	Sickle mould	10	Coins	6
+I	Tiara mould	100	Coins	10
+I	Bolt mould	25	Coins	10
+I	Bracelet mould	5	Coins	5
+S	Dorgesh-Kaan General Supplies	2718	5313	0	Lurgon
+I	Unlit torch	5	Coins	5
+I	Tinderbox	1	Coins	2
+I	Pot	1	Coins	5
+I	Jug	1	Coins	2
+I	Empty jug pack	182	Coins	6
+I	Bowl	5	Coins	2
+I	Cake tin	13	Coins	2
+I	Rope	23	Coins	3
+I	Glassblowing pipe	2	Coins	1
+S	Dragon Inn	2553	3080	0	Bartender (Dragon Inn)
+I	Dragon bitter	2	Coins	∞
+I	Greenman's ale	10	Coins	∞
+I	Beer	2	Coins	∞
+S	Draynor Seed Market	3078	3251	0	Olivia
+I	Potato seed	2	Coins	20
+I	Onion seed	3	Coins	10
+I	Cabbage seed	3	Coins	5
+I	Tomato seed	4	Coins	0
+I	Sweetcorn seed	9	Coins	0
+I	Strawberry seed	21	Coins	0
+I	Watermelon seed	67	Coins	0
+I	Barley seed	2	Coins	20
+I	Jute seed	6	Coins	5
+I	Rosemary seed	4	Coins	20
+I	Marigold seed	2	Coins	20
+I	Hammerstone seed	2	Coins	20
+I	Asgarnian seed	3	Coins	10
+I	Yanillian seed	7	Coins	5
+I	Krandorian seed	9	Coins	0
+I	Wildblood seed	16	Coins	0
+S	Dreven	3183	3356	0	Dreven
+I	Plant cure	40	Coins	∞
+I	Compost	20	Coins	∞
+I	Rake	6	Coins	∞
+I	Empty plant pot	1	Coins	∞
+I	Watering can	8	Coins	∞
+I	Gardening trowel	12	Coins	∞
+I	Seed dibber	6	Coins	∞
+S	Drogo's Mining Emporium	3037	9846	0	Drogo dwarf
+I	Hammer	1	Coins	4
+I	Bronze pickaxe	1	Coins	4
+I	Copper ore	3	Coins	0
+I	Tin ore	3	Coins	0
+I	Iron ore	17	Coins	0
+I	Coal	45	Coins	0
+I	Bronze bar	8	Coins	0
+I	Iron bar	28	Coins	0
+I	Gold bar	300	Coins	0
+S	Dunstan	2919	3574	0	Dunstan
+I	Law talisman	1000	Coins	∞
+S	Duradel	2869	2982	1	Duradel
+I	Slayer cape	99000	Coins	∞
+I	Slayer cape(t)	99000	Coins	∞
+S	Durgok	2714	5322	0	Durgok
+I	Frogburger	10	Coins	∞
+S	Dusuri's Star Shop	3022	3342	0	Dusuri
+I	Celestial ring (uncharged)	2000	Stardust	50
+I	Star fragment	3000	Stardust	50
+I	Bag full of gems	300	Stardust	100
+I	Soft clay pack	150	Stardust	1000
+S	Dwarven shopping store	2994	9828	0	Dwarf (Dwarven shopping store)
+I	Pot	1	Coins	3
+I	Jug	1	Coins	2
+I	Empty jug pack	182	Coins	5
+I	Shears	1	Coins	2
+I	Bucket	2	Coins	3
+I	Empty bucket pack	650	Coins	15
+I	Tinderbox	1	Coins	2
+I	Chisel	1	Coins	2
+I	Hammer	1	Coins	5
+S	Dyes to Die For	1204	3120	0	Xochitl
+I	Red dye	6	Coins	10
+I	Yellow dye	6	Coins	10
+I	Blue dye	6	Coins	10
+I	Orange dye	6	Coins	10
+I	Green dye	6	Coins	10
+I	Purple dye	6	Coins	10
+S	Eblis	3214	2955	0	Eblis
+I	Ancient staff	80000	Coins	1
+I	Ancient signet	0	Coins	∞
+S	Edgeville General Store	3080	3511	0	Shop keeper (Edgeville)
+I	Pot	1	Coins	5
+I	Jug	1	Coins	2
+I	Empty jug pack	182	Coins	5
+I	Shears	1	Coins	2
+I	Bucket	2	Coins	3
+I	Empty bucket pack	650	Coins	15
+I	Bowl	5	Coins	2
+I	Cake tin	13	Coins	2
+I	Tinderbox	1	Coins	2
+I	Chisel	1	Coins	2
+I	Hammer	1	Coins	5
+I	Knife	7	Coins	1
+I	Newcomer map	1	Coins	5
+I	Security book	2	Coins	5
+S	Edmond's Wilderness Cape Shop	3073	3809	0	Edmond (merchant)
+I	Team-8 cape	50	Coins	100
+I	Team-18 cape	50	Coins	100
+I	Team-28 cape	50	Coins	100
+I	Team-38 cape	50	Coins	100
+I	Team-48 cape	50	Coins	100
+S	Edward's Wilderness Cape Shop	3282	3934	0	Edward
+I	Team-5 cape	50	Coins	100
+I	Team-15 cape	50	Coins	100
+I	Team-25 cape	50	Coins	100
+I	Team-35 cape	50	Coins	100
+I	Team-45 cape	50	Coins	100
+S	Efaritay's Supplies	3164	7718	0	Efaritay Hallow
+I	Silver sickle	175	Coins	∞
+I	Silver sickle (b)	250	Coins	∞
+I	Rod of Ivandis	1000	Coins	∞
+I	Ivandis flail	20000	Coins	∞
+I	Blisterwood flail	40000	Coins	∞
+I	Hallowed flail	80000	Coins	∞
+I	Blisterwood sickle	20000	Coins	∞
+I	Blisterwood sickle (e)	30000	Coins	∞
+I	Sunspear	100000	Coins	∞
+S	Ehecatl	1350	3057	0	Ehecatl
+I	Plant cure	40	Coins	∞
+I	Compost	20	Coins	∞
+I	Rake	6	Coins	∞
+I	Empty plant pot	1	Coins	∞
+I	Watering can	8	Coins	∞
+I	Gardening trowel	12	Coins	∞
+I	Seed dibber	6	Coins	∞
+S	Elder Blunn's Spear and Shield Stall	3170	2416	0	Elder Blunn
+I	Bronze spear	26	Coins	10
+I	Iron spear	91	Coins	8
+I	Steel spear	325	Coins	8
+I	Mithril spear	845	Coins	6
+I	Adamant spear	2080	Coins	4
+I	Bronze kiteshield	68	Coins	5
+I	Iron kiteshield	238	Coins	4
+I	Steel kiteshield	850	Coins	4
+I	Mithril kiteshield	2210	Coins	3
+I	Adamant kiteshield	5440	Coins	2
+I	Tortugan shield	2500	Coins	10
+S	Elder Coco's Crafting Stall	3170	2406	0	Elder Coco
+I	Chisel	1	Coins	5
+I	Hammer	1	Coins	5
+I	Needle	1	Coins	5
+I	Thread	1	Coins	50
+I	Glassblowing pipe	2	Coins	5
+I	Ring mould	5	Coins	4
+I	Necklace mould	5	Coins	4
+I	Amulet mould	5	Coins	4
+I	Bracelet mould	5	Coins	4
+I	Sapphire	250	Coins	2
+I	Emerald	500	Coins	1
+I	Ruby	1000	Coins	1
+I	Diamond	2000	Coins	0
+S	Elder Krill's Fishing Stall	3164	2416	0	Elder Krill
+I	Small fishing net	5	Coins	5
+I	Big fishing net	20	Coins	5
+I	Fishing rod	5	Coins	5
+I	Fly fishing rod	5	Coins	5
+I	Harpoon	5	Coins	5
+I	Lobster pot	20	Coins	5
+I	Fishing bait	3	Coins	1000
+I	Bait pack	300	Coins	100
+I	Feather	2	Coins	1000
+I	Feather pack	200	Coins	100
+I	Raw mackerel	15	Coins	10
+I	Raw cod	10	Coins	10
+I	Raw pike	20	Coins	10
+I	Raw trout	10	Coins	10
+I	Raw salmon	30	Coins	10
+I	Raw tuna	40	Coins	10
+I	Raw lobster	70	Coins	4
+I	Raw bass	40	Coins	6
+I	Raw swordfish	80	Coins	4
+S	Elder Raley's Herblore Stall	3175	2413	0	Mag
+I	Pestle and mortar	4	Coins	5
+I	Knife	6	Coins	5
+I	Vial	2	Coins	100
+I	Vial of water	2	Coins	100
+I	Eye of newt	3	Coins	50
+I	Empty vial pack	200	Coins	100
+I	Water-filled vial pack	201	Coins	100
+I	Eye of newt pack	300	Coins	50
+S	Elder Reggle's Farming Shop	3250	2468	0	Elder Reggle
+I	Rake	6	Coins	10
+I	Seed dibber	6	Coins	10
+I	Secateurs	5	Coins	10
+I	Spade	3	Coins	10
+I	Gardening trowel	12	Coins	10
+I	Watering can	8	Coins	10
+I	Filled plant pot	1	Coins	30
+I	Plant pot pack	100	Coins	30
+I	Compost	20	Coins	30
+I	Compost pack	2000	Coins	30
+I	Empty sack	1	Coins	30
+I	Sack pack	100	Coins	30
+I	Basket	1	Coins	30
+I	Basket pack	100	Coins	30
+I	Bucket	2	Coins	30
+I	Empty bucket pack	500	Coins	30
+I	Plant cure	40	Coins	50
+S	Elder Strom's Hunting Stall	3160	2410	0	Elder Strom
+I	Butterfly net	24	Coins	5
+I	Butterfly jar	1	Coins	100
+I	Magic box	720	Coins	30
+I	Noose wand	4	Coins	50
+I	Bird snare	6	Coins	50
+I	Box trap	38	Coins	25
+I	Teasing stick	60	Coins	5
+I	Unlit torch	4	Coins	20
+I	Rabbit snare	18	Coins	10
+I	Net trap (item)	38	Coins	25
+I	Bird snare pack	606	Coins	3
+I	Box trap pack	3840	Coins	3
+I	Magic imp box pack	72000	Coins	3
+S	Elgan's Exceptional Staffs!	3219	6089	0	Elgan
+I	Battlestaff	7000	Coins	5
+I	Staff	15	Coins	5
+I	Magic staff	200	Coins	5
+I	Staff of air	1500	Coins	2
+I	Staff of water	1500	Coins	2
+I	Staff of earth	1500	Coins	2
+I	Staff of fire	1500	Coins	2
+S	Ellena	2861	3432	0	Ellena
+I	Plant cure	40	Coins	∞
+I	Compost	20	Coins	∞
+I	Rake	6	Coins	∞
+I	Empty plant pot	1	Coins	∞
+I	Watering can	8	Coins	∞
+I	Gardening trowel	12	Coins	∞
+I	Seed dibber	6	Coins	∞
+S	Elnock Inquisitor	2586	4314	0	Elnock Inquisitor
+I	Impling jar	2000	Coins	10
+S	Elstan	3053	3305	0	Elstan
+I	Plant cure	40	Coins	∞
+I	Compost	20	Coins	∞
+I	Rake	6	Coins	∞
+I	Empty plant pot	1	Coins	∞
+I	Watering can	8	Coins	∞
+I	Gardening trowel	12	Coins	∞
+I	Seed dibber	6	Coins	∞
+S	Emelio's Kebab Shop	1754	3075	0	Emelio
+I	Varlamorian kebab	2	Coins	20
+S	Ercos	1367	2936	0	Ercos
+I	Plant cure	40	Coins	∞
+I	Compost	20	Coins	∞
+I	Rake	6	Coins	∞
+I	Empty plant pot	1	Coins	∞
+I	Watering can	8	Coins	∞
+I	Gardening trowel	12	Coins	∞
+I	Seed dibber	6	Coins	∞
+S	Estate agent	3240	3476	0	Estate agent
+I	Construct. cape	99000	Coins	∞
+I	Construct. cape(t)	99000	Coins	∞
+S	Etceteria Fish	2600	3878	0	Fishmonger
+I	Small fishing net	6	Coins	5
+I	Fishing rod	6	Coins	5
+I	Fly fishing rod	6	Coins	5
+I	Harpoon	6	Coins	2
+I	Lobster pot	26	Coins	2
+I	Fishing bait	3	Coins	1500
+I	Bait pack	390	Coins	80
+I	Feather	2	Coins	1000
+I	Feather pack	260	Coins	100
+I	Big fishing net	26	Coins	5
+I	Raw shrimps	6	Coins	0
+I	Raw sardine	13	Coins	200
+I	Raw herring	13	Coins	0
+I	Raw mackerel	19	Coins	0
+I	Raw cod	13	Coins	0
+I	Raw anchovies	19	Coins	0
+I	Raw trout	13	Coins	0
+I	Raw pike	26	Coins	0
+I	Raw salmon	39	Coins	0
+I	Raw tuna	52	Coins	0
+I	Raw lobster	91	Coins	0
+I	Raw bass	52	Coins	0
+I	Raw swordfish	104	Coins	0
+I	Raw shark	221	Coins	0
+S	Events Reward Shop	3210	3436	0	Nevet
+I	Grid master tabard	750	event points	∞
+I	Grid master tabard (b)	750	event points	∞
+I	Grid master tabard (p)	750	event points	∞
+I	Grid master tabard (g)	750	event points	∞
+I	Swords and emblem	1100	event points	∞
+I	Swords and emblem (b)	1100	event points	∞
+I	Swords and emblem (p)	1100	event points	∞
+I	Swords and emblem (g)	1100	event points	∞
+I	Grid master altar icon scroll	6000	event points	∞
+I	Grid master torch scroll	6000	event points	∞
+S	Fairy Fixit's Fairy Enchantment	2413	4434	0	Fairy Fixit
+I	Fairy enchantment	100	Coins	4
+S	Falador General Store	2956	3388	0	Shop keeper (Falador)
+I	Pot	1	Coins	5
+I	Jug	1	Coins	2
+I	Empty jug pack	182	Coins	5
+I	Shears	1	Coins	2
+I	Bucket	2	Coins	3
+I	Empty bucket pack	650	Coins	15
+I	Bowl	5	Coins	2
+I	Cake tin	13	Coins	2
+I	Tinderbox	1	Coins	2
+I	Chisel	1	Coins	2
+I	Hammer	1	Coins	5
+I	Newcomer map	1	Coins	5
+I	Security book	2	Coins	5
+S	Party Room	3046	3379	0	Lucy
+I	Beer	2	Coins	∞
+S	Fancy Clothes Store	3280	3397	0	Asyff
+I	Chef's hat	2	Coins	0
+I	Blue wizard hat	2	Coins	3
+I	Yellow cape	41	Coins	1
+I	Grey wolf fur	65	Coins	3
+I	Bear fur	13	Coins	3
+I	Needle	1	Coins	3
+I	Thread	1	Coins	100
+I	Leather gloves	7	Coins	10
+I	Leather boots	7	Coins	10
+I	Priest gown (bottom)	6	Coins	3
+I	Priest gown (top)	6	Coins	3
+I	Brown apron	2	Coins	1
+I	Pink skirt	2	Coins	5
+I	Black skirt	2	Coins	3
+I	Blue skirt	2	Coins	2
+I	Red cape	2	Coins	4
+I	Right eye patch	2	Coins	3
+I	Red feather	13	Coins	0
+I	Yellow feather	16	Coins	0
+I	Orange feather	19	Coins	0
+I	Blue feather	20	Coins	0
+I	Stripy feather	26	Coins	0
+S	Farmer Gricoller's Rewards	1800	3501	0	Farmer Gricoller
+I	Farmer's strawhat	75	Tithe	∞
+I	Farmer's jacket	150	Tithe	∞
+I	Farmer's shirt	150	Tithe	∞
+I	Farmer's boro trousers	125	Tithe	∞
+I	Farmer's boots	50	Tithe	∞
+I	Compost	1	Tithe	∞
+I	Supercompost	5	Tithe	∞
+I	Grape seed	2	Tithe	∞
+I	Bologa's blessing	1	Tithe	∞
+I	Herb box	30	Tithe	∞
+I	Seed pack	30	Tithe	∞
+I	Seed box	250	Tithe	∞
+I	Herb sack	250	Tithe	∞
+I	Gricoller's can	200	Tithe	∞
+I	Auto-weed	50	Tithe	∞
+S	Faustus' Fruit and Veg	1420	2982	0	Faustus
+I	Cooking apple	1	Coins	10
+I	Banana	2	Coins	10
+I	Orange	2	Coins	10
+I	Lemon	2	Coins	10
+I	Lime	2	Coins	10
+I	Pineapple	2	Coins	5
+I	Redberries	3	Coins	5
+I	Grapes	1	Coins	5
+I	Tomato	4	Coins	10
+I	Potato	1	Coins	10
+I	Onion	3	Coins	10
+I	Cabbage	1	Coins	10
+I	Papaya fruit	64	Coins	0
+I	Coconut	87	Coins	0
+I	Strawberry	17	Coins	0
+I	Watermelon	48	Coins	0
+I	Sweetcorn	9	Coins	0
+S	Fayeth	3190	3233	0	Fayeth
+I	Plant cure	40	Coins	∞
+I	Compost	20	Coins	∞
+I	Rake	6	Coins	∞
+I	Empty plant pot	1	Coins	∞
+I	Watering can	8	Coins	∞
+I	Gardening trowel	12	Coins	∞
+I	Seed dibber	6	Coins	∞
+S	Fernahei's Fishing Hut	2871	2969	0	Fernahei
+I	Fishing rod	5	Coins	5
+I	Fly fishing rod	5	Coins	5
+I	Fishing bait	3	Coins	200
+I	Bait pack	300	Coins	30
+I	Feather	2	Coins	800
+I	Feather pack	200	Coins	50
+I	Raw trout	10	Coins	0
+I	Raw pike	20	Coins	0
+I	Raw salmon	30	Coins	0
+S	Fight Arena Bar	2568	3148	0	Khazard barman
+I	Beer	2	Coins	∞
+I	Khali brew	5	Coins	∞
+S	Filamina's Wares	1669	3729	0	Filamina
+I	Staff	15	Coins	5
+I	Magic staff	200	Coins	5
+I	Staff of air	1500	Coins	2
+I	Staff of water	1500	Coins	2
+I	Staff of earth	1500	Coins	2
+I	Staff of fire	1500	Coins	2
+S	Fine Fashions	2482	3510	1	Rometti
+I	Pink hat	160	Coins	5
+I	Green hat	160	Coins	5
+I	Blue hat	160	Coins	5
+I	Cream hat	160	Coins	5
+I	Turquoise hat	160	Coins	5
+I	Pink robe top	180	Coins	5
+I	Green robe top	180	Coins	5
+I	Blue robe top	180	Coins	5
+I	Cream robe top	180	Coins	5
+I	Turquoise robe top	180	Coins	5
+I	Pink robe bottoms	180	Coins	5
+I	Green robe bottoms	180	Coins	5
+I	Blue robe bottoms	180	Coins	5
+I	Cream robe bottoms	180	Coins	5
+I	Turquoise robe bottoms	180	Coins	5
+I	Pink boots	200	Coins	5
+I	Green boots	200	Coins	5
+I	Blue boots	200	Coins	5
+I	Cream boots	200	Coins	5
+I	Turquoise boots	200	Coins	5
+S	Fishing Guild Shop	2595	3402	0	Roachey
+I	Small fishing net	5	Coins	5
+I	Big fishing net	20	Coins	5
+I	Fishing rod	5	Coins	5
+I	Fly fishing rod	5	Coins	5
+I	Harpoon	5	Coins	2
+I	Lobster pot	20	Coins	2
+I	Fishing bait	3	Coins	2000
+I	Bait pack	300	Coins	150
+I	Feather	2	Coins	1500
+I	Feather pack	200	Coins	150
+I	Raw cod	10	Coins	0
+I	Raw mackerel	15	Coins	0
+I	Raw bass	40	Coins	0
+I	Raw tuna	40	Coins	0
+I	Raw lobster	70	Coins	0
+I	Raw swordfish	80	Coins	0
+I	Cod	10	Coins	0
+I	Mackerel	15	Coins	0
+I	Bass	40	Coins	0
+I	Tuna	40	Coins	0
+I	Lobster	70	Coins	0
+I	Swordfish	80	Coins	0
+S	Flakes 'n' Flotsam	3153	2831	0	Spirit Angler (Reward pool)
+I	Fish barrel	6000	Spirit flakes	∞
+I	Tackle box	6000	Spirit flakes	∞
+S	Floria's Fashion	1659	3101	0	Floria
+I	Leather gloves	6	Coins	5
+I	Leather boots	6	Coins	5
+I	Black skirt	2	Coins	3
+I	Blue skirt	2	Coins	2
+I	Pink skirt	2	Coins	2
+I	Green cape	32	Coins	4
+I	Blue cape	32	Coins	4
+I	Yellow cape	32	Coins	4
+I	Red cape	2	Coins	4
+I	White apron	2	Coins	3
+I	Brown apron	2	Coins	3
+S	Flosi's Fishmongers	2417	3816	0	Flosi Dalksson
+I	Raw lobster	77	Coins	5
+I	Raw tuna	44	Coins	20
+I	Raw salmon	33	Coins	20
+I	Raw cod	11	Coins	20
+I	Raw shark	187	Coins	0
+S	Flower Girl	2515	3867	0	Flower Girl
+I	Mixed flowers	15	Coins	∞
+S	Flying Horse Inn	2576	3323	0	Bartender (Flying Horse Inn)
+I	Beer	2	Coins	∞
+S	Flynn's Mace Market	2950	3388	0	Flynn
+I	Bronze mace	18	Coins	5
+I	Iron mace	63	Coins	4
+I	Steel mace	225	Coins	4
+I	Mithril mace	585	Coins	3
+I	Adamant mace	1440	Coins	2
+S	Food Store	3012	3208	0	Wydin
+I	Pot of flour	10	Coins	3
+I	Raw beef	1	Coins	1
+I	Raw chicken	1	Coins	1
+I	Cabbage	1	Coins	3
+I	Banana	2	Coins	3
+I	Redberries	3	Coins	1
+I	Bread	12	Coins	0
+I	Chocolate bar	10	Coins	1
+I	Cheese	4	Coins	3
+I	Tomato	4	Coins	3
+I	Potato	1	Coins	1
+S	Forester's Arms	2695	3494	0	Bartender (Forester's Arms)
+I	Beer	2	Coins	∞
+I	Meat pie	16	Coins	∞
+I	Stew	20	Coins	∞
+S	Forestry Shop	3096	3238	0	Friendly Forester
+I	Forestry kit	0	Anima-infused bark	∞
+I	Secateurs blade	20	Anima-infused bark	∞
+I	Ritual mulch	150	Anima-infused bark	∞
+I	Log brace	3000	Anima-infused bark	∞
+I	Clothes pouch blueprint	10000	Anima-infused bark	∞
+I	Cape pouch	2500	Anima-infused bark	∞
+I	Log basket	5000	Anima-infused bark	∞
+I	Felling axe handle	10000	Anima-infused bark	∞
+I	Twitcher's gloves	5000	Anima-infused bark	∞
+I	Funky shaped log	15000	Anima-infused bark	∞
+I	Sawmill voucher	150	Anima-infused bark	∞
+I	Lumberjack boots	1000	Anima-infused bark	∞
+I	Lumberjack hat	1200	Anima-infused bark	∞
+I	Lumberjack legs	1300	Anima-infused bark	∞
+I	Lumberjack top	1500	Anima-infused bark	∞
+I	Forestry boots	1250	Anima-infused bark	∞
+I	Forestry hat	1250	Anima-infused bark	∞
+I	Forestry legs	1250	Anima-infused bark	∞
+I	Forestry top	1250	Anima-infused bark	∞
+I	Golden pheasant egg	75000	Anima-infused bark	∞
+I	Fox whistle	75000	Anima-infused bark	∞
+S	Fortis Baker's Stall	1687	3112	0	Baker (Civitas illa Fortis)
+I	Bread	12	Coins	15
+I	Cake	50	Coins	5
+I	Chocolate slice	30	Coins	5
+S	Fortis Blacksmith	1659	3140	0	Blacksmith
+I	Bronze platebody	160	Coins	5
+I	Iron platebody	560	Coins	4
+I	Steel platebody	2000	Coins	4
+I	Mithril platebody	5200	Coins	3
+I	Adamant platebody	16640	Coins	2
+I	Bronze platelegs	80	Coins	5
+I	Iron platelegs	280	Coins	4
+I	Steel platelegs	1000	Coins	4
+I	Mithril platelegs	2600	Coins	3
+I	Adamant platelegs	6400	Coins	2
+I	Bronze plateskirt	80	Coins	5
+I	Iron plateskirt	280	Coins	4
+I	Steel plateskirt	1000	Coins	4
+I	Mithril plateskirt	2600	Coins	3
+I	Adamant plateskirt	6400	Coins	2
+I	Bronze longsword	40	Coins	5
+I	Iron longsword	140	Coins	4
+I	Steel longsword	500	Coins	4
+I	Mithril longsword	1300	Coins	3
+I	Adamant longsword	3200	Coins	2
+I	Bronze scimitar	32	Coins	5
+I	Iron scimitar	112	Coins	4
+I	Steel scimitar	400	Coins	4
+I	Mithril scimitar	1040	Coins	3
+I	Adamant scimitar	2560	Coins	2
+I	Bronze spear	26	Coins	5
+I	Iron spear	91	Coins	4
+I	Steel spear	325	Coins	4
+I	Mithril spear	845	Coins	3
+I	Adamant spear	2080	Coins	2
+I	Bronze dagger	10	Coins	5
+I	Iron dagger	35	Coins	3
+I	Steel dagger	125	Coins	2
+I	Bronze halberd	80	Coins	5
+I	Iron halberd	280	Coins	3
+I	Steel halberd	1000	Coins	2
+S	Fortis Fur Stall	1675	3112	0	Fur Merchant
+I	Bear fur	12	Coins	5
+I	Grey wolf fur	60	Coins	5
+I	Jaguar fur	96	Coins	2
+I	Fox fur	12	Coins	0
+I	Moonlight antelope fur	12	Coins	0
+I	Sunlight antelope fur	12	Coins	0
+I	Polar kebbit fur	12	Coins	0
+I	Common kebbit fur	14	Coins	0
+I	Feldip weasel fur	16	Coins	0
+I	Desert devil fur	20	Coins	0
+I	Tatty larupia fur	72	Coins	0
+I	Larupia fur	96	Coins	0
+I	Tatty graahk fur	108	Coins	0
+I	Graahk fur	144	Coins	0
+I	Tatty kyatt fur	144	Coins	0
+I	Kyatt fur	192	Coins	0
+S	Fortis Gem Stall	1675	3101	0	Gem Merchant (Civitas illa Fortis)
+I	Sapphire	375	Coins	2
+I	Emerald	750	Coins	1
+I	Ruby	1500	Coins	1
+I	Diamond	3000	Coins	0
+S	Fortis General Store	1669	3122	0	Shopkeeper (Civitas illa Fortis)
+I	Chisel	1	Coins	5
+I	Spade	3	Coins	5
+I	Hammer	1	Coins	5
+I	Knife	7	Coins	5
+I	Tinderbox	1	Coins	5
+I	Needle	1	Coins	5
+I	Thread	1	Coins	30
+I	Rope	23	Coins	10
+I	Pot	1	Coins	15
+I	Jug	1	Coins	15
+I	Bucket	2	Coins	15
+I	Bowl	5	Coins	15
+I	Cake tin	13	Coins	15
+I	Empty jug pack	182	Coins	5
+I	Empty bucket pack	650	Coins	5
+S	Fortis Silk Stall	1677	3114	0	Silk Merchant (Civitas illa Fortis)
+I	Needle	1	Coins	5
+I	Thread	1	Coins	100
+I	Silk	15	Coins	50
+S	Fortis Spice Stall	1686	3101	0	Spice Merchant
+I	Knife	6	Coins	5
+I	Spice	230	Coins	20
+I	Garlic	3	Coins	10
+S	Fortunato	3085	3252	0	Fortunato
+I	Empty wine bottle	10000000000	Coins	N/A
+S	Fossil Island General Store	3726	3817	0	Shop keeper (Fossil Island)
+I	Pot	1	Coins	5
+I	Jug	1	Coins	2
+I	Bucket	2	Coins	3
+I	Empty bucket pack	650	Coins	15
+I	Bowl	5	Coins	2
+I	Cake tin	13	Coins	2
+I	Tinderbox	1	Coins	2
+I	Chisel	1	Coins	2
+I	Hammer	1	Coins	5
+I	Rope	23	Coins	5
+S	Francis	2815	3336	0	Francis
+I	Plant cure	40	Coins	∞
+I	Compost	20	Coins	∞
+I	Rake	6	Coins	∞
+I	Empty plant pot	1	Coins	∞
+I	Watering can	8	Coins	∞
+I	Gardening trowel	12	Coins	∞
+I	Seed dibber	6	Coins	∞
+S	Frankie's Fishing Emporium	1831	3721	0	Frankie
+I	Raw shrimps	5	Coins	500
+I	Raw sardine	10	Coins	500
+I	Raw herring	10	Coins	250
+I	Raw mackerel	15	Coins	250
+I	Raw cod	10	Coins	100
+I	Raw anchovies	15	Coins	100
+I	Raw tuna	40	Coins	100
+I	Raw lobster	70	Coins	50
+I	Raw bass	40	Coins	50
+I	Raw swordfish	80	Coins	50
+I	Raw shark	170	Coins	25
+S	Franklin Caranos	2343	3666	0	Franklin Caranos
+I	Iron sheet	10000000000	Coins	N/A
+S	Fremennik Fish Monger	2647	3676	0	Fish monger
+I	Small fishing net	6	Coins	5
+I	Fishing rod	6	Coins	5
+I	Fly fishing rod	6	Coins	5
+I	Harpoon	6	Coins	2
+I	Lobster pot	26	Coins	2
+I	Fishing bait	3	Coins	1500
+I	Bait pack	390	Coins	80
+I	Feather	2	Coins	1000
+I	Feather pack	260	Coins	50
+I	Big fishing net	26	Coins	5
+I	Raw shrimps	6	Coins	0
+I	Raw sardine	13	Coins	200
+I	Raw herring	13	Coins	0
+I	Raw mackerel	19	Coins	0
+I	Raw cod	13	Coins	0
+I	Raw anchovies	19	Coins	0
+I	Raw trout	13	Coins	0
+I	Raw pike	26	Coins	0
+I	Raw salmon	39	Coins	0
+I	Raw tuna	52	Coins	0
+I	Raw lobster	91	Coins	0
+I	Raw bass	52	Coins	0
+I	Raw swordfish	104	Coins	0
+I	Raw shark	221	Coins	0
+S	Fremennik Fur Trader	2638	3676	0	Fur trader (Rellekka)
+I	Bear fur	12	Coins	3
+I	Grey wolf fur	60	Coins	3
+I	Polar kebbit fur	12	Coins	0
+I	Common kebbit fur	14	Coins	0
+I	Feldip weasel fur	16	Coins	0
+I	Desert devil fur	20	Coins	0
+I	Tatty larupia fur	72	Coins	0
+I	Larupia fur	96	Coins	0
+I	Tatty graahk fur	108	Coins	0
+I	Graahk fur	144	Coins	0
+I	Tatty kyatt fur	144	Coins	0
+I	Kyatt fur	192	Coins	0
+S	Frenita's Cookery Shop	2567	3100	0	Frenita
+I	Pie dish	3	Coins	5
+I	Cooking apple	1	Coins	2
+I	Cake tin	10	Coins	2
+I	Bowl	4	Coins	2
+I	Potato	1	Coins	5
+I	Tinderbox	1	Coins	4
+I	Jug	1	Coins	1
+I	Empty jug pack	140	Coins	3
+I	Pot	1	Coins	8
+I	Chocolate bar	10	Coins	2
+I	Pot of flour	10	Coins	8
+I	Empty cup	2	Coins	20
+S	Frincos' Fabulous Herb Store	2810	3344	0	Frincos
+I	Vial	2	Coins	50
+I	Empty vial pack	200	Coins	10
+I	Vial of water	2	Coins	45
+I	Water-filled vial pack	201	Coins	8
+I	Pestle and mortar	4	Coins	3
+I	Eye of newt	3	Coins	50
+I	Eye of newt pack	300	Coins	20
+S	Fritz the Glassblower	2832	3351	0	Fritz the Glassblower
+I	Molten glass	10000000000	Coins	N/A
+S	Frizzy Skernip	3057	3259	0	Frizzy Skernip
+I	Plant cure	40	Coins	∞
+I	Compost	20	Coins	∞
+I	Rake	6	Coins	∞
+I	Empty plant pot	1	Coins	∞
+I	Watering can	8	Coins	∞
+I	Gardening trowel	12	Coins	∞
+I	Seed dibber	6	Coins	∞
+S	Funch's Fine Groceries	2492	3488	1	Heckel Funch
+I	Brandy	5	Coins	10
+I	Gin	5	Coins	10
+I	Vodka	5	Coins	10
+I	Whisky	5	Coins	10
+I	Pineapple	2	Coins	10
+I	Equa leaves	2	Coins	20
+I	Orange	2	Coins	20
+I	Lemon	2	Coins	20
+I	Lime	2	Coins	20
+I	Dwellberries	4	Coins	5
+I	Cocktail shaker	2	Coins	10
+I	Chocolate bar	10	Coins	20
+I	Chocolate dust	2	Coins	10
+I	Pot of cream	2	Coins	5
+I	Bucket of milk	6	Coins	5
+I	Knife	6	Coins	5
+I	Cocktail glass	1	Coins	20
+S	Gabooty's Tai Bwo Wannai Cooperative	2796	3066	0	Gabooty
+I	Tribal top (brown)	360	Trading sticks	50
+I	Villager robe (brown)	300	Trading sticks	50
+I	Villager hat (brown)	240	Trading sticks	50
+I	Villager sandals (brown)	120	Trading sticks	50
+I	Villager armband (brown)	180	Trading sticks	50
+I	Opal machete	600	Trading sticks	50
+I	Jade machete	1200	Trading sticks	50
+I	Red topaz machete	2400	Trading sticks	50
+I	Tribal top (blue)	360	Trading sticks	50
+I	Villager robe (blue)	300	Trading sticks	50
+I	Villager hat (blue)	240	Trading sticks	50
+I	Villager sandals (blue)	120	Trading sticks	50
+I	Villager armband (blue)	180	Trading sticks	50
+I	Uncut opal	24	Trading sticks	0
+I	Uncut jade	36	Trading sticks	0
+I	Uncut red topaz	48	Trading sticks	0
+I	Tribal top (yellow)	360	Trading sticks	50
+I	Villager robe (yellow)	300	Trading sticks	50
+I	Villager hat (yellow)	240	Trading sticks	50
+I	Villager sandals (yellow)	120	Trading sticks	50
+I	Villager armband (yellow)	180	Trading sticks	50
+I	Opal	120	Trading sticks	0
+I	Jade	180	Trading sticks	0
+I	Red topaz	240	Trading sticks	0
+I	Tribal top (pink)	360	Trading sticks	50
+I	Villager robe (pink)	300	Trading sticks	50
+I	Villager hat (pink)	240	Trading sticks	50
+I	Villager sandals (pink)	120	Trading sticks	50
+I	Villager armband (pink)	180	Trading sticks	50
+I	Gout tuber	240	Trading sticks	0
+S	Gabooty's Tai Bwo Wannai Drinky Store	2796	3066	0	Gabooty
+I	Fruit blast	30	Trading sticks	0
+I	Drunk dragon	30	Trading sticks	0
+I	Pineapple punch	30	Trading sticks	0
+I	Wizard blizzard	30	Trading sticks	0
+I	Blurberry special	30	Trading sticks	0
+I	Choc saturday	30	Trading sticks	0
+I	Short green guy	30	Trading sticks	0
+S	Gadrin	3021	3339	0	Gadrin
+I	Mining cape	99000	Coins	∞
+I	Mining cape(t)	99000	Coins	∞
+S	Gaius' Two Handed Shop	2885	3450	0	Gaius
+I	Bronze 2h sword	80	Coins	4
+I	Iron 2h sword	280	Coins	3
+I	Steel 2h sword	1000	Coins	2
+I	Black 2h sword	1920	Coins	1
+I	Mithril 2h sword	2600	Coins	1
+I	Adamant 2h sword	6400	Coins	1
+S	Garden Centre	3018	3373	0	Garden supplier
+I	Bagged dead tree	1000	Coins	20
+I	Bagged nice tree	2000	Coins	20
+I	Bagged oak tree	5000	Coins	20
+I	Bagged willow tree	10000	Coins	20
+I	Bagged maple tree	15000	Coins	20
+I	Bagged yew tree	20000	Coins	20
+I	Bagged magic tree	50000	Coins	20
+I	Bagged plant 1	1000	Coins	20
+I	Bagged plant 2	5000	Coins	20
+I	Bagged plant 3	10000	Coins	20
+I	Thorny hedge (bagged)	5000	Coins	20
+I	Nice hedge (bagged)	10000	Coins	20
+I	Small box hedge (bagged)	15000	Coins	20
+I	Topiary hedge (bagged)	20000	Coins	20
+I	Fancy hedge (bagged)	25000	Coins	20
+I	Tall fancy hedge (bagged)	50000	Coins	20
+I	Tall box hedge (bagged)	100000	Coins	20
+I	Bagged flower	5000	Coins	20
+I	Bagged daffodils	10000	Coins	20
+I	Bagged bluebells	15000	Coins	20
+I	Bagged sunflower	5000	Coins	20
+I	Bagged marigolds	10000	Coins	20
+I	Bagged roses	15000	Coins	20
+S	Gardener Gunnhild	2527	3856	0	Gardener Gunnhild
+I	Rake	15	Coins	∞
+I	Iron sickle	15	Coins	∞
+S	Garlic Cocktail Supply	3603	3321	0	Werewolf (Darkmeyer)
+I	Garlic cocktail	20	Coins	50
+S	Garth	2765	3213	0	Garth
+I	Plant cure	40	Coins	∞
+I	Compost	20	Coins	∞
+I	Rake	6	Coins	∞
+I	Empty plant pot	1	Coins	∞
+I	Watering can	8	Coins	∞
+I	Gardening trowel	12	Coins	∞
+I	Seed dibber	6	Coins	∞
+S	Gem Trader	3287	3211	0	Gem trader
+I	Uncut sapphire	25	Coins	1
+I	Uncut emerald	50	Coins	1
+I	Uncut ruby	100	Coins	0
+I	Uncut diamond	200	Coins	0
+I	Sapphire	250	Coins	1
+I	Emerald	500	Coins	1
+I	Ruby	1000	Coins	0
+I	Diamond	2000	Coins	0
+S	General Store	3477	3498	0	Fidelio
+I	Needle	2	Coins	2
+I	Thread	2	Coins	50
+I	Pot	2	Coins	3
+I	Bucket	4	Coins	2
+I	Empty bucket pack	1000	Coins	15
+I	Jug	2	Coins	2
+I	Empty jug pack	280	Coins	6
+I	Tinderbox	2	Coins	2
+I	Chisel	2	Coins	2
+I	Hammer	2	Coins	5
+I	Sample bottle	10	Coins	10
+I	Knife	12	Coins	2
+I	Blood talisman	8	Coins	1
+S	Gerrant's Fishy Business	3014	3226	0	Gerrant
+I	Small fishing net	5	Coins	5
+I	Fishing rod	5	Coins	5
+I	Fly fishing rod	5	Coins	5
+I	Harpoon	5	Coins	2
+I	Lobster pot	20	Coins	2
+I	Fishing bait	3	Coins	1500
+I	Bait pack	300	Coins	80
+I	Feather	2	Coins	1000
+I	Feather pack	200	Coins	100
+I	Raw shrimps	5	Coins	0
+I	Raw sardine	10	Coins	200
+I	Raw herring	10	Coins	0
+I	Raw anchovies	15	Coins	0
+I	Raw trout	10	Coins	0
+I	Raw pike	20	Coins	0
+I	Raw salmon	30	Coins	0
+I	Raw tuna	40	Coins	0
+I	Raw lobster	70	Coins	0
+I	Raw swordfish	80	Coins	0
+S	Gianne's Restaurant	2450	3502	1	Gnome Waiter
+I	Premade veg batta	120	Coins	3
+I	Premade w'm batta	120	Coins	3
+I	Premade t'd batta	120	Coins	3
+I	Premade fr't batta	120	Coins	3
+I	Premade c+t batta	120	Coins	3
+I	Premade worm hole	150	Coins	3
+I	Premade ttl	160	Coins	3
+I	Premade veg ball	150	Coins	3
+I	Premade choc bomb	160	Coins	3
+I	Premade w'm crun'	85	Coins	3
+I	Premade t'd crunch	85	Coins	3
+I	Premade ch' crunch	85	Coins	3
+I	Premade s'y crunch	85	Coins	3
+S	Giants' Foundry Reward Shop	3371	11486	0	Kovac
+I	Double ammo mould	2000	Foundry Reputation	∞
+I	Kovac's grog	300	Foundry Reputation	∞
+I	Smithing catalyst	15	Foundry Reputation	∞
+I	Ore pack (Giants' Foundry)	200	Foundry Reputation	∞
+I	Smiths tunic	4000	Foundry Reputation	∞
+I	Smiths trousers	4000	Foundry Reputation	∞
+I	Smiths boots	3500	Foundry Reputation	∞
+I	Smiths gloves	3500	Foundry Reputation	∞
+I	Colossal blade	5000	Foundry Reputation	∞
+S	Gileth	2489	3179	0	Gileth
+I	Plant cure	40	Coins	∞
+I	Compost	20	Coins	∞
+I	Rake	6	Coins	∞
+I	Empty plant pot	1	Coins	∞
+I	Watering can	8	Coins	∞
+I	Gardening trowel	12	Coins	∞
+I	Seed dibber	6	Coins	∞
+S	Gnome Waiter	2448	3504	1	Gnome Waiter
+I	Premade veg batta	120	Coins	3
+I	Premade w'm batta	120	Coins	3
+I	Premade t'd batta	120	Coins	3
+I	Premade fr't batta	120	Coins	3
+I	Premade c+t batta	120	Coins	3
+I	Premade worm hole	150	Coins	3
+I	Premade ttl	160	Coins	3
+I	Premade veg ball	150	Coins	3
+I	Premade choc bomb	160	Coins	3
+I	Premade w'm crun'	85	Coins	3
+I	Premade t'd crunch	85	Coins	3
+I	Premade ch' crunch	85	Coins	3
+I	Premade s'y crunch	85	Coins	3
+S	Grace's Graceful Clothing	3050	4962	0	Grace
+I	Graceful hood	35	Mark of Grace	100
+I	Graceful top	55	Mark of Grace	100
+I	Graceful legs	60	Mark of Grace	100
+I	Graceful gloves	30	Mark of Grace	100
+I	Graceful boots	40	Mark of Grace	100
+I	Graceful cape	40	Mark of Grace	100
+I	Amylase pack	10	Mark of Grace	1000
+S	Grand Tree Groceries	2449	3510	1	Hudo
+I	Gianne dough	2	Coins	50
+I	Equa leaves	2	Coins	20
+I	Pot of flour	10	Coins	10
+I	Gnome spice	2	Coins	10
+I	Onion	3	Coins	10
+I	Potato	1	Coins	10
+I	Cabbage	1	Coins	10
+I	Tomato	4	Coins	10
+I	Cheese	4	Coins	10
+I	Spider on stick	50	Coins	0
+I	Spider on shaft	40	Coins	0
+I	Lime	2	Coins	10
+I	Orange	2	Coins	10
+I	Lemon	2	Coins	10
+I	Pineapple	2	Coins	10
+I	Dwellberries	4	Coins	10
+I	Cocktail shaker	2	Coins	10
+I	Chocolate bar	10	Coins	20
+I	Chocolate dust	2	Coins	10
+I	Pot of cream	2	Coins	5
+I	Bucket of milk	6	Coins	5
+I	Knife	6	Coins	5
+I	Gianne's cook book	2	Coins	5
+I	Batta tin	10	Coins	5
+I	Crunchy tray	10	Coins	5
+I	Gnomebowl mould	10	Coins	5
+S	Grandpa Jack	2650	3452	0	Grandpa Jack
+I	Fishing rod	5	Coins	∞
+S	Green Gemstone Gems	2887	10210	0	Hervi
+I	Sapphire	375	Coins	3
+I	Emerald	750	Coins	1
+I	Ruby	1500	Coins	1
+I	Diamond	3000	Coins	0
+S	Greengrocer of Miscellania	2516	3865	0	Greengrocer
+I	Cabbage	1	Coins	10
+I	Potato	1	Coins	10
+I	Onion	3	Coins	10
+I	Tomato	4	Coins	10
+I	Garlic	3	Coins	2
+S	Grud's Herblore Stall	2527	3048	0	Ogre merchant
+I	Vial	2	Coins	50
+I	Empty vial pack	260	Coins	10
+I	Vial of water	2	Coins	45
+I	Water-filled vial pack	261	Coins	8
+I	Pestle and mortar	5	Coins	3
+I	Eye of newt	3	Coins	50
+I	Eye of newt pack	390	Coins	20
+S	Grum's Gold Exchange	3014	3247	0	Grum
+I	Gold ring	350	Coins	0
+I	Sapphire ring	900	Coins	0
+I	Emerald ring	1275	Coins	0
+I	Ruby ring	2025	Coins	0
+I	Diamond ring	3525	Coins	0
+I	Gold necklace	450	Coins	0
+I	Sapphire necklace	1050	Coins	0
+I	Emerald necklace	1425	Coins	0
+I	Ruby necklace	2175	Coins	0
+I	Diamond necklace	3675	Coins	0
+I	Gold amulet	350	Coins	0
+I	Sapphire amulet	900	Coins	0
+I	Emerald amulet	1275	Coins	0
+I	Ruby amulet	2025	Coins	0
+I	Diamond amulet	3525	Coins	0
+S	Guinevere's Dyes	3229	6057	0	Guinevere
+I	Red dye	6	Coins	10
+I	Yellow dye	6	Coins	10
+I	Blue dye	6	Coins	10
+I	Orange dye	6	Coins	10
+I	Green dye	6	Coins	10
+I	Purple dye	6	Coins	10
+S	Gulluck and Sons	2470	3488	2	Gulluck
+I	Bronze arrow	1	Coins	200
+I	Bronze bolts	1	Coins	150
+I	Pearl bolts	13	Coins	1
+I	Shortbow	50	Coins	4
+I	Longbow	80	Coins	2
+I	Crossbow	70	Coins	2
+I	Bronze arrowtips	1	Coins	200
+I	Iron arrowtips	2	Coins	180
+I	Steel arrowtips	6	Coins	160
+I	Mithril arrowtips	16	Coins	140
+I	Iron axe	56	Coins	5
+I	Steel axe	200	Coins	3
+I	Iron battleaxe	182	Coins	5
+I	Steel battleaxe	650	Coins	2
+I	Mithril battleaxe	1690	Coins	1
+I	Bronze 2h sword	80	Coins	4
+I	Iron 2h sword	280	Coins	3
+I	Steel 2h sword	1000	Coins	2
+I	Black 2h sword	1920	Coins	1
+I	Mithril 2h sword	2600	Coins	1
+I	Adamant 2h sword	6400	Coins	1
+S	Gundik	2711	5314	0	Gundik
+I	Bat shish	10	Coins	∞
+S	Gunslik's Assorted Items	2871	10190	0	Gunslik
+I	Jug	1	Coins	2
+I	Empty jug pack	182	Coins	4
+I	Bucket	2	Coins	2
+I	Empty bucket pack	650	Coins	15
+I	Tinderbox	1	Coins	2
+I	Chisel	1	Coins	2
+I	Hammer	1	Coins	5
+I	Candle	3	Coins	10
+I	Unlit torch	5	Coins	10
+I	Charcoal	58	Coins	50
+I	Leather gloves	7	Coins	10
+I	Vial	2	Coins	10
+I	Empty vial pack	260	Coins	10
+I	Pestle and mortar	5	Coins	3
+I	Rope	23	Coins	10
+S	Gwyn's Mining Emporium	3290	6044	0	Gwyn
+I	Iron pickaxe	140	Coins	5
+I	Steel pickaxe	500	Coins	4
+I	Mithril pickaxe	1300	Coins	3
+I	Adamant pickaxe	3200	Coins	2
+I	Rune pickaxe	32000	Coins	1
+I	Chisel	1	Coins	10
+S	Hair of the Dog	3495	3475	0	Roavar
+I	Moonlight mead	5	Coins	∞
+I	Pickled brain	50	Coins	∞
+S	Hamab's Crafting Emporium	2781	2792	0	Hamab
+I	Chisel	1	Coins	2
+I	Ring mould	5	Coins	4
+I	Necklace mould	5	Coins	2
+I	M'amulet mould	10	Coins	2
+I	Needle	1	Coins	3
+I	Thread	1	Coins	100
+I	Ball of wool	2	Coins	100
+I	Bracelet mould	5	Coins	2
+S	Happy Heroes' H'emporium	2896	3511	1	Helemos
+I	Dragon battleaxe	200000	Coins	1
+I	Dragon mace	50000	Coins	1
+S	Harminia	1584	3100	0	Harminia
+I	Plant cure	40	Coins	∞
+I	Compost	20	Coins	∞
+I	Rake	6	Coins	∞
+I	Empty plant pot	1	Coins	∞
+I	Watering can	8	Coins	∞
+I	Gardening trowel	12	Coins	∞
+I	Seed dibber	6	Coins	∞
+S	Harpoon Joe's House of 'Rum'	3666	2993	0	Joe
+I	Beer	2	Coins	3
+I	Braindeath 'rum'	30	Coins	3
+I	Jug of wine	1	Coins	1
+I	Stew	20	Coins	5
+S	Harry's Fishing Shop	2834	3446	0	Harry
+I	Small fishing net	5	Coins	5
+I	Fishing rod	5	Coins	5
+I	Harpoon	5	Coins	2
+I	Lobster pot	20	Coins	2
+I	Fishing bait	3	Coins	1200
+I	Bait pack	300	Coins	80
+I	Big fishing net	20	Coins	5
+I	Raw shrimps	5	Coins	0
+I	Raw sardine	10	Coins	0
+I	Raw herring	10	Coins	0
+I	Raw mackerel	15	Coins	0
+I	Raw cod	10	Coins	0
+I	Raw anchovies	15	Coins	0
+I	Raw tuna	40	Coins	0
+I	Raw lobster	70	Coins	0
+I	Raw bass	40	Coins	0
+I	Raw swordfish	80	Coins	0
+I	Raw shark	170	Coins	0
+S	Head chef	3143	3449	0	Head chef
+I	Cooking cape	99000	Coins	∞
+I	Cooking cape(t)	99000	Coins	∞
+S	Hefin Inn	3238	6126	0	Eira
+I	Beer	2	Coins	∞
+I	Cider	2	Coins	∞
+I	Stew	20	Coins	∞
+I	Elven dawn	6	Coins	∞
+S	Helmet Shop	3075	3429	0	Peksa
+I	Bronze med helm	24	Coins	5
+I	Iron med helm	84	Coins	3
+I	Steel med helm	300	Coins	3
+I	Mithril med helm	780	Coins	1
+I	Adamant med helm	1920	Coins	1
+I	Bronze full helm	44	Coins	4
+I	Iron full helm	154	Coins	3
+I	Steel full helm	550	Coins	2
+I	Mithril full helm	1430	Coins	1
+I	Adamant full helm	3520	Coins	1
+S	Henderson's Catch of the Day	3046	2983	0	Henderson
+I	Small fishing net	5	Coins	5
+I	Big fishing net	20	Coins	5
+I	Fishing rod	5	Coins	5
+I	Fly fishing rod	5	Coins	5
+I	Harpoon	5	Coins	5
+I	Lobster pot	20	Coins	5
+I	Fishing bait	3	Coins	2000
+I	Bait pack	300	Coins	100
+I	Feather	2	Coins	1000
+I	Feather pack	200	Coins	100
+I	Raw shrimps	5	Coins	10
+I	Raw sardine	10	Coins	10
+I	Raw herring	10	Coins	10
+I	Raw anchovies	15	Coins	10
+I	Raw mackerel	15	Coins	6
+I	Raw cod	10	Coins	6
+I	Raw bass	40	Coins	4
+S	Hendor's Awesome Ores	3032	9746	0	Hendor
+I	Copper ore	3	Coins	0
+I	Tin ore	3	Coins	0
+I	Iron ore	17	Coins	0
+I	Mithril ore	162	Coins	0
+I	Adamantite ore	400	Coins	0
+I	Runite ore	3200	Coins	0
+I	Coal	45	Coins	0
+S	Herquin's Gems	2946	3335	0	Herquin
+I	Uncut sapphire	25	Coins	1
+I	Uncut emerald	50	Coins	0
+I	Uncut ruby	100	Coins	0
+I	Uncut diamond	200	Coins	0
+I	Sapphire	250	Coins	1
+I	Emerald	500	Coins	0
+I	Ruby	1000	Coins	0
+I	Diamond	2000	Coins	0
+S	Heskel	3004	3374	0	Heskel
+I	Plant cure	40	Coins	∞
+I	Compost	20	Coins	∞
+I	Rake	6	Coins	∞
+I	Empty plant pot	1	Coins	∞
+I	Watering can	8	Coins	∞
+I	Gardening trowel	12	Coins	∞
+I	Seed dibber	6	Coins	∞
+S	Hickton's Archery Emporium	2824	3444	0	Hickton
+I	Bronze bolts	1	Coins	200
+I	Bronze arrow	1	Coins	1000
+I	Iron arrow	3	Coins	800
+I	Steel arrow	12	Coins	0
+I	Mithril arrow	32	Coins	0
+I	Adamant arrow	80	Coins	0
+I	Rune arrow	400	Coins	0
+I	Bronze brutal	5	Coins	0
+I	Iron brutal	10	Coins	0
+I	Steel brutal	20	Coins	0
+I	Black brutal	35	Coins	0
+I	Mithril brutal	50	Coins	0
+I	Adamant brutal	95	Coins	0
+I	Rune brutal	450	Coins	0
+I	Bronze arrowtips	1	Coins	1000
+I	Iron arrowtips	2	Coins	800
+I	Steel arrowtips	6	Coins	600
+I	Mithril arrowtips	16	Coins	400
+I	Adamant arrowtips	40	Coins	200
+I	Rune arrowtips	200	Coins	100
+I	Shortbow	50	Coins	4
+I	Longbow	80	Coins	2
+I	Crossbow	70	Coins	2
+I	Oak shortbow	100	Coins	4
+I	Oak longbow	160	Coins	4
+I	Comp ogre bow	180	Coins	0
+I	Studded body	850	Coins	2
+I	Studded chaps	750	Coins	2
+I	Fletching cape	99000	Coins	1
+I	Fletching cape(t)	99000	Coins	1
+S	Hirko	2888	10202	0	Hirko
+I	Bolt pouch	1500	Coins	∞
+S	Honest Jimmy	3812	3021	0	Honest Jimmy
+I	Clue scroll (medium)	5000	pieces of eight	∞
+S	Honest Jimmy's House of Stuff	3810	3023	0	Honest Jimmy
+I	Blue naval shirt	1000	Pieces of eight	10
+I	Blue tricorn hat	500	Pieces of eight	10
+I	Blue navy slacks	1000	Pieces of eight	10
+I	Green naval shirt	1000	Pieces of eight	10
+I	Green tricorn hat	500	Pieces of eight	10
+I	Green navy slacks	1000	Pieces of eight	10
+I	Red naval shirt	1000	Pieces of eight	10
+I	Red tricorn hat	500	Pieces of eight	10
+I	Red navy slacks	1000	Pieces of eight	10
+I	Brown naval shirt	1000	Pieces of eight	10
+I	Brown tricorn hat	500	Pieces of eight	10
+I	Brown navy slacks	1000	Pieces of eight	10
+I	Black naval shirt	1000	Pieces of eight	10
+I	Black tricorn hat	500	Pieces of eight	10
+I	Black navy slacks	1000	Pieces of eight	10
+I	Purple naval shirt	1000	Pieces of eight	10
+I	Purple tricorn hat	500	Pieces of eight	10
+I	Purple navy slacks	1000	Pieces of eight	10
+I	Grey naval shirt	1000	Pieces of eight	10
+I	Grey tricorn hat	500	Pieces of eight	10
+I	Grey navy slacks	1000	Pieces of eight	10
+I	Cutthroat flag	2000	Pieces of eight	10
+I	Gilded smile flag	2000	Pieces of eight	10
+I	Bronze fist flag	3000	Pieces of eight	10
+I	Lucky shot flag	4000	Pieces of eight	10
+I	Treasure flag	5000	Pieces of eight	10
+I	Phasmatys flag	6000	Pieces of eight	10
+I	The stuff	50	Pieces of eight	200
+I	Rum (red)	20	Pieces of eight	200
+I	Rum (blue)	20	Pieces of eight	200
+S	Horvik's Armour Shop	3230	3438	0	Horvik
+I	Bronze chainbody	60	Coins	5
+I	Iron chainbody	210	Coins	3
+I	Steel chainbody	750	Coins	3
+I	Mithril chainbody	1950	Coins	1
+I	Bronze platebody	160	Coins	3
+I	Iron platebody	560	Coins	1
+I	Steel platebody	2000	Coins	1
+I	Black platebody	3840	Coins	1
+I	Mithril platebody	5200	Coins	1
+I	Iron platelegs	280	Coins	1
+I	Studded body	850	Coins	1
+I	Studded chaps	750	Coins	1
+S	Hudo	2449	3510	1	Hudo
+I	Giant frog legs	10000000000	Coins	N/A
+S	Huito's Herbal Supplies	1437	9553	1	Huito
+I	Pestle and mortar	4	Coins	5
+I	Vial	2	Coins	100
+I	Vial of water	2	Coins	100
+I	Eye of newt	3	Coins	50
+I	Empty vial pack	200	Coins	100
+I	Water-filled vial pack	201	Coins	100
+I	Eye of newt pack	300	Coins	50
+S	Hunting expert	2525	2916	0	Hunting expert
+I	Hunter cape	99000	Coins	∞
+I	Hunter cape(t)	99000	Coins	∞
+S	Ian's Wilderness Cape Shop	2976	3771	0	Ian
+I	Team-2 cape	50	Coins	100
+I	Team-12 cape	50	Coins	100
+I	Team-22 cape	50	Coins	100
+I	Team-32 cape	50	Coins	100
+I	Team-42 cape	50	Coins	100
+S	Ifaba's General Store	2753	2775	0	Ifaba
+I	Pot	1	Coins	3
+I	Jug	1	Coins	2
+I	Empty jug pack	140	Coins	8
+I	Rope	18	Coins	8
+I	Bucket	2	Coins	2
+I	Empty bucket pack	500	Coins	10
+I	Tinderbox	1	Coins	2
+I	Hammer	1	Coins	5
+S	Ignatius Vulcan	2720	3430	0	Ignatius Vulcan
+I	Firemaking cape	99000	Coins	∞
+I	Firemaking cape(t)	99000	Coins	∞
+S	Imia's Supplies	1562	3060	0	Imia
+I	Butterfly net	26	Coins	5
+I	Butterfly jar	1	Coins	100
+I	Magic box	780	Coins	30
+I	Noose wand	5	Coins	50
+I	Bird snare	6	Coins	50
+I	Box trap	41	Coins	25
+I	Teasing stick	65	Coins	5
+I	Unlit torch	5	Coins	20
+I	Rabbit snare	19	Coins	10
+I	Net trap (item)	41	Coins	25
+I	Bird snare pack	656	Coins	3
+I	Box trap pack	4160	Coins	3
+I	Magic imp box pack	78000	Coins	3
+S	Imiago	2797	3102	0	Imiago
+I	Plant cure	40	Coins	∞
+I	Compost	20	Coins	∞
+I	Rake	6	Coins	∞
+I	Empty plant pot	1	Coins	∞
+I	Watering can	8	Coins	∞
+I	Gardening trowel	12	Coins	∞
+I	Seed dibber	6	Coins	∞
+S	Initiate Temple Knight Armoury	2997	3373	0	Sir Tiffy Cashien
+I	Initiate sallet	6000	Coins	30
+I	Initiate cuisse	8000	Coins	30
+I	Initiate hauberk	10000	Coins	30
+I	Initiate harness m	20000	Coins	30
+S	Iorwerth's Arms	3259	6059	0	Celyn
+I	Adamant dagger	1200	Coins	4
+I	Rune dagger	12000	Coins	3
+I	Dragon dagger	45000	Coins	2
+I	Adamant scimitar	3840	Coins	2
+I	Rune scimitar	38400	Coins	1
+I	Adamant halberd	9600	Coins	7
+I	Rune halberd	96000	Coins	7
+I	Dragon halberd	375000	Coins	5
+S	Irksol	2475	4469	0	Irksol
+I	Ruby ring	1012	Coins	5
+S	Ishmael's Fish He Sells	3160	2848	0	Ishmael
+I	Small fishing net	5	Coins	5
+I	Fishing rod	5	Coins	5
+I	Fly fishing rod	5	Coins	5
+I	Harpoon	5	Coins	2
+I	Lobster pot	20	Coins	2
+I	Fishing bait	3	Coins	1500
+I	Bait pack	300	Coins	80
+I	Feather	2	Coins	1000
+I	Feather pack	200	Coins	100
+I	Raw shrimps	5	Coins	0
+I	Raw sardine	10	Coins	200
+I	Raw herring	10	Coins	0
+I	Raw anchovies	15	Coins	0
+I	Raw trout	10	Coins	0
+I	Raw pike	20	Coins	0
+I	Raw salmon	30	Coins	0
+I	Raw tuna	40	Coins	0
+I	Raw lobster	70	Coins	0
+I	Raw swordfish	80	Coins	0
+S	Island Fishmonger	2516	3865	0	Fishmonger
+I	Small fishing net	6	Coins	5
+I	Fishing rod	6	Coins	5
+I	Fly fishing rod	6	Coins	5
+I	Harpoon	6	Coins	2
+I	Lobster pot	26	Coins	2
+I	Fishing bait	3	Coins	1500
+I	Bait pack	390	Coins	80
+I	Feather	2	Coins	1000
+I	Feather pack	260	Coins	100
+I	Big fishing net	26	Coins	5
+I	Raw shrimps	6	Coins	0
+I	Raw sardine	13	Coins	200
+I	Raw herring	13	Coins	0
+I	Raw mackerel	19	Coins	0
+I	Raw cod	13	Coins	0
+I	Raw anchovies	19	Coins	0
+I	Raw trout	13	Coins	0
+I	Raw pike	26	Coins	0
+I	Raw salmon	39	Coins	0
+I	Raw tuna	52	Coins	0
+I	Raw lobster	91	Coins	0
+I	Raw bass	52	Coins	0
+I	Raw swordfish	104	Coins	0
+I	Raw shark	221	Coins	0
+S	Island Greengrocer	2600	3875	0	Greengrocer
+I	Cabbage	1	Coins	10
+I	Potato	1	Coins	10
+I	Onion	3	Coins	10
+I	Tomato	4	Coins	10
+I	Garlic	3	Coins	2
+S	Islwyn	2206	3158	0	Islwyn
+I	Crystal bow	900000	Coins	N/A
+I	Crystal shield	750000	Coins	N/A
+I	Crystal halberd	750000	Coins	N/A
+S	Ivan's Supplies	3598	9613	0	Ivan Strom
+I	Silver sickle	175	Coins	20
+I	Silver sickle (b)	250	Coins	20
+I	Rod of Ivandis (10)	1000	Coins	20
+I	Ivandis flail	20000	Coins	20
+I	Blisterwood flail	40000	Coins	20
+I	Blisterwood sickle	20000	Coins	20
+S	Iwan's Maces	3256	6126	0	Iwan
+I	Mithril mace	585	Coins	3
+I	Adamant mace	1440	Coins	2
+I	Rune mace	14400	Coins	1
+S	Jamila's Craft Stall	3311	2780	0	Jamila
+I	Chisel	1	Coins	2
+I	Ring mould	7	Coins	4
+I	Necklace mould	7	Coins	2
+I	Amulet mould	7	Coins	2
+I	Needle	1	Coins	3
+I	Thread	1	Coins	100
+I	Holy mould	7	Coins	3
+I	Sickle mould	15	Coins	6
+I	Tiara mould	150	Coins	10
+I	Bracelet mould	7	Coins	5
+S	Jatix's Herblore Shop	2898	3429	0	Jatix
+I	Vial	2	Coins	800
+I	Empty vial pack	200	Coins	800
+I	Vial of water	2	Coins	750
+I	Water-filled vial pack	201	Coins	750
+I	Pestle and mortar	4	Coins	3
+I	Eye of newt	3	Coins	800
+I	Eye of newt pack	300	Coins	100
+S	Jennifer's General Supplies	1519	3590	0	Jennifer (Shayzien)
+I	Pot	1	Coins	5
+I	Jug	1	Coins	2
+I	Empty jug pack	182	Coins	5
+I	Shears	1	Coins	2
+I	Bucket	2	Coins	3
+I	Empty bucket pack	650	Coins	15
+I	Bowl	5	Coins	2
+I	Cake tin	13	Coins	2
+I	Tinderbox	1	Coins	2
+I	Chisel	1	Coins	2
+I	Hammer	1	Coins	5
+I	Bronze axe	20	Coins	10
+I	Field ration	390	Coins	25
+S	Jiminua's Jungle Store	2767	3122	0	Jiminua
+I	Tinderbox	1	Coins	2
+I	Candle	4	Coins	10
+I	Unlit torch	6	Coins	10
+I	Pot	1	Coins	3
+I	Rope	27	Coins	10
+I	Leather body	31	Coins	12
+I	Leather gloves	9	Coins	10
+I	Leather boots	9	Coins	10
+I	Cooked meat	6	Coins	2
+I	Bread	18	Coins	10
+I	Vial	3	Coins	10
+I	Empty vial pack	300	Coins	100
+I	Vial of water	3	Coins	50
+I	Water-filled vial pack	301	Coins	50
+I	Pestle and mortar	6	Coins	3
+I	Antipoison(3)	432	Coins	10
+I	Papyrus	15	Coins	50
+I	Charcoal	67	Coins	50
+I	Knife	9	Coins	2
+I	Hammer	1	Coins	10
+I	Machete	60	Coins	50
+I	Chisel	1	Coins	10
+I	Spade	4	Coins	10
+I	Bronze axe	24	Coins	2
+I	Bronze pickaxe	1	Coins	2
+I	Iron axe	84	Coins	5
+I	Bronze bar	12	Coins	10
+I	Pure essence	6	Coins	0
+S	Jolly Boar Inn	3281	3498	0	Bartender (Jolly Boar Inn)
+I	Beer	2	Coins	∞
+S	Jukat	2484	4450	0	Jukat
+I	Dragon longsword	100000	Coins	2
+I	Dragon dagger	30000	Coins	2
+S	Justine's stuff for the Last Shopper Standing	3142	3635	0	Justine
+I	Deadman's chest	160	Points	∞
+I	Deadman's legs	160	Points	∞
+I	Deadman's cape	160	Points	∞
+I	Swift blade	350	Points	∞
+I	Guthixian icon	500	Points	∞
+I	Trouver parchment	18	Points	∞
+I	Wilderness crabs teleport	1	Points	∞
+I	Blighted entangle sack	1	Points	∞
+I	Blighted teleport spell sack	1	Points	∞
+I	Blighted vengeance sack	1	Points	∞
+I	Blighted ancient ice sack	1	Points	∞
+I	Adamant arrow	1	Points	∞
+I	Bolt rack	1	Points	∞
+I	Rune arrow	3	Points	∞
+I	Dragonstone bolts (e)	3	Points	∞
+I	Blighted karambwan	1	Points	∞
+I	Blighted manta ray	1	Points	∞
+I	Blighted anglerfish	1	Points	∞
+I	Blighted super restore(4)	1	Points	∞
+I	Climbing boots	1	Points	∞
+I	Looting bag	1	Points	∞
+I	Looting bag note	1	Points	∞
+I	Ring of wealth scroll	5	Points	∞
+I	Magic shortbow scroll	5	Points	∞
+I	Clue box	5	Points	∞
+I	Crystal weapon seed	12	Points	∞
+I	Granite clamp	25	Points	∞
+I	Ornate maul handle	15	Points	∞
+I	Steam staff upgrade kit	13	Points	∞
+I	Lava staff upgrade kit	13	Points	∞
+I	Dragon pickaxe upgrade kit	14	Points	∞
+I	Ward upgrade kit	20	Points	∞
+I	Green dark bow paint	25	Points	∞
+I	Yellow dark bow paint	25	Points	∞
+I	White dark bow paint	25	Points	∞
+I	Blue dark bow paint	25	Points	∞
+I	Volcanic whip mix	25	Points	∞
+I	Frozen whip mix	25	Points	∞
+I	Rune pouch	75	Points	∞
+I	Rune pouch note	75	Points	∞
+I	Decorative emblem	100	Points	∞
+I	Saradomin's tear	150	Points	∞
+I	Target teleport scroll	250	Points	∞
+I	Vesta's longsword (inactive)	300	Points	∞
+I	Victor's cape (1)	0	Points	∞
+I	Victor's cape (10)	0	Points	∞
+I	Victor's cape (50)	0	Points	∞
+I	Victor's cape (100)	0	Points	∞
+I	Victor's cape (500)	0	Points	∞
+I	Victor's cape (1000)	0	Points	∞
+I	Armadyl halo	450	Points	∞
+I	Bandos halo	450	Points	∞
+I	Seren halo	450	Points	∞
+I	Ancient halo	450	Points	∞
+I	Brassica halo	450	Points	∞
+I	Paddewwa teleport (tablet)	1	Points	∞
+I	Senntisten teleport (tablet)	1	Points	∞
+I	Annakarl teleport (tablet)	1	Points	∞
+I	Carrallanger teleport (tablet)	1	Points	∞
+I	Dareeyak teleport (tablet)	1	Points	∞
+I	Ghorrock teleport (tablet)	1	Points	∞
+I	Kharyrll teleport (tablet)	1	Points	∞
+I	Lassar teleport (tablet)	1	Points	∞
+I	Target teleport	1	Points	∞
+I	Animation overrides#Godswords	75	Points	∞
+S	Kaqemeex	2926	3484	0	Kaqemeex
+I	Herblore cape	99000	Coins	∞
+I	Herblore cape(t)	99000	Coins	∞
+S	Karamja General Store	2905	3149	0	Shop keeper (Musa Point)
+I	Pot	1	Coins	5
+I	Jug	1	Coins	2
+I	Empty jug pack	182	Coins	5
+I	Shears	1	Coins	2
+I	Bucket	2	Coins	3
+I	Empty bucket pack	650	Coins	15
+I	Bowl	5	Coins	2
+I	Cake tin	13	Coins	2
+I	Tinderbox	1	Coins	2
+I	Chisel	1	Coins	2
+I	Hammer	1	Coins	5
+S	Karamja Wines, Spirits, and Beers	2923	3145	0	Zembo
+I	Beer	2	Coins	3
+I	Karamjan rum	30	Coins	3
+I	Jug of wine	1	Coins	1
+S	Karim	3274	3181	0	Karim
+I	Kebab	1	Coins	∞
+S	Kastori Farming Supplies	1357	3061	0	Ameyalli
+I	Rake	6	Coins	5
+I	Seed dibber	6	Coins	5
+I	Secateurs	5	Coins	5
+I	Spade	3	Coins	5
+I	Gardening trowel	12	Coins	10
+I	Watering can	8	Coins	30
+I	Filled plant pot	1	Coins	100
+I	Plant pot pack	100	Coins	30
+I	Compost	20	Coins	30
+I	Compost pack	2000	Coins	30
+I	Empty sack	1	Coins	30
+I	Sack pack	100	Coins	30
+I	Basket	1	Coins	30
+I	Basket pack	100	Coins	30
+I	Bucket	2	Coins	30
+I	Empty bucket pack	500	Coins	30
+I	Plant cure	40	Coins	50
+S	Kastori General Store	1374	3045	0	Shopkeeper (Kastori)
+I	Bronze pickaxe	1	Coins	5
+I	Bronze axe	20	Coins	5
+I	Chisel	1	Coins	5
+I	Spade	3	Coins	5
+I	Hammer	1	Coins	5
+I	Knife	7	Coins	5
+I	Tinderbox	1	Coins	5
+I	Needle	1	Coins	5
+I	Thread	1	Coins	30
+I	Rope	23	Coins	10
+I	Pot	1	Coins	15
+I	Jug	1	Coins	15
+I	Bucket	2	Coins	15
+I	Bowl	5	Coins	15
+I	Cake tin	13	Coins	15
+I	Empty jug pack	182	Coins	5
+I	Empty bucket pack	650	Coins	5
+S	Keepa Kettilon's store	2417	3816	0	Keepa Kettilon
+I	Tuna	44	Coins	20
+I	Salmon	33	Coins	20
+I	Cod	11	Coins	20
+I	Lobster	77	Coins	10
+I	Swordfish	88	Coins	0
+I	Shark	187	Coins	0
+S	Keldagrim Stonemason	2849	10184	0	Stonemason
+I	Limestone brick	26	Coins	1000
+I	Marble block	325000	Coins	20
+I	Gold leaf	130000	Coins	20
+I	Magic stone	975000	Coins	10
+I	Condensed gold	10400000	Coins	10
+S	Keldagrim's Best Bread	2892	10211	0	Randivor
+I	Bread	18	Coins	10
+I	Cake	75	Coins	3
+I	Chocolate slice	45	Coins	8
+S	Kenelme's Wares	1785	3757	0	Kenelme
+I	Pot of flour	10	Coins	3
+I	Raw beef	1	Coins	1
+I	Cabbage	1	Coins	3
+I	Banana	2	Coins	3
+I	Redberries	3	Coins	1
+I	Bread	12	Coins	0
+I	Chocolate bar	10	Coins	1
+I	Cheese	4	Coins	3
+I	Tomato	4	Coins	3
+I	Potato	1	Coins	1
+S	Khazard General Store	2656	3152	0	Shop keeper (Port Khazard)
+I	Bronze pickaxe	1	Coins	5
+I	Pot	1	Coins	3
+I	Jug	1	Coins	2
+I	Empty jug pack	196	Coins	5
+I	Shears	1	Coins	2
+I	Bucket	2	Coins	2
+I	Empty bucket pack	700	Coins	15
+I	Tinderbox	1	Coins	2
+I	Chisel	1	Coins	2
+I	Hammer	1	Coins	5
+I	Rope	25	Coins	30
+I	Pot of flour	14	Coins	30
+I	Bailing bucket	14	Coins	30
+I	Swamp paste	42	Coins	5000
+I	Knife	8	Coins	2
+I	Bronze axe	22	Coins	5
+S	King Narnode's Royal Seed Pods	2466	3496	0	King Narnode Shareen
+I	Royal seed pod	2	Coins	30
+S	King's Axe Inn	2840	10196	0	Barman (King's Axe Inn)
+I	Beer	1	Coins	∞
+I	Dwarven stout	2	Coins	∞
+I	Jug of wine	10	Coins	∞
+S	Kjut's Kebabs	2906	10216	0	Kjut
+I	Kebab	1	Coins	∞
+S	Klank	2321	9805	0	Klank
+I	Klank's gauntlets	5000	Coins	∞
+S	Kourend Castle Baker's Stall	1639	3684	0	Baker
+I	Bread	12	Coins	30
+I	Cake	50	Coins	10
+I	Chocolate slice	30	Coins	5
+I	Chocolate bar	10	Coins	15
+S	Kourend Castle Gem Stall	1634	3684	0	Gem merchant (Kourend Castle)
+I	Sapphire	250	Coins	2
+I	Emerald	500	Coins	1
+I	Ruby	1000	Coins	1
+I	Diamond	2000	Coins	0
+S	Kragen	2667	3375	0	Kragen
+I	Plant cure	40	Coins	∞
+I	Compost	20	Coins	∞
+I	Rake	6	Coins	∞
+I	Empty plant pot	1	Coins	∞
+I	Watering can	8	Coins	∞
+I	Gardening trowel	12	Coins	∞
+I	Seed dibber	6	Coins	∞
+S	Kuradal	2869	2982	1	Kuradal
+I	Slayer cape	99000	Coins	∞
+I	Slayer cape(t)	99000	Coins	∞
+S	Kylie Minnow	2599	3426	0	Kylie Minnow
+I	Raw shark	40	minnow	∞
+S	Lalli	2772	3622	0	Lalli
+I	Golden fleece	1000	Coins	∞
+S	Lammy Langle	1693	3542	0	Lammy Langle
+I	Plant cure	40	Coins	∞
+I	Compost	20	Coins	∞
+I	Rake	6	Coins	∞
+I	Empty plant pot	1	Coins	∞
+I	Watering can	8	Coins	∞
+I	Gardening trowel	12	Coins	∞
+I	Seed dibber	6	Coins	∞
+S	Larry's Wilderness Cape Shop	3206	3718	0	Larry (merchant)
+I	Team-3 cape	50	Coins	100
+I	Team-13 cape	50	Coins	100
+I	Team-23 cape	50	Coins	100
+I	Team-33 cape	50	Coins	100
+I	Team-43 cape	50	Coins	100
+S	Latlink Fastbell	1255	3753	0	Latlink Fastbell
+I	Plant cure	40	Coins	∞
+I	Compost	20	Coins	∞
+I	Rake	6	Coins	∞
+I	Empty plant pot	1	Coins	∞
+I	Watering can	8	Coins	∞
+I	Gardening trowel	12	Coins	∞
+I	Seed dibber	6	Coins	∞
+S	Leagues Reward Shop	3226	3215	0	Leagues Tutor
+I	Twisted banner	750	League Points	∞
+I	Twisted teleport scroll	750	League Points	∞
+I	Twisted blueprints	4000	League Points	∞
+I	Twisted horns	6000	League Points	∞
+I	Twisted Relic Hunter (T1)	1000	League Points	∞
+I	Twisted Relic Hunter (T2)	2500	League Points	∞
+I	Twisted Relic Hunter (T3)	10000	League Points	∞
+I	Trailblazer banner	500	League Points	∞
+I	Trailblazer teleport scroll	1000	League Points	∞
+I	Trailblazer tool ornament kit	1500	League Points	∞
+I	Trailblazer globe	4000	League Points	∞
+I	Trailblazer rug	5000	League Points	∞
+I	Trailblazer graceful ornament kit	6000	League Points	∞
+I	Trailblazer Relic Hunter (T1)	1000	League Points	∞
+I	Trailblazer Relic Hunter (T2)	3000	League Points	∞
+I	Trailblazer Relic Hunter (T3)	15000	League Points	∞
+I	Shattered banner	500	League Points	∞
+I	Shattered teleport scroll	1000	League Points	∞
+I	Shattered relics variety ornament kit	1500	League Points	∞
+I	Shattered relics void ornament kit	6500	League Points	∞
+I	Shattered relics mystic ornament kit	1000	League Points	∞
+I	Shattered cannon ornament kit	4500	League Points	∞
+I	Shattered Relic Hunter (T1)	1000	League Points	∞
+I	Shattered Relic Hunter (T2)	3000	League Points	∞
+I	Shattered Relic Hunter (T3)	15000	League Points	∞
+I	Trailblazer reloaded banner	500	League Points	∞
+I	Trailblazer reloaded home teleport scroll	1000	League Points	∞
+I	Trailblazer reloaded death scroll	3000	League Points	∞
+I	Trailblazer reloaded alchemy scroll	2000	League Points	∞
+I	Trailblazer reloaded vengeance scroll	7000	League Points	∞
+I	Trailblazer reloaded rejuvenation pool scroll	9000	League Points	∞
+I	Trailblazer reloaded blowpipe ornament kit	6000	League Points	∞
+I	Trailblazer reloaded bulwark ornament kit	10000	League Points	∞
+I	Trailblazer Reloaded Relic Hunter (T1)	1000	League Points	∞
+I	Trailblazer Reloaded Relic Hunter (T2)	5000	League Points	∞
+I	Trailblazer Reloaded Relic Hunter (T3)	18000	League Points	∞
+I	Raging echoes banner	500	League Points	∞
+I	Raging Echoes Relic Hunter (T1)	1000	League Points	∞
+I	Raging Echoes Relic Hunter (T2)	5000	League Points	∞
+I	Raging Echoes Relic Hunter (T3)	20000	League Points	∞
+I	Raging echoes spirit tree scroll	6000	League Points	∞
+I	Raging echoes nexus scroll	4000	League Points	∞
+I	Raging echoes rug	500	League Points	∞
+I	Raging echoes curtains	500	League Points	∞
+I	Raging echoes scrying pool scroll	3000	League Points	∞
+I	Raging echoes portal scroll	1000	League Points	∞
+I	Echo home teleport scroll	1000	League Points	∞
+I	Raging echoes death scroll	2000	League Points	∞
+I	Raging echoes astral contact scroll	5000	League Points	∞
+I	Echo ahrim's ornament kit	6000	League Points	∞
+I	Echo virtus ornament kit	8000	League Points	∞
+I	Echo venator bow ornament kit	10000	League Points	∞
+I	Demonic pacts banner	500	League Points	∞
+I	Demonic Pacts Relic Hunter (T1)	1000	League Points	∞
+I	Demonic Pacts Relic Hunter (T2)	5000	League Points	∞
+I	Demonic Pacts Relic Hunter (T3)	20000	League Points	∞
+I	Demonic pacts throne scroll	3000	League Points	∞
+I	Impish ritual scroll	1000	League Points	∞
+I	Impish whistle	8000	League Points	∞
+I	Demonic trident ornament kit	4500	League Points	∞
+I	Demonic axe ornament kit	10000	League Points	∞
+I	Demonic quill	3000	League Points	∞
+I	Demonic skin contract	3000	League Points	∞
+I	Demonic pacts demon butler scroll	4000	League Points	∞
+I	Demonic staff ornament kit	2000	League Points	∞
+S	Leela	3113	3262	0	Leela
+I	Bronze key (Prince Ali Rescue)	15	Coins	∞
+S	Leenz's General Supplies	1808	3726	0	Leenz
+I	Pot	1	Coins	50000
+I	Jug	1	Coins	5
+I	Empty jug pack	154	Coins	6
+I	Bucket	2	Coins	5
+I	Empty bucket pack	550	Coins	15
+I	Bowl	4	Coins	5
+I	Tinderbox	1	Coins	2
+I	Hammer	1	Coins	5
+I	Bronze nails	2	Coins	500
+I	Iron nails	4	Coins	500
+S	Legends Guild General Store	2729	3378	1	Fionella
+I	Swordfish	124	Coins	20
+I	Apple pie	46	Coins	5
+I	Attack potion(3)	18	Coins	3
+I	Steel arrow	18	Coins	500
+S	Legends Guild Shop of Useful Items	2726	3381	2	Siegfried Erkle
+I	Mithril seeds	300	Coins	6
+I	Dusty key	1	Coins	5
+I	Maze key	1	Coins	3
+I	Shield right half	750000	Coins	1
+I	Cape of Legends	675	Coins	3
+S	Leon's Prototype Crossbow	2567	3082	0	Leon
+I	Hunters' crossbow	1300	Coins	2
+S	Leprechaun Larry's Farming Supplies	2825	3685	0	Tool Leprechaun (Larry)
+I	Rake	7	Coins	6
+I	Seed dibber	7	Coins	4
+I	Secateurs	6	Coins	1
+I	Spade	3	Coins	3
+I	Gardening trowel	15	Coins	2
+I	Watering can	10	Coins	2
+I	Compost	26	Coins	2
+I	Compost pack	2600	Coins	10
+I	Plant cure	52	Coins	5
+I	Cocktail glass	1	Coins	523
+I	Rock (elemental)	1	Coins	3
+S	Liliwen	2347	3162	0	Liliwen
+I	Plant cure	40	Coins	∞
+I	Compost	20	Coins	∞
+I	Rake	6	Coins	∞
+I	Empty plant pot	1	Coins	∞
+I	Watering can	8	Coins	∞
+I	Gardening trowel	12	Coins	∞
+I	Seed dibber	6	Coins	∞
+S	Little Munty's Little Shop	1552	3751	0	Munty
+I	Bronze pickaxe	1	Coins	20
+I	Pot	1	Coins	50000
+I	Jug	1	Coins	5
+I	Empty jug pack	154	Coins	4
+I	Bucket	2	Coins	5
+I	Empty bucket pack	550	Coins	15
+I	Bowl	4	Coins	5
+I	Tinderbox	1	Coins	2
+I	Ball of wool	2	Coins	30
+I	Chisel	1	Coins	2
+I	Hammer	1	Coins	5
+S	Little Shop of Horace	1772	3589	0	Horace
+I	Vial of water	2	Coins	60
+I	Water-filled vial pack	251	Coins	30
+I	Pot	1	Coins	30
+I	Jug	1	Coins	5
+I	Empty jug pack	175	Coins	6
+I	Bucket	2	Coins	5
+I	Empty bucket pack	625	Coins	15
+I	Bowl	5	Coins	5
+I	Machete	50	Coins	1
+I	Shears	1	Coins	2
+I	Rope	22	Coins	30
+I	Tinderbox	1	Coins	2
+I	Spade	3	Coins	5
+I	Ball of wool	2	Coins	30
+I	Chisel	1	Coins	2
+I	Hammer	1	Coins	5
+I	Needle	1	Coins	2
+I	Thread	1	Coins	40
+S	Lletya Archery Shop	2326	3166	0	Dalldav
+I	Iron arrow	3	Coins	2000
+I	Steel arrow	15	Coins	500
+I	Mithril arrow	41	Coins	500
+I	Adamant arrow	104	Coins	450
+I	Rune arrow	520	Coins	400
+I	Bronze bolts	1	Coins	1500
+I	Oak shortbow	130	Coins	5
+I	Oak longbow	208	Coins	5
+I	Crossbow	91	Coins	5
+I	Willow shortbow	260	Coins	5
+I	Willow longbow	416	Coins	5
+S	Lletya Food Store	2341	3158	1	Gethin
+I	Bread	15	Coins	10
+I	Lobster	91	Coins	15
+I	Jug of wine	1	Coins	3
+I	Cheese	5	Coins	10
+I	Cake	65	Coins	5
+S	Lletya General Store	2335	3183	0	Eudav
+I	Pot	1	Coins	3
+I	Jug	1	Coins	2
+I	Empty jug pack	182	Coins	5
+I	Shears	1	Coins	2
+I	Bucket	2	Coins	2
+I	Empty bucket pack	650	Coins	10
+I	Tinderbox	1	Coins	2
+I	Chisel	1	Coins	2
+I	Hammer	1	Coins	5
+I	Spade	3	Coins	5
+I	Knife	7	Coins	4
+S	Lletya Seamstress	2326	3178	0	Oronwen
+I	Thread	1	Coins	8
+I	Needle	1	Coins	3
+I	Ball of wool	2	Coins	5
+I	Red dye	6	Coins	10
+I	Yellow dye	6	Coins	10
+I	Blue dye	6	Coins	10
+I	Orange dye	6	Coins	10
+I	Green dye	6	Coins	10
+I	Purple dye	6	Coins	10
+S	Lliann's Wares	3230	6069	0	Lliann
+I	Crystal crown (Ithell)	250000000	Coins	3
+I	Crystal of Ithell	500000	Coins	10
+I	Crystal of Iorwerth	500000	Coins	10
+I	Crystal of Trahaearn	500000	Coins	10
+I	Crystal of Cadarn	500000	Coins	10
+I	Crystal of Crwys	500000	Coins	10
+I	Crystal of Meilyr	500000	Coins	10
+I	Crystal of Hefin	500000	Coins	10
+I	Crystal of Amlodd	500000	Coins	10
+I	Elven boots	10000	Coins	50
+I	Elven gloves	10000	Coins	50
+I	Elven top (yellow)	5000	Coins	100
+I	Elven skirt (yellow)	5000	Coins	100
+I	Elven top (white)	5000	Coins	100
+I	Elven skirt (white)	5000	Coins	100
+I	Elven top (yellow vest)	5000	Coins	100
+I	Elven legwear	5000	Coins	100
+I	Elven top (white vest)	5000	Coins	100
+S	Logava Gricoller's Cooking Supplies	1768	3599	0	Logava
+I	Pie dish	3	Coins	5
+I	Cake tin	10	Coins	5
+I	Bowl	4	Coins	2
+I	Tinderbox	1	Coins	3
+I	Jug	1	Coins	3
+I	Empty jug pack	140	Coins	4
+I	Pot	1	Coins	12
+I	Empty cup	2	Coins	3
+I	Knife	6	Coins	3
+I	Ball of wool	2	Coins	30
+I	Potato	1	Coins	5
+I	Cooking apple	1	Coins	2
+I	Bread	12	Coins	2
+I	Chocolate bar	10	Coins	1
+I	Cheese	4	Coins	3
+I	Pot of flour	10	Coins	8
+S	Lost Property shop	3230	3215	0	Perdu
+I	Ectophial	4600	Coins	∞
+I	Guthix cape	23000	Coins	∞
+I	Zamorak cape	23000	Coins	∞
+I	Saradomin cape	23000	Coins	∞
+I	Book of Balance	12000	Coins	∞
+I	Book of Darkness	14000	Coins	∞
+I	Book of Law	14000	Coins	∞
+I	Book of War	14000	Coins	∞
+I	Holy book	12000	Coins	∞
+I	Unholy book	12000	Coins	∞
+I	Book of the Dead	9500	Coins	∞
+I	Chronicle	500	Coins	∞
+I	Karamja gloves	200	Coins	∞
+I	Ardougne cloak	200	Coins	∞
+I	Falador shield	200	Coins	∞
+I	Fremennik sea boots	200	Coins	∞
+I	Kandarin headgear	200	Coins	∞
+I	Desert amulet	200	Coins	∞
+I	Explorer's ring	200	Coins	∞
+I	Morytania legs	200	Coins	∞
+I	Varrock armour	200	Coins	∞
+I	Wilderness sword	200	Coins	∞
+I	Western banner	200	Coins	∞
+I	Rada's blessing	200	Coins	∞
+I	Ghostly hood	15000	Coins	∞
+I	Ghostly robe (top)	45000	Coins	∞
+I	Ghostly robe (bottom)	43000	Coins	∞
+I	Ghostly gloves	13500	Coins	∞
+I	Ghostly boots	13500	Coins	∞
+I	Ghostly cloak	15000	Coins	∞
+I	Lunar staff	60000	Coins	∞
+I	Lunar helm	22000	Coins	∞
+I	Lunar torso	140000	Coins	∞
+I	Lunar legs	95000	Coins	∞
+I	Lunar gloves	15000	Coins	∞
+I	Lunar boots	15000	Coins	∞
+I	Lunar cape	18000	Coins	∞
+I	Lunar amulet	9000	Coins	∞
+I	Lunar ring	8000	Coins	∞
+I	Barrelchest anchor	290000	Coins	∞
+I	Boots of lightness	9800	Coins	∞
+I	Cape of Legends	1900	Coins	∞
+I	Keris	25000	Coins	∞
+I	Bearhead	10000	Coins	∞
+I	Beacon ring	6000	Coins	∞
+I	Colossal blade	300000	Coins	∞
+I	Dwarven helmet	115000	Coins	∞
+I	Helm of Neitiznot	95000	Coins	∞
+I	Ivandis flail	30000	Coins	∞
+I	Ava's attractor	7000	Coins	∞
+I	Ava's accumulator	7000	Coins	∞
+I	Ava's assembler	7000	Coins	∞
+I	Imbued Guthix cape	250000	Coins	∞
+I	Imbued Zamorak cape	250000	Coins	∞
+I	Imbued Saradomin cape	250000	Coins	∞
+I	Drakan's medallion	30000	Coins	∞
+I	Thread of Elidinis	350000	Coins	∞
+I	Arkan blade	350000	Coins	∞
+S	Louie's Armoured Legs Bazaar	3316	3175	0	Louie Legs
+I	Bronze platelegs	80	Coins	5
+I	Iron platelegs	280	Coins	3
+I	Steel platelegs	1000	Coins	2
+I	Black platelegs	1920	Coins	1
+I	Mithril platelegs	2600	Coins	1
+I	Adamant platelegs	6400	Coins	1
+S	Lovecraft's Tackle	2734	3292	0	Ezekial Lovecraft
+I	Small fishing net	5	Coins	5
+I	Fishing rod	5	Coins	5
+I	Fly fishing rod	5	Coins	5
+I	Harpoon	5	Coins	2
+I	Lobster pot	20	Coins	2
+I	Fishing bait	3	Coins	1500
+I	Bait pack	300	Coins	80
+I	Feather	2	Coins	1000
+I	Feather pack	200	Coins	100
+I	Raw shrimps	5	Coins	0
+I	Raw sardine	10	Coins	200
+I	Raw herring	10	Coins	0
+I	Raw anchovies	15	Coins	0
+I	Raw trout	10	Coins	0
+I	Raw pike	20	Coins	0
+I	Raw salmon	30	Coins	0
+I	Raw tuna	40	Coins	0
+I	Raw lobster	70	Coins	0
+I	Raw swordfish	80	Coins	0
+S	Lowe's Archery Emporium	3236	3425	0	Lowe
+I	Bronze arrow	1	Coins	2000
+I	Iron arrow	3	Coins	1500
+I	Steel arrow	12	Coins	1000
+I	Mithril arrow	32	Coins	800
+I	Adamant arrow	80	Coins	600
+I	Bronze bolts	1	Coins	1500
+I	Shortbow	50	Coins	4
+I	Longbow	80	Coins	4
+I	Oak shortbow	100	Coins	3
+I	Oak longbow	160	Coins	3
+I	Willow shortbow	200	Coins	2
+I	Willow longbow	320	Coins	2
+I	Maple shortbow	400	Coins	1
+I	Maple longbow	640	Coins	1
+I	Crossbow	70	Coins	2
+S	Lucrezia	1360	2923	0	Lucrezia
+I	Ale yeast	25	Coins	∞
+S	Lumbridge General Store	3211	3248	0	Shop keeper (Lumbridge)
+I	Pot	1	Coins	5
+I	Jug	1	Coins	2
+I	Empty jug pack	182	Coins	5
+I	Shears	1	Coins	2
+I	Knife	7	Coins	5
+I	Bucket	2	Coins	3
+I	Empty bucket pack	650	Coins	15
+I	Bowl	5	Coins	2
+I	Cake tin	13	Coins	2
+I	Tinderbox	1	Coins	2
+I	Chisel	1	Coins	2
+I	Spade	3	Coins	5
+I	Hammer	1	Coins	5
+I	Newcomer map	1	Coins	5
+I	Security book	2	Coins	5
+S	Lunami's Axe Shop	1402	3343	0	Lunami
+I	Bronze axe	16	Coins	10
+I	Iron axe	56	Coins	5
+I	Steel axe	200	Coins	3
+I	Mithril axe	520	Coins	2
+I	Adamant axe	1280	Coins	1
+I	Bronze battleaxe	52	Coins	4
+I	Iron battleaxe	182	Coins	3
+I	Steel battleaxe	650	Coins	2
+I	Mithril battleaxe	1690	Coins	1
+I	Adamant battleaxe	4160	Coins	1
+S	Lundail's Arena-side Rune Shop	3109	10357	0	Lundail
+I	Fire rune	4	Coins	200
+I	Water rune	4	Coins	200
+I	Air rune	4	Coins	200
+I	Earth rune	4	Coins	200
+I	Mind rune	3	Coins	140
+I	Body rune	3	Coins	140
+I	Nature rune	180	Coins	250
+I	Chaos rune	90	Coins	250
+I	Law rune	240	Coins	250
+I	Cosmic rune	50	Coins	20
+I	Death rune	180	Coins	250
+I	Fire rune pack	430	Coins	5
+I	Water rune pack	430	Coins	5
+I	Air rune pack	430	Coins	5
+I	Earth rune pack	430	Coins	5
+I	Mind rune pack	330	Coins	4
+I	Chaos rune pack	9950	Coins	3
+S	Lunderwin	2476	4467	0	Lunderwin
+I	Cabbage	10000000000	Coins	N/A
+S	Lyra	3600	3524	0	Lyra
+I	Plant cure	40	Coins	∞
+I	Compost	20	Coins	∞
+I	Rake	6	Coins	∞
+I	Empty plant pot	1	Coins	∞
+I	Watering can	8	Coins	∞
+I	Gardening trowel	12	Coins	∞
+I	Seed dibber	6	Coins	∞
+S	Mac	2791	3540	0	Mac
+I	Max cape	2376000	Coins	∞
+S	Mage Arena Staffs	3084	10336	0	Chamber guardian
+I	Saradomin staff	80000	Coins	5
+I	Guthix staff	80000	Coins	5
+I	Zamorak staff	80000	Coins	5
+S	Magic Guild Store	2595	3089	1	Wizard Sinina
+I	Mystic hat	15000	Coins	1000
+I	Mystic robe top	120000	Coins	1000
+I	Mystic robe bottom	80000	Coins	1000
+I	Mystic gloves	10000	Coins	1000
+I	Mystic boots	10000	Coins	1000
+I	Magic cape	99000	Coins	1
+I	Magic cape(t)	99000	Coins	1
+S	Magic Guild Store	2595	3088	1	Wizard Akutha
+I	Air rune	4	Coins	5000
+I	Water rune	4	Coins	5000
+I	Earth rune	4	Coins	5000
+I	Fire rune	4	Coins	5000
+I	Mind rune	3	Coins	5000
+I	Body rune	3	Coins	5000
+I	Chaos rune	90	Coins	250
+I	Nature rune	180	Coins	250
+I	Death rune	180	Coins	250
+I	Law rune	240	Coins	250
+I	Blood rune	400	Coins	250
+I	Soul rune	300	Coins	250
+I	Fire rune pack	430	Coins	80
+I	Water rune pack	430	Coins	80
+I	Air rune pack	430	Coins	80
+I	Earth rune pack	430	Coins	80
+I	Mind rune pack	330	Coins	40
+I	Chaos rune pack	9950	Coins	35
+I	Battlestaff	7000	Coins	5
+I	Staff of fire	1500	Coins	2
+I	Staff of water	1500	Coins	2
+I	Staff of air	1500	Coins	2
+I	Staff of earth	1500	Coins	2
+S	Mahogany Homes Reward Shop	2991	3366	0	Amy
+I	Supply crate (Mahogany Homes)	25	Points	∞
+I	Amy's saw	500	Points	∞
+I	Plank sack	350	Points	∞
+I	Hosidius blueprints	2000	Points	∞
+I	Carpenter's helmet	400	Points	∞
+I	Carpenter's shirt	800	Points	∞
+I	Carpenter's trousers	600	Points	∞
+I	Carpenter's boots	200	Points	∞
+S	Mairin's Market	3765	10290	0	Mairin
+I	Unidentified small fossil	100	Mermaid's tear	100
+I	Unidentified medium fossil	200	Mermaid's tear	100
+I	Unidentified large fossil	300	Mermaid's tear	100
+I	Merfolk trident	400	Mermaid's tear	10
+I	Seaweed spore	20	Mermaid's tear	100
+I	Bowl of fish	30	Mermaid's tear	100
+S	Makeover Mage	2918	3322	0	Makeover Mage
+I	Yin yang amulet	100	Coins	∞
+S	Malignius Mortifer	2990	3268	0	Malignius Mortifer
+I	Magic secateurs	40000	Coins	∞
+I	Brown apron	0	Coins	∞
+I	Bone seeds	0	Coins	∞
+S	Marcellus	1684	2974	0	Marcellus
+I	Plant cure	40	Coins	∞
+I	Compost	20	Coins	∞
+I	Rake	6	Coins	∞
+I	Empty plant pot	1	Coins	∞
+I	Watering can	8	Coins	∞
+I	Gardening trowel	12	Coins	∞
+I	Seed dibber	6	Coins	∞
+S	Marisi	1735	3555	0	Marisi
+I	Plant cure	40	Coins	∞
+I	Compost	20	Coins	∞
+I	Rake	6	Coins	∞
+I	Empty plant pot	1	Coins	∞
+I	Watering can	8	Coins	∞
+I	Gardening trowel	12	Coins	∞
+I	Seed dibber	6	Coins	∞
+S	Markog	2723	5303	0	Markog
+I	Frogspawn gumbo	10	Coins	∞
+S	Martin Thwait's Lost and Found	3051	4974	0	Martin Thwait
+I	Rope	18	Coins	50
+I	Lockpick	20	Coins	25
+I	Chisel	1	Coins	30
+I	Knife	6	Coins	20
+I	Stethoscope	10	Coins	25
+I	Bronze knife	1	Coins	15
+I	Iron knife	3	Coins	10
+I	Steel knife	11	Coins	5
+I	Bronze claws	15	Coins	3
+I	Iron claws	50	Coins	2
+I	Steel claws	175	Coins	1
+I	Thieving cape	99000	Coins	1
+I	Thieving cape(t)	99000	Coins	1
+S	Martin the Master Gardener	3078	3258	0	Martin the Master Gardener
+I	Farming cape	99000	Coins	∞
+I	Farming cape(t)	99000	Coins	∞
+S	Master Crafter	2935	3283	0	Master Crafter
+I	Crafting cape	99000	Coins	∞
+I	Crafting cape(t)	99000	Coins	∞
+S	Master fisher	2612	3392	0	Master fisher
+I	Fishing cape	99000	Coins	∞
+I	Fishing cape(t)	99000	Coins	∞
+S	Mawnis Burowgar	2335	3799	0	Mawnis Burowgar
+I	Helm of Neitiznot	50000	Coins	∞
+S	Melee combat tutor	3218	3238	0	Melee combat tutor
+I	Defence cape	99000	Coins	∞
+I	Defence cape(t)	99000	Coins	∞
+S	Mernia	3736	10272	1	Mernia
+I	Plant cure	40	Coins	∞
+I	Compost	20	Coins	∞
+I	Rake	6	Coins	∞
+I	Empty plant pot	1	Coins	∞
+I	Watering can	8	Coins	∞
+I	Gardening trowel	12	Coins	∞
+I	Seed dibber	6	Coins	∞
+S	Metarialus	3680	9958	0	Metarialus
+I	Ale yeast	5	ecto-tokens	∞
+S	Miltog's Lamps	2721	5322	0	Miltog
+I	Unlit torch	6	Coins	15
+I	Empty oil lamp	37	Coins	4
+I	Empty oil lantern	180	Coins	2
+I	Bullseye lantern (empty)	600	Coins	1
+I	Mining helmet	900	Coins	1
+I	Tinderbox	1	Coins	10
+I	Light orb	525	Coins	0
+I	Oil lamp	42	Coins	0
+I	Oil lantern	187	Coins	0
+I	Bullseye lantern	630	Coins	0
+S	Mining Guild Mineral Exchange	3018	9723	0	Belona
+I	Mining gloves	40	Unidentified minerals	100
+I	Superior mining gloves	100	Unidentified minerals	100
+I	Soft clay pack	10	Unidentified minerals	1000
+I	Bag full of gems	20	Unidentified minerals	100
+S	Miscellanian Clothes Shop	2509	10251	0	Halla
+I	Fremennik brown shirt	250	Coins	5
+I	Fremennik grey shirt	250	Coins	5
+I	Fremennik beige shirt	250	Coins	5
+I	Fremennik red shirt	250	Coins	5
+I	Fremennik blue shirt	250	Coins	5
+I	Fremennik robe	500	Coins	5
+I	Fremennik skirt	500	Coins	5
+I	Skirt (lilac)	550	Coins	3
+I	Skirt (blue)	625	Coins	3
+I	Trousers (lilac)	700	Coins	3
+I	Trousers (blue)	750	Coins	3
+I	Shorts (yellow)	360	Coins	3
+I	Shorts (blue)	390	Coins	3
+I	Woven top (yellow)	625	Coins	3
+I	Woven top (blue)	650	Coins	3
+I	Shirt (yellow)	600	Coins	3
+I	Shirt (lilac)	625	Coins	3
+S	Miscellanian Food Shop	2520	10252	0	Osvald
+I	Bread	12	Coins	5
+I	Cheese	4	Coins	5
+I	Cabbage	1	Coins	5
+I	Potato	1	Coins	5
+I	Onion	3	Coins	5
+I	Pot of flour	10	Coins	5
+I	Chocolate bar	10	Coins	2
+I	Bucket of milk	6	Coins	5
+S	Miscellanian General Store	2508	10259	0	Finn
+I	Pot	1	Coins	5
+I	Jug	1	Coins	2
+I	Empty jug pack	182	Coins	6
+I	Shears	1	Coins	2
+I	Bucket	2	Coins	3
+I	Empty bucket pack	650	Coins	15
+I	Bowl	5	Coins	2
+I	Cake tin	13	Coins	2
+I	Tinderbox	1	Coins	2
+I	Chisel	1	Coins	2
+I	Hammer	1	Coins	5
+S	Mistrock Mining Supplies	1400	2866	0	Necto
+I	Hammer	1	Coins	6
+I	Chisel	1	Coins	6
+I	Bronze pickaxe	1	Coins	6
+I	Iron pickaxe	140	Coins	6
+I	Steel pickaxe	500	Coins	6
+I	Copper ore	3	Coins	0
+I	Tin ore	3	Coins	0
+I	Iron ore	17	Coins	0
+I	Mithril ore	162	Coins	0
+I	Adamantite ore	400	Coins	0
+I	Runite ore	3200	Coins	0
+I	Coal	45	Coins	0
+I	Silver ore	75	Coins	0
+I	Gold ore	150	Coins	0
+S	Mixology Rewards	1395	9312	0	Supervisor Lalo
+I	Apprentice potion pack	145	Coins	∞
+I	Adept potion pack	200	Coins	∞
+I	Expert potion pack	400	Coins	∞
+I	Prescription goggles	10000000000	Coins	∞
+I	Alchemist labcoat	10000000000	Coins	∞
+I	Alchemist pants	10000000000	Coins	∞
+I	Alchemist gloves	390	Coins	∞
+I	Reagent pouch	10000000000	Coins	∞
+I	Potion storage	10000000000	Coins	∞
+I	Chugging barrel (disassembled)	1000	Coins	∞
+I	Alchemist's amulet	10000000000	Coins	∞
+I	Aldarium	100	Coins	∞
+S	Moon Clan Fine Clothes	2105	3908	0	Rimae Sirsalis
+I	Moonclan helm	1000	Coins	9
+I	Moonclan hat	1000	Coins	10
+I	Moonclan armour	1000	Coins	10
+I	Moonclan skirt	1000	Coins	10
+I	Moonclan gloves	900	Coins	9
+I	Moonclan boots	900	Coins	12
+I	Moonclan cape	200	Coins	15
+I	Needle	1	Coins	50
+I	Thread	1	Coins	500
+S	Moon Clan General Store	2096	3907	0	Melana Moonlander
+I	Pot	1	Coins	5
+I	Jug	1	Coins	2
+I	Empty jug pack	140	Coins	5
+I	Shears	1	Coins	2
+I	Bucket	2	Coins	3
+I	Empty bucket pack	500	Coins	10
+I	Bowl	4	Coins	2
+I	Cake tin	10	Coins	2
+I	Tinderbox	1	Coins	2
+I	Chisel	1	Coins	2
+I	Hammer	1	Coins	5
+I	Security book	2	Coins	5
+S	Moonrise Wines	1360	2922	0	Antonius
+I	Blackbird red	300	Coins	20
+I	Chilhuac red	400	Coins	20
+I	Eclipse red	1000	Coins	20
+I	Ixcoztic white	100	Coins	20
+I	Metztonalli white	500	Coins	20
+I	Tonameyo white	600	Coins	20
+I	Chichilihui rosé	100	Coins	20
+I	Imperial rosé	400	Coins	20
+S	Mount Karuulm Weapon Shop	1298	3797	0	Leke quo Keran
+I	Steel spear	325	Coins	2
+I	Mithril spear	845	Coins	1
+I	Adamant spear	2080	Coins	1
+I	Rune spear	20800	Coins	1
+I	Steel battleaxe	650	Coins	2
+I	Mithril battleaxe	1690	Coins	1
+I	Adamant battleaxe	4160	Coins	1
+I	Steel warhammer	640	Coins	2
+I	Mithril warhammer	1660	Coins	1
+I	Adamant warhammer	4120	Coins	1
+S	Multicannon parts for sale	3011	3452	0	Nulodion
+I	Cannon stand	200625	Coins	5
+I	Cannon base	200625	Coins	5
+I	Cannon furnace	200625	Coins	5
+I	Cannon barrels	200625	Coins	5
+I	Instruction manual	10	Coins	5
+I	Ammo mould	5	Coins	5
+I	Dwarf cannon set	750000	Coins	∞
+S	Myreque's Rest	3493	3230	0	Veliaf Hurtz
+I	Beer	2	Coins	∞
+I	Meat pie	15	Coins	∞
+S	Mysterious Hallowed Goods	2400	5986	0	Mysterious Stranger (Hallowed Sepulchre)
+I	Hallowed crystal shard	1	Hallowed mark	1000
+I	Hallowed token	10	Hallowed mark	100
+I	Hallowed grapple	100	Hallowed mark	100
+I	Hallowed focus	100	Hallowed mark	100
+I	Hallowed symbol	100	Hallowed mark	100
+I	Hallowed hammer	100	Hallowed mark	100
+I	Hallowed ring	250	Hallowed mark	100
+I	Dark dye	300	Hallowed mark	100
+I	Dark acorn	3000	Hallowed mark	100
+I	Hallowed sack	100	Hallowed mark	100
+S	Mysterious Stranger	3673	3222	0	Mysterious Stranger
+I	Escape crystal	75000	Coins	9500
+S	Mythical Cape Store	2451	2848	2	Jack
+I	Mythical cape	10000	Coins	50
+S	Myths' Guild Armoury	2464	2848	2	Erdan
+I	Shield right half	750000	Coins	1
+I	Dragon metal shard	1800000	Coins	1
+S	Myths' Guild Herbalist	2452	2852	1	Primula
+I	Pestle and mortar	4	Coins	5
+I	Vial of water	2	Coins	45
+I	Water-filled vial pack	201	Coins	15
+I	Vial	2	Coins	50
+I	Empty vial pack	200	Coins	10
+I	Eye of newt	3	Coins	50
+I	Eye of newt pack	300	Coins	20
+S	Myths' Guild Weaponry	2464	2848	2	Diana
+I	Dragon dagger	30000	Coins	2
+I	Dragon longsword	100000	Coins	2
+I	Dragon mace	50000	Coins	2
+I	Dragon battleaxe	200000	Coins	2
+S	Nardah General Store	3417	2909	0	Kazemde
+I	Pot	1	Coins	5
+I	Jug	1	Coins	2
+I	Empty jug pack	182	Coins	7
+I	Shears	1	Coins	2
+I	Bucket	2	Coins	3
+I	Empty bucket pack	650	Coins	10
+I	Bowl	5	Coins	2
+I	Cake tin	13	Coins	2
+I	Tinderbox	1	Coins	2
+I	Chisel	1	Coins	2
+I	Hammer	1	Coins	5
+I	Cooked meat	5	Coins	4
+S	Nardah Hunter Shop	3441	2902	0	Artimeus
+I	Butterfly net	24	Coins	5
+I	Butterfly jar	1	Coins	100
+I	Magic box	720	Coins	30
+I	Noose wand	4	Coins	50
+I	Bird snare	6	Coins	50
+I	Box trap	38	Coins	25
+I	Teasing stick	60	Coins	5
+I	Unlit torch	4	Coins	20
+I	Rabbit snare	18	Coins	10
+I	Net trap (item)	38	Coins	25
+I	Bird snare pack	606	Coins	3
+I	Box trap pack	3840	Coins	3
+I	Magic imp box pack	72000	Coins	3
+S	Nardok's Bone Weapons	3322	9608	0	Nardok
+I	Bone club	600	Coins	10
+I	Bone spear	600	Coins	10
+I	Bone dagger	2000	Coins	5
+I	Dorgeshuun crossbow	2000	Coins	5
+I	Bone bolts	3	Coins	1000
+I	Bone bolt pack	350	Coins	80
+S	Nathifa's Bake Stall	3304	2770	0	Nathifa
+I	Bread	12	Coins	10
+I	Cake	50	Coins	3
+I	Chocolate slice	30	Coins	8
+I	Waterskin(4)	30	Coins	50
+S	Ned's Handmade Rope (100% Wool)	3099	3259	0	Ned
+I	Rope	18	Coins	30
+S	Neil's Wilderness Cape Shop	3026	3707	0	Neil
+I	Team-7 cape	50	Coins	100
+I	Team-17 cape	50	Coins	100
+I	Team-27 cape	50	Coins	100
+I	Team-37 cape	50	Coins	100
+I	Team-47 cape	50	Coins	100
+S	Neitiznot supplies	2337	3807	0	Jofridr Mordstatter
+I	Knife	6	Coins	10
+I	Hammer	1	Coins	10
+I	Thread	1	Coins	10
+I	Needle	1	Coins	10
+I	Bronze axe	16	Coins	10
+I	Ball of wool	2	Coins	100
+S	Nemus Retreat	1366	3304	0	Bartender (Nemus Retreat)
+I	Beer	2	Coins	∞
+I	Cider	2	Coins	∞
+I	Sunbeam ale	8	Coins	∞
+I	Axeman's folly	2	Coins	∞
+I	Greenman's ale	2	Coins	∞
+I	Vodka	5	Coins	∞
+I	Rum	5	Coins	∞
+I	Whisky	5	Coins	∞
+I	Gin	5	Coins	∞
+I	Stew	20	Coins	∞
+S	Nigel	3245	3200	0	Nigel
+I	Deadman's chest	1	Blood money	∞
+I	Deadman's legs	1	Blood money	∞
+I	Deadman's cape	1	Blood money	∞
+S	Nikkie	1242	3757	0	Nikkie
+I	Plant cure	40	Coins	∞
+I	Compost	20	Coins	∞
+I	Rake	6	Coins	∞
+I	Empty plant pot	1	Coins	∞
+I	Watering can	8	Coins	∞
+I	Gardening trowel	12	Coins	∞
+I	Seed dibber	6	Coins	∞
+S	Nulodion	3012	3452	0	Nulodion
+I	Dwarf cannon set	750000	Coins	∞
+S	Nurmof's Pickaxe Shop	2998	9845	0	Nurmof
+I	Bronze pickaxe	1	Coins	6
+I	Iron pickaxe	140	Coins	5
+I	Steel pickaxe	500	Coins	4
+I	Mithril pickaxe	1300	Coins	3
+I	Adamant pickaxe	3200	Coins	2
+I	Rune pickaxe	32000	Coins	1
+S	Obli's General Store	2825	2959	0	Obli
+I	Tinderbox	1	Coins	2
+I	Vial	3	Coins	10
+I	Empty vial pack	300	Coins	100
+I	Pestle and mortar	6	Coins	3
+I	Pot	1	Coins	3
+I	Bronze axe	24	Coins	3
+I	Bronze pickaxe	1	Coins	2
+I	Iron axe	84	Coins	5
+I	Leather body	31	Coins	12
+I	Leather gloves	9	Coins	10
+I	Leather boots	9	Coins	10
+I	Cooked meat	6	Coins	2
+I	Bread	18	Coins	10
+I	Bronze bar	12	Coins	10
+I	Spade	4	Coins	10
+I	Candle	4	Coins	10
+I	Unlit torch	6	Coins	10
+I	Chisel	1	Coins	10
+I	Hammer	1	Coins	10
+I	Papyrus	15	Coins	50
+I	Charcoal	67	Coins	50
+I	Vial of water	3	Coins	50
+I	Water-filled vial pack	301	Coins	50
+I	Machete	60	Coins	50
+I	Rope	27	Coins	10
+S	Olaf the Bard	2673	3684	0	Olaf the Bard
+I	Music cape	99000	Coins	∞
+I	Music cape(t)	99000	Coins	∞
+S	Old Man Ral's Supplies	3607	3208	0	Old Man Ral
+I	Silver sickle	175	Coins	∞
+I	Silver sickle (b)	250	Coins	∞
+I	Rod of Ivandis (10)	1000	Coins	∞
+I	Ivandis flail	20000	Coins	∞
+I	Blisterwood flail	40000	Coins	∞
+I	Blisterwood sickle	20000	Coins	∞
+S	Oneiromancer	2151	3868	0	Oneiromancer
+I	Lunar helm	15000	Coins	∞
+I	Lunar torso	120000	Coins	∞
+I	Lunar legs	80000	Coins	∞
+I	Lunar cape	12000	Coins	∞
+I	Lunar gloves	10000	Coins	∞
+I	Lunar boots	10000	Coins	∞
+I	Lunar amulet	4000	Coins	∞
+I	Lunar ring	2000	Coins	∞
+I	Lunar staff	30000	Coins	∞
+S	Oobapohk's Javelin Store	2775	2778	0	Oobapohk
+I	Bronze javelin	4	Coins	500
+I	Iron javelin	6	Coins	500
+I	Steel javelin	24	Coins	500
+I	Mithril javelin	64	Coins	500
+I	Adamant javelin	160	Coins	500
+I	Rune javelin	400	Coins	500
+S	Ore seller.&#91;sic&#93;	1936	4966	0	Ordan
+I	Copper ore	4	Coins	100
+I	Tin ore	4	Coins	100
+I	Iron ore	25	Coins	100
+I	Mithril ore	243	Coins	100
+I	Silver ore	112	Coins	100
+I	Gold ore	225	Coins	100
+I	Coal	67	Coins	100
+S	Ore store	2397	3798	0	Hring Hring
+I	Copper ore	3	Coins	20
+I	Tin ore	3	Coins	10
+I	Iron ore	18	Coins	10
+I	Silver ore	82	Coins	5
+I	Coal	49	Coins	10
+I	Gold ore	165	Coins	5
+I	Mithril ore	178	Coins	0
+I	Adamantite ore	440	Coins	0
+S	Osman	3286	3180	0	Osman
+I	Bronze key (Prince Ali Rescue)	15	Coins	∞
+I	Keris	20000	Coins	∞
+S	Oswallt	3292	6100	0	Oswallt
+I	Plant cure	40	Coins	∞
+I	Compost	20	Coins	∞
+I	Rake	6	Coins	∞
+I	Empty plant pot	1	Coins	∞
+I	Watering can	8	Coins	∞
+I	Gardening trowel	12	Coins	∞
+I	Seed dibber	6	Coins	∞
+S	Outer Fortis General Store	1720	3060	0	Shopkeeper (Outer Fortis)
+I	Chisel	1	Coins	5
+I	Spade	3	Coins	5
+I	Hammer	1	Coins	5
+I	Knife	7	Coins	5
+I	Tinderbox	1	Coins	5
+I	Needle	1	Coins	5
+I	Thread	1	Coins	30
+I	Rope	23	Coins	10
+I	Pot	1	Coins	15
+I	Jug	1	Coins	15
+I	Bucket	2	Coins	15
+I	Bowl	5	Coins	15
+I	Cake tin	13	Coins	15
+I	Empty jug pack	182	Coins	5
+I	Empty bucket pack	650	Coins	5
+S	Oziach	3070	3518	0	Oziach
+I	Rune platebody	84500	Coins	2
+I	Green d'hide body	10140	Coins	2
+I	Anti-dragon shield	26	Coins	35
+S	Paramaya Inn	2861	2998	1	Kaleb Paramaya
+I	Jug of wine	1	Coins	∞
+I	Beer	2	Coins	∞
+I	Paramaya ticket	35	Coins	∞
+S	Pellem's Fur Store	1565	3034	0	Pellem
+I	Thread	1	Coins	100
+I	Needle	1	Coins	3
+I	Fur	13	Coins	3
+I	Bear fur	13	Coins	3
+I	Grey wolf fur	65	Coins	3
+I	Jaguar fur	104	Coins	2
+I	Fox fur	13	Coins	0
+I	Moonlight antelope fur	13	Coins	0
+I	Sunlight antelope fur	13	Coins	0
+I	Polar kebbit fur	13	Coins	0
+I	Common kebbit fur	15	Coins	0
+I	Feldip weasel fur	18	Coins	0
+I	Desert devil fur	22	Coins	0
+I	Tatty larupia fur	78	Coins	0
+I	Larupia fur	104	Coins	0
+I	Tatty graahk fur	117	Coins	0
+I	Graahk fur	156	Coins	0
+I	Tatty kyatt fur	156	Coins	0
+I	Kyatt fur	208	Coins	0
+I	Mixed hide base	11700	Coins	10
+S	Pelters' Veg Stall	3228	3411	0	Tramp (pillory)
+I	Rotten tomato	1	Coins	2000
+S	Perry's Chop-chop Shop	1652	3498	0	Perry
+I	Bronze axe	51	Coins	4
+I	Iron axe	179	Coins	3
+I	Steel axe	640	Coins	2
+I	Mithril axe	1664	Coins	1
+I	Adamant axe	4096	Coins	1
+I	Rune axe	40960	Coins	1
+I	Tinderbox	3	Coins	2
+S	Petrified Pete's Ore Shop	3817	3810	0	Petrified Pete
+I	Iron ore	30	Volcanic Mine points	∞
+I	Silver ore	55	Volcanic Mine points	∞
+I	Coal	60	Volcanic Mine points	∞
+I	Gold ore	150	Volcanic Mine points	∞
+I	Mithril ore	150	Volcanic Mine points	∞
+I	Adamantite ore	300	Volcanic Mine points	∞
+I	Runite ore	855	Volcanic Mine points	∞
+I	Volcanic ash	40	Volcanic Mine points	∞
+I	Calcite	70	Volcanic Mine points	∞
+I	Pyrophosphite	70	Volcanic Mine points	∞
+I	Volcanic mine teleport	200	Volcanic Mine points	∞
+I	Heat-proof vessel	10000	Volcanic Mine points	∞
+I	Ash covered tome	40000	Volcanic Mine points	∞
+I	Ore pack (Volcanic Mine)	4000	Volcanic Mine points	∞
+I	Prospector helmet#Volcanic Mine	26000	Volcanic Mine points	∞
+I	Prospector jacket#Volcanic Mine	39000	Volcanic Mine points	∞
+I	Prospector legs#Volcanic Mine	34000	Volcanic Mine points	∞
+I	Prospector boots#Volcanic Mine	21000	Volcanic Mine points	∞
+S	Picaria's Fishing Shop	1560	2960	0	Picaria
+I	Small fishing net	5	Coins	5
+I	Big fishing net	20	Coins	5
+I	Fishing rod	5	Coins	5
+I	Fly fishing rod	5	Coins	5
+I	Harpoon	5	Coins	5
+I	Lobster pot	20	Coins	5
+I	Fishing bait	3	Coins	1000
+I	Bait pack	300	Coins	100
+I	Feather	2	Coins	1000
+I	Feather pack	200	Coins	100
+I	Raw sardine	10	Coins	10
+I	Raw herring	10	Coins	10
+I	Raw mackerel	15	Coins	10
+I	Raw cod	10	Coins	10
+I	Raw tuna	40	Coins	10
+I	Raw bass	40	Coins	6
+I	Raw swordfish	80	Coins	4
+I	Raw lobster	70	Coins	4
+S	Pickaxe-Is-Mine	2925	10212	0	Tati
+I	Bronze pickaxe	1	Coins	6
+I	Steel pickaxe	650	Coins	4
+I	Mithril pickaxe	1690	Coins	3
+I	Adamant pickaxe	4160	Coins	2
+I	Rune pickaxe	41600	Coins	1
+S	Pie Shop	3143	3447	0	Romily Weaklax
+I	Pie recipe book	5	Coins	50
+I	Redberry pie	12	Coins	5
+I	Meat pie	15	Coins	4
+I	Mud pie	54	Coins	0
+I	Apple pie	30	Coins	3
+I	Garden pie	24	Coins	2
+I	Fish pie	100	Coins	1
+I	Admiral pie	310	Coins	0
+I	Wild pie	182	Coins	0
+I	Summer pie	140	Coins	0
+S	Pollnivneach general store	3358	2988	0	Market seller
+I	Pot	1	Coins	3
+I	Jug	1	Coins	2
+I	Empty jug pack	140	Coins	5
+I	Waterskin(3)	27	Coins	20
+I	Desert shirt	40	Coins	3
+I	Desert boots	20	Coins	2
+I	Bucket	2	Coins	12
+I	Empty bucket pack	500	Coins	15
+I	Fake beard	1	Coins	11
+I	Kharidian headpiece	1	Coins	12
+I	Cheese	4	Coins	5
+I	Lime	2	Coins	5
+I	Orange	2	Coins	5
+I	Tomato	4	Coins	5
+I	Jug of water	1	Coins	5
+I	Bowl of water	4	Coins	7
+I	Bucket of water	6	Coins	8
+S	Port Phasmatys General Store	3660	3477	0	Ghost shopkeeper
+I	Pot	1	Coins	100
+I	Bucket	2	Coins	100
+I	Empty bucket pack	650	Coins	15
+I	Shears	1	Coins	2
+I	Jug	1	Coins	2
+I	Empty jug pack	182	Coins	5
+I	Tinderbox	1	Coins	2
+I	Chisel	1	Coins	2
+I	Hammer	1	Coins	5
+S	Port Roberts Cannonball Stall	1867	3296	0	Iron Bill
+I	Bronze cannonball	5	Coins	10000
+I	Iron cannonball	10	Coins	10000
+I	Steel cannonball	12	Coins	0
+I	Mithril cannonball	150	Coins	8000
+I	Adamant cannonball	450	Coins	0
+I	Rune cannonball	3500	Coins	0
+S	Port Roberts Fish Stall	1861	3292	0	Gregory
+I	Raw shrimps	5	Coins	10
+I	Raw sardine	10	Coins	10
+I	Raw herring	10	Coins	10
+I	Raw anchovies	15	Coins	10
+I	Raw mackerel	15	Coins	10
+I	Raw trout	10	Coins	10
+I	Raw cod	10	Coins	10
+I	Raw pike	20	Coins	10
+I	Raw salmon	30	Coins	10
+I	Raw tuna	40	Coins	10
+I	Raw lobster	70	Coins	6
+I	Raw bass	40	Coins	6
+I	Raw swordfish	80	Coins	4
+I	Raw shark	170	Coins	0
+S	Port Roberts Fur Stall	1871	3292	0	Perdie
+I	Bear fur	12	Coins	5
+I	Grey wolf fur	60	Coins	5
+I	Jaguar fur	96	Coins	2
+I	Fox fur	12	Coins	0
+I	Polar kebbit fur	12	Coins	0
+I	Common kebbit fur	14	Coins	0
+I	Feldip weasel fur	16	Coins	0
+I	Desert devil fur	20	Coins	0
+I	Tatty larupia fur	72	Coins	0
+I	Larupia fur	96	Coins	0
+I	Tatty graahk fur	108	Coins	0
+I	Graahk fur	144	Coins	0
+I	Tatty kyatt fur	144	Coins	0
+I	Kyatt fur	192	Coins	0
+S	Port Roberts Gem Stall	1870	3288	0	Eleanor
+I	Sapphire	375	Coins	2
+I	Emerald	750	Coins	1
+I	Ruby	1500	Coins	1
+I	Diamond	2000	Coins	0
+S	Port Roberts General Store	1888	3298	0	Shopkeeper (Port Roberts)
+I	Chisel	1	Coins	5
+I	Spade	3	Coins	5
+I	Hammer	1	Coins	5
+I	Knife	7	Coins	5
+I	Tinderbox	1	Coins	5
+I	Fishing rod	6	Coins	5
+I	Rope	23	Coins	10
+I	Swamp paste	39	Coins	10
+I	Pestle and mortar	5	Coins	5
+I	Needle	1	Coins	5
+I	Thread	1	Coins	30
+I	Pot	1	Coins	15
+I	Jug	1	Coins	15
+I	Bucket	2	Coins	15
+I	Vial	2	Coins	50
+I	Empty jug pack	182	Coins	5
+I	Empty bucket pack	650	Coins	5
+I	Empty vial pack	260	Coins	5
+S	Port Roberts Ore Stall	1861	3295	0	Delf
+I	Copper ore	3	Coins	20
+I	Tin ore	3	Coins	20
+I	Iron ore	18	Coins	10
+I	Silver ore	82	Coins	5
+I	Lead ore	38	Coins	5
+I	Gold ore	165	Coins	5
+I	Mithril ore	178	Coins	0
+I	Adamantite ore	440	Coins	0
+I	Nickel ore	440	Coins	0
+I	Runite ore	3520	Coins	0
+I	Coal	49	Coins	10
+S	Port Roberts Silk Stall	1871	3295	0	Doria
+I	Needle	1	Coins	5
+I	Thread	1	Coins	100
+I	Silk	15	Coins	50
+S	Port Roberts Silver Stall	1867	3288	0	Amos
+I	Silver ore	75	Coins	10
+I	Silver bar	150	Coins	5
+I	Unstrung symbol	200	Coins	5
+S	Port Roberts Spice Stall	1863	3288	0	Samir
+I	Knife	6	Coins	5
+I	Spice	230	Coins	20
+I	Garlic	3	Coins	10
+S	Port Roberts Veg Stall	1864	3297	0	Marla (Port Roberts)
+I	Potato	1	Coins	10
+I	Onion	3	Coins	10
+I	Cabbage	1	Coins	10
+I	Tomato	4	Coins	10
+I	Sweetcorn	9	Coins	0
+I	Potato seed	2	Coins	20
+I	Onion seed	3	Coins	10
+I	Cabbage seed	3	Coins	5
+I	Tomato seed	4	Coins	0
+I	Sweetcorn seed	8	Coins	0
+S	Praistan Ebola	2800	3205	0	Praistan Ebola
+I	Plant cure	40	Coins	∞
+I	Compost	20	Coins	∞
+I	Rake	6	Coins	∞
+I	Empty plant pot	1	Coins	∞
+I	Watering can	8	Coins	∞
+I	Gardening trowel	12	Coins	∞
+I	Seed dibber	6	Coins	∞
+S	Prifddinas Foodstuffs	3274	6106	0	Derwen (elf)
+I	Pot of flour	10	Coins	3
+I	Bucket of milk	6	Coins	3
+I	Cod	10	Coins	3
+I	Trout	10	Coins	3
+I	Bass	40	Coins	3
+I	Stew	20	Coins	10
+I	Bread	12	Coins	10
+I	Cheese	4	Coins	10
+I	Potato	1	Coins	10
+I	Onion	3	Coins	10
+I	Tomato	4	Coins	10
+I	Cabbage	1	Coins	10
+I	Banana	2	Coins	10
+I	Redberries	3	Coins	3
+I	Raw beef	1	Coins	5
+I	Raw chicken	1	Coins	5
+I	Chocolate bar	10	Coins	10
+I	Cake	50	Coins	5
+S	Prifddinas Gem Stall	3276	6100	0	Glenda
+I	Sapphire	250	Coins	2
+I	Emerald	500	Coins	1
+I	Ruby	1000	Coins	1
+I	Diamond	2000	Coins	0
+S	Prifddinas General Store	3302	6052	0	Gwallter
+I	Pot	1	Coins	3
+I	Jug	1	Coins	2
+I	Bucket	2	Coins	2
+I	Bowl	5	Coins	2
+I	Cake tin	13	Coins	2
+I	Vial	2	Coins	10
+I	Tinderbox	1	Coins	2
+I	Chisel	1	Coins	2
+I	Spade	3	Coins	2
+I	Hammer	1	Coins	5
+I	Knife	7	Coins	2
+I	Empty vial pack	260	Coins	100
+I	Papyrus	13	Coins	50
+I	Empty jug pack	182	Coins	5
+I	Empty bucket pack	650	Coins	15
+S	Prifddinas Herbal Supplies	3286	6119	0	Llio
+I	Pestle and mortar	4	Coins	3
+I	Vial	2	Coins	100
+I	Vial of water	2	Coins	100
+I	Eye of newt	3	Coins	50
+I	Empty vial pack	200	Coins	100
+I	Water-filled vial pack	201	Coins	100
+I	Eye of newt pack	300	Coins	50
+S	Prifddinas Silver Stall	3282	6098	0	Osian
+I	Unstrung symbol	200	Coins	2
+I	Silver ore	75	Coins	1
+I	Silver bar	150	Coins	1
+S	Prifddinas Spice Stall	3278	6094	0	Caerwyn
+I	Spice	230	Coins	1
+I	Knife	6	Coins	1
+I	Garlic	3	Coins	2
+S	Prifddinas' Seamstress	3222	6075	0	Nia
+I	Thread	1	Coins	100
+I	Needle	1	Coins	3
+I	Ball of wool	2	Coins	20
+I	Silk	39	Coins	5
+I	Fur	13	Coins	3
+I	Bear fur	13	Coins	3
+I	Grey wolf fur	65	Coins	3
+I	Polar kebbit fur	13	Coins	0
+I	Common kebbit fur	15	Coins	0
+I	Feldip weasel fur	18	Coins	0
+I	Desert devil fur	22	Coins	0
+I	Tatty larupia fur	78	Coins	0
+I	Larupia fur	104	Coins	0
+I	Tatty graahk fur	117	Coins	0
+I	Graahk fur	156	Coins	0
+I	Tatty kyatt fur	156	Coins	0
+I	Kyatt fur	208	Coins	0
+S	Prissy Scilla	2436	3415	0	Prissy Scilla
+I	Plant cure	40	Coins	∞
+I	Compost	20	Coins	∞
+I	Rake	6	Coins	∞
+I	Empty plant pot	1	Coins	∞
+I	Watering can	8	Coins	∞
+I	Gardening trowel	12	Coins	∞
+I	Seed dibber	6	Coins	∞
+S	Proselyte Temple Knight Armoury	2997	3373	0	Sir Tiffy Cashien
+I	Initiate sallet	6000	Coins	30
+I	Initiate cuisse	8000	Coins	30
+I	Initiate hauberk	10000	Coins	30
+I	Initiate harness m	20000	Coins	30
+I	Proselyte sallet	8000	Coins	30
+I	Proselyte cuisse	10000	Coins	30
+I	Proselyte hauberk	12000	Coins	30
+I	Proselyte tasset	10000	Coins	30
+I	Proselyte harness m	25000	Coins	30
+I	Proselyte harness f	25000	Coins	30
+S	Prospector Percy's Nugget Shop	3116	9698	0	Prospector Percy
+I	Prospector helmet#Motherlode Mine	40	Golden nugget	100
+I	Prospector jacket#Motherlode Mine	60	Golden nugget	100
+I	Prospector legs#Motherlode Mine	50	Golden nugget	100
+I	Prospector boots#Motherlode Mine	30	Golden nugget	100
+I	Coal bag	100	Golden nugget	1
+I	Gem bag	100	Golden nugget	1
+I	Soft clay pack	10	Golden nugget	1000
+I	Bag full of gems	40	Golden nugget	100
+S	PvP Arena Rewards	3314	3243	0	Mubariz
+I	Blighted surge sack	10	Points	∞
+I	Scroll of Imbuing	200	Points	∞
+S	Quality Armour Shop	2827	10199	0	Saro
+I	Steel chainbody	975	Coins	3
+I	Mithril chainbody	2535	Coins	1
+I	Black chainbody	1872	Coins	1
+I	Adamant chainbody	6240	Coins	1
+I	Steel med helm	390	Coins	3
+I	Mithril med helm	1014	Coins	1
+I	Adamant med helm	2496	Coins	1
+I	Steel sq shield	780	Coins	0
+I	Black kiteshield	2121	Coins	0
+S	Quality Weapons Shop	2827	10230	0	Santiri
+I	Steel battleaxe	845	Coins	2
+I	Mithril battleaxe	2197	Coins	1
+I	Mithril sword	1098	Coins	3
+I	Adamant sword	2704	Coins	2
+I	Steel scimitar	520	Coins	2
+I	Black longsword	1248	Coins	2
+I	Rune longsword	41600	Coins	1
+I	Maple shortbow	520	Coins	1
+I	Maple longbow	832	Coins	1
+I	Mithril arrow	41	Coins	800
+I	Adamant arrow	104	Coins	600
+S	Quartermaster's Stores	2195	3140	0	Quartermaster
+I	Pot	1	Coins	5
+I	Jug	1	Coins	2
+I	Empty jug pack	182	Coins	5
+I	Shears	1	Coins	3
+I	Tinderbox	1	Coins	3
+I	Bread	15	Coins	10
+I	Bronze halberd	104	Coins	10
+I	Iron halberd	364	Coins	10
+I	Steel halberd	1300	Coins	10
+I	Black halberd	2496	Coins	10
+I	Mithril halberd	3380	Coins	7
+I	Adamant halberd	8320	Coins	7
+I	Rune halberd	83200	Coins	7
+I	Dragon halberd	325000	Coins	5
+S	Quetzacalli Gorge General Store	1517	3224	0	Shopkeeper (Quetzacalli Gorge)
+I	Bronze pickaxe	1	Coins	5
+I	Bronze axe	20	Coins	5
+I	Chisel	1	Coins	5
+I	Spade	3	Coins	5
+I	Hammer	1	Coins	5
+I	Knife	7	Coins	5
+I	Shears	1	Coins	5
+I	Tinderbox	1	Coins	5
+I	Pestle and mortar	5	Coins	5
+I	Unlit torch	5	Coins	5
+I	Rope	23	Coins	10
+I	Charcoal	58	Coins	10
+I	Papyrus	13	Coins	10
+I	Pot	1	Coins	15
+I	Bucket	2	Coins	15
+S	Raetul and Co's Cloth Store	3316	2789	0	Raetul
+I	Linen (Icthlarin's Little Helper)	30	Coins	14
+I	Desert shirt	40	Coins	12
+I	Desert robe	40	Coins	9
+I	Silk	30	Coins	7
+I	Thread	1	Coins	10
+I	Needle	1	Coins	15
+I	Desert boots	20	Coins	20
+S	Ranael's Super Skirt Store	3316	3163	0	Ranael
+I	Bronze plateskirt	80	Coins	5
+I	Iron plateskirt	280	Coins	3
+I	Steel plateskirt	1000	Coins	2
+I	Black plateskirt	1920	Coins	1
+I	Mithril plateskirt	2600	Coins	1
+I	Adamant plateskirt	6400	Coins	1
+S	Ranging Guild Ticket Exchange	2658	3431	0	Ticket Merchant
+I	Barb bolttips	140	Archery ticket	∞
+I	Studded body	150	Archery ticket	∞
+I	Rune arrow	2000	Archery ticket	∞
+I	Coif	100	Archery ticket	∞
+I	Green d'hide body	2400	Archery ticket	∞
+I	Adamant javelin	2000	Archery ticket	∞
+S	Raqueel	1758	5483	0	Raqueel
+I	Beer	5	Coins	∞
+S	Rasolo	2535	3431	0	Rasolo
+I	Ring of visibility	0	Coins	∞
+S	Rasolo the Wandering Merchant	2535	3429	0	Rasolo
+I	Spinach roll	2	Coins	5
+I	Cocktail guide	4	Coins	1
+I	Blue hat	320	Coins	1
+I	Dragon dagger	60000	Coins	1
+I	Newcomer map	2	Coins	20
+I	Bailing bucket	20	Coins	1
+I	Swamp paste	60	Coins	1
+I	Poison (item)	2	Coins	1
+I	Papyrus	20	Coins	5
+I	Machete	80	Coins	1
+I	Holy mould	10	Coins	1
+I	Sickle mould	20	Coins	1
+I	Waterskin(4)	60	Coins	1
+I	Desert boots	40	Coins	1
+I	Shantay pass (item)	10	Coins	1
+I	Black toy horsey	200	Coins	10
+I	Sample bottle	10	Coins	10
+I	Grey boots	1000	Coins	1
+I	Greenman's ale	4	Coins	1
+I	Fremennik pink cloak	500	Coins	1
+I	Keg of beer	500	Coins	20
+I	Flamtaer hammer	20000	Coins	1
+I	Olive oil(3)	40	Coins	2
+I	Limestone brick	40	Coins	2
+I	Instruction manual	20	Coins	1
+S	Rat & Bat	3749	3298	0	Carl
+I	Bloody bracer	99	Coins	∞
+S	Ratpit Bar	1935	4689	0	Rauborn
+I	Beer	2	Coins	∞
+I	Stew	20	Coins	∞
+S	Ratpit Bar	2987	9655	0	Barman (Ratpit bar)
+I	Beer	2	Coins	∞
+I	Stew	20	Coins	∞
+S	Ratpit Bar	2908	5077	0	Barman (Ratpit bar)
+I	Beer	2	Coins	∞
+I	Stew	20	Coins	∞
+S	Razmire Builders Merchants	3489	3296	0	Razmire Keelgan
+I	Limestone	10	Coins	1000
+I	Limestone brick	21	Coins	1000
+I	Timber beam	1	Coins	1000
+I	Swamp paste	31	Coins	1000
+I	Plank	1	Coins	10
+S	Razmire General Store	3489	3297	0	Razmire Keelgan
+I	Pot	1	Coins	3
+I	Jug	1	Coins	2
+I	Empty jug pack	182	Coins	5
+I	Shears	1	Coins	2
+I	Bucket	2	Coins	2
+I	Empty bucket pack	650	Coins	10
+I	Tinderbox	1	Coins	2
+I	Chisel	1	Coins	2
+I	Hammer	1	Coins	5
+I	Olive oil(4)	28	Coins	150
+I	Olive oil pack	3471	Coins	20
+I	Vial of water	2	Coins	100
+I	Water-filled vial pack	261	Coins	50
+I	Pot of flour	13	Coins	100
+I	Flamtaer hammer	13000	Coins	3
+S	Regath's Wares	1718	3726	0	Regath
+I	Vial of water	2	Coins	30
+I	Water-filled vial pack	281	Coins	25
+I	Rope	25	Coins	10
+I	Fire rune	5	Coins	500
+I	Water rune	5	Coins	500
+I	Air rune	5	Coins	500
+I	Earth rune	5	Coins	500
+I	Mind rune	4	Coins	300
+I	Body rune	4	Coins	300
+I	Blood rune	560	Coins	50
+I	Soul rune	420	Coins	50
+I	Fire rune pack	602	Coins	80
+I	Water rune pack	602	Coins	80
+I	Air rune pack	602	Coins	80
+I	Earth rune pack	602	Coins	80
+I	Mind rune pack	462	Coins	40
+I	Blue wizard hat	2	Coins	1
+I	Wizard hat	2	Coins	1
+I	Eye of newt	4	Coins	300
+I	Eye of newt pack	420	Coins	60
+S	Reldak's Leather Armour	2723	5314	0	Reldak
+I	Frog-leather body	1000	Coins	50
+I	Frog-leather chaps	900	Coins	50
+I	Frog-leather boots	200	Coins	50
+S	Rellekka Longhall Bar	2659	3672	0	Thora the Barkeep
+I	Beer	2	Coins	50
+I	Beer tankard	26	Coins	50
+I	Keg of beer	325	Coins	20
+S	Rhazien	2593	3864	0	Rhazien
+I	Plant cure	40	Coins	∞
+I	Compost	20	Coins	∞
+I	Rake	6	Coins	∞
+I	Empty plant pot	1	Coins	∞
+I	Watering can	8	Coins	∞
+I	Gardening trowel	12	Coins	∞
+I	Seed dibber	6	Coins	∞
+S	Rhonen	2666	3525	0	Rhonen
+I	Plant cure	40	Coins	∞
+I	Compost	20	Coins	∞
+I	Rake	6	Coins	∞
+I	Empty plant pot	1	Coins	∞
+I	Watering can	8	Coins	∞
+I	Gardening trowel	12	Coins	∞
+I	Seed dibber	6	Coins	∞
+S	Richard's Farming shop	2646	3360	0	Richard (Ardougne)
+I	Rake	6	Coins	500
+I	Seed dibber	6	Coins	500
+I	Secateurs	5	Coins	500
+I	Spade	3	Coins	500
+I	Gardening trowel	12	Coins	500
+I	Watering can	8	Coins	500
+I	Filled plant pot	1	Coins	500
+I	Plant pot pack	100	Coins	30
+I	Compost	20	Coins	500
+I	Compost pack	2000	Coins	10
+I	Empty sack	1	Coins	500
+I	Sack pack	100	Coins	30
+I	Basket	1	Coins	500
+I	Basket pack	100	Coins	30
+I	Bucket	2	Coins	100
+I	Empty bucket pack	500	Coins	15
+I	Potato	1	Coins	0
+I	Onion	3	Coins	0
+I	Cabbage	1	Coins	0
+I	Tomato	4	Coins	0
+I	Sweetcorn	9	Coins	0
+I	Strawberry	17	Coins	0
+I	Watermelon	48	Coins	0
+I	Hammerstone hops	4	Coins	0
+I	Asgarnian hops	5	Coins	0
+I	Yanillian hops	7	Coins	0
+I	Krandorian hops	10	Coins	0
+I	Wildblood hops	15	Coins	0
+I	Jute fibre	6	Coins	0
+I	Barley	4	Coins	0
+I	Plant cure	40	Coins	100
+S	Richard's Wilderness Cape Shop	3099	3518	0	Richard (merchant)
+I	Team-6 cape	50	Coins	100
+I	Team-16 cape	50	Coins	100
+I	Team-26 cape	50	Coins	100
+I	Team-36 cape	50	Coins	100
+I	Team-46 cape	50	Coins	100
+S	Rick (Wizards' Tower)	3108	3163	1	Rick (Wizards' Tower)
+I	Escape crystal	75000	Coins	∞
+S	Rimmington General Store	2949	3215	0	Shop keeper (Rimmington)
+I	Pot	1	Coins	5
+I	Jug	1	Coins	2
+I	Empty jug pack	182	Coins	5
+I	Shears	1	Coins	2
+I	Bucket	2	Coins	3
+I	Empty bucket pack	650	Coins	15
+I	Bowl	5	Coins	2
+I	Cake tin	13	Coins	2
+I	Tinderbox	1	Coins	2
+I	Chisel	1	Coins	2
+I	Hammer	1	Coins	5
+I	Newcomer map	1	Coins	5
+I	Security book	2	Coins	5
+S	Rising Sun Inn	2958	3372	0	Kaylee
+I	Asgarnian ale	3	Coins	∞
+I	Wizard's mind bomb	3	Coins	∞
+I	Dwarven stout	3	Coins	∞
+S	Rohak	2865	9877	0	Rohak
+I	Dwarven rock cake	100	Coins	∞
+S	Rok's Chocs Box	3430	2914	0	Rokuh
+I	Choc-ice	30	Coins	30
+I	Chocolate bar	10	Coins	25
+S	Rommik's Crafty Supplies	2949	3206	0	Rommik
+I	Chisel	1	Coins	2
+I	Ring mould	5	Coins	4
+I	Necklace mould	5	Coins	2
+I	Amulet mould	5	Coins	2
+I	Needle	1	Coins	3
+I	Thread	1	Coins	100
+I	Holy mould	5	Coins	3
+I	Sickle mould	10	Coins	6
+I	Tiara mould	100	Coins	10
+I	Bolt mould	25	Coins	10
+I	Bracelet mould	5	Coins	5
+S	Rosie	1232	3732	0	Rosie
+I	Plant cure	40	Coins	∞
+I	Compost	20	Coins	∞
+I	Rake	6	Coins	∞
+I	Empty plant pot	1	Coins	∞
+I	Watering can	8	Coins	∞
+I	Gardening trowel	12	Coins	∞
+I	Seed dibber	6	Coins	∞
+S	Rufus' Meat Emporium	3507	3495	0	Rufus
+I	Raw beef	1	Coins	10
+I	Raw chicken	1	Coins	10
+I	Raw rat meat	1	Coins	10
+I	Raw bear meat	1	Coins	10
+I	Raw trout	13	Coins	5
+I	Raw pike	26	Coins	5
+I	Raw salmon	39	Coins	5
+I	Raw shark	221	Coins	1
+S	Rupert the Beard	2968	3468	2	Rupert the Beard
+I	Dwarven helmet	60000	Coins	∞
+S	Rusty Anchor Inn	3050	3258	0	Bartender (Rusty Anchor Inn)
+I	Beer	2	Coins	∞
+S	Salius' Armour Shop	1620	3291	0	Salius
+I	Bronze platebody	160	Coins	6
+I	Iron platebody	560	Coins	5
+I	Steel platebody	2000	Coins	5
+I	Mithril platebody	5200	Coins	4
+I	Adamant platebody	16640	Coins	3
+S	Salvager Overlook General Store	1628	3288	0	Shopkeeper (Salvager Overlook)
+I	Bronze pickaxe	1	Coins	5
+I	Bronze axe	20	Coins	5
+I	Chisel	1	Coins	5
+I	Spade	3	Coins	5
+I	Hammer	1	Coins	5
+I	Knife	7	Coins	5
+I	Tinderbox	1	Coins	5
+I	Fishing rod	6	Coins	5
+I	Rope	23	Coins	10
+I	Swamp paste	39	Coins	10
+I	Pot	1	Coins	15
+I	Jug	1	Coins	15
+I	Bucket	2	Coins	15
+I	Vial	2	Coins	50
+I	Empty jug pack	182	Coins	5
+I	Empty bucket pack	650	Coins	5
+I	Empty vial pack	260	Coins	5
+S	Sam's Wilderness Cape Shop	3049	3630	0	Sam (merchant)
+I	Team-10 cape	50	Coins	100
+I	Team-20 cape	50	Coins	100
+I	Team-30 cape	50	Coins	100
+I	Team-40 cape	50	Coins	100
+I	Team-50 cape	50	Coins	100
+S	Sarah's Farming shop	3038	3294	0	Sarah
+I	Rake	6	Coins	500
+I	Seed dibber	6	Coins	500
+I	Secateurs	5	Coins	500
+I	Spade	3	Coins	500
+I	Gardening trowel	12	Coins	500
+I	Watering can	8	Coins	500
+I	Filled plant pot	1	Coins	500
+I	Plant pot pack	100	Coins	30
+I	Compost	20	Coins	500
+I	Compost pack	2000	Coins	10
+I	Empty sack	1	Coins	500
+I	Sack pack	100	Coins	30
+I	Basket	1	Coins	500
+I	Basket pack	100	Coins	30
+I	Bucket	2	Coins	100
+I	Empty bucket pack	500	Coins	15
+I	Potato	1	Coins	0
+I	Onion	3	Coins	0
+I	Cabbage	1	Coins	0
+I	Tomato	4	Coins	0
+I	Sweetcorn	9	Coins	0
+I	Strawberry	17	Coins	0
+I	Watermelon	48	Coins	0
+I	Hammerstone hops	4	Coins	0
+I	Asgarnian hops	5	Coins	0
+I	Yanillian hops	7	Coins	0
+I	Krandorian hops	10	Coins	0
+I	Wildblood hops	15	Coins	0
+I	Jute fibre	6	Coins	0
+I	Barley	4	Coins	0
+I	Plant cure	40	Coins	100
+S	Scavvo's Rune Store	3192	3354	1	Scavvo
+I	Rune plateskirt	64000	Coins	1
+I	Rune platelegs	64000	Coins	1
+I	Rune mace	14400	Coins	1
+I	Rune chainbody	50000	Coins	1
+I	Rune longsword	32000	Coins	1
+I	Rune sword	20800	Coins	1
+I	Green d'hide chaps	3900	Coins	1
+I	Green d'hide vambraces	2500	Coins	1
+I	Coif	200	Coins	2
+S	Seb's Shipyard Supplies	2082	2722	0	Shipwright Seb
+I	Bronze nails	2	Coins	1000
+I	Iron nails	5	Coins	1000
+I	Swamp paste	39	Coins	2500
+I	Repair kit	195	Coins	500
+I	Facility bottle (empty)	75000	Coins	100
+S	Sebamo's Sublime Staffs	1412	3344	0	Sebamo
+I	Staff	15	Coins	5
+I	Magic staff	200	Coins	5
+I	Staff of air	1500	Coins	2
+I	Staff of water	1500	Coins	2
+I	Staff of earth	1500	Coins	2
+I	Staff of fire	1500	Coins	2
+S	Seddu's Adventurer's Store	3405	2925	0	Seddu
+I	Rune plateskirt	60800	Coins	1
+I	Rune platelegs	60800	Coins	1
+I	Rune chainbody	47500	Coins	1
+I	Green d'hide chaps	3705	Coins	1
+I	Green d'hide vambraces	2375	Coins	1
+I	Steel kiteshield	807	Coins	1
+I	Black med helm	547	Coins	1
+S	Selena	2578	3103	0	Selena
+I	Plant cure	40	Coins	∞
+I	Compost	20	Coins	∞
+I	Rake	6	Coins	∞
+I	Empty plant pot	1	Coins	∞
+I	Watering can	8	Coins	∞
+I	Gardening trowel	12	Coins	∞
+I	Seed dibber	6	Coins	∞
+S	Selim	3293	3180	0	Selim
+I	Keris	20000	Coins	∞
+I	Keris partisan	60000	Coins	∞
+S	Seravel	2870	2974	1	Seravel
+I	Ship ticket	25	Coins	∞
+S	Shantay Pass Shop	3304	3123	0	Shantay
+I	Waterskin(4)	30	Coins	100
+I	Waterskin(0)	15	Coins	100
+I	Jug of water	1	Coins	10
+I	Bowl of water	4	Coins	10
+I	Bucket of water	6	Coins	10
+I	Knife	6	Coins	10
+I	Desert shirt	40	Coins	10
+I	Desert robe	40	Coins	10
+I	Desert boots	20	Coins	10
+I	Bronze bar	8	Coins	10
+I	Feather	2	Coins	500
+I	Feather pack	200	Coins	50
+I	Hammer	1	Coins	10
+I	Empty bucket pack	500	Coins	15
+I	Bucket	2	Coins	0
+I	Bowl	4	Coins	0
+I	Jug	1	Coins	0
+I	Empty jug pack	140	Coins	0
+I	Shantay pass (item)	5	Coins	500
+I	Rope	18	Coins	20
+S	Shayzien Styles	1510	3593	0	Robyn
+I	White apron	2	Coins	3
+I	Leather body	21	Coins	12
+I	Leather gloves	6	Coins	10
+I	Leather boots	6	Coins	10
+I	Brown apron	2	Coins	1
+I	Black skirt	2	Coins	3
+I	Blue skirt	2	Coins	2
+I	Red cape	2	Coins	4
+I	Black cape	7	Coins	4
+I	Blue cape	32	Coins	4
+I	Yellow cape	32	Coins	4
+I	Chef's hat	2	Coins	4
+S	Shield master	2656	3428	0	Shield master
+I	Leather shields flyer	0	Coins	∞
+S	Shields of Mistrock	1386	2869	0	Ichta
+I	Bronze sq shield	48	Coins	6
+I	Bronze kiteshield	68	Coins	5
+I	Iron sq shield	168	Coins	5
+I	Iron kiteshield	238	Coins	4
+I	Steel sq shield	600	Coins	4
+I	Steel kiteshield	850	Coins	3
+I	Mithril sq shield	1560	Coins	3
+I	Mithril kiteshield	2210	Coins	2
+I	Adamant sq shield	3840	Coins	2
+I	Adamant kiteshield	5440	Coins	1
+S	Shop of Distaste	3383	3270	0	Fadli
+I	Rotten tomato	1	Coins	2000
+S	Sian's Ranged Weaponry	3306	6074	0	Sian
+I	Mithril arrow	32	Coins	700
+I	Adamant arrow	80	Coins	600
+I	Rune arrow	400	Coins	500
+I	Maple shortbow	400	Coins	5
+I	Maple longbow	640	Coins	5
+I	Yew shortbow	800	Coins	5
+I	Yew longbow	1280	Coins	5
+S	Sigmund the Merchant	2642	3678	0	Sigmund the Merchant
+I	Tinderbox	1	Coins	2
+I	Rope	23	Coins	10
+I	Pestle and mortar	5	Coins	3
+I	Pot	1	Coins	3
+I	Cooked meat	5	Coins	2
+I	Bread	15	Coins	10
+I	Spade	3	Coins	10
+I	Candle	3	Coins	10
+I	Chisel	1	Coins	10
+I	Hammer	1	Coins	10
+I	Vial	2	Coins	10
+I	Empty vial pack	260	Coins	10
+I	Vial of water	2	Coins	10
+I	Water-filled vial pack	261	Coins	10
+I	Bucket	2	Coins	10
+I	Empty bucket pack	650	Coins	15
+I	Bucket of water	7	Coins	10
+I	Egg	5	Coins	10
+I	Potato	1	Coins	10
+I	Cabbage	1	Coins	10
+S	Silk merchant	2657	3302	0	Silk merchant
+I	Silk	10000000000	Coins	N/A
+S	Silk trader	3298	3202	0	Silk trader
+I	Silk	2	Coins	∞
+S	Silver Cog Silver Stall	2888	10196	0	Gulldamar
+I	Unstrung symbol	300	Coins	2
+I	Silver ore	112	Coins	1
+I	Silver bar	225	Coins	1
+S	Simon's Wilderness Cape Shop	3239	3609	0	Simon
+I	Team-9 cape	50	Coins	100
+I	Team-19 cape	50	Coins	100
+I	Team-29 cape	50	Coins	100
+I	Team-39 cape	50	Coins	100
+I	Team-49 cape	50	Coins	100
+S	Sir Renitee	2982	3341	1	Sir Renitee
+I	Small map (item)	1000	Coins	∞
+I	Medium map (item)	1000	Coins	∞
+I	Large map (item)	1000	Coins	∞
+I	Elena portrait	1000	Coins	∞
+I	Arthur portrait	1000	Coins	∞
+I	Misc. portrait	1000	Coins	∞
+I	Keldagrim portrait	1000	Coins	∞
+I	Lumbridge painting	2000	Coins	∞
+I	Desert painting	2000	Coins	∞
+I	Morytania painting	2000	Coins	∞
+I	Karamja painting	2000	Coins	∞
+I	Isafdar painting	2000	Coins	∞
+S	Skulgrimen's Battle Gear	2665	3693	0	Skulgrimen
+I	Bronze warhammer	61	Coins	5
+I	Iron warhammer	224	Coins	4
+I	Steel warhammer	832	Coins	3
+I	Black warhammer	1274	Coins	3
+I	Mithril warhammer	2158	Coins	2
+I	Adamant warhammer	5356	Coins	1
+I	Rune warhammer	53950	Coins	0
+I	Archer helm	78000	Coins	5
+I	Berserker helm	78000	Coins	5
+I	Warrior helm	78000	Coins	5
+I	Farseer helm	78000	Coins	5
+S	Slayer Equipment	2931	3537	0	Konar quo Maten
+I	Enchanted gem	1	Coins	50
+I	Mirror shield	5000	Coins	100
+I	Leaf-bladed spear	31000	Coins	50
+I	Broad arrows	60	Coins	50000
+I	Bag of salt	10	Coins	5000
+I	Rock hammer	500	Coins	50
+I	Facemask	200	Coins	50
+I	Earmuffs	200	Coins	50
+I	Nose peg	200	Coins	50
+I	Slayer's staff	21000	Coins	50
+I	Spiny helmet	650	Coins	50
+I	Fishing explosive	60	Coins	5000
+I	Ice cooler	1	Coins	5000
+I	Slayer gloves	200	Coins	50
+I	Unlit bug lantern	130	Coins	50
+I	Insulated boots	200	Coins	50
+I	Fungicide spray	300	Coins	50
+I	Fungicide	10	Coins	5000
+I	Witchwood icon	900	Coins	50
+I	Slayer bell	150	Coins	50
+I	Broad arrowheads	55	Coins	3000
+I	Broad arrowhead pack	5500	Coins	800
+I	Unfinished broad bolts	55	Coins	5000
+I	Unfinished broad bolt pack	5500	Coins	1000
+I	Rock thrownhammer	200	Coins	5000
+I	Boots of stone	200	Coins	50
+I	Reinforced goggles	100	Coins	50
+S	Slayer Rewards	2931	3537	0	Konar quo Maten
+I	Slayer ring (8)	75	Points	∞
+I	Broad bolts	35	Points	∞
+I	Broad arrows	35	Points	∞
+I	Herb sack	750	Points	∞
+I	Rune pouch	750	Points	∞
+I	Looting bag	10	Points	∞
+S	Sloane	2856	3553	1	Sloane
+I	Strength cape	99000	Coins	∞
+I	Strength cape(t)	99000	Coins	∞
+S	Smith	3689	2955	0	Smith
+I	Harry's cutlass	1040	Coins	∞
+I	Lucky cutlass	2560	Coins	∞
+I	Rapier	25600	Coins	∞
+S	Smithing Smith's Shop	3689	2954	0	Smith
+I	Bronze scimitar	32	Coins	5
+I	Iron scimitar	112	Coins	3
+I	Steel scimitar	400	Coins	2
+I	Mithril scimitar	1040	Coins	1
+I	Hammer	1	Coins	5
+S	Solihib's Food Stall	2770	2789	0	Solihib
+I	Monkey nuts	3	Coins	200
+I	Banana	2	Coins	1000
+I	Banana stew	300	Coins	10
+I	Monkey bar	50	Coins	20
+S	Sophanem Guard	2767	5133	0	Sophanem Guard
+I	Tinderbox	50	Coins	∞
+I	Unlit torch	200	Coins	∞
+S	Soul Wars Reward Shop	2214	2858	0	Nomad
+I	Soul cape	2500	Zeal Tokens	∞
+I	Ectoplasmator	250	Zeal Tokens	∞
+I	Spoils of War	30	Zeal Tokens	∞
+I	Blighted entangle sack	10	Zeal Tokens	∞
+I	Blighted teleport spell sack	10	Zeal Tokens	∞
+I	Blighted vengeance sack	10	Zeal Tokens	∞
+I	Blighted ancient ice sack	10	Zeal Tokens	∞
+I	Blighted manta ray	10	Zeal Tokens	∞
+I	Blighted anglerfish	10	Zeal Tokens	∞
+I	Blighted karambwan	10	Zeal Tokens	∞
+I	Blighted super restore(4)	10	Zeal Tokens	∞
+S	Speedrunning Reward Shop	3220	3426	0	Eliza
+I	Adventurer's outfit (tier 1)	200	Speedrun Points	∞
+I	Adventurer's outfit (tier 2)	600	Speedrun Points	∞
+I	Adventurer's outfit (tier 3)	1800	Speedrun Points	∞
+I	Giant stopwatch	1200	Speedrun Points	∞
+I	Speedy teleport scroll	600	Speedrun Points	∞
+S	Spike's Spikes	1775	3059	0	Spike
+I	Bronze mace	23	Coins	5
+I	Iron mace	81	Coins	4
+I	Steel mace	292	Coins	4
+I	Mithril mace	760	Coins	3
+I	Adamant mace	1872	Coins	2
+I	Rune mace	18720	Coins	1
+S	Spirit of Scorpius	2464	3227	0	Spirit of Scorpius
+I	Unholy mould	0	Coins	∞
+S	Squirrel (Fossil Island)	3706	3838	0	Squirrel (Fossil Island)
+I	Plant cure	40	Coins	∞
+I	Compost	20	Coins	∞
+I	Rake	6	Coins	∞
+I	Empty plant pot	1	Coins	∞
+I	Watering can	8	Coins	∞
+I	Gardening trowel	12	Coins	∞
+I	Seed dibber	6	Coins	∞
+S	Stankers	2581	3486	0	Stankers
+I	Poison chalice	0	Coins	∞
+S	Stick Your Ore Inn	1390	2857	0	Bartender (Stick Your Ore Inn)
+I	Beer	2	Coins	∞
+I	Cider	2	Coins	∞
+I	Dwarven stout	2	Coins	∞
+I	Wizard's mind bomb	2	Coins	∞
+I	Steamforge brew	8	Coins	∞
+I	Whisky	5	Coins	∞
+I	Sun-shine	100	Coins	∞
+I	Jug of wine	1	Coins	∞
+I	Stew	20	Coins	∞
+I	Meat pie	15	Coins	∞
+S	Stonecutter Supplies	1742	2977	0	Metla
+I	Bronze pickaxe	1	Coins	5
+I	Limestone brick	26	Coins	100
+I	Marble block	325000	Coins	30
+I	Gold leaf	130000	Coins	40
+I	Magic stone	975000	Coins	10
+I	Condensed gold	10400000	Coins	10
+S	Sulisal's Superb Fishing Store	1376	3038	0	Sulisal
+I	Small fishing net	5	Coins	5
+I	Big fishing net	20	Coins	5
+I	Fishing rod	5	Coins	5
+I	Fly fishing rod	5	Coins	5
+I	Harpoon	5	Coins	5
+I	Lobster pot	20	Coins	5
+I	Fishing bait	3	Coins	1000
+I	Bait pack	300	Coins	100
+I	Feather	2	Coins	1000
+I	Feather pack	200	Coins	100
+I	Raw sardine	10	Coins	10
+I	Raw herring	10	Coins	10
+I	Raw mackerel	15	Coins	10
+I	Raw cod	10	Coins	10
+I	Raw tuna	40	Coins	10
+I	Raw bass	40	Coins	6
+I	Raw swordfish	80	Coins	4
+I	Raw lobster	70	Coins	4
+S	Sunlight's Sanctum	1379	2928	0	Bartender (Sunlight's Sanctum)
+I	Beer	2	Coins	∞
+I	Cider	2	Coins	∞
+I	Sunbeam ale	8	Coins	∞
+I	Greenman's ale	2	Coins	∞
+I	Vodka	5	Coins	∞
+I	Rum	5	Coins	∞
+I	Whisky	5	Coins	∞
+I	Gin	5	Coins	∞
+I	Brandy	5	Coins	∞
+I	Moon-lite	15	Coins	∞
+I	Jug of wine	1	Coins	∞
+I	Metztonalli white	500	Coins	∞
+I	Blackbird red	300	Coins	∞
+I	Eclipse red	1000	Coins	∞
+I	Cup of tea	10	Coins	∞
+I	Stew	20	Coins	∞
+I	Meat pie	15	Coins	∞
+S	Sunset Coast General Store	1517	2986	0	Shopkeeper (Sunset Coast)
+I	Bronze pickaxe	1	Coins	5
+I	Bronze axe	20	Coins	5
+I	Chisel	1	Coins	5
+I	Spade	3	Coins	5
+I	Hammer	1	Coins	5
+I	Knife	7	Coins	5
+I	Tinderbox	1	Coins	5
+I	Pestle and mortar	5	Coins	5
+I	Unlit torch	5	Coins	5
+I	Rope	23	Coins	10
+I	Charcoal	58	Coins	10
+I	Papyrus	13	Coins	10
+I	Pot	1	Coins	15
+I	Bucket	2	Coins	15
+S	Supplies's Supplies	2566	2255	0	Mr Supplies Jnr
+I	Pot	1	Coins	5
+I	Jug	1	Coins	2
+I	Empty jug pack	182	Coins	5
+I	Shears	1	Coins	2
+I	Bucket	2	Coins	3
+I	Empty bucket pack	650	Coins	15
+I	Thread	1	Coins	20
+I	Needle	1	Coins	5
+I	Tinderbox	1	Coins	2
+I	Chisel	1	Coins	2
+I	Hammer	1	Coins	5
+I	Rope	23	Coins	5
+I	Goat horn	15	Coins	0
+I	Wyrmscraig goat fur	13	Coins	0
+S	Surgeon General Tafani	3372	3276	0	Surgeon General Tafani
+I	Hitpoints cape	99000	Coins	∞
+I	Hitpoints cape(t)	99000	Coins	∞
+S	Tal Teklan General Store	1242	3110	0	Shopkeeper (Tal Teklan)
+I	Bronze pickaxe	1	Coins	5
+I	Bronze axe	20	Coins	5
+I	Chisel	1	Coins	5
+I	Spade	3	Coins	5
+I	Hammer	1	Coins	5
+I	Knife	7	Coins	5
+I	Tinderbox	1	Coins	5
+I	Pestle and mortar	5	Coins	5
+I	Needle	1	Coins	5
+I	Thread	1	Coins	30
+I	Rope	23	Coins	10
+I	Pot	1	Coins	15
+I	Jug	1	Coins	15
+I	Bucket	2	Coins	15
+I	Bowl	5	Coins	15
+I	Vial	2	Coins	15
+S	Tal Teklan Rune Shop	1212	3120	0	Teicuh
+I	Air rune	4	Coins	5000
+I	Water rune	4	Coins	5000
+I	Earth rune	4	Coins	5000
+I	Fire rune	4	Coins	5000
+I	Mind rune	3	Coins	3000
+I	Body rune	3	Coins	3000
+I	Chaos rune	90	Coins	250
+I	Death rune	180	Coins	100
+I	Cosmic rune	50	Coins	30
+I	Nature rune	180	Coins	30
+I	Air rune pack	430	Coins	100
+I	Water rune pack	430	Coins	100
+I	Earth rune pack	430	Coins	100
+I	Fire rune pack	430	Coins	100
+I	Mind rune pack	330	Coins	50
+I	Chaos rune pack	9950	Coins	30
+S	Tamayu's Spear Stall	2801	3058	0	Tamayu
+I	Bronze spear(kp)	26	Coins	10
+I	Iron spear(kp)	91	Coins	10
+I	Steel spear(kp)	325	Coins	5
+I	Mithril spear(kp)	845	Coins	2
+I	Adamant spear(kp)	2080	Coins	0
+I	Rune spear(kp)	20800	Coins	0
+I	Cleaning cloth	60	Coins	10
+S	Taria	2941	3222	0	Taria
+I	Plant cure	40	Coins	∞
+I	Compost	20	Coins	∞
+I	Rake	6	Coins	∞
+I	Empty plant pot	1	Coins	∞
+I	Watering can	8	Coins	∞
+I	Gardening trowel	12	Coins	∞
+I	Seed dibber	6	Coins	∞
+S	Taylor	1247	3754	0	Taylor
+I	Plant cure	40	Coins	∞
+I	Compost	20	Coins	∞
+I	Rake	6	Coins	∞
+I	Empty plant pot	1	Coins	∞
+I	Watering can	8	Coins	∞
+I	Gardening trowel	12	Coins	∞
+I	Seed dibber	6	Coins	∞
+S	Temple Supplies	3620	9476	0	Apprentice Felix
+I	Hat of the Eye	400	Abyssal pearls	100
+I	Robe top of the Eye	350	Abyssal pearls	100
+I	Robe bottoms of the Eye	350	Abyssal pearls	100
+I	Boots of the Eye	250	Abyssal pearls	100
+I	Ring of the elements	400	Abyssal pearls	100
+I	Guardian's eye	3000	Abyssal pearls	100
+I	Abyssal lantern	1500	Abyssal pearls	100
+I	Abyssal needle	750	Abyssal pearls	100
+I	Air talisman	10	Abyssal pearls	100
+I	Water talisman	10	Abyssal pearls	100
+I	Earth talisman	10	Abyssal pearls	100
+I	Fire talisman	10	Abyssal pearls	100
+I	Mind talisman	10	Abyssal pearls	100
+I	Body talisman	10	Abyssal pearls	100
+I	Chaos talisman	30	Abyssal pearls	100
+I	Cosmic talisman	30	Abyssal pearls	100
+I	Nature talisman	50	Abyssal pearls	100
+I	Law talisman	50	Abyssal pearls	100
+I	Death talisman	80	Abyssal pearls	100
+I	Blood talisman	100	Abyssal pearls	100
+S	Tenzing	2821	3556	0	Tenzing
+I	Climbing boots	12	Coins	∞
+S	The Asp & Snake Bar	3359	2958	0	Ali the Barman
+I	Beer	2	Coins	83
+I	Whisky	5	Coins	10
+I	Jug of wine	1	Coins	13
+I	Vodka	5	Coins	5
+I	Brandy	5	Coins	4
+I	Grog	3	Coins	12
+S	The Big Heist Lodge	3159	2984	0	Bartender (The Big Heist Lodge)
+I	Bandit's brew	650	Coins	10
+S	The Cloak and Stagger	1551	3563	0	Oswald
+I	Beer	2	Coins	10
+I	Lizardkicker	6	Coins	10
+I	Jug of wine	1	Coins	5
+I	Cup of tea	10	Coins	5
+I	Stew	20	Coins	5
+S	The Crypt	3600	3392	0	Despoina Callidra
+I	Blood pint	2	Coins	∞
+S	The Deeper Lode	1569	3759	0	Fuggy
+I	Beer	2	Coins	10
+I	Dwarven stout	2	Coins	1
+I	Dragon bitter	2	Coins	3
+I	Kebab	4	Coins	2
+I	Beer glass	2	Coins	0
+S	The Esoterican Arms	2529	10257	0	Runa
+I	Beer	2	Coins	10
+I	Cider	2	Coins	10
+I	Jug of wine	1	Coins	5
+I	Cup of tea	10	Coins	5
+S	The Flaming Arrow	1713	3116	0	Bartender (The Flaming Arrow)
+I	Beer	2	Coins	∞
+I	Cider	2	Coins	∞
+I	Sunbeam ale	8	Coins	∞
+I	Vodka	5	Coins	∞
+I	Rum	5	Coins	∞
+I	Whisky	5	Coins	∞
+I	Gin	5	Coins	∞
+I	Moon-lite	15	Coins	∞
+I	Jug of wine	1	Coins	∞
+I	Metztonalli white	500	Coins	∞
+I	Blackbird red	300	Coins	∞
+I	Eclipse red	1000	Coins	∞
+I	Cup of tea	10	Coins	∞
+I	Stew	20	Coins	∞
+I	Meat pie	15	Coins	∞
+S	The Golden Field	1743	3617	0	Richard (Hosidius)
+I	Beer	2	Coins	10
+I	Cider	2	Coins	10
+I	Jug of wine	1	Coins	5
+I	Cup of tea	10	Coins	5
+S	The King's Inn	1226	3118	0	King (Tal Teklan)
+I	Beer	2	Coins	∞
+I	Cider	2	Coins	∞
+I	Sunbeam ale	8	Coins	∞
+I	Vodka	5	Coins	∞
+I	Rum	5	Coins	∞
+I	Whisky	5	Coins	∞
+I	Gin	5	Coins	∞
+I	Moon-lite	15	Coins	∞
+I	Jug of wine	1	Coins	∞
+I	Metztonalli white	500	Coins	∞
+I	Blackbird red	300	Coins	∞
+I	Eclipse red	1000	Coins	∞
+I	Cup of tea	10	Coins	∞
+I	Stew	20	Coins	∞
+I	Meat pie	15	Coins	∞
+S	The Legless Faun	1768	3683	0	Bast
+I	Beer	4	Coins	∞
+S	The Lighthouse Store	2509	3641	1	Jossik
+I	Rope	19	Coins	10
+I	Hammer	1	Coins	10
+I	Chisel	1	Coins	10
+I	Knife	6	Coins	10
+I	Spade	3	Coins	10
+I	Tinderbox	1	Coins	5
+I	Candle	3	Coins	10
+I	Poison (item)	1	Coins	10
+I	Pestle and mortar	4	Coins	10
+I	Pot	1	Coins	10
+I	Bucket	2	Coins	5
+I	Empty bucket pack	550	Coins	15
+I	Bucket of water	6	Coins	5
+I	Jug	1	Coins	5
+I	Empty jug pack	154	Coins	8
+I	Jug of water	1	Coins	5
+I	Vial	2	Coins	100
+I	Empty vial pack	220	Coins	100
+I	Vial of water	2	Coins	100
+I	Water-filled vial pack	221	Coins	100
+I	Gin	5	Coins	5
+I	Brandy	5	Coins	5
+I	Vodka	5	Coins	5
+I	Grog	3	Coins	5
+I	Whisky	5	Coins	5
+I	Greenman's ale	2	Coins	5
+I	Dwarven stout	2	Coins	5
+I	Wizard's mind bomb	2	Coins	5
+S	The Lost Pickaxe	1431	9584	1	Bartender (The Lost Pickaxe)
+I	Beer	2	Coins	∞
+I	Cider	2	Coins	∞
+I	Dwarven stout	2	Coins	∞
+I	Wizard's mind bomb	2	Coins	∞
+I	Steamforge brew	8	Coins	∞
+I	Whisky	5	Coins	∞
+I	Sun-shine	100	Coins	∞
+I	Jug of wine	1	Coins	∞
+I	Stew	20	Coins	∞
+I	Meat pie	15	Coins	∞
+S	The Old Nite	3152	3644	0	Camarst
+I	Beer	2	Coins	∞
+S	The Other Inn	3668	2981	0	Mama
+I	Beer	2	Coins	3
+I	Braindeath 'rum'	30	Coins	3
+I	Jug of wine	1	Coins	1
+I	Stew	20	Coins	5
+S	The Rolling Tide	1892	3315	0	Bartender (Port Roberts)
+I	Beer	2	Coins	∞
+I	Cider	2	Coins	∞
+I	Grog	3	Coins	∞
+I	Vodka	5	Coins	∞
+I	Rum	5	Coins	∞
+I	Whisky	5	Coins	∞
+I	Gin	5	Coins	∞
+I	Stew	20	Coins	∞
+I	Meat pie	15	Coins	∞
+S	The Runic Emporium	1426	9568	1	Nahta
+I	Air rune	4	Coins	5000
+I	Water rune	4	Coins	5000
+I	Earth rune	4	Coins	5000
+I	Fire rune	4	Coins	5000
+I	Mind rune	3	Coins	3000
+I	Body rune	3	Coins	3000
+I	Chaos rune	90	Coins	1000
+I	Nature rune	180	Coins	500
+I	Law rune	240	Coins	500
+I	Death rune	180	Coins	500
+I	Air rune pack	430	Coins	100
+I	Water rune pack	430	Coins	100
+I	Earth rune pack	430	Coins	100
+I	Fire rune pack	430	Coins	100
+I	Mind rune pack	330	Coins	50
+I	Chaos rune pack	9950	Coins	30
+S	The Sheared Ram	3229	3240	0	Bartender (Sheared Ram)
+I	Beer	2	Coins	∞
+S	The Shrimp and Parrot	2794	3188	0	Alfonse the waiter
+I	Herring	13	Coins	5
+I	Cod	13	Coins	5
+I	Tuna	52	Coins	5
+I	Lobster	91	Coins	3
+I	Swordfish	104	Coins	2
+I	Cooked karambwan	325	Coins	3
+S	The Spice Is Right	3284	2756	0	Embalmer
+I	Pot	1	Coins	5
+I	Gnome spice	3	Coins	10
+I	Curry leaf	28	Coins	0
+I	Pile of salt	30	Coins	0
+I	Bucket of sap	45	Coins	0
+I	Antipoison(3)	432	Coins	20
+S	The Toad and Chicken	2910	3540	0	Sam (barmaid)
+I	Asgarnian ale	2	Coins	12
+I	Wizard's mind bomb	2	Coins	12
+I	Dwarven stout	2	Coins	12
+S	The Windbreaker	1501	3226	0	Bartender (The Windbreaker)
+I	Beer	2	Coins	∞
+I	Cider	2	Coins	∞
+I	Sunbeam ale	8	Coins	∞
+I	Vodka	5	Coins	∞
+I	Rum	5	Coins	∞
+I	Whisky	5	Coins	∞
+I	Gin	5	Coins	∞
+I	Moon-lite	15	Coins	∞
+I	Jug of wine	1	Coins	∞
+I	Stew	20	Coins	∞
+I	Meat pie	15	Coins	∞
+S	Thessalia	3206	3416	0	Thessalia
+I	Frog mask	1	Frog token	∞
+I	Royal frog costume	1	Frog token	∞
+I	Lamp	1	Frog token	∞
+S	Thessalia's Fine Clothes	3206	3415	0	Thessalia
+I	White apron	2	Coins	3
+I	Leather body	21	Coins	12
+I	Leather gloves	6	Coins	10
+I	Leather boots	6	Coins	10
+I	Brown apron	2	Coins	1
+I	Pink skirt	2	Coins	5
+I	Black skirt	2	Coins	3
+I	Blue skirt	2	Coins	2
+I	Red cape	2	Coins	4
+I	Silk	30	Coins	5
+I	Priest gown (bottom)	5	Coins	3
+I	Priest gown (top)	5	Coins	3
+S	Thirus Urkar's Fine Dynamite Store	1518	3834	0	Thirus
+I	Dynamite	575	Coins	2000
+I	Tinderbox	11	Coins	2
+S	Thurgo	3001	3144	0	Thurgo
+I	Smithing cape	99000	Coins	∞
+I	Smithing cape(t)	99000	Coins	∞
+S	Thurid's Brain Buckets	1516	2994	0	Thurid
+I	Bronze med helm	31	Coins	5
+I	Iron med helm	109	Coins	4
+I	Steel med helm	390	Coins	4
+I	Mithril med helm	1014	Coins	3
+I	Adamant med helm	2496	Coins	2
+I	Bronze full helm	57	Coins	5
+I	Iron full helm	200	Coins	4
+I	Steel full helm	715	Coins	4
+I	Mithril full helm	1859	Coins	3
+I	Adamant full helm	4576	Coins	2
+S	Thyria's Wares	1719	3744	0	Thyria
+I	Fire rune	4	Coins	5000
+I	Water rune	4	Coins	5000
+I	Air rune	4	Coins	5000
+I	Earth rune	4	Coins	5000
+I	Mind rune	3	Coins	5000
+I	Body rune	3	Coins	5000
+I	Chaos rune	90	Coins	250
+I	Death rune	180	Coins	250
+I	Fire rune pack	430	Coins	80
+I	Water rune pack	430	Coins	80
+I	Air rune pack	430	Coins	80
+I	Earth rune pack	430	Coins	80
+I	Mind rune pack	330	Coins	40
+I	Chaos rune pack	9950	Coins	35
+S	Tiadeche's Karambwan Stall	2781	3058	0	Tiadeche
+I	Raw karambwan	110	Coins	10
+I	Raw karambwanji	10	Coins	50
+I	Karambwan vessel	2	Coins	2
+S	Tindar	2712	5309	0	Tindar
+I	Coated frogs' legs	10	Coins	∞
+S	Tizoro's Pickaxes	1443	9553	1	Tizoro
+I	Hammer	1	Coins	6
+I	Chisel	1	Coins	6
+I	Bronze pickaxe	1	Coins	6
+I	Iron pickaxe	140	Coins	5
+I	Steel pickaxe	500	Coins	4
+I	Mithril pickaxe	1300	Coins	3
+I	Adamant pickaxe	3200	Coins	2
+I	Rune pickaxe	32000	Coins	1
+S	Toci's Gem Store	1430	2975	0	Toci
+I	Uncut sapphire	25	Coins	3
+I	Uncut emerald	50	Coins	2
+I	Uncut ruby	100	Coins	1
+I	Uncut diamond	200	Coins	0
+I	Sapphire	250	Coins	3
+I	Emerald	500	Coins	2
+I	Ruby	1000	Coins	1
+I	Diamond	2000	Coins	0
+S	Tony's Pizza Bases	3038	3707	0	Fat Tony
+I	Pizza base	4	Coins	30
+S	Toothy's Pickaxes	1454	3858	0	Toothy
+I	Bronze pickaxe	1	Coins	5
+I	Iron pickaxe	182	Coins	3
+I	Steel pickaxe	650	Coins	3
+I	Mithril pickaxe	1690	Coins	2
+I	Adamant pickaxe	4160	Coins	1
+I	Rune pickaxe	41600	Coins	1
+I	Pot	1	Coins	50000
+S	Torrell	2617	3225	0	Torrell
+I	Plant cure	40	Coins	∞
+I	Compost	20	Coins	∞
+I	Rake	6	Coins	∞
+I	Empty plant pot	1	Coins	∞
+I	Watering can	8	Coins	∞
+I	Gardening trowel	12	Coins	∞
+I	Seed dibber	6	Coins	∞
+S	Trader Stan's Trading Post	3041	3193	0	Trader Crewmember
+I	Pot	2	Coins	5
+I	Jug	2	Coins	2
+I	Empty jug pack	350	Coins	6
+I	Shears	2	Coins	2
+I	Bucket	5	Coins	3
+I	Empty bucket pack	1250	Coins	10
+I	Bowl	10	Coins	2
+I	Cake tin	25	Coins	2
+I	Tinderbox	2	Coins	2
+I	Chisel	2	Coins	2
+I	Hammer	2	Coins	5
+I	Newcomer map	2	Coins	5
+I	Security book	5	Coins	5
+I	Rope	45	Coins	2
+I	Knife	15	Coins	2
+I	Pineapple	5	Coins	15
+I	Banana	5	Coins	15
+I	Orange	5	Coins	10
+I	Bucket of slime	2	Coins	10
+I	Glassblowing pipe	5	Coins	15
+I	Bucket of sand	5	Coins	10
+I	Seaweed	5	Coins	20
+I	Soda ash	5	Coins	10
+I	Lobster pot	50	Coins	20
+I	Fishing rod	12	Coins	20
+I	Swamp paste	75	Coins	30
+I	Tyras helm	1375	Coins	25
+I	Raw rabbit	50	Coins	20
+I	Right eye patch	5	Coins	5
+I	Bronze cannonball	5	Coins	250
+S	Trader Sven's Black-market Goods	3604	3201	0	Trader Sven
+I	Citizen top	6	Coins	10
+I	Citizen trousers	6	Coins	10
+I	Citizen shoes	6	Coins	10
+I	Vyrewatch top	650	Coins	10
+I	Vyrewatch legs	650	Coins	10
+I	Vyrewatch shoes	650	Coins	10
+S	Tree (Draynor guard)	3086	3242	0	Tree (Draynor guard)
+I	Stew	10000000000	Coins	N/A
+S	Treznor	3229	3459	0	Treznor
+I	Plant cure	40	Coins	∞
+I	Compost	20	Coins	∞
+I	Rake	6	Coins	∞
+I	Empty plant pot	1	Coins	∞
+I	Watering can	8	Coins	∞
+I	Gardening trowel	12	Coins	∞
+I	Seed dibber	6	Coins	∞
+S	Trufitus	2810	3086	0	Trufitus
+I	Snake weed	10000000000	Coins	N/A
+I	Ardrigal	10000000000	Coins	N/A
+I	Sito foil	10000000000	Coins	N/A
+I	Volencia moss	10000000000	Coins	N/A
+I	Rogue's purse	10000000000	Coins	N/A
+S	Turgok	2712	5303	0	Turgok
+I	Green gloop soup	10	Coins	∞
+S	Tutab's Magical Market	2758	2770	0	Tutab
+I	Fire rune	4	Coins	1000
+I	Water rune	4	Coins	1000
+I	Air rune	4	Coins	1000
+I	Earth rune	4	Coins	1000
+I	Law rune	240	Coins	250
+I	Fire rune pack	430	Coins	40
+I	Water rune pack	430	Coins	40
+I	Air rune pack	430	Coins	40
+I	Earth rune pack	430	Coins	40
+I	Eye of gnome	3	Coins	10
+I	Monkey dentures	10	Coins	100
+I	Monkey talisman	1000	Coins	50
+S	Twiggy O'Korn	3096	3227	0	Twiggy O'Korn
+I	Achievement diary cape	99000	Coins	∞
+I	Achievement diary cape (t)	99000	Coins	∞
+S	Two Feet Charley's Fish Shop	3674	2968	0	Charley
+I	Raw shrimps	5	Coins	10
+I	Raw sardine	10	Coins	10
+I	Raw herring	10	Coins	7
+I	Raw mackerel	15	Coins	7
+I	Raw cod	10	Coins	6
+I	Raw anchovies	15	Coins	5
+I	Raw tuna	40	Coins	4
+I	Raw lobster	70	Coins	2
+I	Raw bass	40	Coins	2
+I	Raw swordfish	80	Coins	1
+S	Tynan's Fishing Supplies	1841	3786	0	Tynan
+I	Bucket	2	Coins	1000
+I	Small fishing net	5	Coins	5
+I	Big fishing net	20	Coins	5
+I	Fishing rod	5	Coins	5
+I	Harpoon	5	Coins	2
+I	Lobster pot	20	Coins	2
+I	Fishing bait	3	Coins	1200
+I	Sandworms	90	Coins	500
+I	Bait pack	300	Coins	80
+I	Sandworms pack	9000	Coins	50
+S	Tyss	1714	3883	0	Tyss
+I	Arceuus signet	0	Coins	∞
+S	TzHaar-Hur-Lek's Ore and Gem Store	2465	5149	0	TzHaar-Hur-Lek
+I	Tin ore	4	Tokkul	5
+I	Copper ore	4	Tokkul	5
+I	Iron ore	25	Tokkul	2
+I	Silver ore	112	Tokkul	0
+I	Coal	67	Tokkul	0
+I	Gold ore	225	Tokkul	0
+I	Mithril ore	243	Tokkul	0
+I	Adamantite ore	600	Tokkul	0
+I	Runite ore	4800	Tokkul	0
+I	Uncut sapphire	37	Tokkul	1
+I	Uncut emerald	75	Tokkul	1
+I	Uncut ruby	150	Tokkul	0
+I	Uncut diamond	300	Tokkul	0
+I	Uncut dragonstone	1500	Tokkul	0
+I	Uncut onyx	300000	Tokkul	1
+I	Onyx bolt tips	1500	Tokkul	50
+S	TzHaar-Hur-Rin's Ore and Gem Store	2524	5075	0	TzHaar-Hur-Rin
+I	Tin ore	4	Tokkul	25
+I	Copper ore	4	Tokkul	25
+I	Iron ore	25	Tokkul	15
+I	Silver ore	112	Tokkul	12
+I	Coal	67	Tokkul	20
+I	Gold ore	225	Tokkul	12
+I	Mithril ore	243	Tokkul	4
+I	Adamantite ore	600	Tokkul	2
+I	Runite ore	4800	Tokkul	1
+I	Uncut sapphire	37	Tokkul	16
+I	Uncut emerald	75	Tokkul	12
+I	Uncut ruby	150	Tokkul	8
+I	Uncut diamond	300	Tokkul	6
+I	Uncut dragonstone	1500	Tokkul	0
+I	Uncut onyx	300000	Tokkul	1
+I	Onyx bolt tips	1500	Tokkul	50
+S	TzHaar-Hur-Tel's Equipment Store	2478	5147	0	TzHaar-Hur-Tel
+I	Toktz-xil-ul	375	Tokkul	500
+I	Toktz-xil-ak	60000	Tokkul	1
+I	Toktz-xil-ek	37500	Tokkul	1
+I	Tzhaar-ket-om	75001	Tokkul	1
+I	Toktz-mej-tal	52500	Tokkul	1
+I	Tzhaar-ket-em	45000	Tokkul	1
+I	Obsidian cape	90000	Tokkul	1
+I	Toktz-ket-xil	67500	Tokkul	1
+S	TzHaar-Hur-Zal's Equipment Store	2491	5071	0	TzHaar-Hur-Zal
+I	Toktz-xil-ul	375	Tokkul	500
+I	Toktz-xil-ak	60000	Tokkul	1
+I	Toktz-xil-ek	37500	Tokkul	1
+I	Tzhaar-ket-om	75001	Tokkul	1
+I	Toktz-mej-tal	52500	Tokkul	1
+I	Tzhaar-ket-em	45000	Tokkul	1
+I	Obsidian cape	90000	Tokkul	1
+I	Toktz-ket-xil	67500	Tokkul	1
+I	Obsidian helmet	84480	Tokkul	1
+I	Obsidian platebody	126000	Tokkul	1
+I	Obsidian platelegs	100500	Tokkul	1
+S	TzHaar-Mej-Roh's Rune Store	2462	5125	0	TzHaar-Mej-Roh
+I	Fire rune	6	Tokkul	5000
+I	Water rune	6	Tokkul	5000
+I	Air rune	6	Tokkul	5000
+I	Earth rune	6	Tokkul	5000
+I	Mind rune	4	Tokkul	5000
+I	Body rune	4	Tokkul	5000
+I	Chaos rune	135	Tokkul	2500
+I	Death rune	270	Tokkul	2500
+I	Tzhaar fire rune pack	645	Tokkul	50
+I	Tzhaar water rune pack	645	Tokkul	50
+I	Tzhaar air rune pack	645	Tokkul	50
+I	Tzhaar earth rune pack	645	Tokkul	50
+S	Tziuhtla	1367	3032	0	Tziuhtla
+I	Plant cure	40	Coins	∞
+I	Compost	20	Coins	∞
+I	Rake	6	Coins	∞
+I	Empty plant pot	1	Coins	∞
+I	Watering can	8	Coins	∞
+I	Gardening trowel	12	Coins	∞
+I	Seed dibber	6	Coins	∞
+S	Valaine's Shop of Champions	3191	3359	1	Valaine
+I	Blue cape	41	Coins	2
+I	Black full helm	1372	Coins	1
+I	Black platelegs	2496	Coins	1
+I	Adamant platebody	21632	Coins	1
+S	Vale Research Exchange	1366	3368	0	Ranulph
+I	Bow string spool	250	points	∞
+I	Fletching knife	350	points	∞
+I	Greenman mask	500	points	∞
+I	Ent branch	20	points	∞
+S	Vanessa's Farming shop	2820	3462	0	Vanessa
+I	Rake	6	Coins	500
+I	Seed dibber	6	Coins	500
+I	Secateurs	5	Coins	500
+I	Spade	3	Coins	500
+I	Gardening trowel	12	Coins	500
+I	Watering can	8	Coins	500
+I	Filled plant pot	1	Coins	500
+I	Plant pot pack	100	Coins	30
+I	Compost	20	Coins	500
+I	Compost pack	2000	Coins	10
+I	Empty sack	1	Coins	500
+I	Sack pack	100	Coins	30
+I	Basket	1	Coins	500
+I	Basket pack	100	Coins	30
+I	Bucket	2	Coins	100
+I	Empty bucket pack	500	Coins	15
+I	Potato	1	Coins	0
+I	Onion	3	Coins	0
+I	Cabbage	1	Coins	0
+I	Tomato	4	Coins	0
+I	Sweetcorn	9	Coins	0
+I	Strawberry	17	Coins	0
+I	Watermelon	48	Coins	0
+I	Hammerstone hops	4	Coins	0
+I	Asgarnian hops	5	Coins	0
+I	Yanillian hops	7	Coins	0
+I	Krandorian hops	10	Coins	0
+I	Wildblood hops	15	Coins	0
+I	Jute fibre	6	Coins	0
+I	Barley	4	Coins	0
+I	Plant cure	40	Coins	100
+S	Vannah's Farming Stall	1763	3594	0	Vannah
+I	Rake	6	Coins	5
+I	Seed dibber	6	Coins	5
+I	Secateurs	5	Coins	5
+I	Spade	3	Coins	5
+I	Gardening trowel	12	Coins	3
+I	Watering can	8	Coins	30
+I	Filled plant pot	1	Coins	100
+I	Plant pot pack	100	Coins	10
+I	Compost	20	Coins	100
+I	Compost pack	2000	Coins	10
+I	Bucket	2	Coins	100
+I	Empty bucket pack	500	Coins	15
+I	Empty sack	1	Coins	100
+I	Sack pack	100	Coins	30
+I	Basket	1	Coins	100
+I	Basket pack	100	Coins	30
+I	Plant cure	40	Coins	40
+S	Varrock General Store	3216	3417	0	Shop keeper (Varrock)
+I	Pot	1	Coins	5
+I	Jug	1	Coins	2
+I	Empty jug pack	182	Coins	5
+I	Shears	1	Coins	2
+I	Bucket	2	Coins	3
+I	Empty bucket pack	650	Coins	15
+I	Bowl	5	Coins	2
+I	Cake tin	13	Coins	2
+I	Tinderbox	1	Coins	2
+I	Chisel	1	Coins	2
+I	Hammer	1	Coins	5
+I	Newcomer map	1	Coins	5
+I	Security book	2	Coins	5
+S	Varrock Swordshop	3207	3400	0	Shop keeper (Varrock Swordshop)
+I	Bronze sword	26	Coins	5
+I	Iron sword	91	Coins	4
+I	Steel sword	325	Coins	4
+I	Black sword	624	Coins	3
+I	Mithril sword	845	Coins	3
+I	Adamant sword	2080	Coins	2
+I	Bronze longsword	40	Coins	4
+I	Iron longsword	140	Coins	3
+I	Steel longsword	500	Coins	3
+I	Black longsword	960	Coins	2
+I	Mithril longsword	1300	Coins	2
+I	Adamant longsword	3200	Coins	1
+I	Bronze dagger	10	Coins	10
+I	Iron dagger	35	Coins	6
+I	Steel dagger	125	Coins	5
+I	Black dagger	240	Coins	4
+I	Mithril dagger	325	Coins	3
+I	Adamant dagger	800	Coins	2
+S	Vasile	3485	3237	0	Vasile
+I	Ale yeast	25	Coins	∞
+S	Vasquen	3227	3314	0	Vasquen
+I	Plant cure	40	Coins	∞
+I	Compost	20	Coins	∞
+I	Rake	6	Coins	∞
+I	Empty plant pot	1	Coins	∞
+I	Watering can	8	Coins	∞
+I	Gardening trowel	12	Coins	∞
+I	Seed dibber	6	Coins	∞
+S	Velrak the explorer	2931	9686	0	Velrak the explorer
+I	Dusty key	0	Coins	∞
+S	Vermundi's Clothes Stall	2888	10189	0	Vermundi
+I	Skirt (brown)	455	Coins	3
+I	Trousers (brown)	715	Coins	3
+I	Shorts (brown)	364	Coins	3
+I	Woven top (brown)	650	Coins	3
+I	Shirt (brown)	585	Coins	3
+I	Silk	39	Coins	5
+S	Vertida Sefalatis	3630	9644	0	Vertida Sefalatis
+I	Ivandis flail	20000	Coins	∞
+I	Blisterwood flail	40000	Coins	∞
+S	Vigr's Warhammers	2873	10210	0	Vigr
+I	Bronze warhammer	61	Coins	5
+I	Iron warhammer	224	Coins	4
+I	Steel warhammer	832	Coins	3
+I	Black warhammer	1274	Coins	3
+I	Mithril warhammer	2158	Coins	2
+I	Adamant warhammer	5356	Coins	1
+S	Void Knight Archery Store	2666	2660	0	Squire (Void Knights ranged shop)
+I	Bronze javelin	4	Coins	10
+I	Iron javelin	6	Coins	10
+I	Steel javelin	24	Coins	10
+I	Mithril javelin	64	Coins	5
+I	Adamant javelin	160	Coins	5
+I	Rune javelin	400	Coins	5
+I	Bronze arrowtips	1	Coins	10
+I	Iron arrowtips	2	Coins	10
+I	Steel arrowtips	6	Coins	10
+I	Mithril arrowtips	16	Coins	5
+I	Adamant arrowtips	40	Coins	5
+I	Rune arrowtips	200	Coins	5
+S	Void Knight General Store	2651	2665	0	Squire (Void Knights general store)
+I	Pot	1	Coins	5
+I	Jug	1	Coins	2
+I	Empty jug pack	182	Coins	5
+I	Shears	1	Coins	2
+I	Bucket	2	Coins	3
+I	Empty bucket pack	650	Coins	15
+I	Bowl	5	Coins	2
+I	Cake tin	13	Coins	2
+I	Tinderbox	1	Coins	2
+I	Chisel	1	Coins	2
+I	Hammer	1	Coins	5
+I	Bronze axe	20	Coins	10
+I	Field ration	390	Coins	25
+S	Void Knight Magic Store	2659	2654	0	Squire (Void Knights magic shop)
+I	Fire rune	4	Coins	5000
+I	Water rune	4	Coins	5000
+I	Air rune	4	Coins	5000
+I	Earth rune	4	Coins	5000
+I	Mind rune	3	Coins	5000
+I	Body rune	3	Coins	5000
+I	Chaos rune	90	Coins	250
+I	Death rune	180	Coins	250
+I	Fire rune pack	430	Coins	80
+I	Water rune pack	430	Coins	80
+I	Air rune pack	430	Coins	80
+I	Earth rune pack	430	Coins	80
+I	Mind rune pack	330	Coins	40
+I	Chaos rune pack	9950	Coins	35
+S	Void Knights' Reward Options	2654	2664	0	Void Knight
+I	Void Knights' Reward Options#Herb pack	30	Void Knight commendation points	∞
+I	Void Knights' Reward Options#Mineral pack	15	Void Knight commendation points	∞
+I	Void Knights' Reward Options#Seed pack	15	Void Knight commendation points	∞
+I	Void knight mace	250	Void Knight commendation points	∞
+I	Void knight top	250	Void Knight commendation points	∞
+I	Void knight robe	250	Void Knight commendation points	∞
+I	Void knight gloves	150	Void Knight commendation points	∞
+I	Void mage helm	200	Void Knight commendation points	∞
+I	Void ranger helm	200	Void Knight commendation points	∞
+I	Void melee helm	200	Void Knight commendation points	∞
+I	Void seal	10	Void Knight commendation points	∞
+S	Warrens Fish Monger	1825	10145	0	Fish monger (The Warrens)
+I	Small fishing net	6	Coins	5
+I	Fishing rod	6	Coins	5
+I	Fly fishing rod	6	Coins	5
+I	Harpoon	6	Coins	2
+I	Lobster pot	26	Coins	2
+I	Fishing bait	3	Coins	1500
+I	Bait pack	390	Coins	80
+I	Feather	2	Coins	1000
+I	Feather pack	260	Coins	50
+I	Big fishing net	26	Coins	5
+I	Raw shrimps	6	Coins	0
+I	Raw sardine	13	Coins	200
+I	Raw herring	13	Coins	0
+I	Raw mackerel	19	Coins	0
+I	Raw cod	13	Coins	0
+I	Raw anchovies	19	Coins	0
+I	Raw trout	13	Coins	0
+I	Raw pike	26	Coins	0
+I	Raw salmon	39	Coins	0
+I	Raw tuna	52	Coins	0
+I	Raw lobster	91	Coins	0
+I	Raw bass	52	Coins	0
+I	Raw swordfish	104	Coins	0
+I	Raw shark	221	Coins	0
+S	Warrens General Store	1840	10148	0	Shop keeper (The Warrens)
+I	Pot	1	Coins	3
+I	Jug	1	Coins	2
+I	Empty jug pack	182	Coins	5
+I	Shears	1	Coins	2
+I	Bucket	2	Coins	2
+I	Empty bucket pack	650	Coins	10
+I	Tinderbox	1	Coins	2
+I	Chisel	1	Coins	2
+I	Hammer	1	Coins	5
+I	Spade	3	Coins	5
+I	Knife	7	Coins	4
+S	Warrior Guild Armoury	2853	3537	1	Anton
+I	Iron battleaxe	218	Coins	5
+I	Steel battleaxe	780	Coins	2
+I	Mithril battleaxe	2028	Coins	1
+I	Bronze sword	31	Coins	5
+I	Iron sword	109	Coins	4
+I	Steel sword	390	Coins	4
+I	Black sword	748	Coins	3
+I	Mithril sword	1014	Coins	3
+I	Adamant sword	2496	Coins	2
+I	Bronze longsword	48	Coins	4
+I	Iron longsword	168	Coins	3
+I	Steel longsword	600	Coins	3
+I	Black longsword	1152	Coins	2
+I	Mithril longsword	1560	Coins	2
+I	Adamant longsword	3840	Coins	1
+I	Bronze dagger	12	Coins	10
+I	Iron dagger	42	Coins	6
+I	Steel dagger	150	Coins	5
+I	Black dagger	288	Coins	4
+I	Mithril dagger	390	Coins	3
+I	Adamant dagger	960	Coins	2
+I	Bronze mace	21	Coins	5
+I	Iron mace	75	Coins	4
+I	Steel mace	270	Coins	4
+I	Mithril mace	702	Coins	3
+I	Adamant mace	1728	Coins	2
+I	Bronze 2h sword	96	Coins	4
+I	Iron 2h sword	336	Coins	3
+I	Steel 2h sword	1200	Coins	2
+I	Black 2h sword	2304	Coins	1
+I	Mithril 2h sword	3120	Coins	1
+I	Adamant 2h sword	7680	Coins	1
+I	Bronze chainbody	72	Coins	5
+I	Iron chainbody	252	Coins	3
+I	Steel chainbody	900	Coins	3
+I	Bronze med helm	28	Coins	5
+I	Iron med helm	100	Coins	3
+I	Steel med helm	360	Coins	3
+S	Warrior Guild Food Shop	2841	3552	0	Lidio
+I	Trout	12	Coins	10
+I	Bass	48	Coins	10
+I	Plain pizza	48	Coins	5
+I	Potato with cheese	9	Coins	10
+I	Stew	24	Coins	10
+S	Warrior Guild Potion Shop	2847	3552	0	Lilly
+I	Strength potion(3)	15	Coins	10
+I	Attack potion(3)	14	Coins	10
+I	Defence potion(3)	144	Coins	10
+S	Watson	1646	3574	0	Watson
+I	S.t.a.s.h blueprint	500	Coins	∞
+S	Wayne's Chains! - Chainmail specialist	2972	3312	0	Wayne
+I	Bronze chainbody	60	Coins	3
+I	Iron chainbody	210	Coins	2
+I	Steel chainbody	750	Coins	1
+I	Black chainbody	1440	Coins	1
+I	Mithril chainbody	1950	Coins	1
+I	Adamant chainbody	4800	Coins	1
+S	Weapons galore	2397	3805	0	Skuli Myrka
+I	Mithril longsword	1430	Coins	4
+I	Mithril warhammer	1826	Coins	4
+I	Mithril battleaxe	1859	Coins	4
+I	Mithril claws	522	Coins	4
+I	Mithril 2h sword	2860	Coins	4
+S	West Ardougne General Store	2467	3287	0	Chadwell
+I	Pot	1	Coins	3
+I	Rope	21	Coins	3
+I	Bronze pickaxe	1	Coins	2
+I	Bucket	2	Coins	2
+I	Empty bucket pack	600	Coins	10
+I	Tinderbox	1	Coins	2
+I	Hammer	1	Coins	3
+I	Leather boots	7	Coins	2
+I	Longbow	96	Coins	2
+I	Bronze arrow	1	Coins	20
+I	Salmon	36	Coins	10
+I	Meat pie	18	Coins	10
+I	Bread	14	Coins	5
+I	Cooked meat	4	Coins	10
+S	Where Wyrmscraig's Wear Wares Were	2574	2242	0	Declan
+I	Noble robe top (green)	50000	Coins	5
+I	Noble robe top (blue)	50000	Coins	5
+I	Noble robe top (red)	50000	Coins	5
+I	Noble robe top (yellow)	50000	Coins	5
+I	Noble robe top (white)	50000	Coins	5
+I	Noble robe top (black)	50000	Coins	5
+I	Noble robe top (pink)	50000	Coins	5
+I	Wyrmscraig noble skirt (green)	40000	Coins	5
+I	Wyrmscraig noble skirt (blue)	40000	Coins	5
+I	Wyrmscraig noble skirt (red)	40000	Coins	5
+I	Wyrmscraig noble skirt (yellow)	40000	Coins	5
+I	Wyrmscraig noble skirt (white)	40000	Coins	5
+I	Wyrmscraig noble skirt (black)	40000	Coins	5
+I	Wyrmscraig noble skirt (pink)	40000	Coins	5
+I	Wyrmscraig villager robe top (A, green)	500	Coins	5
+I	Wyrmscraig villager robe top (A, blue)	500	Coins	5
+I	Wyrmscraig villager robe top (A, red)	500	Coins	5
+I	Wyrmscraig villager robe top (A, yellow)	500	Coins	5
+I	Wyrmscraig villager robe top (A, white)	500	Coins	5
+I	Wyrmscraig villager robe top (A, black)	500	Coins	5
+I	Wyrmscraig villager robe top (A, pink)	500	Coins	5
+I	Wyrmscraig villager robe top (A, beige)	500	Coins	5
+I	Wyrmscraig villager robe bottom (A, green)	400	Coins	5
+I	Wyrmscraig villager robe bottom (A, blue)	400	Coins	5
+I	Wyrmscraig villager robe bottom (A, red)	400	Coins	5
+I	Wyrmscraig villager robe bottom (A, yellow)	400	Coins	5
+I	Wyrmscraig villager robe bottom (A, white)	400	Coins	5
+I	Wyrmscraig villager robe bottom (A, black)	400	Coins	5
+I	Wyrmscraig villager robe bottom (A, pink)	400	Coins	5
+I	Wyrmscraig villager robe bottom (B, green)	400	Coins	5
+I	Wyrmscraig villager robe bottom (B, blue)	400	Coins	5
+I	Wyrmscraig villager robe bottom (B, red)	400	Coins	5
+I	Wyrmscraig villager robe bottom (B, yellow)	400	Coins	5
+I	Wyrmscraig villager robe bottom (B, white)	400	Coins	5
+I	Wyrmscraig villager robe bottom (B, black)	400	Coins	5
+I	Wyrmscraig villager robe bottom (B, pink)	400	Coins	5
+I	Wyrmscraig villager robe top (B, green)	500	Coins	5
+I	Wyrmscraig villager robe top (B, blue)	500	Coins	5
+I	Wyrmscraig villager robe top (B, red)	500	Coins	5
+I	Wyrmscraig villager robe top (B, yellow)	500	Coins	5
+I	Wyrmscraig villager robe top (B, white)	500	Coins	5
+I	Wyrmscraig villager robe top (B, black)	500	Coins	5
+I	Wyrmscraig villager robe top (B, pink)	500	Coins	5
+I	Wyrmscraig villager skirt (green)	400	Coins	5
+I	Wyrmscraig villager skirt (blue)	400	Coins	5
+I	Wyrmscraig villager skirt (red)	400	Coins	5
+I	Wyrmscraig villager skirt (yellow)	400	Coins	5
+I	Wyrmscraig villager skirt (white)	400	Coins	5
+I	Wyrmscraig villager skirt (black)	400	Coins	5
+I	Wyrmscraig villager skirt (pink)	400	Coins	5
+I	Wyrmscraig villager work skirt (green)	400	Coins	5
+I	Wyrmscraig villager work skirt (blue)	400	Coins	5
+I	Wyrmscraig villager work skirt (red)	400	Coins	5
+I	Wyrmscraig villager work skirt (yellow)	400	Coins	5
+I	Wyrmscraig villager work skirt (white)	400	Coins	5
+I	Wyrmscraig villager work skirt (black)	400	Coins	5
+I	Wyrmscraig villager work skirt (pink)	400	Coins	5
+I	Wyrmscraig villager work skirt (beige)	400	Coins	5
+I	Wyrmscraig shoes	10000	Coins	5
+I	Wyrmscraig boots	10000	Coins	5
+S	White Knight Armoury	2983	3341	2	Sir Vyvin
+I	White chainbody	1440	Coins	20
+I	White platelegs	1920	Coins	20
+I	White plateskirt	1920	Coins	20
+I	White med helm	576	Coins	20
+I	White sq shield	1152	Coins	20
+I	White full helm	1056	Coins	20
+I	White kiteshield	1632	Coins	20
+I	White platebody	3840	Coins	20
+I	White boots	576	Coins	20
+I	White gloves	6	Coins	20
+I	White dagger	240	Coins	20
+I	White sword	624	Coins	20
+I	White mace	432	Coins	20
+I	White magic staff	200	Coins	20
+I	White longsword	960	Coins	20
+I	White warhammer	980	Coins	20
+I	White battleaxe	1248	Coins	20
+I	White scimitar	768	Coins	20
+I	White claws	360	Coins	20
+I	White 2h sword	1920	Coins	20
+I	White halberd	1920	Coins	20
+S	William's Wilderness Cape Shop	3248	3856	0	William
+I	Team-1 cape	50	Coins	100
+I	Team-11 cape	50	Coins	100
+I	Team-21 cape	50	Coins	100
+I	Team-31 cape	50	Coins	100
+I	Team-41 cape	50	Coins	100
+S	Wine Shop	3085	3253	0	Fortunato
+I	Jug of wine	1	Coins	5
+I	Jug	1	Coins	3
+I	Empty jug pack	140	Coins	5
+I	Bottle of wine	500	Coins	2
+I	Jug of vinegar	1	Coins	500
+S	Wise Old Man	3090	3254	0	Wise Old Man
+I	Quest point cape	99000	Coins	∞
+I	Quest point cape (t)	99000	Coins	∞
+S	Woodsman tutor	3227	3246	0	Woodsman tutor
+I	Woodcutting cape	99000	Coins	∞
+I	Woodcut. cape(t)	99000	Coins	∞
+S	Worm Tongue's Wares	1639	2923	0	Worm Tongue
+I	Amylase pack	100	Termites	∞
+I	Colossal wyrm teleport scroll	40	Termites	∞
+I	Graceful crafting kit	650	Termites	∞
+I	Calcified acorn	900	Termites	∞
+S	Wyson the gardener	3027	3379	0	Wyson the gardener
+I	Woad leaf	15	Coins	∞
+S	Yadech Strongarm	2855	3553	1	Yadech Strongarm
+I	Strength cape	99000	Coins	∞
+I	Strength cape(t)	99000	Coins	∞
+S	Yanni Salika	2836	2984	0	Yanni Salika
+I	Tattered scroll	10000000000	Coins	N/A
+I	Crumpled scroll	10000000000	Coins	N/A
+I	Bervirius notes	10000000000	Coins	N/A
+I	Bone key (Shilo Village)	100	Coins	∞
+I	Stone-plaque	10000000000	Coins	N/A
+I	Locating crystal	10000000000	Coins	N/A
+I	Beads of the Dead	1200	Coins	∞
+I	Black prism	10000000000	Coins	N/A
+I	Steel key ring	500	Coins	∞
+S	Yarnio's Baked Goods	1443	9559	1	Yarnio
+I	Bread	12	Coins	15
+I	Cake	50	Coins	5
+I	Redberry pie	12	Coins	5
+I	Meat pie	15	Coins	5
+I	Apple pie	30	Coins	5
+I	Garden pie	24	Coins	5
+I	Fish pie	100	Coins	5
+S	Yarsul's Prodigious Pickaxes	3031	9747	0	Yarsul
+I	Bronze pickaxe	1	Coins	6
+I	Iron pickaxe	140	Coins	5
+I	Steel pickaxe	500	Coins	4
+I	Mithril pickaxe	1300	Coins	3
+I	Adamant pickaxe	3200	Coins	2
+I	Rune pickaxe	32000	Coins	1
+S	Ye olde Tea Shoppe	3270	3412	0	Tea seller
+I	Cup of tea	10	Coins	20
+S	Yrsa's Accoutrements	2624	3674	0	Yrsa
+I	Fremennik blue shirt	325	Coins	5
+I	Fremennik red shirt	325	Coins	5
+I	Fremennik brown shirt	325	Coins	5
+I	Fremennik grey shirt	325	Coins	5
+I	Fremennik beige shirt	325	Coins	5
+I	Fremennik robe	650	Coins	5
+I	Fremennik skirt	650	Coins	5
+I	Fremennik hat	650	Coins	5
+I	Fremennik boots	650	Coins	5
+I	Fremennik gloves	650	Coins	5
+I	Fremennik green cloak	325	Coins	5
+I	Fremennik blue cloak	325	Coins	5
+I	Fremennik brown cloak	325	Coins	5
+I	Fremennik cyan cloak	325	Coins	5
+I	Fremennik red cloak	325	Coins	5
+I	Fremennik grey cloak	325	Coins	5
+I	Fremennik yellow cloak	325	Coins	5
+I	Fremennik teal cloak	325	Coins	5
+I	Fremennik purple cloak	325	Coins	5
+I	Fremennik pink cloak	325	Coins	5
+I	Fremennik black cloak	325	Coins	5
+S	Yulf Squecks	2614	3858	0	Yulf Squecks
+I	Plant cure	40	Coins	∞
+I	Compost	20	Coins	∞
+I	Rake	6	Coins	∞
+I	Empty plant pot	1	Coins	∞
+I	Watering can	8	Coins	∞
+I	Gardening trowel	12	Coins	∞
+I	Seed dibber	6	Coins	∞
+S	Zaff's Superior Staffs!	3203	3434	0	Zaff
+I	Battlestaff	7000	Coins	5
+I	Staff	15	Coins	5
+I	Magic staff	200	Coins	5
+I	Staff of air	1500	Coins	2
+I	Staff of water	1500	Coins	2
+I	Staff of earth	1500	Coins	2
+I	Staff of fire	1500	Coins	2
+S	Zanaris General Store	2375	4447	0	Fairy shop keeper
+I	Pot	1	Coins	5
+I	Jug	1	Coins	2
+I	Empty jug pack	182	Coins	5
+I	Shears	1	Coins	2
+I	Bucket	2	Coins	3
+I	Empty bucket pack	650	Coins	15
+I	Bowl	5	Coins	2
+I	Cake tin	13	Coins	2
+I	Tinderbox	1	Coins	2
+I	Chisel	1	Coins	2
+I	Hammer	1	Coins	5
+I	Newcomer map	1	Coins	5
+I	Security book	2	Coins	5
+S	Zavistic Rarve	2591	3088	0	Zavistic Rarve
+I	Black prism	10000000000	Coins	N/A
+S	Zeke's Superior Scimitars	3288	3190	0	Zeke
+I	Bronze scimitar	32	Coins	5
+I	Iron scimitar	112	Coins	3
+I	Steel scimitar	400	Coins	2
+I	Mithril scimitar	1040	Coins	1
+S	Zenesha's Plate Mail Body Shop	2652	3295	0	Zenesha
+I	Bronze platebody	160	Coins	3
+I	Iron platebody	560	Coins	1
+I	Steel platebody	2000	Coins	1
+I	Black platebody	3840	Coins	1
+I	Mithril platebody	5200	Coins	1
+S	Zenkog	2723	5307	0	Zenkog
+I	Fingers	10	Coins	∞
+S	~ Uglug's stuffsies ~	2445	3049	0	Uglug Nar
+I	Relicym's balm(3)	200	Coins	100
+I	Sanfew serum(3)	240	Coins	0
+I	Achey tree logs	4	Coins	100
+I	Bow string	10	Coins	10
+I	Raw chompy	85	Coins	0
+I	Cooked chompy	130	Coins	10
+I	Ogre coffin key	100	Coins	0
+I	Knife	6	Coins	5
+I	Bronze brutal	5	Coins	0
+I	Iron brutal	10	Coins	0
+I	Steel brutal	20	Coins	0
+I	Black brutal	35	Coins	0
+I	Mithril brutal	50	Coins	0
+I	Adamant brutal	95	Coins	0
+I	Rune brutal	450	Coins	0
+I	Comp ogre bow	180	Coins	0

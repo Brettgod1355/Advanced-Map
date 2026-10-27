@@ -158,9 +158,9 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 	@Override
 	public void keyTyped(KeyEvent e)
 	{
-		if (plugin.isMapOpen() && plugin.filtersOpen() && !hasShortcutKey(e))
+		if (plugin.isMapOpen() && plugin.typing() && !hasShortcutKey(e))
 		{
-			plugin.typeFilters(e.getKeyChar());
+			plugin.type(e.getKeyChar());
 			e.consume();
 		}
 	}
@@ -173,13 +173,10 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 			plugin.escape();
 			e.consume();
 		}
-		else if (plugin.isMapOpen() && plugin.filtersOpen() && !hasShortcutKey(e))
+		else if (plugin.isMapOpen() && plugin.typing() && !hasShortcutKey(e))
 		{
-			// typing in the search box: keep the keys from the game's chat
-			if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE)
-			{
-				plugin.backspaceFilters();
-			}
+			// typing in a search box: keep the keys from the game's chat
+			plugin.typingKey(e.getKeyCode());
 			e.consume();
 		}
 	}
@@ -187,7 +184,7 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 	@Override
 	public void keyReleased(KeyEvent e)
 	{
-		if (plugin.isMapOpen() && plugin.filtersOpen() && !hasShortcutKey(e))
+		if (plugin.isMapOpen() && plugin.typing() && !hasShortcutKey(e))
 		{
 			e.consume();
 		}

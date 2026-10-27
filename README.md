@@ -10,6 +10,13 @@ A full-screen world map for RuneLite, drawn from the game's own map data with sm
   own world map or on another screen. **Over the game** brings it back.
 - **Wilderness teleport limits**: zoomed in, red dashed lines show where the Wilderness passes level 20 and level 30,
   above which most teleports stop working. Turn them off with the "Wilderness teleport limits" setting.
+- **Search** with the box at the top: places, dungeon and minigame entrances, shops, everything shops sell and
+  monsters, matched loosely as the Grand Exchange does ("d scim" and "dragon sim" find the dragon scimitar, "kbd"
+  the King Black Dragon). A place or shop moves the map there; an item lists the shops that sell it and the price,
+  nearest first; a monster or NPC marks every spawn and lists them by area.
+- **Shops**: click a shop, general stores included, for what it sells and for how much.
+- **Fares**: click a charter ship, the Shilo Village cart or another transport for where it goes, the fare and what
+  the trip needs (a quest, a level, the Karamja elite diary that makes the cart free).
 - **Place names** from the game's own map: kingdoms when zoomed far out, then towns, then smaller places.
 - **Prifddinas in Tirannwn**: the game keeps the elven city on a map of its own; Advanced Map draws it inside its
   walls on the main map, with its icons, and puts you, its teleports and the transports that go there (the spirit
@@ -69,6 +76,9 @@ eventBus.post(new PluginMessage("advancedmap", "layer", layer));
 ## Credits
 
 The map drawing is RuneLite's own map renderer from its cache library (BSD 2-Clause), adapted to read the
-running client. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+running client. Shops, their stock and prices, and monster spawns come from the
+[Old School RuneScape Wiki](https://oldschool.runescape.wiki/) (CC BY-NC-SA 3.0); transport routes and fares from
+[Shortest Path](https://github.com/Skretzo/shortest-path) (BSD 2-Clause). See
+[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
 Advanced Map is not affiliated with Jagex or RuneLite.

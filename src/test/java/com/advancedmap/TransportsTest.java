@@ -162,4 +162,24 @@ public class TransportsTest
 		assertEquals(to.size(), layer.getLines().size());
 		assertEquals(to.size(), layer.getMarkers().size());
 	}
+
+	@Test
+	public void faresAndNeedsComeWithTheTrip()
+	{
+		// Aldarin's charter crew: Brimhaven for 2,500 coins; the Sunset Coast needs Children of the Sun
+		List<Transports.Destination> to = Transports.from(1455, 2968, 0);
+		Transports.Destination brimhaven = to.stream().filter(d -> d.label().equals("Brimhaven")).findFirst().get();
+		assertEquals("2,500 gp", brimhaven.fareText());
+		assertTrue(to.stream().anyMatch(d -> d.getNeeds().contains("Children of the Sun")));
+	}
+
+	@Test
+	public void theShiloCartCostsUnlessTheDiaryIsDone()
+	{
+		List<Transports.Destination> to = Transports.from(2780, 3214, 0);
+		assertEquals(1, to.size());
+		assertEquals("200 gp", to.get(0).fareText());
+		assertTrue(to.get(0).getNeeds().contains("Karamja elite diary"));
+		assertEquals("200 gp", Transports.from(2833, 2958, 0).get(0).fareText());
+	}
 }
