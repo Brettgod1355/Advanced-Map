@@ -57,10 +57,33 @@ public final class WorldMapElements
 		int y;
 		int size;
 		int minLevel;
+		/** How many floors from {@code minLevel} up it holds. */
+		int levels;
+
+		/** A part holding every floor from {@code minLevel} up. */
+		public Piece(int x, int y, int size, int minLevel)
+		{
+			this(x, y, size, minLevel, 4 - minLevel);
+		}
+
+		public Piece(int x, int y, int size, int minLevel, int levels)
+		{
+			this.x = x;
+			this.y = y;
+			this.size = size;
+			this.minLevel = minLevel;
+			this.levels = levels;
+		}
+
+		/** True when it holds a floor: from its lowest, as many as it lists (the game's maps stack parts by floor). */
+		public boolean holds(int plane)
+		{
+			return plane >= minLevel && plane < minLevel + levels;
+		}
 
 		public boolean contains(int tileX, int tileY, int plane)
 		{
-			return plane >= minLevel && tileX >= x && tileY >= y && tileX < x + size && tileY < y + size;
+			return holds(plane) && tileX >= x && tileY >= y && tileX < x + size && tileY < y + size;
 		}
 	}
 
@@ -68,6 +91,7 @@ public final class WorldMapElements
 	private static final class Moved
 	{
 		int minLevel;
+		int levels;
 		int sourceX;
 		int sourceY;
 		int displayX;
@@ -106,7 +130,7 @@ public final class WorldMapElements
 			expect(in.readUnsignedByte(), 0);
 			Moved square = new Moved();
 			square.minLevel = in.readUnsignedByte();
-			in.readUnsignedByte();
+			square.levels = in.readUnsignedByte();
 			square.sourceX = in.readUnsignedShort();
 			square.sourceY = in.readUnsignedShort();
 			square.displayX = in.readUnsignedShort();
@@ -120,7 +144,7 @@ public final class WorldMapElements
 			expect(in.readUnsignedByte(), 1);
 			Moved zone = new Moved();
 			zone.minLevel = in.readUnsignedByte();
-			in.readUnsignedByte();
+			zone.levels = in.readUnsignedByte();
 			zone.sourceX = in.readUnsignedShort();
 			zone.sourceY = in.readUnsignedShort();
 			zone.sourceZoneX = in.readUnsignedByte();
@@ -135,12 +159,12 @@ public final class WorldMapElements
 		{
 			for (Moved square : squares)
 			{
-				pieces.add(new Piece(square.sourceX * 64, square.sourceY * 64, 64, square.minLevel));
+				pieces.add(new Piece(square.sourceX * 64, square.sourceY * 64, 64, square.minLevel, square.levels));
 			}
 			for (Moved zone : zones)
 			{
 				pieces.add(new Piece(zone.sourceX * 64 + zone.sourceZoneX * 8, zone.sourceY * 64 + zone.sourceZoneY * 8, 8,
-					zone.minLevel));
+					zone.minLevel, zone.levels));
 			}
 			return null;
 		}

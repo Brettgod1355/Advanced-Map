@@ -211,6 +211,12 @@ class RegionImages
 		}
 	}
 
+	/** No preview shows any more: the pictures only it wanted are not drawn after all (queued ones are skipped). */
+	void clearBesides()
+	{
+		wantedBesides = Collections.emptySet();
+	}
+
 	private static Set<Integer> keys(int plane, Collection<Integer> regionIds)
 	{
 		Set<Integer> keys = new HashSet<>();

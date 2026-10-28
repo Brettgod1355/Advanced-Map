@@ -54,6 +54,30 @@ public class DungeonPreviewTest
 	}
 
 	@Test
+	public void noGroundYetButSomeStillBeingDrawnIsNotComplete()
+	{
+		// the arrival tile is wall, the ground beside it in a region not drawn yet: not "no monsters" for good
+		DungeonPreview.Floor wallThenUnknown = (x, y) -> x >= 101 ? DungeonPreview.UNKNOWN : DungeonPreview.CLOSED;
+		DungeonPreview.Fill fill = DungeonPreview.flood(100, 100, wallThenUnknown);
+		assertEquals(0, fill.getTiles().cardinality());
+		assertFalse(fill.isComplete());
+		// all known and no ground: complete
+		org.junit.Assert.assertTrue(DungeonPreview.flood(100, 100, (x, y) -> DungeonPreview.CLOSED).isComplete());
+	}
+
+	@Test
+	public void aMapPieceHoldsOnlyTheFloorsItLists()
+	{
+		// the Grand Library's map holds its squares on floor 1 only
+		WorldMapElements.Piece library = new WorldMapElements.Piece(2560, 6080, 64, 1, 1);
+		assertFalse(library.contains(2570, 6090, 0));
+		org.junit.Assert.assertTrue(library.contains(2570, 6090, 1));
+		assertFalse(library.contains(2570, 6090, 2));
+		// without a count, every floor from its lowest up
+		org.junit.Assert.assertTrue(new WorldMapElements.Piece(2560, 6080, 64, 1).contains(2570, 6090, 3));
+	}
+
+	@Test
 	public void theMonstersInsideAreThoseWithASpawnInTheFillOnItsFloor()
 	{
 		DungeonPreview.Fill fill = DungeonPreview.flood(105, 105, TWO_CAVES);

@@ -11,7 +11,6 @@ import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.util.Objects;
 import net.runelite.api.Client;
-import net.runelite.api.Point;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
@@ -68,9 +67,10 @@ class MapOverlay extends Overlay
 		// the map in its box (the whole view when maximized); the game goes on around it
 		GameBox box = plugin.gameBox();
 		Rectangle map = box.map(width, height);
-		Point canvasMouse = client.getMouseCanvasPosition();
-		java.awt.Point mouse = canvasMouse == null || !map.contains(canvasMouse.getX(), canvasMouse.getY()) ? null
-			: new java.awt.Point(canvasMouse.getX() - map.x, canvasMouse.getY() - map.y);
+		// the mouse as the map's input last saw it: the game's own position stands still while the box has it
+		java.awt.Point canvasMouse = plugin.gameMouse();
+		java.awt.Point mouse = canvasMouse == null || !map.contains(canvasMouse) ? null
+			: new java.awt.Point(canvasMouse.x - map.x, canvasMouse.y - map.y);
 		long now = System.nanoTime();
 		int touches = plugin.touches();
 		boolean resized = frame == null || frame.getWidth() != map.width || frame.getHeight() != map.height;
@@ -99,6 +99,8 @@ class MapOverlay extends Overlay
 		}
 		g.drawImage(frame, map.x, map.y, null);
 		box.draw(g, width, height);
-		return new Dimension(width, height);
+		// no size claimed: RuneLite would make the whole view this overlay's, and Shift+right-click on the game beside
+		// the box would offer to move it
+		return null;
 	}
 }

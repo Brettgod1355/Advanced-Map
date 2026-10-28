@@ -133,6 +133,9 @@ final class DungeonPreview
 		boolean complete;
 	}
 
+	/** How opaque a tile's pixel on the smallest picture must be to count as ground. */
+	static final int GROUND_ALPHA = 128;
+
 	private static volatile List<Way> innerWays = Collections.emptyList();
 
 	private final RegionImages images;
@@ -150,6 +153,11 @@ final class DungeonPreview
 	private volatile List<Way> mapWays = Collections.emptyList();
 	private volatile WorldPoint lastTry;
 	private volatile long lastTryAt;
+	/** Where looks run, off the client thread (one can take tens of milliseconds); null runs them in place. */
+	private volatile java.util.concurrent.Executor executor;
+	private final java.util.concurrent.atomic.AtomicBoolean looking = new java.util.concurrent.atomic.AtomicBoolean();
+	/** Counts the game map data given: a look begun before newer data is not kept. */
+	private final java.util.concurrent.atomic.AtomicInteger generation = new java.util.concurrent.atomic.AtomicInteger();
 
 	DungeonPreview(RegionImages images)
 	{
@@ -157,9 +165,15 @@ final class DungeonPreview
 	}
 
 	/** The parts of the world each of the game's maps other than the surface shows, one list a map. */
+	void setExecutor(java.util.concurrent.Executor executor)
+	{
+		this.executor = executor;
+	}
+
 	void setMaps(List<List<WorldMapElements.Piece>> maps)
 	{
 		this.maps = maps;
+		generation.incrementAndGet();
 		looked.clear();
 	}
 
@@ -178,6 +192,7 @@ final class DungeonPreview
 			}
 		});
 		mapWays = ways;
+		generation.incrementAndGet();
 		looked.clear();
 	}
 
@@ -249,7 +264,7 @@ final class DungeonPreview
 		Set<Integer> zones = new HashSet<>();
 		for (WorldMapElements.Piece piece : map)
 		{
-			if (plane < piece.getMinLevel())
+			if (!piece.holds(plane))
 			{
 				continue;
 			}
@@ -278,13 +293,49 @@ final class DungeonPreview
 		{
 			return known;
 		}
-		lastTry = to;
-		lastTryAt = now;
 		List<Way> ways = new ArrayList<>(innerWays);
 		ways.addAll(mapWays);
-		Look look = look(to, maps, ways, this::floor, Spawns.all());
-		looked.put(to, look);
-		return look;
+		List<List<WorldMapElements.Piece>> mapsNow = maps;
+		java.util.concurrent.Executor run = executor;
+		if (run == null)
+		{
+			lastTry = to;
+			lastTryAt = now;
+			Look look = look(to, mapsNow, ways, this::floor, Spawns.all());
+			looked.put(to, look);
+			return look;
+		}
+		// the flood runs off the client thread; meanwhile what was known (or nothing yet) shows
+		if (looking.compareAndSet(false, true))
+		{
+			lastTry = to;
+			lastTryAt = now;
+			int asOf = generation.get();
+			try
+			{
+				run.execute(() ->
+				{
+					try
+					{
+						Look look = look(to, mapsNow, ways, this::floor, Spawns.all());
+						if (generation.get() == asOf)
+						{
+							looked.put(to, look);
+						}
+					}
+					finally
+					{
+						looking.set(false);
+					}
+				});
+			}
+			catch (java.util.concurrent.RejectedExecutionException e)
+			{
+				// the plugin is stopping
+				looking.set(false);
+			}
+		}
+		return known != null ? known : new Look(Collections.emptyList(), Collections.singletonList(to), null, false);
 	}
 
 	/**
@@ -398,7 +449,9 @@ final class DungeonPreview
 			int perTile = Math.max(1, image.getWidth() / 64);
 			int px = (x & 63) * perTile + perTile / 2;
 			int py = (63 - (y & 63)) * perTile + perTile / 2;
-			return image.getRGB(px, py) >>> 24 == 0 ? CLOSED : OPEN;
+			// a tile's pixel is its 4 x 4 drawn pixels averaged: a wall line or a sprite's corner over the dark
+			// around a cave is not ground
+			return image.getRGB(px, py) >>> 24 < GROUND_ALPHA ? CLOSED : OPEN;
 		};
 	}
 
@@ -414,23 +467,27 @@ final class DungeonPreview
 		BitSet seen = new BitSet(size * size);
 		BitSet tiles = new BitSet(size * size);
 		int start = -1;
+		boolean unknownNear = false;
 		for (int r = 0; r <= 3 && start < 0; r++)
 		{
 			for (int dx = -r; dx <= r && start < 0; dx++)
 			{
 				for (int dy = -r; dy <= r && start < 0; dy++)
 				{
-					if (floor.at(startX + dx, startY + dy) == OPEN)
+					int ground = floor.at(startX + dx, startY + dy);
+					if (ground == OPEN)
 					{
 						start = (REACH + dy) * size + REACH + dx;
 					}
+					unknownNear |= ground == UNKNOWN;
 				}
 			}
 		}
 		boolean complete = true;
 		if (start < 0)
 		{
-			return new Fill(minX, minY, size, tiles, floor.at(startX, startY) != UNKNOWN);
+			// no ground near the start yet: complete only once every tile looked at is known (none still being drawn)
+			return new Fill(minX, minY, size, tiles, !unknownNear);
 		}
 		int[] queue = new int[size * size];
 		int head = 0;

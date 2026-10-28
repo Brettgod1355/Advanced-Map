@@ -43,6 +43,25 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 		this.height = height;
 	}
 
+	/**
+	 * Where the mouse is on the game view, or null when it is off it: the game is not told of moves over the box (they
+	 * are the map's), so its own idea of where the mouse is would stay where it left the game.
+	 */
+	private volatile java.awt.Point mouse;
+
+	java.awt.Point mouse()
+	{
+		return mouse;
+	}
+
+	/** True while the mouse is on the box (the map or its frame). */
+	private boolean mouseOnBox()
+	{
+		java.awt.Point at = mouse;
+		return at != null && plugin.gameBox().partAt(at.x, at.y, width.getAsInt(), height.getAsInt())
+			!= GameBox.Part.OUTSIDE;
+	}
+
 	private GameBox.Part partAt(MouseEvent e)
 	{
 		return plugin.gameBox().partAt(e.getX(), e.getY(), width.getAsInt(), height.getAsInt());
@@ -117,6 +136,7 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 	{
 		// whatever the mouse or keys do, the map over the game is drawn again at once
 		plugin.touched();
+		mouse = e.getPoint();
 		if (!plugin.isMapOpen() || !held)
 		{
 			return e;
@@ -199,6 +219,7 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 	{
 		// whatever the mouse or keys do, the map over the game is drawn again at once
 		plugin.touched();
+		mouse = null;
 		return e;
 	}
 
@@ -207,6 +228,7 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 	{
 		// whatever the mouse or keys do, the map over the game is drawn again at once
 		plugin.touched();
+		mouse = e.getPoint();
 		return swallow(e);
 	}
 
@@ -255,7 +277,10 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 	{
 		// whatever the mouse or keys do, the map over the game is drawn again at once
 		plugin.touched();
-		if (plugin.isMapOpen() && e.getKeyCode() == KeyEvent.VK_ESCAPE)
+		// Escape is the map's while the mouse is on its box or something of it is open or typed into; else it is the
+		// game's (closing the bank beside a small map)
+		if (plugin.isMapOpen() && e.getKeyCode() == KeyEvent.VK_ESCAPE
+			&& (mouseOnBox() || plugin.typing() || plugin.sideListOpen() || plugin.selection() != null))
 		{
 			plugin.escape();
 			e.consume();

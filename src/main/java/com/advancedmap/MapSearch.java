@@ -424,7 +424,7 @@ final class MapSearch
 		{
 			Entry entry = ranked.get(i).entry;
 			// a dungeon's entrance and the game's name for it ("Ardougne Sewers" twice): the first only
-			if (entry.getImportance() > 0 && !placesListed.add(entry.getKey()))
+			if (entry.getImportance() > 0 && entry.getKind() != Kind.MARKER && !placesListed.add(entry.getKey()))
 			{
 				continue;
 			}

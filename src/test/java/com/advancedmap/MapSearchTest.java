@@ -246,6 +246,16 @@ public class MapSearchTest
 	}
 
 	@Test
+	public void aMarkerNamedLikeATownStillShows()
+	{
+		// the player's marker "Varrock" is theirs, not a second name for the town
+		List<MapSearch.Entry> both = Arrays.asList(entry(MapSearch.Kind.PLACE, "Varrock", 3),
+			entry(MapSearch.Kind.MARKER, "Varrock", 1));
+		List<MapSearch.Entry> found = MapSearch.search(both, "varrock", null);
+		assertEquals(2, found.size());
+	}
+
+	@Test
 	public void placesComeFirstTheBiggerFirst()
 	{
 		List<MapSearch.Entry> entries = Arrays.asList(

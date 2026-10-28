@@ -245,6 +245,9 @@ public class AdvancedMapPlugin extends Plugin
 		messages = new MapMessages(this::openMap);
 		painter = new MapPainter(images, messages, icons, labels, filters, sideList, search);
 		painter.setPins(pins, editor);
+		painter.setExecutor(executor);
+		// a new painter does not follow: neither does the map, until the locate button is pressed again
+		following = false;
 		painter.setMultiCombat(config.multiCombat());
 		painter.setInfoOnHover(config.infoOnHover());
 		painter.setHighestFirst(config.monsterOrder() == MonsterOrder.HIGHEST_FIRST);
@@ -654,8 +657,11 @@ public class AdvancedMapPlugin extends Plugin
 	@Subscribe
 	public void onConfigChanged(ConfigChanged event)
 	{
-		if (!AdvancedMapConfig.GROUP.equals(event.getGroup()))
+		if (!AdvancedMapConfig.GROUP.equals(event.getGroup())
+			|| AdvancedMapConfig.GAME_BOUNDS.equals(event.getKey())
+			|| AdvancedMapConfig.GAME_MAXIMIZED.equals(event.getKey()))
 		{
+			// the box's own place and size, saved as it is moved: nothing else to read again
 			return;
 		}
 		settings = readSettings();
@@ -726,6 +732,8 @@ public class AdvancedMapPlugin extends Plugin
 	{
 		search.setFocused(false);
 		filters.setOpen(false);
+		// back to the game: the marker box would otherwise keep taking every key
+		editor.close();
 		selection = null;
 	}
 
@@ -926,6 +934,13 @@ public class AdvancedMapPlugin extends Plugin
 	boolean isOpen()
 	{
 		return mapOpen || windowOpen;
+	}
+
+	/** Where the mouse is on the game view as the map's input last saw it, or null when it is off the view. */
+	java.awt.Point gameMouse()
+	{
+		MapInput in = input;
+		return in == null ? null : in.mouse();
 	}
 
 	MapSettings settings()
@@ -2103,6 +2118,11 @@ public class AdvancedMapPlugin extends Plugin
 			readProgress();
 			loadLabels();
 			WorldPoint center = at != null ? at : player != null ? player : LUMBRIDGE;
+			if (at != null)
+			{
+				// a place to show (another plugin's, a search's): following the player would move straight off it
+				following = false;
+			}
 			area = MapArea.of(center.getY());
 			plane = center.getPlane();
 			MapViewport viewport = viewports.get(area);

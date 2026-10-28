@@ -162,6 +162,8 @@ final class MapPainter
 	private volatile boolean dragging;
 	/** Where a click on an icon would move the map to the other map (a dungeon's entrance), or null. */
 	private volatile Function<MapSpot, WorldPoint> links = spot -> null;
+	/** Set while a frame draws a dungeon preview; without one, its pictures are no longer wanted. */
+	private boolean previewShown;
 	private final DungeonPreview preview;
 	/** The icon or pin the mouse rests on (a {@link MapSpot} or a {@link MapPins.Pin}), and since when. */
 	private Object hovered;
@@ -178,6 +180,12 @@ final class MapPainter
 		this.filters = filters;
 		this.sideList = sideList;
 		this.preview = new DungeonPreview(images);
+	}
+
+	/** Where a dungeon preview's looks run, off the client thread. */
+	void setExecutor(java.util.concurrent.Executor executor)
+	{
+		preview.setExecutor(executor);
 	}
 
 	/** Shows an icon's info box when the mouse rests on it, as well as on a click. */
@@ -391,7 +399,12 @@ final class MapPainter
 			sideList.draw(g, sideList.layout(buttons(view.width, view.height, window)), mouse);
 		}
 		search.draw(g, search.layout(buttons(view.width, view.height, window), view.width), mouse);
+		previewShown = false;
 		drawHovered(g, view, area, window, mouse, settings, progress, selection, shown, pinsShown, farms);
+		if (!previewShown)
+		{
+			images.clearBesides();
+		}
 		if (antialiasing != null)
 		{
 			g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, antialiasing);
@@ -889,6 +902,7 @@ final class MapPainter
 		WorldPoint to = links.apply(spot);
 		if (to != null)
 		{
+			previewShown = true;
 			drawPreview(g, view, at, spot, to, settings, progress);
 			return;
 		}
