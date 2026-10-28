@@ -82,6 +82,8 @@ class RegionImages
 	private final Set<Integer> absent = ConcurrentHashMap.newKeySet();
 	private final Set<Long> queued = ConcurrentHashMap.newKeySet();
 	private volatile Set<Integer> wanted = Collections.emptySet();
+	/** Asked for besides what is on screen: the regions a dungeon preview shows or looks through. */
+	private volatile Set<Integer> wantedBesides = Collections.emptySet();
 	private volatile MapStore store;
 
 	RegionImages(MapSource source, ExecutorService executor, MapIcons icons)
@@ -188,6 +190,26 @@ class RegionImages
 	 */
 	void request(int plane, Collection<Integer> regionIds, Level level)
 	{
+		wanted = keys(plane, regionIds);
+		queue(plane, regionIds, level);
+	}
+
+	/**
+	 * Asks for pictures of regions off the screen, as well as those on it: a dungeon preview's {@code shown} at a
+	 * level, and the smallest of those it {@code looks} through. They replace the last ones asked for this way, never
+	 * the screen's.
+	 */
+	void requestBesides(int plane, Collection<Integer> shown, Level level, Collection<Integer> looks)
+	{
+		Set<Integer> keys = keys(plane, shown);
+		keys.addAll(keys(plane, looks));
+		wantedBesides = keys;
+		queue(plane, shown, level);
+		queue(plane, looks, Level.SMALL);
+	}
+
+	private static Set<Integer> keys(int plane, Collection<Integer> regionIds)
+	{
 		Set<Integer> keys = new HashSet<>();
 		for (int id : regionIds)
 		{
@@ -196,7 +218,11 @@ class RegionImages
 				keys.add(key(p, id));
 			}
 		}
-		wanted = keys;
+		return keys;
+	}
+
+	private void queue(int plane, Collection<Integer> regionIds, Level level)
+	{
 		for (int id : regionIds)
 		{
 			for (int p = plane; p >= 0; p--)
@@ -234,7 +260,7 @@ class RegionImages
 	{
 		try
 		{
-			if (!wanted.contains(key) || images.get(level).containsKey(key))
+			if (!wanted.contains(key) && !wantedBesides.contains(key) || images.get(level).containsKey(key))
 			{
 				return;
 			}

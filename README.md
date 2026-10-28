@@ -14,7 +14,9 @@ A full-screen world map for RuneLite, drawn from the game's own map data with sm
   matched loosely as the Grand Exchange does ("d scim" and "dragon sim" find the dragon scimitar, "kbd" the King
   Black Dragon). Places come first, the bigger first: "var" lists Varlamore and Varrock before Varrock armour, and
   nicknames work ("ardy", "fally", "zeah"). A place moves the map there; an item lists the shops that sell it and
-  the price, nearest first; a monster or NPC marks every spawn and lists them by area. Fairy ring codes ("cks"),
+  the price, nearest first; a monster or NPC marks every spawn and lists them by area, a monster under its
+  hitpoints, max hit, weakness, Slayer level and masters, sure and rare drops, and a button to its wiki page. Fairy
+  ring codes ("cks"),
   fishing spots by catch ("lobster"), hunter areas by creature ("chinchompa") and kinds of icon ("bank", "anvil",
   "altar": every one, nearest first) are found too, and among equally good matches the nearest to you comes first.
   Shops are found through what they sell; the setting "Search finds shops by name" lists them by name too.
@@ -36,9 +38,12 @@ A full-screen world map for RuneLite, drawn from the game's own map data with sm
 - **Prifddinas in Tirannwn**: the game keeps the elven city on a map of its own; Advanced Map draws it inside its
   walls on the main map, with its icons, and puts you, its teleports and the transports that go there (the spirit
   tree, the teleport crystal) there too.
-- **Icons you can click**: banks, quests, shops, shortcuts and every other icon of the game's map, plus teleport
-  destinations. Click one for its details (a quest's difficulty and the levels it needs, a shortcut's Agility level,
-  a spell's Magic level and quest). Agility shortcuts and teleport spells you can't use yet are grayed out with a
+- **Dungeon preview**: point at a dungeon's entrance for a look inside before going in: the dungeon's name, a small
+  map of where you come out, and every monster inside. Click the entrance to go in.
+- **Icons you can point at**: banks, quests, shops, shortcuts and every other icon of the game's map, plus teleport
+  destinations. Rest the mouse on one for its details, or click it to keep them open (a quest's difficulty and the
+  levels it needs, a shortcut's Agility level, a spell's Magic level and quest); the setting "Info on hover" makes
+  it click only. Agility shortcuts and teleport spells you can't use yet are grayed out with a
   red mark, and finished quests are left out (a setting turns them back on).
 - **Banks**: banks the game's map leaves out get an icon too (the Culinaromancer's Chest in Lumbridge Castle's
   cellar, the Lovakengj blast mine's other chests ...). The bank chests you build yourself (Fossil Island, the
@@ -91,7 +96,7 @@ eventBus.post(new PluginMessage("advancedmap", "layer", layer));
 ## Credits
 
 The map drawing is RuneLite's own map renderer from its cache library (BSD 2-Clause), adapted to read the
-running client. Shops, their stock and prices, and monster spawns come from the
+running client. Shops, their stock and prices, monster spawns, stats and drops come from the
 [Old School RuneScape Wiki](https://oldschool.runescape.wiki/) (CC BY-NC-SA 3.0); transport routes and fares from
 [Shortest Path](https://github.com/Skretzo/shortest-path) (BSD 2-Clause). See
 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

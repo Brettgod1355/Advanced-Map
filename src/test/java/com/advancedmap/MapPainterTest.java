@@ -138,6 +138,127 @@ public class MapPainterTest
 		g.dispose();
 	}
 
+	/** A painter over a world with no regions drawn, its pictures made on the calling thread. */
+	private static MapPainter blankPainter(MapIcons icons)
+	{
+		com.advancedmap.cache.MapSource none = (com.advancedmap.cache.MapSource) java.lang.reflect.Proxy.newProxyInstance(
+			MapPainterTest.class.getClassLoader(), new Class<?>[]{com.advancedmap.cache.MapSource.class},
+			(proxy, method, args) -> method.getReturnType() == int.class ? (Object) 0
+				: method.getReturnType() == long.class ? (Object) 0L : null);
+		java.util.concurrent.ExecutorService direct = new java.util.concurrent.AbstractExecutorService()
+		{
+			@Override
+			public void execute(Runnable command)
+			{
+				command.run();
+			}
+
+			@Override
+			public void shutdown()
+			{
+			}
+
+			@Override
+			public List<Runnable> shutdownNow()
+			{
+				return Collections.emptyList();
+			}
+
+			@Override
+			public boolean isShutdown()
+			{
+				return false;
+			}
+
+			@Override
+			public boolean isTerminated()
+			{
+				return false;
+			}
+
+			@Override
+			public boolean awaitTermination(long timeout, java.util.concurrent.TimeUnit unit)
+			{
+				return true;
+			}
+		};
+		return new MapPainter(new RegionImages(none, direct, icons), new MapMessages((at, zoom) ->
+		{
+		}), icons, new MapLabels(), new MapFilters(), new SideList(), new MapSearch());
+	}
+
+	/** Paints a frame with the mouse at a point, twice, the hover delay apart, and returns the second. */
+	private static BufferedImage restOn(MapPainter painter, MapViewport.View view, java.awt.Point mouse)
+		throws InterruptedException
+	{
+		BufferedImage image = new BufferedImage(view.width, view.height, BufferedImage.TYPE_INT_RGB);
+		for (int i = 0; i < 2; i++)
+		{
+			Graphics2D g = image.createGraphics();
+			painter.paint(g, view, MapArea.SURFACE, 0, null, mouse, true, settings(RoutingPlugin.NONE), Progress.NONE,
+				null);
+			g.dispose();
+			if (i == 0)
+			{
+				Thread.sleep(MapPainter.HOVER_NANOS / 1_000_000 + 50);
+			}
+		}
+		return image;
+	}
+
+	private static int differences(BufferedImage a, BufferedImage b, Rectangle where)
+	{
+		int count = 0;
+		for (int y = where.y; y < where.y + where.height; y++)
+		{
+			for (int x = where.x; x < where.x + where.width; x++)
+			{
+				count += a.getRGB(x, y) != b.getRGB(x, y) ? 1 : 0;
+			}
+		}
+		return count;
+	}
+
+	@Test
+	public void restingOnAnIconShowsItsBoxUnlessOffOrDragging() throws InterruptedException
+	{
+		MapIcons icons = new MapIcons();
+		MapViewport.View view = new MapViewport.View(Teleport.VARROCK.getLocation().getX(),
+			Teleport.VARROCK.getLocation().getY(), 4, 500, 400);
+		MapIcons.Shown varrock = null;
+		for (MapIcons.Shown shown : icons.visible(view, MapArea.SURFACE, 0, settings(RoutingPlugin.NONE), Progress.NONE))
+		{
+			if (shown.getSpot().getTeleport() == Teleport.VARROCK)
+			{
+				varrock = shown;
+			}
+		}
+		java.awt.Point on = new java.awt.Point((int) varrock.getBounds().getCenterX(),
+			(int) varrock.getBounds().getCenterY());
+		// right of the icon, where its box goes, above the bar along the bottom
+		Rectangle beside = new Rectangle(on.x + 12, 50, 120, 250);
+
+		MapPainter off = blankPainter(icons);
+		BufferedImage plain = restOn(off, view, on);
+
+		MapPainter hover = blankPainter(icons);
+		hover.setInfoOnHover(true);
+		assertTrue(differences(plain, restOn(hover, view, on), beside) > 500);
+
+		MapPainter dragging = blankPainter(icons);
+		dragging.setInfoOnHover(true);
+		dragging.setDragging(true);
+		assertEquals(0, differences(plain, restOn(dragging, view, on), beside));
+
+		// the mouse on a button: no box, though an icon may be under it
+		MapPainter onButton = blankPainter(icons);
+		onButton.setInfoOnHover(true);
+		Rectangle locate = MapPainter.buttons(500, 400, true).get(MapPainter.Button.LOCATE);
+		BufferedImage away = restOn(off, view, new java.awt.Point(locate.x + 4, locate.y + 4));
+		assertEquals(0, differences(away, restOn(onButton, view, new java.awt.Point(locate.x + 4, locate.y + 4)),
+			new Rectangle(0, 50, 500, 250)));
+	}
+
 	private static MapSettings settings(RoutingPlugin routing)
 	{
 		return new MapSettings(EnumSet.allOf(IconGroup.class), Collections.emptySet(), Collections.emptySet(), false,

@@ -239,6 +239,7 @@ final class MapWindow extends JFrame
 					{
 						dragFrom = point(e);
 						pressedAt = point(e);
+						plugin.setDragging(true);
 					}
 					repaint();
 				}
@@ -262,6 +263,10 @@ final class MapWindow extends JFrame
 						&& Math.abs(y(e) - pressedAt.y) <= AdvancedMapPlugin.CLICK_SLOP)
 					{
 						plugin.leftClick(x(e), y(e), width(), height());
+					}
+					if (dragFrom != null)
+					{
+						plugin.setDragging(false);
 					}
 					dragFrom = null;
 					pressedAt = null;

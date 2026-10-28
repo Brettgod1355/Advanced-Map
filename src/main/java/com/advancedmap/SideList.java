@@ -11,6 +11,8 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Shape;
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -39,6 +41,8 @@ final class SideList
 	private static final Color TEXT = new Color(0xE8E2D0);
 	private static final Color QUIET = new Color(0x8C8676);
 	private static final Color HOVER = new Color(255, 255, 255, 28);
+	/** For measuring text outside a frame, to wrap a row's lines before the list is drawn. */
+	private static final Graphics2D MEASURE = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB).createGraphics();
 
 	/** One row: its text, a note on its right (a fare, a price, the other map), an optional second line, a place. */
 	@Value
@@ -195,7 +199,10 @@ final class SideList
 		scroll = (int) Math.max(0, Math.min(max, scroll + Math.round(notches * ROW * 3)));
 	}
 
-	/** Draws the list; the row under {@code mouse} (null when the pointer is elsewhere) is lit when it has a place. */
+	/**
+	 * Draws the list; the row under {@code mouse} (null when the pointer is elsewhere) is lit when a click on it does
+	 * something: it has a place, or something to open.
+	 */
 	void draw(Graphics2D g, Layout layout, Point mouse)
 	{
 		List<Row> shown = rows;
@@ -226,7 +233,7 @@ final class SideList
 			int height = row.height();
 			if (y + height >= list.y && y <= list.y + list.height)
 			{
-				if (row.getPoint() != null && mouse != null && list.contains(mouse) && mouse.y >= y
+				if ((row.getPoint() != null || row.getTarget() != null) && mouse != null && list.contains(mouse) && mouse.y >= y
 					&& mouse.y < y + height)
 				{
 					g.setColor(HOVER);
@@ -262,6 +269,28 @@ final class SideList
 			g.setColor(new Color(255, 255, 255, 60));
 			g.fillRoundRect(list.x + list.width - 5, top, 3, thumb, 3, 3);
 		}
+	}
+
+	/** Text in lines no wider than {@code width} in the list's font, broken between words only. */
+	static List<String> wrap(String text, int width)
+	{
+		FontMetrics metrics = MEASURE.getFontMetrics(FontManager.getRunescapeSmallFont());
+		List<String> lines = new ArrayList<>();
+		StringBuilder line = new StringBuilder();
+		for (String word : text.split(" "))
+		{
+			if (line.length() > 0 && metrics.stringWidth(line + " " + word) > width)
+			{
+				lines.add(line.toString());
+				line.setLength(0);
+			}
+			line.append(line.length() > 0 ? " " : "").append(word);
+		}
+		if (line.length() > 0)
+		{
+			lines.add(line.toString());
+		}
+		return lines;
 	}
 
 	/** Text cut to a width, with "..." when it had to be cut. */

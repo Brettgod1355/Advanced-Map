@@ -54,6 +54,7 @@ import net.runelite.client.ui.overlay.worldmap.WorldMapPoint;
 import net.runelite.client.ui.overlay.worldmap.WorldMapPointManager;
 import net.runelite.client.util.ColorUtil;
 import net.runelite.client.util.HotkeyListener;
+import net.runelite.client.util.LinkBrowser;
 
 @Slf4j
 @PluginDescriptor(
@@ -206,6 +207,7 @@ public class AdvancedMapPlugin extends Plugin
 		MultiCombat.load();
 		Farming.load();
 		SlayerTask.load();
+		MonsterInfo.load();
 		reader = new CacheReader(client);
 		shortestPathRoute = new ShortestPathRoute();
 		source = new ClientMapSource(reader);
@@ -238,6 +240,8 @@ public class AdvancedMapPlugin extends Plugin
 		painter = new MapPainter(images, messages, icons, labels, filters, sideList, search);
 		painter.setPins(pins, editor);
 		painter.setMultiCombat(config.multiCombat());
+		painter.setInfoOnHover(config.infoOnHover());
+		painter.setLinks(this::leadsTo);
 		overlay = new MapOverlay(client, this, painter);
 		input = new MapInput(this, client::getCanvasWidth, client::getCanvasHeight);
 		hotkey = new HotkeyListener(() -> config.toggleKey())
@@ -648,6 +652,7 @@ public class AdvancedMapPlugin extends Plugin
 		if (drawing != null)
 		{
 			drawing.setMultiCombat(config.multiCombat());
+			drawing.setInfoOnHover(config.infoOnHover());
 			farmingRead = 0;
 			slayerShown = slayerShown == null ? null : "";
 		}
@@ -680,6 +685,16 @@ public class AdvancedMapPlugin extends Plugin
 	boolean isMapOpen()
 	{
 		return mapOpen;
+	}
+
+	/** A mouse button is held on the map (dragging it), or let go: no info box shows on hover meanwhile. */
+	void setDragging(boolean on)
+	{
+		MapPainter drawing = painter;
+		if (drawing != null)
+		{
+			drawing.setDragging(on);
+		}
 	}
 
 	/** Counts the mouse and key events on the map over the game, for {@link MapOverlay} to draw again at once. */
@@ -1149,10 +1164,22 @@ public class AdvancedMapPlugin extends Plugin
 	 */
 	private boolean followLink(MapSpot spot)
 	{
+		WorldPoint to = linkDestination(spot);
+		if (to == null)
+		{
+			return false;
+		}
+		goTo(to);
+		return true;
+	}
+
+	/** Where a dungeon's entrance or exit (a spot in the game's map links) leads, or null when the icon is no link. */
+	WorldPoint linkDestination(MapSpot spot)
+	{
 		ClientMapSource links = source;
 		if (links == null)
 		{
-			return false;
+			return null;
 		}
 		int to = MapLinks.destinationNear(links.knownMapLinks(), spot.getX(), spot.getY(), spot.getPlane(),
 			RegionImages.LINK_REACH);
@@ -1161,12 +1188,17 @@ public class AdvancedMapPlugin extends Plugin
 			// a few of the game's links name the entrance a floor up from its icon (Slepe's trapdoor)
 			to = MapLinks.destinationNear(links.knownMapLinks(), spot.getX(), spot.getY(), floor, 0);
 		}
-		if (to < 0)
-		{
-			return false;
-		}
-		goTo(new WorldPoint(MapLinks.x(to), MapLinks.y(to), MapLinks.plane(to)));
-		return true;
+		return to < 0 ? null : new WorldPoint(MapLinks.x(to), MapLinks.y(to), MapLinks.plane(to));
+	}
+
+	/**
+	 * Where a click on an icon would move the map to the other map (a dungeon's entrance, a transport down or up), or
+	 * null: what the dungeon preview shows.
+	 */
+	WorldPoint leadsTo(MapSpot spot)
+	{
+		WorldPoint to = linkDestination(spot);
+		return to != null ? to : Transports.elsewhere(spot);
 	}
 
 	/** A click on a transport that goes to one place on the other map moves the map there. False otherwise. */
@@ -1553,10 +1585,19 @@ public class AdvancedMapPlugin extends Plugin
 				List<SearchSpots.Area> areas = SearchSpots.areas(entry.getPoints(), from, labelsNow());
 				nearest = areas.get(0).getPoint();
 				messages.put(SearchSpots.layer(SEARCH_LAYER, entry.getPoints()));
+				List<SideList.Row> rows = new ArrayList<>();
+				MonsterInfo.Monster monster = entry.getKind() == MapSearch.Kind.MONSTER ? MonsterInfo.of(entry.getName())
+					: null;
+				if (monster != null)
+				{
+					// what the monster is like first, then where it is
+					rows.addAll(MonsterInfo.rows(monster));
+					rows.add(new SideList.Row("Where, nearest first", null, null, null, null, null));
+				}
+				rows.addAll(SearchSpots.rows(areas, entry.getKind() == MapSearch.Kind.FISHING ? "spot"
+					: entry.getKind() == MapSearch.Kind.HUNTER ? "area" : "spawn"));
 				sideList.open(entry.getName() + (entry.getKind() == MapSearch.Kind.MONSTER
-					? " (" + entry.getNote().toLowerCase(java.util.Locale.ROOT) + ")" : ""),
-					SearchSpots.rows(areas, entry.getKind() == MapSearch.Kind.FISHING ? "spot"
-					: entry.getKind() == MapSearch.Kind.HUNTER ? "area" : "spawn"), entry);
+					? " (" + entry.getNote().toLowerCase(java.util.Locale.ROOT) + ")" : ""), rows, entry);
 				break;
 			default:
 				if (entry.getPoints().size() > 1)
@@ -1737,6 +1778,10 @@ public class AdvancedMapPlugin extends Plugin
 			if (row.getTarget() instanceof Shops.Shop)
 			{
 				showShop((Shops.Shop) row.getTarget());
+			}
+			else if (row.getTarget() instanceof MonsterInfo.WikiPage)
+			{
+				LinkBrowser.browse(((MonsterInfo.WikiPage) row.getTarget()).getUrl());
 			}
 		}
 		return true;
@@ -2020,6 +2065,11 @@ public class AdvancedMapPlugin extends Plugin
 				list.setCategoryIcons(categories);
 				into.set(from.labels());
 				gameMaps = from.gameMaps();
+				MapPainter drawing = painter;
+				if (drawing != null)
+				{
+					drawing.setDungeonMaps(from.mapPieces());
+				}
 			}
 			catch (RuntimeException e)
 			{

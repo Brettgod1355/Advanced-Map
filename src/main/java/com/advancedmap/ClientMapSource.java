@@ -737,6 +737,47 @@ class ClientMapSource implements MapSource
 		return maps;
 	}
 
+	/**
+	 * The parts of the world each of the game's maps other than the surface shows (a list of squares and zones a map:
+	 * "Taverley Underground", "Dwarven Mines"), for telling one dungeon from the next. Read in one wait for the client
+	 * thread; empty while the client has no world map data yet.
+	 */
+	List<List<WorldMapElements.Piece>> mapPieces()
+	{
+		List<byte[]> maps = reader.read(client ->
+		{
+			List<byte[]> out = new ArrayList<>();
+			IndexDataBase index = client.getIndex(WORLD_MAP);
+			int[] files = index == null ? null : index.getFileIds(COMPOSITE_MAPS);
+			if (files != null)
+			{
+				for (int file : files)
+				{
+					// file 0 is the surface
+					byte[] data = file == 0 ? null : index.loadData(COMPOSITE_MAPS, file);
+					if (data != null)
+					{
+						out.add(data);
+					}
+				}
+			}
+			return out;
+		});
+		List<List<WorldMapElements.Piece>> out = new ArrayList<>();
+		for (byte[] map : maps)
+		{
+			try
+			{
+				out.add(WorldMapElements.pieces(map));
+			}
+			catch (RuntimeException e)
+			{
+				// a file in a format not known yet is skipped
+			}
+		}
+		return out;
+	}
+
 	private byte[] config(int group, int id)
 	{
 		return reader.read(client -> client.getIndexConfig().loadData(group, id));

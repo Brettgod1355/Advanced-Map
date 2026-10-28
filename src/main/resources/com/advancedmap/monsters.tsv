@@ -1,0 +1,844 @@
+# Monster info from the OSRS Wiki's infobox_monster and dropsline buckets (2026-10-28). CC BY-NC-SA 3.0, see
+# THIRD_PARTY_NOTICES.md. name, hitpoints, max hit, attack styles, aggressive/poisonous, Slayer level,
+# Slayer masters, weak to, always drops (;), rare drops (;)
+Aberrant spectre	90	8, 14 (without Nose peg)	Magic	Aggressive	60	Vannaka, Chaeldar, Konar, Nieve, Duradel, Mortimer	Air spells 50%	Reward casket (elite)	Mystic robe bottom (dark) 1/512
+Abyssal Sire	425	66 (Melee), 96 (with explosion)	Melee	Poisonous	85	Vannaka, Chaeldar, Konar, Nieve, Duradel, Mortimer		Abyssal ashes	Chaos talisman 1/1,081.1; Nature talisman 1/1,081.1; Cosmic talisman 1/810.8
+Abyssal antibody	50	1	Crush						
+Abyssal demon	150	8	Stab		85	Vannaka, Chaeldar, Konar, Nieve, Duradel, Krystilia, Mortimer		Abyssal ashes	Abyssal dagger 1/32,000; Abyssal head 1/6,000; Abyssal whip 1/512
+Abyssal guardian	50	11	Stab, Ranged	Aggressive				Ashes	Elemental talisman 1/256
+Abyssal leech	10	2	Slash	Aggressive				Ashes	Elemental talisman 1/256
+Abyssal leech (The Scar)	20-50	1-2	Slash, Crush						
+Abyssal walker	95	13	Crush	Aggressive				Ashes	Elemental talisman 1/256
+Acidic Araxyte	58	15	Ranged	Aggressive Venomous	92	Turael, Spria, Nieve, Duradel	Fire spells 50%		
+Adamant dragon	295	29 (Melee), 20 (Ranged), 20 (Magic), 50 (Dragonfire), 25 (Poison special)	Slash, Ranged, Magic, Dragonfire	Aggressive		Konar, Nieve, Duradel	Earth spells 50%	Dragon bones; Adamantite bar	Draconic visage 1/9,000; Dragon metal slice 1/5,000; Dragon limbs 1/1,000
+Afflicted	24-30	3-4	Crush	Aggressive				Bones	
+Air elemental	30	3	Stab				Air spells 30%		
+Air wizard	25	1	Magic					Ashes	
+Al Kharid warrior	19	2	Slash					Bones	
+Albatross	135	10	Stab					Bones	Bird nest (egg)#Blue egg 1/1,000; Bird nest (egg)#Green egg 1/1,000; Bird nest (egg)#Red egg 1/1,000
+Albino bat	33	7	Stab	Aggressive		Turael, Spria, Mazchna	Air spells 40%	Bat bones; Giant bat wing	
+Alchemical Hydra	1100	17x2 (default), 26x2 (empowered)	Ranged, Magic	Aggressive Poisonous	95	Konar, Mortimer	Earth spells 50%	Hydra bones	Ikkle Hydra 1/3,000; Dragon knife 1/2,001; Dragon thrownaxe 1/2,000
+Alexis	60	2	Crush					Wolf bones	Blamish oil 1/512; Eye of newt 2/512; Jangerberries 2/512
+Alomone	25	2	Crush					Bones	
+Alrik	1	1	Crush						
+Ammonite Crab	100	1	Crush	Aggressive		Mazchna, Vannaka, Chaeldar	Earth spells 25%		Unidentified rare fossil 3/3,500; Unidentified large fossil 3/875
+Amoxliatl	400-520	22 (standard)34 (Icicle Crash)	Magic	Aggressive	48	Chaeldar, Konar	Fire spells 30%		Moxi 1/3,000
+Ancient Wyvern	300	10 (Ranged), 16 (Melee), 44 (Icy breath), 10 (Icy breath with Elemental shield equipped)	Slash, Typeless Ranged, Icy breath	Aggressive	82	Chaeldar, Konar, Nieve, Duradel	Air spells 35%	Wyvern bones	Wyvern visage 1/10,000; Granite boots 1/600; Granite longsword 1/600
+Ancient Zygomite	150	9 (melee), 10 (ranged)	Magical melee, Magical ranged		57	Chaeldar, Konar, Nieve, Duradel	Fire spells 40%	Mort myre fungus	
+Ancient feral vyre	81	10	Slash	Aggressive				Vampyre dust	
+Angry barbarian spirit	190	18	Crush	Aggressive			Air spells 30%		
+Angry bear	50-200	5	Stab						
+Angry giant rat	50-200	5	Stab					Bones	
+Angry goblin	50-200	5	Stab						
+Angry unicorn	50-200	5	Stab						
+Animated spade	40	6	Stab				Earth spells 25%	Spade	
+Anja	7	1	Crush					Bones	
+Ankou	60-100	8-10	Crush	Aggressive		Vannaka, Konar, Nieve, Duradel, Krystilia	Air spells 40%	Bones; Reward casket (elite)	Mushroom spore 1/3,613.8
+Aquanite	180	18	Magic		78	Nieve, Duradel, Mortimer		Big bones	Curved bone 1/5,012.5; Aquanite tendon 1/3,500; Long bone 1/400
+Araxxor	1020	38 (melee)  21 (magic)  34 (ranged)	Crush, '"`UNIQ--ref-00000005-QINU`"' Magic, Ranged, All	Aggressive Venomous	92	Turael, Spria, Konar, Nieve, Duradel, Mortimer	Fire spells 50%	Coagulated venom	Nid 1/3,000; Jar of Venom 1/1,500; Araxyte fang 1/600
+Araxyte	60-100	13-17	Crush	Aggressive Venomous	92	Turael, Spria, Nieve, Duradel, Mortimer	Fire spells 50%	Araxyte venom sac	Aranea boots 1/4,000; Araxyte head 1/2,000; Mushroom spore 1/459
+Archer (Ardougne)	50	6	Ranged					Bones	
+Archer (Burthorpe)	50	6	Ranged					Bones	
+Armoured kraken	231	18	Magic	Aggressive			Earth spells 50%		Mushroom spore 1/2,146; Inky paint 1/2,000; Dragon keel parts 1/540
+Armoured zombie (Defender of Varrock)	75	8	Crush, Ranged	Aggressive		Turael, Spria, Mazchna	Fire spells 50%	Bones	
+Armoured zombie (Zemouregal's Base)	75	8	Crush, Ranged	Aggressive		Turael, Spria, Mazchna	Fire spells 50%	Bones	Broken zombie axe 1/800
+Armoured zombie (Zemouregal's Fort)	95	10	Crush, Ranged	Aggressive		Turael, Spria, Mazchna	Fire spells 50%	Bones	Broken zombie axe 1/600; Broken zombie helmet 1/600
+Arrg	140	38 (melee), 30 (ranged)	Slash, Ranged	Aggressive		Vannaka, Chaeldar, Nieve, Duradel	Earth spells 50%	Bones	
+Artio	450	35 (Crush), 50 (Magic), 17 (Ranged)	Crush, Magic, Ranged	Aggressive		Turael, Spria, Mazchna, Konar, Nieve, Duradel, Krystilia		Big bones	Curved bone 1/5,012.5; Callisto cub 1/2,800; Voidwaker hilt 1/912
+Asyn Shade	90	9	Crush	Aggressive		Mazchna, Vannaka	Air spells 40%	Asyn remains	
+Aviansie	63-139	8-16	Ranged	Aggressive		Chaeldar, Konar, Nieve, Duradel, Krystilia	Air spells 45%	Bones; Feather	
+Baby black dragon	80	11	Slash	Aggressive		Konar, Nieve, Duradel	Water spells 50%	Babydragon bones	
+Baby blue dragon	50	5	Slash	Aggressive		Vannaka, Chaeldar, Konar, Nieve, Duradel	Water spells 50%	Babydragon bones	Tooth half of key (moon key) 1/1,066
+Baby blue dragon (Realm of Memories)	50		Melee						
+Baby green dragon	50	5	Slash	Aggressive			Water spells 50%	Babydragon bones	
+Baby impling	10	N/A							
+Baby red dragon	50	5	Slash	Aggressive		Konar, Nieve, Duradel	Water spells 50%	Babydragon bones	
+Baby tanglefoot	40	5	Slash				Fire spells 20%	Leaves	
+Balfrug Kreeyath	161	16	Magic	Aggressive		Chaeldar, Nieve, Duradel	Water spells 25%	Malicious ashes	Zamorakian spear 3/16,129; Godsword shard 1 1/1,524; Godsword shard 2 1/1,524
+Bandit	27-155	3-12	Stab	Aggressive		Krystilia		Bones	
+Bandit (Bandit Camp)	50-65	6-7	Crush					Bones	
+Bandit (Pollnivneach)	30	7-9	Slash					Bones	
+Bandit (Shayzien)	27	3	Stab	Aggressive				Bones	
+Bandit (Varlamore)	27	4	Crush	Aggressive				Bones	
+Banshee	22	2, 6 (without Earmuffs)	Magical melee	Aggressive	15	Turael, Spria, Mazchna, Mortimer	Air spells 30%		Mystic gloves (dark) 1/512
+Barbarian	14-24	2-3	Crush, Stab, Ranged					Bones; Key (medium)	
+Barbarian (Barbarian Camp)	18-24	2	Crush, Ranged					Bones; Key (medium)	
+Bark Blamish Snail	22	2	Ranged	Aggressive			Earth spells 30%	Blamish bark shell; Lean snail	
+Basilisk	75	5	Slash		40	Vannaka, Chaeldar, Konar, Nieve, Duradel, Mortimer	Earth spells 40%	Bones; Reward casket (elite)	Basilisk head 1/2,000; Mystic hat (light) 1/512
+Basilisk Knight	300	20	Slash, Magic	Aggressive	60	Vannaka, Chaeldar, Konar, Nieve, Duradel, Mortimer	Earth spells 40%	Big bones; Reward casket (elite)	Curved bone 1/5,012.5; Basilisk jaw 1/5,000; Basilisk head 1/1,000
+Bat	8	1	Stab			Turael, Spria, Mazchna	Air spells 35%	Bat bones	
+Battle mage	120	20	Magic	Aggressive				Bones	
+Bear Cub	20	2	Slash			Turael, Spria, Mazchna	Fire spells 25%	Bones; Bear fur; Raw bear meat; Bear ribs	
+Bedabin Nomad Fighter	50	7	Slash					Bones	
+Berry	90	13	Crush	Aggressive		Vannaka, Chaeldar, Konar, Nieve, Duradel	Earth spells 20%	Big bones; Cell key 2	Curved bone 1/5,012.5; Long bone 1/400
+Berserk barbarian spirit	190	18	Crush	Aggressive			Air spells 25%		
+Big Snake	120	14	Stab	Aggressive Poisonous				Bones; Snake corpse	
+Big Wolf	74	7	Stab	Aggressive		Turael, Spria, Mazchna	Fire spells 20%	Wolf bones	
+Big frog	18-25	2-3	Crush				Earth spells 25%	Bones; Big frog leg	
+Billy Goat	28	6	Crush				Fire spells 10%	Bones; Goat horn	
+Bird	5-10	1-2	Stab			Turael, Spria	Air spells 25%	Bones	
+Black Guard	30-40	3-8	Stab, Crush			Turael, Spria		Bones	
+Black Guard Berserker	50	13	Crush			Turael, Spria		Bones	
+Black Heather	37	4	Slash			Krystilia		Bones	
+Black Knight	42	4	Slash	Aggressive		Krystilia		Bones	
+Black Knight Titan	142	15	Crush					Bones; Key (medium)	
+Black bear	25	3	Slash			Turael, Spria, Mazchna, Krystilia	Fire spells 30%	Bones; Bear fur; Raw bear meat; Bear ribs	
+Black chinchompa (Hunter)	1	1	Crush						
+Black demon	157-200	16-17	Slash	Aggressive		Chaeldar, Konar, Nieve, Duradel, Krystilia	Water spells 40%	Malicious ashes	
+Black demon (Realm of Memories)	157		Slash						
+Black dragon	190-250	21 (Melee), 50 (Dragonfire)	Slash, Dragonfire	Aggressive		Konar, Nieve, Duradel, Krystilia	Water spells 50%	Dragon bones; Black dragonhide; Dragon token	Draconic visage 1/10,000
+Black dragon (Realm of Memories)	190								
+Black jaguar	80	6	Slash	Aggressive			Fire spells 30%	Bones; Jaguar fur	
+Black knight (Port Sarim jail)	42	4	Slash					Bones	
+Black unicorn	29	3	Stab	Aggressive				Bones; Unicorn horn; Unicorn bone	
+Black unicorn Foal	25	3	Stab					Bones	
+Blessed giant rat	30	1	Stab			Turael, Spria		Bones; Giant rat bone	
+Blessed spider	32	4	Crush	Aggressive		Turael, Spria	Fire spells 50%		
+Blood Blamish Snail	10-13	2-3	Ranged	Aggressive			Earth spells 30%	Fat snail; Blamish red shell (round)	
+Blood Moon	500	32 total 4+8+20	Typeless slash	Aggressive			Air spells 15%		
+Blood Reaver	125-150	20	Magic	Aggressive				Malicious ashes	Ancient ceremonial boots 1/640; Ancient ceremonial gloves 1/640; Ancient ceremonial legs 1/640
+Bloodveld	120-134	5-6	Magical melee		50	Vannaka, Chaeldar, Konar, Nieve, Duradel, Krystilia, Mortimer		Vile ashes	
+Bloodworm	45	3	Stab	Aggressive					
+Blue Moon	500	32 total 4+8+20	Typeless slash	Aggressive			Air spells 15%		
+Blue dragon	105	10 (Slash), 50 (Dragonfire)	Slash, Dragonfire	Aggressive		Vannaka, Chaeldar, Konar, Nieve, Duradel	Water spells 50%	Blue dragonhide; Dragon bones	Tooth half of key (moon key) 1/636
+Blue dragon (Realm of Memories)	105								
+Boar	8-12	1	Slash				Fire spells 20%	Bones; Raw boar meat	
+Body Golem	60	7	Slash				Earth spells 35%		
+Boris	60	2	Crush					Wolf bones	Blamish oil 1/512; Eye of newt 2/512; Jangerberries 2/512
+Borrokar	50	6	Crush					Bones	Blamish oil 1/512; Fremennik blade 1/512; Fremennik helm 1/512
+Bouncer	116	13	Stab	Aggressive		Vannaka, Chaeldar, Nieve, Duradel, Krystilia		Vile ashes	
+Bree	162	16	Ranged	Aggressive				Bones	Saradomin sword 3/16,129; Godsword shard 1 1/1,524; Godsword shard 2 1/1,524
+Breoca	10	1	Crush					Bones	
+Brine rat	50	9	Stab		47	Turael, Spria, Vannaka, Chaeldar, Konar, Nieve		Bones; Raw rat meat	Brine sabre 1/512
+Broddi	1	1	Crush					Bones	
+Bronze dragon	122	12 (Melee), 50 (Dragonfire)	Slash, Dragonfire	Aggressive		Konar, Nieve, Duradel	Earth spells 50%	Dragon bones; Bronze bar	Dragon platelegs 1/2,048; Dragon plateskirt 1/2,048
+Bruise Blamish Snail	12-15	2-3	Ranged	Aggressive			Earth spells 25%	Blamish blue shell (round); Fat snail	
+Brutal black dragon	315	29 (Melee, Magic), 50 (Dragonfire)	Slash, Magic, Dragonfire	Aggressive	77	Konar, Nieve, Duradel	Water spells 50%	Dragon bones; Black dragonhide	Draconic visage 1/10,000; Dragon platelegs 1/512; Dragon plateskirt 1/512
+Brutal blue dragon	245	21 (Melee, Magic), 50 (Dragonfire)	Slash, Magic, Dragonfire	Aggressive		Vannaka, Chaeldar, Konar, Nieve, Duradel	Water spells 50%	Dragon bones; Blue dragonhide	Draconic visage 1/10,000
+Brutal green dragon	175	18 (Melee, Magic), 50 (Dragonfire)	Stab, Magic, Dragonfire	Aggressive			Water spells 50%	Dragon bones; Green dragonhide	
+Brutal red dragon	285	22 (Melee, Magic), 50 (Dragonfire)	Slash, Magic, Dragonfire	Aggressive		Konar, Nieve, Duradel	Water spells 50%	Dragon bones; Red dragonhide	Draconic visage 1/10,000
+Brutus	58	3 (melee), 19 (special)	Crush	Aggressive		Turael, Spria	Earth spells 25%	Bull bones; Raw t-bone steak	Beef 1/1,000
+Bryophyta	115	16 (Melee), 10 (Magic)	Crush, Magic	Aggressive Poisonous		Vannaka	Fire spells 50%	Giant bones	Curved bone 1/5,012.5; Long bone 1/400
+Buffalo	20	2	Crush			Turael, Spria		Bones; Raw beef	
+Bull shark	81	5	Slash						Umbral frag 2/1,000
+Bunny	5	0	Crush					Bones; Raw rabbit	
+Butterfly ray	83	4	Slash						
+Callisto	1000	55 (Crush), 31 (Ranged), 50 (Special)	Crush, Magic, Ranged	Aggressive		Turael, Spria, Mazchna, Konar, Nieve, Duradel, Krystilia	Fire spells 30%	Big bones; Bones	Curved bone 2/10,025; Callisto cub 1/1,500; Tyrannical ring 1/512
+Camp dweller	25-30	3-5	Crush					Bones	
+Carnivorous chinchompa	1	1	Crush						
+Catablepon	40-70	5-7	Stab, Magic	Aggressive		Mazchna		Bones	
+Catherby monodon	40	4	Ranged						
+Cave Bug (Realm of Memories)	5	1							
+Cave bug	5-93	1-9	Stab, Crush	Aggressive	7	Turael, Spria, Mazchna	Fire spells 50%		
+Cave crawler	22	3	Stab	Aggressive Poisonous	10	Turael, Spria, Mazchna, Mortimer			Tooth half of key (moon key) 1/1,024
+Cave goblin (monster)	10	1	Crush			Turael, Spria	Fire spells 40%	Bones	
+Cave goblin guard	26	3	Crush			Turael, Spria	Fire spells 40%	Bones	
+Cave goblin miner	10	2	Crush			Turael, Spria	Fire spells 40%	Bones	
+Cave horror	55	9	Magical melee	Aggressive	58	Chaeldar, Nieve, Duradel, Mortimer	Fire spells 30%	Big bones	Curved bone 1/5,012.5; Black mask (10) 1/512; Long bone 1/400
+Cave kraken	125	13	Magic		87	Chaeldar, Konar, Nieve, Duradel	Earth spells 50%		Kraken tentacle 1/1,200
+Cave lizard	20	5	Crush	Aggressive				Bones	
+Cave slime	25	2	Stab	Poisonous	17	Turael, Spria, Mazchna	Earth spells 50%	Swamp tar	
+Ceolburg	10	1	Crush					Bones	
+Cerberus	600	23	Stab, Ranged, Magic	Aggressive	91	Vannaka, Chaeldar, Konar, Nieve, Duradel	Water spells 40%	Infernal ashes	Hellpuppy 1/3,000; Jar of Souls 1/2,000; Eternal crystal 1/520
+Chaos Elemental	250	28	Magic, Ranged, Melee (Crush?)	Aggressive		Konar, Nieve, Duradel, Krystilia	Air spells 50%		Pet chaos elemental 1/300; Dragon pickaxe 1/256
+Chaos Fanatic	225	21 (Magic attack) 31 (Special attack)	Ranged magic	Aggressive		Konar, Nieve, Duradel, Krystilia		Bones	Pet chaos elemental 1/1,000; Malediction shard 1 1/256; Odium shard 1 1/256
+Chaos Golem	94	10	Crush				Earth spells 35%		
+Chaos druid	20	2 (Melee)	Crush, Magic	Aggressive		Krystilia		Bones	
+Chaos druid warrior	40	5	Crush	Aggressive				Bones	
+Chaos dwarf	61	6	Crush	Aggressive		Turael, Spria		Bones	
+Chicken	3	0	Stab			Turael, Spria		Bones; Raw chicken; Key (medium)	
+Chicken (Tutorial Island)	3	0	Stab					Bones	
+Chilled jelly	140	10	Magical melee		52	Vannaka, Chaeldar, Konar, Mortimer	Fire spells 50%		Tooth half of key (moon key) 1/504; Frozen tear Rare
+Chinchompa (Hunter)	1	1	Crush						
+Chronozon	60	18	Slash	Aggressive			Water spells 25%	Vile ashes; Crest part (Johnathon)	
+City guard	80	10	Crush			Vannaka		Big bones	Curved bone 1/5,012.5; Long bone 1/400
+Clivet	25	2	Crush					Bones	
+Cockatrice	37	5	Stab		25	Mazchna, Vannaka, Mortimer		Bones	Cockatrice head 1/1,000; Mystic boots (light) 1/512
+Colonel Radick	65	4	Slash					Bones	
+Commander Zilyana	255	27 (melee), 20 (magic)	Crush, Magic	Aggressive		Konar, Nieve, Duradel		Bones; Frozen key piece (Saradomin)	Pet Zilyana 1/5,000; Godsword shard 1 1/762; Godsword shard 2 1/762
+Confused barbarian	124	15	Crush					Mangled bones	
+Confusion beast	28-64	5-6	Slash, Crush, Stab	Aggressive Poisonous					
+Corporeal Beast	2000	33 (Melee), 65 (Magic), 51 (Stomp)	Crush, Magic	Aggressive			Earth spells 10%		Pet dark core 1/5,000; Elysian sigil 1/4,095; Arcane sigil 1/1,365
+Cow	8	1	Crush			Turael, Spria		Cowhide; Raw beef; Bones	
+Cow calf	6	1	Crush			Turael, Spria		Cowhide; Raw beef; Bones	
+Crab	18-19	3	Crush			Mazchna, Vannaka, Chaeldar	Earth spells 20%	Giant crab meat	
+Crandor shark	35	3	Slash						
+Crawling Hand	15-19	1-2	Crush		5	Turael, Spria, Mazchna, Mortimer		Bones	Crawling hand (item) 1/500
+Crazy archaeologist	225	14 (standard), 24 (special)	Ranged, Crush	Aggressive		Konar, Nieve, Duradel, Krystilia		Bones	Malediction shard 2 1/256; Odium shard 2 1/256
+Crocodile	62	6	Slash	Aggressive		Vannaka	Earth spells 40%	Bones	
+Crypt rat	35	3	Stab	Aggressive		Turael, Spria		Bones	
+Crypt spider	60	6	Stab	Aggressive		Turael, Spria	Fire spells 50%		
+Cuffs	7	1	Crush					Bones	
+Culinaromancer	150	25 (Magic), 11 (Crush)	Melee, Magic	Aggressive				Cake	
+Cyclops	75-150	6-8	Crush	Aggressive		Mazchna, Vannaka		Big bones	Curved bone 1/5,012.5; Mushroom spore 1/3,613.8; Long bone 1/400
+Cyclops (Ardougne Zoo)	55	6	Crush	Aggressive		Mazchna, Vannaka		Big bones; Key (medium)	Curved bone 1/5,012.5; Long bone 1/400
+Cyclops (Catacombs of Kourend)	75-100	6-7	Crush	Aggressive		Mazchna, Vannaka		Big bones	Curved bone 1/5,012.5; Mushroom spore 1/3,613.8; Long bone 1/400
+Cyclops (God Wars Dungeon)	110	12	Crush	Aggressive		Mazchna, Vannaka		Big bones	Curved bone 1/5,012.5; Mushroom spore 1/3,613.8; Long bone 1/400
+Dad	120	27	Crush			Vannaka, Chaeldar, Nieve, Duradel	Earth spells 40%	Big bones	Curved bone 1/5,012.5; Long bone 1/400
+Dagannoth	70-120	8	Stab, Ranged	Aggressive		Vannaka, Chaeldar, Konar, Nieve, Duradel	Earth spells 35%	Bones	
+Dagannoth (Waterbirth Island)	85-95	15-20	Ranged, Stab	Aggressive		Vannaka, Chaeldar, Konar, Nieve, Duradel	Earth spells 35%	Bones	Archer helm 1/2,048; Berserker helm 1/2,048; Farseer helm 1/2,048
+Dagannoth Prime	255	50	Magic	Aggressive		Vannaka, Chaeldar, Konar, Nieve, Duradel	Earth spells 35%	Dagannoth bones; Dagannoth hide	Pet Dagannoth Prime 1/5,000; Chaos talisman 1/2,986.7; Nature talisman 1/2,986.7
+Dagannoth Rex	255	26	Slash	Aggressive		Vannaka, Chaeldar, Konar, Nieve, Duradel	Earth spells 35%	Dagannoth bones; Dagannoth hide	Pet Dagannoth Rex 1/5,000; Chaos talisman 1/2,986.7; Nature talisman 1/2,986.7
+Dagannoth Supreme	255	30	Ranged	Aggressive Poisonous		Vannaka, Chaeldar, Konar, Nieve, Duradel	Earth spells 35%	Dagannoth bones; Dagannoth hide	Pet Dagannoth Supreme 1/5,000; Chaos talisman 1/2,986.7; Nature talisman 1/2,986.7
+Dagannoth fledgeling	100	6	Stab			Vannaka, Chaeldar, Konar, Nieve, Duradel	Earth spells 35%	Bones	
+Dagannoth spawn	35	4	Stab	Aggressive		Vannaka, Chaeldar, Konar, Nieve, Duradel	Earth spells 35%	Bones	
+Damien Leucurte	217	20	Ranged, Magic	Aggressive Poisonous		Mazchna, Vannaka, Chaeldar, Konar, Nieve, Duradel			
+Dark beast	220	17 (melee), 8 (magic)	Crush, Magic	Aggressive	90	Konar, Nieve, Duradel, Mortimer	Earth spells 60%	Big bones	Curved bone 1/5,012.5; Dark bow 1/512; Long bone 1/400
+Dark warrior	17-165	2-18	Slash	Aggressive		Krystilia		Bones	
+Dark wizard	12-25	2-6	Magic	Aggressive				Bones	
+Deadly red spider	35	3	Stab	Aggressive		Turael, Spria, Krystilia	Fire spells 40%		
+Death wing	80	8 (approx)	Stab	Aggressive		Turael, Spria, Mazchna	Air spells 20%		
+Demonic gorilla	380	31 (normal), 40 (special attack)	Crush, Ranged, Magic	Aggressive		Turael, Spria, Chaeldar, Steve, Duradel	Water spells 35%	Malicious ashes	Heavy frame 1/1,500; Monkey tail 1/1,500; Light frame 1/750
+Deranged archaeologist	200	25 (melee), 25 (range), 56 (special direct hit), 18+ (special indirect hit)	Ranged, Crush	Aggressive		Konar, Nieve, Duradel		Bones	Unidentified rare fossil 12/3,500
+Desert Lizard	25	3	Crush	Aggressive	22	Turael, Spria, Mazchna		Bones	Mystic gloves (light) 1/512
+Desert Wolf	34	3	Slash	Aggressive		Turael, Spria, Mazchna		Wolf bones	
+Deviant spectre	190	8, 14 (without Nose peg)	Magic	Aggressive	60	Vannaka, Chaeldar, Konar, Nieve, Duradel, Mortimer	Air spells 30%	Reward casket (elite)	Mystic robe bottom (dark) 1/512
+Dire Wolf	10-85	3-8	Ranged, Stab	Aggressive		Turael, Spria, Mazchna		Wolf bones	
+Dire Wolf Alpha	100	12	Stab	Aggressive		Turael, Spria, Mazchna		Wolf bones	
+Dire bat	90	6	Typeless Stab	Aggressive			Air spells 40%	Bat bones	
+Disciple of Iban	20	2	Crush					Bones; Zamorak monk top; Zamorak monk bottom	
+Dolphin	45	2	Slash					Bones	Echo pearl 1/1,200
+Donny the lad	37	4	Slash			Krystilia		Bones	
+Doomion	87	9	Slash	Aggressive				Vile ashes; Amulet of Doomion	
+Drake	225	15 (Ranged), 15 (Ranged melee), 32 (Dragonfire)	Ranged, Ranged melee, Dragonfire	Aggressive	84	Konar, Nieve, Duradel, Mortimer	Water spells 50%	Drake bones	Dragon knife 1/10,000; Dragon thrownaxe 1/10,000; Drake's claw 1/2,560
+Druid	30	4 (Crush), 5 (Magic)	Crush, Magic					Bones	
+Drunken man	7	1	Crush					Bones; Key (medium)	
+Duck	3	0	Stab			Turael, Spria			
+Duckling	3	0	Stab			Turael, Spria			
+Duke Sucellus	330-1697	56 (Melee), 48 (Magic), 101 (Gaze)	Magic, Crush	Aggressive		Konar, Nieve, Duradel		Odd key; Ancient blood ornament kit	Baron 1/2,500; Virtus mask 1/2,160; Virtus robe bottom 1/2,160
+Dungeon rat	12	2	Stab			Turael, Spria		Bones; Rat's tail; Giant rat bone	
+Dust devil	105-130	8, 16 (without Facemask)	Ranged melee		65	Vannaka, Chaeldar, Konar, Nieve, Duradel, Krystilia, Mortimer	Air spells 35%	Bones	Dragon chainbody 1/32,768; Dust battlestaff 1/4,000
+Dwarf	10-26	2-3	Stab, Crush			Turael, Spria		Bones	
+Dwarf gang member	25-40	4-7	Crush			Turael, Spria		Bones	
+Eadburg	10	1	Crush					Bones	
+Eagle ray	55	3	Slash						Umbral frag 1/750
+Earth elemental	35	4	Crush				Earth spells 50%	Rock (elemental)	
+Earth impling	10	N/A							
+Earth warrior	54	5	Crush	Aggressive		Krystilia			Mushroom spore 1/257
+Earth wizard	25	6	Magic					Ashes	
+Earthen Nagua	160	13 total, 7+6	Stab	Aggressive	48	Chaeldar, Konar	Air spells 15%		Earthbound tecpatl 1/400
+Eclectic impling	10	N/A							
+Eclipse Moon	500	32 total 4+8+20	Typeless slash	Aggressive			Air spells 15%		
+Eduard	60	2	Crush					Wolf bones	Blamish oil 1/512; Eye of newt 2/512; Jangerberries 2/512
+Einar	1	1	Crush					Bones	
+Elder Chaos druid	150	17	Magic	Aggressive		Krystilia		Bones	Elder chaos hood 1/1,419; Elder chaos robe 1/1,419; Elder chaos top 1/1,419
+Elder custodian stalker	250	10 (melee), 5 (special attack)	Crush, Magic (Bleed)	Aggressive	76	Chaeldar, Nieve, Mortimer	Fire spells 30%	Big bones	Curved bone 1/5,012.5; Antler guard 1/650; Long bone 1/400
+Elf Archer	105	11	Ranged			Vannaka, Chaeldar, Nieve, Duradel		Bones	
+Elf Warrior	105	10	Stab			Vannaka, Chaeldar, Nieve, Duradel		Bones	
+Elite Black Knight	90	13	Slash	Aggressive				Bones	
+Elite Dark Mage	80	16 (Fire Blast)20 (Fire Wave)2 (Wind Strike)	Magic	Aggressive				Bones	
+Elite Dark Ranger	80	9	Ranged	Aggressive				Bones	
+Elite Dark Warrior	80	9	Slash	Aggressive				Bones	
+Elite Khazard Guard	85	12	Slash	Aggressive					
+Elvarg	80	8 (Slash), 70 (Dragonfire), 10 (with anti-dragon shield)	Slash, Magic, Dragonfire	Aggressive			Water spells 30%		
+Embertailed jerboa	2	0	Crush						
+Emissary Acolyte	25	4	Stab	Aggressive				Bones	
+Emissary Ascended	80	12	Stab	Aggressive				Bones	
+Emissary Chosen	50	8	Stab	Aggressive				Bones	
+Enclave guard	80	10	Crush			Vannaka		Big bones	Curved bone 1/5,012.5; Long bone 1/400
+Enraged Boar	25	2	Slash	Aggressive				Raw boar meat; Bones	
+Enraged barbarian spirit	190	18	Crush	Aggressive			Air spells 15%		
+Ent	75-105	10-17	Crush	Aggressive		Krystilia	Fire spells 40%		
+Entrana firebird	5	1	Stab			Turael, Spria	Water spells 100%	Bones; Fire feather	
+Essence impling	10	N/A							
+Evil Chicken	120	21	Magic			Turael, Spria		Bones; Raw chicken; Feather	
+Experiment	40-100	1-6	Crush, Stab					Cavern key	
+Experiment No.2	95	11 (approx)	Stab, Ranged					Bones; Shrunk ogleroot	
+Famished shark	15	2	Slash						
+Farmer	12	1	Stab					Bones	
+Fear reaper	25-57	5-6	Slash	Aggressive					
+Feral Vampyre	40-185	6-13	Stab, Slash	Aggressive		Mazchna, Vannaka, Chaeldar, Konar, Nieve, Duradel		Vampyre dust	
+Fever spider	40	4, 1–12 (without Slayer gloves)	Stab		42	Vannaka, Chaeldar	Fire spells 25%	Fever spider body	
+Fire elemental	30	4	Slash				Water spells 100%	Ashes	
+Fire giant	111-150	10-13	Slash	Aggressive		Vannaka, Chaeldar, Konar, Nieve, Duradel, Krystilia	Water spells 100%	Big bones	Curved bone 1/5,012.5; Long bone 1/400
+Fire giant (Realm of Memories)	111								
+Fire wizard	25	4	Magic					Ashes	
+Fiyr Shade	110	11	Crush	Aggressive		Mazchna, Vannaka	Air spells 40%	Fiyr remains	
+Flawed Golem	25	3	Stab				Earth spells 35%		Barronite guard 1/800
+Flesh Crawler	25	1	Slash	Aggressive		Mazchna	Fire spells 20%		
+Flight Kilisa	133	15	Slash	Aggressive		Chaeldar, Konar, Nieve, Duradel	Air spells 30%	Bones; Feather	Armadyl chainskirt 1/16,129; Armadyl chestplate 1/16,129; Armadyl helmet 1/16,129
+Flockleader Geerin	132	25	Ranged	Aggressive		Chaeldar, Konar, Nieve, Duradel	Air spells 30%	Bones; Feather	Armadyl chainskirt 1/16,129; Armadyl chestplate 1/16,129; Armadyl helmet 1/16,129
+Flower	10	0 (Does not attack)							
+Foreman	20	3	Crush					Bones	
+Forester (Woodcutting Guild)	17	2	Slash					Bones	
+Forgotten Soul	50	2	Crush			Turael, Spria, Mazchna	Air spells 50%		
+Fortress Guard	22	3	Stab					Bones	
+Fox	30	4	Crush				Fire spells 25%	Bones	
+Fragment of Seren	1000	12+12 (standard), 3+3 (Protect from Missiles), Max HP minus 1 (special)	Slash, Ranged	Aggressive					
+Freidir	50	6	Crush					Bones	Blamish oil 1/512; Fremennik blade 1/512; Fremennik helm 1/512
+Frenzied ice troll female	80	17	Ranged	Aggressive		Turael, Spria, Vannaka, Chaeldar, Nieve, Duradel	Fire spells 50%	Big bones	Curved bone 1/5,012.5; Long bone 1/400
+Frenzied ice troll grunt	80	21	Crush	Aggressive		Vannaka, Chaeldar, Nieve, Duradel	Fire spells 50%	Big bones	Curved bone 1/5,012.5; Long bone 1/400
+Frenzied ice troll male	80	17	Crush	Aggressive		Vannaka, Chaeldar, Nieve, Duradel	Fire spells 50%	Big bones	Curved bone 1/5,012.5; Long bone 1/400
+Frenzied ice troll runt	60	15	Crush	Aggressive		Vannaka, Chaeldar, Nieve, Duradel	Fire spells 50%	Big bones	Curved bone 1/5,012.5; Long bone 1/400
+Frigatebird	79	8	Stab					Bones	Bird nest (egg)#Blue egg 1/1,250; Bird nest (egg)#Green egg 1/1,250; Bird nest (egg)#Red egg 1/1,250
+Frog	8	1	Crush				Earth spells 40%	Bones	
+Frost Crab	60	1	Crush	Aggressive		Mazchna, Vannaka, Chaeldar	Fire spells 100%		Tooth half of key (moon key) 1/1,354
+Frost Nagua	120	12 total, 6+6	Magic	Aggressive	48	Chaeldar, Konar	Fire spells 50%		Tooth half of key (moon key) 1/540; Glacial temotli 1/500
+Frost dragon	230	16 (Stab)50 (Dragonfire)	Melee, Dragonfire	Aggressive		Nieve, Duradel	Fire spells 100%	Frost dragon bones	Draconic visage 1/10,000
+Gadderanks	20	3	Crush						
+Galina	60	2	Crush					Wolf bones	Blamish oil 1/512; Eye of newt 2/512; Jangerberries 2/512
+Gardener	7	1	Stab					Bones	
+Gargoyle	105	11	Slash	Aggressive	75	Vannaka, Chaeldar, Konar, Nieve, Duradel, Mortimer	Earth spells 40%		Mystic robe top (dark) 1/512; Granite maul 1/256
+Gemstone Crab		1	Crush	Aggressive					Uncut dragonstone 1/500
+General Graardor	255	60 (melee), 35 (ranged)	Crush, Ranged	Aggressive		Konar, Nieve, Duradel	Earth spells 40%	Big bones; Frozen key piece (Bandos)	Curved bone 1/5,012.5; Pet General Graardor 1/5,000; Godsword shard 1 1/762
+Georgy	60	2	Crush					Wolf bones	Blamish oil 1/512; Eye of newt 2/512; Jangerberries 2/512
+Ghast	45-160	3-12	Slash, Crush				Air spells 25%	Bones	
+Ghost	25-80	2-7	Crush	Aggressive		Turael, Spria, Mazchna	Air spells 50%		
+Ghost (Grave of Scorpius)	20	3	Crush			Turael, Spria, Mazchna	Air spells 50%		
+Ghost (Melzar's Maze)	25	2	Crush			Turael, Spria, Mazchna	Air spells 50%	Key (orange)	
+Ghoul	50	5	Crush	Aggressive		Mazchna, Vannaka		Bones	
+Giant Mole	200	21	Crush			Konar, Nieve, Duradel	Earth spells 50%	Big bones; Mole claw; Mole skin	Curved bone 1/5,012.5; Baby Mole 1/3,000; Long bone 1/400
+Giant Rock Crab	180	9	Crush	Aggressive		Mazchna, Vannaka, Chaeldar	Earth spells 20%	Bones	Chaos talisman 1/298.7; Nature talisman 1/298.7
+Giant ant	20-30	3-4	Stab						
+Giant bat	32	3	Stab	Aggressive		Turael, Spria, Mazchna	Air spells 10%	Bat bones; Giant bat wing	
+Giant bat (Brine Rat Cavern)	32	3	Crush	Aggressive		Turael, Spria, Mazchna	Air spells 10%	Bat bones	
+Giant crypt rat	70	6	Stab	Aggressive		Turael, Spria		Bones; Giant rat bone	
+Giant crypt spider	80	8	Stab	Aggressive		Turael, Spria	Fire spells 40%		
+Giant frog	23-100	2-9	Crush				Earth spells 25%	Big bones	Curved bone 1/5,012.5; Long bone 1/400
+Giant lobster	50	4	Stab	Aggressive		Turael, Spria, Mazchna	Earth spells 25%		
+Giant mosquito	3	1	Crush				Fire spells 40%		
+Giant rat	5-25	1-3	Stab	Aggressive		Turael, Spria		Bones; Raw rat meat; Giant rat bone	
+Giant rat (Tutorial Island)	3	1	Stab					Bones (Tutorial Island)	
+Giant skeleton (Shadow Dungeon)	70	8	Crush	Aggressive		Turael, Spria, Mazchna	Earth spells 40%	Big bones	Curved bone 1/5,012.5; Long bone 1/400
+Giant skeleton (Tarn's Lair)	110	11	Crush	Aggressive		Turael, Spria, Mazchna, Vannaka	Earth spells 40%	Big bones	
+Giant spider	5-50	1-7	Stab	Aggressive		Turael, Spria, Krystilia	Fire spells 50%		
+Giant wasp	30	3	Stab						
+Gnome	3	1	Crush, Ranged					Bones	
+Gnome child	2	0	Crush					Bones	
+Gnome guard	31	3	Slash					Bones	
+Gnome troop	3	1	Ranged					Bones	
+Gnome woman	2	1	Crush					Bones	
+Goat	21	4	Crush					Bones; Goat horn	
+Goblin	5-16	1-2	Stab, Crush			Turael, Spria		Bones; Goblin skull	
+Goblin (Goblin Village)	12	1	Crush			Turael, Spria			
+Goblin (God Wars Dungeon)	3-18	2-3	Crush			Turael, Spria		Bones; Goblin skull	
+Goblin (Lumbridge farm)	12	1	Crush			Turael, Spria			
+Goblin (Realm of Memories)	5								
+Goblin (Vault of War)	5-26	1-3	Stab, Crush			Turael, Spria		Bones; Goblin skull	
+Goblin guard	43	5	Stab			Turael, Spria		Bones; Goblin skull	
+Gorad	80	7	Crush			Vannaka		Big bones; Ogre tooth	Curved bone 1/5,012.5; Long bone 1/400
+Gorak	112-128	14	Crush (100% prayer penetration)	Aggressive				Big bones	Curved bone 1/5,012.5; Long bone 1/400
+Gourmet impling	10	N/A							
+Grave scorpion	7	2	Crush			Turael, Spria, Mazchna	Fire spells 40%		
+Great white shark	243	15	Slash	Aggressive					Dragon keel parts 1/720; Large dragon keel parts 1/720; Broken dragon hook 1/500
+Greater Nechryael	205	21	Crush		80	Vannaka, Chaeldar, Konar, Nieve, Duradel, Krystilia, Mortimer		Malicious ashes	
+Greater demon	87-130	8-10	Slash	Aggressive		Chaeldar, Konar, Nieve, Duradel, Krystilia	Water spells 40%	Vile ashes	
+Greater demon (Realm of Memories)	87								
+Green dragon	75-100	8 (Slash), 50 (Dragonfire)	Slash, Dragonfire	Aggressive		Krystilia	Water spells 50%	Dragon bones; Green dragonhide; Reward casket (elite)	
+Grimy Lizard	75	3	Crush	Aggressive Poisonous	44	Turael, Spria, Mazchna		Bones	Mystic gloves (light) 1/512
+Grip	25	3	Slash						
+Grizzly bear	27-35	3-5	Slash	Aggressive		Turael, Spria, Mazchna, Krystilia	Fire spells 20%	Bones; Bear fur; Raw bear meat; Bear ribs	
+Grizzly bear (Escape Caves)	75	8	Typeless Slash	Aggressive		Turael, Spria, Mazchna, Krystilia	Fire spells 20%		
+Grizzly bear cub	35	4	Slash			Turael, Spria, Mazchna	Fire spells 20%	Bones; Bear fur; Raw bear meat; Bear ribs	
+Growler	146	16	Magic	Aggressive				Bones	Saradomin sword 3/16,129; Godsword shard 1 1/1,524; Godsword shard 2 1/1,524
+Gryphon	110	8, 20+ (special)	Crush		51	Vannaka, Chaeldar, Nieve, Duradel, Mortimer	Air spells 50%	Bones; Gryphon feather	Horn of Plenty (empty) 1/2,500
+Guard	22	3-4	Stab, Ranged, Crush					Bones; Key (medium)	
+Guard (Aldarin)	22	3	Stab					Bones	
+Guard (Auburnvale)	22	3	Stab, Ranged					Bones	
+Guard (Burthorpe)	40	5	Crush					Bones	
+Guard (Cave goblin)	26	3	Crush			Turael, Spria		Bones	
+Guard (Deadman Mode)	800	Varies	Ranged, Slash	Aggressive					
+Guard (Desert Mining Camp)	60	5	Crush	Aggressive				Bones	
+Guard (Doric's hut)	22	3	Crush					Bones; Key (medium)	
+Guard (H.A.M. Storerooms)	30	3	Crush						
+Guard (Hosidius)	22	4	Ranged, Crush					Bones	
+Guard (Port Roberts)	22	3	Stab					Bones; Key (medium)	
+Guard (Port Sarim jail)	22	3	Crush					Bones; Key (medium)	
+Guard (Prifddinas)	105	10	Stab			Vannaka, Chaeldar, Nieve, Duradel		Bones	
+Guard (Ranging Guild)	50	4	Ranged					Bones	
+Guard (Shayzien)	22	3	Crush					Bones	
+Guard (Tlati Rainforest)	22	3	Stab, Ranged					Bones; Key (medium)	
+Guard (Varlamore)	22	3	Stab					Bones	
+Guard (dwarf)	16	2	Stab			Turael, Spria		Bones	
+Guard Bandit	27	3	Stab	Aggressive		Krystilia		Bones	
+Guard dog	49	5	Crush			Turael, Spria, Mazchna		Bones; Key (medium)	
+Guardian of Armadyl	40-50	6	Slash					Bones	
+Gunthor the brave	35	4	Slash	Aggressive				Bones; Key (medium)	
+H.A.M. Guard	15-30	2-3	Crush					Bones	
+Halla (Miscellania)	1	1	Crush					Bones	
+Hammerhead shark	125	7	Slash	Aggressive					Umbral frag 2/1,000
+Harpie Bug Swarm	25	6	Crush	Aggressive	33	Vannaka	Fire spells 50%		
+Head Guard	86	10	Crush					Bones	Rune kiteshield 1/512; Rune scimitar 1/512
+Head Thief	37	3	Slash					Bones	
+Headless Beast	100	10 (Melee), 16 (Special attack)	Slash	Aggressive				Big bones	Curved bone 1/5,012.5; Long bone 1/400
+Hellhound	116-150	11-13	Stab	Aggressive		Vannaka, Chaeldar, Konar, Nieve, Duradel, Krystilia	Water spells 50%	Vile ashes	Smouldering stone 1/32,768
+Hengel	7	1	Crush					Bones	
+Hermit crab	75	1	Crush					Sandy paint	Umbral frag 1/1,280; Pillar frag 3/1,280
+Hero	82	9	Slash					Bones	
+Highwayman	13	1	Stab	Aggressive				Black cape; Bones	
+Hill Giant	35	4	Crush	Aggressive		Mazchna, Vannaka, Krystilia	Earth spells 25%	Big bones; Key (medium)	Curved bone 1/5,012.5; Long bone 1/400
+Hill Giant (Realm of Memories)	35								
+Hobgoblin	29-52	3-5	Crush, Stab	Aggressive		Mazchna, Vannaka		Bones	
+Hobgoblin (The Slug Menace)	29	3	Crush	Aggressive		Mazchna, Vannaka			
+Holthion	87	9	Slash	Aggressive				Vile ashes; Amulet of Holthion	
+Hoop Snake	25	2	Crush					Bones	Unidentified rare fossil 3/3,500; Unidentified large fossil 3/875
+Hopeless creature	25-71	7	Slash, Stab, Ranged	Aggressive			Fire spells 40%		
+Hydra	300	22	Magic, Ranged	Aggressive Poisonous	95	Konar, Mortimer	Earth spells 40%	Hydra bones	Dragon knife 1/10,001; Dragon thrownaxe 1/10,000; Hydra tail 1/5,001
+Hygd	10	1	Crush					Bones	
+Ice Queen	104	10	Crush				Fire spells 100%	Ice gloves	
+Ice giant	70-100	7-10	Slash	Aggressive		Vannaka, Krystilia	Fire spells 100%	Big bones	Curved bone 1/5,012.5; Tooth half of key (moon key) 1/1,026; Mushroom spore 1/578.2
+Ice spider	65	6	Crush	Aggressive		Turael, Spria, Krystilia	Fire spells 100%		Tooth half of key (moon key) 1/964
+Ice troll	80-100	21-25	Crush	Aggressive		Vannaka, Chaeldar, Nieve, Duradel	Fire spells 100%	Big bones	Curved bone 1/5,012.5; Long bone 1/400
+Ice troll female	80	6	Ranged	Aggressive		Vannaka, Chaeldar, Konar, Nieve, Duradel	Fire spells 100%	Big bones	Curved bone 1/5,012.5; Mushroom spore 1/420.5; Long bone 1/400
+Ice troll grunt	80	21	Crush	Aggressive		Vannaka, Chaeldar, Nieve, Duradel	Fire spells 35%	Big bones	Curved bone 1/5,012.5; Mushroom spore 1/420.5; Long bone 1/400
+Ice troll male	80	17	Crush	Aggressive		Vannaka, Chaeldar, Nieve, Duradel	Fire spells 100%	Big bones	Curved bone 1/5,012.5; Mushroom spore 1/420.5; Long bone 1/400
+Ice troll runt	60	15-17	Crush	Aggressive		Vannaka, Chaeldar, Konar, Nieve, Duradel	Fire spells 100%	Big bones	Curved bone 1/5,012.5; Mushroom spore 1/420.5; Long bone 1/400
+Ice warrior	59	6	Slash	Aggressive		Mazchna, Vannaka, Krystilia	Fire spells 100%		Tooth half of key (moon key) 1/994; Mushroom spore 1/257
+Ice wolf	70	10-16	Stab	Aggressive		Turael, Spria, Mazchna	Fire spells 20%	Wolf bones	
+Icefiend	15-20	2-3	Magical melee			Turael, Spria	Fire spells 100%		Tooth half of key (moon key) 1/1,373
+Icelord	60	1-5	Ranged, Crush	Aggressive		Mazchna, Vannaka	Fire spells 30%	Big bones	Curved bone 1/5,012.5; Long bone 1/400
+Imp	8-10	0-1	Stab				Water spells 10%	Fiendish ashes	
+Impaler deer	50	12	Stab	Aggressive				Raw impaler meat; Bones	
+Imre	60	2	Crush					Wolf bones	Blamish oil 1/512; Eye of newt 2/512; Jangerberries 2/512
+Infernal Mage	60	8	Magic		45	Vannaka, Mortimer		Bones	Lava battlestaff 1/1,000; Mystic boots (dark) 1/512; Mystic hat (dark) 1/512
+Invrigar the Necromancer	24	3	Magic, Crush					Bones	
+Iorwerth Archer	105	11	Ranged			Vannaka, Chaeldar, Nieve, Duradel		Bones	
+Iorwerth Warrior	105	10	Stab			Vannaka, Chaeldar, Nieve, Duradel		Bones	
+Irina	60	2	Crush					Wolf bones	Blamish oil 1/512; Eye of newt 2/512; Jangerberries 2/512
+Iron dragon	165-195	17 (Melee), 50 (Dragonfire)	Slash, Dragonfire	Aggressive		Konar, Nieve, Duradel	Earth spells 50%	Dragon bones; Iron bar	Draconic visage 1/10,000; Dragon platelegs 1/1,024; Dragon plateskirt 1/1,024
+Irvig Senay	125	12	Slash				Air spells 15%	Hunk of crystal	
+Jackal	27	3	Stab	Aggressive		Turael, Spria, Mazchna	Fire spells 10%	Bones	
+Jaguar	80	6	Slash	Aggressive			Fire spells 10%	Bones; Jaguar fur	
+Jaguar cub	40	3	Slash	Aggressive			Fire spells 10%	Bones	
+Jail guard	32	3	Crush					Bones	
+Jailer	47	5	Crush					Bones; Jail key	
+Jake	50	4	Crush					Bones	
+Jeff	7	1	Crush					Bones	
+Jelly	75	5	Magical melee		52	Vannaka, Chaeldar, Konar, Krystilia, Mortimer	Earth spells 35%		
+Jennella	50	6	Crush					Bones	Blamish oil 1/512; Fremennik blade 1/512; Fremennik helm 1/512
+Jogre	60-70	7-8	Crush	Aggressive			Earth spells 25%	Jogre bones	Mushroom spore 1/310.8
+Jonny the Beard	8	1	Crush					Bones; Intel report	
+Joseph	60	2	Crush					Wolf bones	Blamish oil 1/512; Eye of newt 2/512; Jangerberries 2/512
+Jungle Wolf	69	6	Stab	Aggressive		Turael, Spria, Mazchna	Fire spells 15%	Wolf bones	
+Jungle horror	45	8	Stab	Aggressive		Vannaka, Chaeldar	Fire spells 25%	Bones	
+Jungle spider	50	6	Stab	Aggressive		Turael, Spria	Fire spells 40%	Spider carcass	
+Jungle spider (Ape Atoll)	35	10	Stab	Aggressive Poisonous		Turael, Spria	Fire spells 40%		
+Juvenile custodian stalker	135	6	Crush, Bleed	Aggressive	54	Chaeldar, Nieve, Mortimer	Fire spells 30%	Big bones	Curved bone 1/5,012.5; Long bone 1/400
+K'ril Tsutsaroth	255	30 (magic), 46 (melee), 49 (special attack)	Slash, Magic	Aggressive Poisonous		Chaeldar, Konar, Nieve, Duradel	Water spells 30%	Infernal ashes; Frozen key piece (Zamorak)	Pet K'ril Tsutsaroth 1/5,000; Godsword shard 1 1/762; Godsword shard 2 1/762
+Kalphite Guardian	170	12	Crush	Aggressive Poisonous		Turael, Spria, Mazchna, Vannaka, Chaeldar, Konar, Nieve, Duradel	Fire spells 40%		
+Kalphite Queen	255	31	Stab, Ranged, Magic	Aggressive		Turael, Spria, Mazchna, Vannaka, Chaeldar, Konar, Nieve, Duradel	Fire spells 40%		Kalphite Princess 1/3,000; Jar of Sand 1/2,000; Dragon pickaxe 1/400
+Kalphite Queen (Realm of Memories)	255								
+Kalphite Soldier	90	8	Crush	Aggressive Poisonous		Turael, Spria, Mazchna, Vannaka, Chaeldar, Konar, Nieve, Duradel	Fire spells 40%		
+Kalphite Worker	40	3	Crush			Turael, Spria, Mazchna, Vannaka, Chaeldar, Konar, Nieve, Duradel	Fire spells 40%		
+Kalrag	78	9	Stab	Aggressive					
+Karamjan tiger shark	25	3	Slash						
+Keef	180	47	Crush	Aggressive					
+Kharazi monodon	60	7	Ranged						
+Khazard Guard	25	3	Slash					Bones	
+Khazard Ogre	60	8	Crush	Aggressive					Curved bone 1/5,012.5; Long bone 1/400
+Khazard Scorpion	40	5	Stab	Aggressive			Fire spells 25%		
+Khazard commander	22	5	Stab					Bones; Orb of Protection	
+Khazard trooper	22	3	Crush, Stab					Bones	
+Khazard warlord	170	10	Crush	Aggressive				Bones; Orbs of Protection	
+Killerwatt	51	8 (Ranged), 6 (Melee), 15 (Ranged/Melee, without insulated boots)	Stab, Magical ranged, Crush		37	Mazchna	Air spells 60%	Ashes	Mystic fire staff 1/512
+King Black Dragon	240	25 (Melee), 65 (Dragonfire)	Stab, Dragonfire	Aggressive Poisonous		Konar, Nieve, Duradel	Water spells 50%	Dragon bones; Black dragonhide; Key (elite)	Draconic visage 1/5,000; Prince Black Dragon 1/3,000; Dragon pickaxe 1/1,000
+King Sand Crab	200	6	Crush	Aggressive		Mazchna, Vannaka, Chaeldar	Earth spells 15%	Bones	Chaos talisman 1/298.7; Nature talisman 1/298.7
+King Scorpion	30	4	Stab	Aggressive		Turael, Spria, Mazchna, Krystilia	Fire spells 20%		
+King Scorpion (Realm of Memories)	30								
+King black dragon (Realm of Memories)	240		Stab, Dragonfire	Poisonous					
+Knight of Ardougne	52	6 (regular hit), 3 (pickpocket failure)	Slash					Bones	
+Knight of Saradomin	108-135	11-12	Crush	Aggressive				Bones	
+Knight of Varlamore	52	8	Slash					Bones	
+Kob	200	57 (normal), 27 (Protect from Melee)	Slash				Earth spells 20%		
+Kolodion	3-107	20	Magic	Aggressive Poisonous		Chaeldar, Nieve, Duradel, Krystilia			
+Kraka	120	23	Crush	Aggressive		Vannaka, Chaeldar, Nieve, Duradel	Earth spells 20%	Big bones	Curved bone 1/5,012.5; Long bone 1/400
+Kraken	255	28	Magic (100% prayer penetration)		87	Chaeldar, Konar, Nieve, Duradel	Earth spells 50%		Pet Kraken 1/3,000; Jar of Dirt 1/1,000; Trident of the Seas (full) 1/512
+Kree'arra	255	69 (Ranged), 21 (Magic), 25 (Melee)	Ranged, Ranged magic, Magical melee	Aggressive		Chaeldar, Konar, Nieve, Duradel	Air spells 30%	Big bones; Feather; Frozen key piece (Armadyl)	Curved bone 1/5,012.5; Pet Kree'arra 1/5,000; Godsword shard 1 1/762
+Ksenia	60	2	Crush					Wolf bones	Blamish oil 1/512; Eye of newt 2/512; Jangerberries 2/512
+Kurask	97	11	Crush	Aggressive	70	Vannaka, Chaeldar, Konar, Nieve, Duradel, Mortimer		Bones	Kurask head 1/3,000; Leaf-bladed battleaxe 1/1,026; Mystic robe top (light) 1/512
+Lanzig	50	6	Crush					Bones	Blamish oil 1/512; Fremennik blade 1/512; Fremennik helm 1/512
+Lava Strykewyrm	150	10 (Melee), 12 (Ranged)	Crush, Ranged	Aggressive	62	Chaeldar, Konar, Nieve, Duradel, Mortimer	Water spells 50%	Strykewyrm bones	Sapphire bolt tips 1/471; Onyx bolt tips 1/336.5
+Lava dragon	230	23 (Melee), 50 (Dragonfire)	Slash, Dragonfire	Aggressive		Krystilia	Water spells 50%	Lava dragon bones; Black dragonhide; Lava scale	Draconic visage 1/10,000
+Leech	45	3	Stab	Aggressive					
+Lensa	50	6	Crush					Bones	Blamish oil 1/512; Fremennik blade 1/512; Fremennik helm 1/512
+Lesser demon	79-110	8-9	Slash	Aggressive		Vannaka, Chaeldar, Krystilia	Water spells 40%	Vile ashes	
+Lesser demon (Melzar's Maze)	79	8	Slash	Aggressive		Vannaka, Chaeldar, Krystilia	Water spells 40%	Vile ashes; Key (green)	
+Lesser demon (Realm of Memories)	79								
+Lev	60	2	Crush					Wolf bones	Blamish oil 1/512; Eye of newt 2/512; Jangerberries 2/512
+Liliya	60	2	Crush					Wolf bones	Blamish oil 1/512; Eye of newt 2/512; Jangerberries 2/512
+Lizard	40	5	Crush	Aggressive	22	Turael, Spria, Mazchna		Big bones	Curved bone 1/5,012.5; Mystic gloves (light) 1/512; Long bone 1/400
+Lizard man (Realm of Memories)	35								
+Lizardman	60	7-9	Crush, Ranged	Aggressive Poisonous		Chaeldar, Konar, Nieve, Duradel		Bones	
+Lizardman brute	60	11	Crush, Ranged	Aggressive Poisonous		Chaeldar, Konar, Nieve, Duradel		Bones	
+Lizardman shaman	150	31 (Melee), 21 (Ranged)	Crush, Ranged	Aggressive Poisonous		Chaeldar, Konar, Nieve, Duradel		Big bones	Curved bone 1/5,012.5; Dragon warhammer 1/3,000; Long bone 1/400
+Loar Shade	38	4	Crush	Aggressive		Mazchna, Vannaka	Air spells 40%	Loar remains	
+Lobstrosity	50	9	Stab	Aggressive		Turael, Spria, Mazchna	Earth spells 25%	Raw lobster	Mushroom spore 1/1,066.1; Unidentified rare fossil 5/3,500
+Locust	27	3	Crush	Aggressive			Fire spells 40%	Locust meat	
+Locust rider	90	15-22	Crush, Ranged	Aggressive		Nieve	Fire spells 40%	Bones	
+Long-tailed Wyvern	200	13 (Melee), 10 (Ranged), 10 (Icy breath with Elemental shield)	Slash, Typeless Ranged, Icy breath	Aggressive	66	Chaeldar, Konar, Nieve, Duradel	Air spells 25%	Wyvern bones	Wyvern visage 1/12,000; Granite boots 1/2,560; Granite longsword 1/512
+Lost barbarian	124	12	Crush					Mangled bones	
+Lucien	17	2	Stab						
+Lynx	25-30	3	Slash					Bones	
+Lynx Tamer	22	3	Crush					Bones	
+Mad Angel	565-755	31	Melee, Magic				Earth spells 15%	Granite dust; Sunstone crystal	Aggy 1/2,000; Jar of Light 1/1,000
+Magic axe	44	5	Slash	Aggressive		Krystilia		Iron battleaxe	Rune battleaxe 1/500
+Mammoth	130	7	Stab	Aggressive		Krystilia		Big bones	Curved bone 1/5,012.5; Long bone 1/400
+Man	7	1	Crush					Bones; Key (medium)	
+Man (East Ardougne)	7	1	Crush					Bones	
+Man (level 4)	13	1	Crush					Bones	
+Maniacal Monkey Archer	60	24	Ranged	Aggressive		Turael, Spria		Small ninja monkey bones	
+Maniacal monkey	65	18	Slash	Aggressive		Turael, Spria		Small ninja monkey bones	
+Manta ray (monster)	194	8	Slash						
+Market Guard	50	8	Crush					Bones; Key (medium)	
+Market Guard (Draynor)	22	3	Crush					Bones	
+Mature custodian stalker	190	8	Crush, Magic (Bleed)	Aggressive	67	Chaeldar, Nieve, Mortimer	Fire spells 30%	Big bones	Curved bone 1/5,012.5; Antler guard 1/800; Long bone 1/400
+Me	45	9	Crush	Aggressive				Bones	
+Melzar the Mad	44	5	Magic, Crush	Aggressive				Bones; Key (magenta)	
+Menaphite Thug	60	7	Crush					Bones	
+Mercenary	60	5	Crush	Aggressive					
+Mercenary Captain	80	5	Slash					Bones; Metal key	
+Milla	60	2	Crush					Wolf bones	Blamish oil 1/512; Eye of newt 2/512; Jangerberries 2/512
+Mind Golem	40	5	Stab				Earth spells 35%		Barronite guard 1/500
+Minotaur	10-22	2	Crush			Turael, Spria		Bones	
+Mithril dragon	254	28 (Melee), 18 (Magic), 18 (Magical ranged), 50 (Dragonfire)	Stab, Magic, Magical ranged, Dragonfire	Aggressive		Nieve, Duradel	Earth spells 50%	Dragon bones; Mithril bar	Dragon full helm 1/32,768; Draconic visage 1/10,000
+Mogre	48	8	Crush	Aggressive	32	Mazchna, Vannaka	Earth spells 20%	Big bones	Curved bone 1/5,012.5; Long bone 1/400; Mushroom spore 1/355.8
+Mogre (sea)	59	6	Crush		32	Mazchna, Vannaka		Big bones	
+Molanisk	52	5	Crush	Aggressive	39	Vannaka	Earth spells 60%	Bones	
+Monk	5-15	1	Crush					Bones; Key (medium)	
+Monk of Zamorak	10-40	5	Crush, Magic					Bones	
+Monk of Zamorak (Paterdomus)	10-25	5	Crush, Magic	Aggressive				Bones	
+Monkey (monster)	6	1	Crush			Turael, Spria		Monkey bones; Monkey corpse; Monkey paw	
+Monkey Archer	50	20	Ranged	Aggressive		Turael, Spria		Small ninja monkey bones	
+Monkey Guard	130	14	Crush	Aggressive		Turael, Spria		Gorilla bones; Bearded gorilla bones	
+Monkey Zombie	60-90	7-12	Crush	Aggressive		Turael, Spria, Mazchna	Fire spells 50%	Small zombie monkey bones; Large zombie monkey bones; Monkey paw	
+Moonlight Cockatrice	52	6	Stab		25	Mazchna, Vannaka, Mortimer		Bones	Cockatrice head 1/1,000; Mystic boots (light) 1/512
+Moss Giant (Iorwerth Dungeon)	120	14	Melee, Magic	Aggressive		Vannaka	Fire spells 50%	Big bones	Curved bone 1/5,012.5; Long bone 1/400
+Moss Guardian	120	14	Crush, Magical melee	Aggressive				Big bones; Consecration seed	Curved bone 1/5,012.5; Long bone 1/400
+Moss giant	60-85	6	Crush	Aggressive		Vannaka, Krystilia	Fire spells 50%	Big bones	Curved bone 1/5,012.5; Long bone 1/400
+Mountain troll	90	11-13	Crush	Aggressive		Vannaka, Chaeldar, Konar, Nieve, Duradel	Fire spells 50%	Big bones	Curved bone 1/5,012.5; Long bone 1/400
+Mounted terrorbird gnome	36-55	3-5	Stab			Turael, Spria		Bones	
+Mourner	19-105	2-10	Crush, Stab			Vannaka, Chaeldar, Nieve, Duradel		Bones; Mourner cloak; Mourner boots; Bloody mourner top; Mourner gloves; Gas mask	
+Mouse	70	9	Crush	Aggressive				Bones	
+Mudskipper	20	4	Crush				Earth spells 20%	Mudskipper hide	
+Mugger	8	1	Crush	Aggressive				Bones	
+Mummy (Ancient Pyramid)	90	24	Crush	Aggressive			Fire spells 50%	Ashes	Ancient staff 1/513
+Mummy (Klenter's Pyramid)	90	6	Crush	Aggressive				Bones	
+Mutated Bloodveld	170	12	Magical melee		50	Vannaka, Chaeldar, Konar, Nieve, Duradel, Mortimer		Vile ashes; Reward casket (elite)	
+Myre Blamish Snail	8-13	2	Ranged	Aggressive			Earth spells 25%	Blamish myre shell (round); Thin snail	
+Narf	7	1	Crush					Bones	
+Narwhal	187	7	Slash					Big bones	
+Nechryael	105	11	Crush		80	Vannaka, Chaeldar, Konar, Nieve, Duradel, Krystilia, Mortimer		Malicious ashes	
+Necromancer	40	3	Crush, Curse	Aggressive				Bones	
+Necromancer (Great Kourend)	80	7	Magic	Aggressive				Bones	
+Nikita	60	2	Crush					Wolf bones	Blamish oil 1/512; Eye of newt 2/512; Jangerberries 2/512
+Nikolai	60	2	Crush					Wolf bones	Blamish oil 1/512; Eye of newt 2/512; Jangerberries 2/512
+Obelisk (Tombs of Amascut)	260	0							
+Obor	120	22 (Melee), 26 (Ranged)	Crush, Ranged	Aggressive		Mazchna, Vannaka	Earth spells 20%	Giant bones	Curved bone 1/5,012.5; Long bone 1/400; Mushroom spore 1/269
+Ocelot	40	3	Slash	Aggressive			Fire spells 10%	Bones	
+Ocga	10	1	Crush					Bones	
+Ochre Blamish Snail	10-20	2	Ranged	Aggressive			Earth spells 25%	Blamish ochre shell (round); Thin snail	
+Ogre	60-70	7-8	Crush	Aggressive		Vannaka	Earth spells 20%	Big bones	Curved bone 1/5,012.5; Long bone 1/400
+Ogre chieftain	60	9	Crush			Vannaka	Earth spells 20%	Big bones	Curved bone 1/5,012.5; Long bone 1/400
+Ogre monodon	150	8	Ranged						
+Ogre shaman	1	30	Magic						
+Ogress Shaman	82	8	Magic	Aggressive		Vannaka	Earth spells 20%	Big bones	Curved bone 1/5,012.5; Shaman mask 1/1,200; Mushroom spore 1/838.4
+Ogress Warrior	82	8	Crush	Aggressive		Vannaka	Earth spells 20%	Big bones	Curved bone 1/5,012.5; Shaman mask 1/1,200; Mushroom spore 1/838.4
+Oomlie bird	40	5	Stab			Turael, Spria		Bones; Raw oomlie	
+Orc (Realm of Memories)	29								
+Orca	370	13	Slash					Big bones	Dragon keel parts 1/400; Large dragon keel parts 1/400
+Ork	110	12	Crush	Aggressive			Earth spells 15%	Bones	
+Oryx	19	2	Stab					Bones	
+Osprey	72	6	Stab					Bones	Bird nest (egg)#Blue egg 1/2,500; Bird nest (egg)#Green egg 1/2,500; Bird nest (egg)#Red egg 1/2,500
+Othainian	87	9	Slash	Aggressive				Vile ashes; Amulet of Othanian	
+Otherworldly being	66	7	Crush			Vannaka	Air spells 35%		
+Outlaw	20	3	Crush					Bones; Rat's paper	
+Padulah	130	20+	Slash	Aggressive				Medium ninja monkey bones	
+Paladin	57	8	Slash					Bones	
+Palmer	50	4	Crush					Bones	
+Pee Hat	120	23	Crush	Aggressive		Vannaka, Chaeldar, Nieve, Duradel	Earth spells 20%	Big bones	Curved bone 1/5,012.5; Long bone 1/400
+Penance Fighter	28-56	3-8	Crush	Aggressive				Blue egg; Green egg; Red egg	
+Penance Healer	27-76	0 (Does not attack)	Poison	Aggressive Poisonous				Blue egg; Green egg; Red egg	
+Penance Ranger	20-58	3-9	Ranged	Aggressive				Blue egg; Green egg; Red egg	
+Penance Runner	5	0						Blue egg; Green egg; Red egg	
+Penda	10	1	Crush					Bones; Key (medium)	
+Penguin (monster)	4	1	Stab			Turael, Spria	Fire spells 25%	Bones	
+Phantom Muspah	75-850	61 (Ranged), 72 (Magic)	Typeless, Stab, Ranged, Magic	Aggressive		Konar, Nieve, Duradel	Air spells 65%	Charged ice	Muphin 1/2,500
+Phrin Shade	56	6	Crush	Aggressive		Mazchna, Vannaka	Air spells 40%	Phrin remains	
+Pirate	20-52	3-6	Slash			Krystilia		Bones; Key (medium)	
+Pirate (Thieving)	38	6	Slash					Bones	
+Pirate Guard	25	3	Slash					Bones	
+Pit Scorpion	32	3	Stab	Aggressive		Turael, Spria, Mazchna	Fire spells 25%		
+Plague frog	10	2	Crush	Aggressive					
+Poison Scorpion	23	3	Stab	Aggressive Poisonous		Turael, Spria, Mazchna	Fire spells 25%		
+Poison spider	25-64	4-7	Stab	Aggressive Poisonous		Turael, Spria, Krystilia	Fire spells 40%		
+Poison spider (Escape Caves)	73	8	Typeless Ranged	Aggressive Poisonous		Turael, Spria, Krystilia	Fire spells 40%		
+Poltenip	22	3	Stab					Bones	
+Porcupine	5	1	Slash				Fire spells 20%	Bones	
+Possessed pickaxe	40	6	Stab	Aggressive				Iron pickaxe	
+Praying mantis	18	2	Stab						
+Pygmy kraken	150	10	Magic	Aggressive			Earth spells 50%		Inky paint 1/3,000; Mushroom spore 1/780.6; Umbral frag 1/540
+Pyrefiend	45-48	4-5	Magical melee		30	Mazchna, Vannaka, Mortimer	Water spells 100%	Fiendish ashes	
+Pyrelord	80	5	Magical melee		30	Mazchna, Vannaka, Mortimer	Water spells 100%	Fiendish ashes	
+Rabbit	1-5	1	Crush				Fire spells 20%	Bones; Raw rabbit	
+Rabbit (Prifddinas)	2000	40	Typeless Crush					Crystal grail	
+Radat	22	3	Stab					Bones	
+Ragnar (Miscellania)	1	1	Crush						
+Ragnvald	1	1	Crush					Bones	
+Ram	8	1	Crush				Fire spells 20%	Bones; Ram skull	
+Ranalph Devere	130	13	Slash	Aggressive			Air spells 10%	Lump of crystal	
+Rannveig	1	1	Crush					Bones	
+Rat	2	0	Crush			Turael, Spria		Rat's tail	
+Red dragon	140	14 (Melee), 50 (Dragonfire)	Slash, Dragonfire	Aggressive		Konar, Nieve, Duradel	Water spells 50%	Dragon bones; Red dragonhide	
+Red dragon (Realm of Memories)	140								
+Renegade knight	48	5	Slash	Aggressive				Bones	
+Respiratory system	50	0			85	Vannaka, Chaeldar, Konar, Nieve, Duradel			
+Revenant cyclops	110	16	Crush, Ranged, Magic	Aggressive		Turael, Spria, Mazchna, Krystilia	Air spells 30%	Revenant ether	Ancient crystal 1/3,253.33; Ancient emblem 1/1,626.67; Dragon med helm 1/750.77
+Revenant dark beast	140	23	Crush, Ranged, Magic	Aggressive		Turael, Spria, Mazchna, Krystilia	Air spells 30%	Revenant ether	Ancient crystal 1/2,933.33; Ancient emblem 1/1,466.67; Dragon med helm 1/676.92
+Revenant demon	80	15	Crush, Ranged, Magic	Aggressive		Turael, Spria, Mazchna, Krystilia	Air spells 30%	Revenant ether	Ancient crystal 1/3,253.33; Ancient emblem 1/1,626.67; Dragon med helm 1/750.77
+Revenant dragon	155	30	Slash, Ranged, Magic	Aggressive		Turael, Spria, Mazchna, Krystilia	Air spells 30%	Revenant ether	Ancient crystal 1/2,666.67; Ancient emblem 1/1,333.33; Dragon med helm 1/615.38
+Revenant goblin	14	3	Crush, Ranged, Magic	Aggressive		Turael, Spria, Mazchna, Krystilia	Air spells 30%	Revenant ether	Ancient crystal 1/9,773.33; Ancient emblem 1/4,886.67; Dragon platelegs 1/3,455.57
+Revenant hellhound	80	14	Stab, Ranged, Magic	Aggressive		Turael, Spria, Mazchna, Krystilia	Air spells 30%	Revenant ether	Ancient crystal 1/3,253.33; Ancient emblem 1/1,626.67; Dragon med helm 1/750.77
+Revenant hobgoblin	72	8	Slash, Ranged, Magic	Aggressive		Turael, Spria, Mazchna, Krystilia	Air spells 30%	Revenant ether	Ancient crystal 1/4,186.67; Ancient emblem 1/2,093.33; Dragon med helm 1/966.15
+Revenant imp	10	2	Stab, Ranged, Magic	Aggressive		Turael, Spria, Mazchna, Krystilia	Air spells 30%	Revenant ether	Ancient crystal 1/14,666.67; Ancient emblem 1/7,333.33; Dragon platelegs 1/6,050
+Revenant knight	143	27	Slash, Ranged, Magic	Aggressive		Turael, Spria, Mazchna, Krystilia	Air spells 30%	Revenant ether	Ancient crystal 1/2,666.67; Ancient emblem 1/1,333.33; Dragon med helm 1/615.38
+Revenant ork	105	20	Slash, Ranged, Magic	Aggressive		Turael, Spria, Mazchna, Krystilia	Air spells 30%	Revenant ether	Ancient crystal 1/2,933.33; Ancient emblem 1/1,466.67; Dragon med helm 1/676.92
+Revenant pyrefiend	48	5	Crush, Ranged, Magic	Aggressive		Turael, Spria, Mazchna, Krystilia	Air spells 30%	Revenant ether	Ancient crystal 1/4,186.67; Ancient emblem 1/2,093.33; Dragon med helm 1/966.15
+Riyl Shade	76	6	Crush	Aggressive		Mazchna, Vannaka	Air spells 40%	Riyl remains	
+Rock (Troll)	140	30	Slash	Aggressive		Vannaka, Chaeldar, Nieve, Duradel	Earth spells 20%	Big bones	Curved bone 1/5,012.5; Long bone 1/400
+Rock Crab	50	1	Crush	Aggressive		Mazchna, Vannaka, Chaeldar	Earth spells 20%	Reward casket (elite)	
+Rock lobster	150	11	Crush	Aggressive			Earth spells 25%	Raw lobster	Chaos talisman 1/746.7; Nature talisman 1/746.7; Cosmic talisman 1/560
+Rockslug	27	4	Crush		20	Mazchna, Mortimer	Earth spells 25%		Mystic gloves (light) 1/512
+Rogue	17-125	2-15	Crush, Stab			Krystilia		Bones	
+Rooster	5-7	0-1	Stab			Turael, Spria		Bones; Raw chicken	
+Rowdy slave	16	2	Crush	Aggressive				Bones; Slave shirt; Slave robe; Slave boots	
+Rune dragon	330	29 (Melee), 31 (Ranged), 26 (Magic), 40 (range special), 50 (Dragonfire)	Slash, Ranged, Magic, Dragonfire	Aggressive		Konar, Nieve, Duradel	Earth spells 50%	Dragon bones; Runite bar	Draconic visage 1/8,000; Dragon metal lump 1/5,000; Dragon limbs 1/800
+Runite Golem	120	16	Crush				Earth spells 60%		
+Rusty	7	1	Crush					Bones	
+Salarin the twisted	70	7	Crush	Aggressive				Bones	
+San Tojalon	120	12	Stab				Air spells 10%	Chunk of crystal	
+Sand Crab	60	1	Crush			Mazchna, Vannaka, Chaeldar	Earth spells 20%		
+Sanguidae	10	10	Typeless|Typeless Stab	Aggressive			Fire spells 40%		
+Sarachnis	400	31	Melee, Ranged	Aggressive		Turael, Spria, Konar, Nieve, Duradel	Fire spells 40%		Sraracha 1/3,000; Jar of Eyes 1/2,000; Sarachnis cudgel 1/384
+Saradomin priest	89	20	Magic	Aggressive				Bones	
+Scarab Mage	50-120	16-17	Magic	Aggressive		Nieve	Fire spells 50%	Bones	
+Scorpia	200	16	Stab	Aggressive Poisonous		Turael, Spria, Mazchna, Konar, Nieve, Duradel, Krystilia	Fire spells 35%		Scorpia's offspring 1/2,015.75; Malediction shard 3 1/256; Odium shard 3 1/256
+Scorpia's offspring (monster)	2	2	Ranged	Aggressive Poisonous		Turael, Spria, Mazchna, Krystilia	Fire spells 35%		
+Scorpion	2-55	0-15	Stab	Aggressive		Turael, Spria, Mazchna, Krystilia	Fire spells 25%	Book page 1	
+Scorpion (Realm of Memories)	17								
+Scurrius	500-1500	13 (Melee), 8 (Magic), 7 (Ranged), 22 (Rockfall)	Magic, Ranged, Melee	Aggressive		Turael, Spria		Big bones; Raw rat meat	Curved bone 1/5,012.5; Scurry 1/3,000; Long bone 1/400
+Sea Snake Hatchling	50	6	Crush	Poisonous		Vannaka	Earth spells 20%	Bones	
+Sea Snake Young	85	8	Crush	Poisonous		Vannaka	Earth spells 20%	Big bones	Curved bone 1/5,012.5; Long bone 1/400; Mushroom spore 1/330.4
+Sea monodon	360								
+Seagull	6-10	0	Crush			Turael, Spria	Air spells 20%	Bones	
+Seagull (Icyene Graveyard)	10	0	Crush			Turael, Spria	Air spells 20%	Bones; Feather	
+Sergeant (Shayzien)	86	10	Crush					Bones	Rune kiteshield 1/512; Rune scimitar 1/512
+Sergeant Grimspike	146	21	Ranged	Aggressive		Turael, Spria		Bones	Bandos boots 1/16,256; Bandos chestplate 1/16,256; Bandos tassets 1/16,256
+Sergeant Steelwill	127	15	Magic	Aggressive		Turael, Spria		Bones	Bandos boots 1/16,256; Bandos chestplate 1/16,256; Bandos tassets 1/16,256
+Sergeant Strongstack	128	15	Crush	Aggressive		Turael, Spria		Bones	Bandos boots 1/16,256; Bandos chestplate 1/16,256; Bandos tassets 1/16,256
+Servant (Burthorpe)	10	1	Crush					Bones	
+Shade	115-170	14-15	Crush			Mazchna, Vannaka			
+Shadow (Temple of Light)	15	13	Crush	Aggressive			Air spells 40%		
+Shadow Hound	62	6	Stab	Aggressive		Turael, Spria, Mazchna		Bones	
+Shadow spider	55	5	Stab	Aggressive		Turael, Spria, Krystilia	Fire spells 40%		
+Shadow warrior	67	6	Slash	Aggressive		Vannaka, Chaeldar			
+Shantay Guard	32	3	Stab	Aggressive				Bones	
+Shark (Sailing alpha)	60	4	Slash						
+Shipyard worker	10	2	Crush					Bones	
+Sir Bedivere	90	14	Crush	Aggressive					
+Sir Carl	57	8	Slash					Bones; Paladin's badge (Sir Carl)	
+Sir Gawain	110	19	Slash	Aggressive					
+Sir Harry	57	8	Slash					Bones; Paladin's badge (Sir Harry)	
+Sir Jerro	57	8	Slash					Bones; Paladin's badge (Sir Jerro)	
+Sir Kay	110	22	Slash	Aggressive					
+Sir Lancelot	115	23	Crush	Aggressive					
+Sir Lucan	105	19	Stab	Aggressive					
+Sir Mordred	38	5	Slash					Bones	
+Sir Pelleas	99	15	Stab	Aggressive					
+Sir Tristram	105	15	Crush	Aggressive					
+Skeletal Wyvern	200	13 (Ranged), 13 (Melee), 50+ (Icy breath)	Ranged, Slash, Icy breath	Aggressive	72	Chaeldar, Konar, Nieve, Duradel	Fire spells 25%	Wyvern bones	Draconic visage 1/10,000; Dragon platelegs 1/512; Dragon plateskirt 1/512
+Skeleton	17-59	3-5	Crush, Slash	Aggressive		Turael, Spria, Mazchna, Krystilia	Earth spells 35%	Bones	
+Skeleton (Ape Atoll)	77	10	Slash	Aggressive		Turael, Spria, Mazchna	Earth spells 35%	Bones (Ape Atoll)	
+Skeleton (Barrows)	51	10	Crush, Slash	Aggressive		Turael, Spria, Mazchna	Earth spells 35%	Bones	
+Skeleton (Catacombs of Kourend)	29	3	Crush	Aggressive		Turael, Spria, Mazchna	Earth spells 35%	Bones	
+Skeleton (Draynor Manor)	29	3	Slash	Aggressive		Turael, Spria, Mazchna	Earth spells 35%		
+Skeleton (Forthos Ruin)	17	4		Aggressive		Turael, Spria, Mazchna	Earth spells 35%	Bones	
+Skeleton (Lucien's camp)	54	19	Slash	Aggressive		Turael, Spria, Mazchna	Earth spells 35%	Bones	Jade bolt tips 3/6,720; Onyx bolt tips 3/6,720; Sapphire bolt tips 3/6,720
+Skeleton (Melzar's Maze)	29	3	Slash	Aggressive		Turael, Spria, Mazchna	Earth spells 35%	Bones; Key (yellow)	
+Skeleton (Shayzien Crypts)	54	19	Magic, Ranged, Slash	Aggressive		Turael, Spria, Mazchna	Earth spells 35%	Bones	Jade bolt tips 3/6,720; Onyx bolt tips 3/6,720; Sapphire bolt tips 3/6,720
+Skeleton (Stronghold of Security)	70-77	10?		Aggressive		Turael, Spria, Mazchna	Earth spells 35%	Bones	
+Skeleton (Tarn's Lair)	26-92	4-11	Crush			Turael, Spria, Mazchna	Earth spells 35%	Bones	
+Skeleton (Wilderness Agility Course)	17	1	Slash	Aggressive		Turael, Spria, Mazchna, Krystilia	Earth spells 35%	Bones	
+Skeleton (Wrath Altar)	60								
+Skeleton (mage)	85	12 (Magic), 7 (Melee)	Magic, Crush			Turael, Spria, Mazchna	Earth spells 35%	Bones	
+Skeleton Mage	17-80	3-11	Magic, Crush	Aggressive		Turael, Spria, Mazchna	Earth spells 35%	Bones	
+Skeleton brute	124	15	Crush	Aggressive		Turael, Spria, Mazchna, Vannaka	Earth spells 35%	Bones	
+Skeleton fremennik	25-40	5-8	Slash			Turael, Spria, Mazchna, Vannaka	Earth spells 35%	Bones; Key (Olaf's Quest)	
+Skeleton thug	114	15	Crush	Aggressive		Turael, Spria, Mazchna, Vannaka	Earth spells 35%	Bones	
+Skeleton warlord	124	15	Crush	Aggressive		Turael, Spria, Mazchna, Vannaka	Earth spells 35%	Bones	
+Skogre	71	5	Crush	Aggressive		Turael, Spria, Vannaka		Zogre bones; Ogre coffin key	
+Skotizo	450	38	Stab, Magic	Aggressive		Chaeldar, Konar, Nieve, Duradel	Water spells 40%	Infernal ashes; Clue scroll (hard)	Uncut onyx 1/1,000
+Skraeling (Etceteria)	1	1	Crush					Bones	
+Skraeling (Miscellania)	1	1	Crush					Bones	
+Slagilith	60	13	Crush	Aggressive			Earth spells 40%	Adamantite ore; Uncut diamond; Uncut ruby	
+Small Lizard	15	2	Crush		22	Turael, Spria, Mazchna		Bones	Mystic gloves (light) 1/512
+Small scarab	40	1	Crush	Aggressive		Nieve	Fire spells 50%		
+Smoke devil	185	20	Magical ranged		93	Konar, Nieve, Duradel, Mortimer	Air spells 30%	Ashes	Dragon chainbody 1/32,768; Occult necklace 1/512
+Snake	6	1	Stab	Aggressive				Bones	
+Snake (Ape Atoll)	36	10	Crush	Aggressive Poisonous				Bones	
+Snake (Mos Le'Harmless)	25	3	Stab	Aggressive Poisonous				Snake hide	
+Snake (desert)	6	1	Stab					Bones	
+Sofiya	60	2	Crush					Wolf bones	Blamish oil 1/512; Eye of newt 2/512; Jangerberries 2/512
+Soldier (Burthorpe)	50	6	Slash					Bones	
+Soldier (Shayzien)	22	3	Crush					Bones	
+Soldier (Yanille)	22	4	Slash					Bones	
+Soldier (tier 1)	50	5	Slash					Shayzien helm (1); Shayzien platebody (1); Shayzien greaves (1); Shayzien gloves (1); Shayzien boots (1)	
+Soldier (tier 2)	50	7	Crush					Shayzien helm (2); Shayzien platebody (2); Shayzien greaves (2); Shayzien gloves (2); Shayzien boots (2)	
+Soldier (tier 3)	55	7	Stab					Shayzien helm (3); Shayzien platebody (3); Shayzien greaves (3); Shayzien gloves (3); Shayzien boots (3)	
+Soldier (tier 4)	65	8	Crush					Shayzien helm (4); Shayzien platebody (4); Shayzien greaves (4); Shayzien gloves (4); Shayzien boots (4)	
+Soldier (tier 5)	90	10	Crush					Shayzien helm (5); Shayzien body (5); Shayzien greaves (5); Shayzien gloves (5); Shayzien boots (5)	
+Sorebones	52	6	Crush			Turael, Spria, Mazchna		Bones; Brain tongs; Cranial clamp; Bell jar; Skull staple	
+Soulless	24	2	Crush	Aggressive				Bones	
+Sourhog	40	6, 20-30 (without Reinforced goggles)	Crush, Ranged	Aggressive		Spria		Big bones	Curved bone 1/5,012.5; Mushroom spore 1/441.7; Long bone 1/400
+Speedy Keith	37	4	Slash			Krystilia		Bones	
+Spider	2-22	0-6	Stab			Turael, Spria, Krystilia	Fire spells 50%		
+Spider (Ape Atoll)	2	1	Slash	Aggressive Poisonous		Turael, Spria, Krystilia	Fire spells 50%		
+Spider (Ungael)	4	6	Stab	Aggressive Venomous		Turael, Spria	Fire spells 50%		
+Spined kraken	177	14	Magic	Aggressive			Earth spells 50%		Inky paint 1/2,500
+Spinolyp	100	10	Ranged magic, Ranged	Aggressive Poisonous				Bones	
+Spiritual mage	75-125	17-38	Magic	Aggressive	83	Vannaka, Chaeldar, Nieve, Duradel, Krystilia	Air spells 30%		
+Spiritual ranger	89-131	15	Ranged	Aggressive	63	Vannaka, Chaeldar, Nieve, Duradel, Krystilia	Air spells 30%		
+Spiritual warrior	98-131	11	Crush, Slash, Ranged	Aggressive	68	Vannaka, Chaeldar, Nieve, Duradel, Krystilia	Air spells 30%		
+Spitting Wyvern	200	9 (Melee), 8 (Ranged), 50+ (Icy breath)	Slash, Ranged, Icy breath	Aggressive	66	Chaeldar, Konar, Nieve, Duradel	Air spells 25%	Wyvern bones	Wyvern visage 1/12,000; Granite boots 1/2,560; Granite longsword 1/512
+Stag	19	2	Stab					Bones	
+Starlight	160	15	Crush	Aggressive				Bones	Saradomin sword 3/16,129; Godsword shard 1 1/1,524; Godsword shard 2 1/1,524
+Steel dragon	210-250	22 (Melee), 50 (Dragonfire)	Slash, Dragonfire	Aggressive		Konar, Nieve, Duradel	Earth spells 50%	Dragon bones; Steel bar	Draconic visage 1/10,000; Dragon platelegs 1/512; Dragon plateskirt 1/512
+Stick	135	27	Crush	Aggressive		Vannaka, Chaeldar, Nieve, Duradel	Earth spells 20%	Big bones	Curved bone 1/5,012.5; Long bone 1/400
+Stingray	106	6	Slash						
+Stone Guardian	62	16	Ranged, Crush, Magic	Aggressive			Earth spells 40%		
+Strangled	40-50	3	Typeless	Aggressive			Fire spells 50%		
+Strangled Bear	100	6	Typeless	Aggressive					
+Strangled Boar	40	4	Typeless	Aggressive					
+Strangled Lynx	50	5	Typeless	Aggressive					
+Sulphur Lizard	50	5	Crush	Aggressive	44	Turael, Spria, Mazchna		Bones	Mystic gloves (light) 1/512
+Sulphur Nagua	100	11 total 6+5	Slash	Aggressive	48	Chaeldar, Konar	Air spells 15%		Sulphur blades 1/450
+Suqah	105	10	Stab, Magic	Aggressive		Nieve, Duradel	Earth spells 20%	Big bones; Suqah hide	Curved bone 1/5,012.5; Long bone 1/400
+Svetlana	60	2	Crush					Wolf bones	Blamish oil 1/512; Eye of newt 2/512; Jangerberries 2/512
+Swamp Crab	75	1	Crush	Aggressive		Mazchna, Vannaka, Chaeldar	Earth spells 35%	Mort myre fungus	
+Swamp frog	25	3	Crush				Earth spells 20%	Bones	
+Taloned Wyvern	200	10 (Ranged), 12 (Melee), 55 (Icy breath)	Slash, Typeless Ranged, Icy breath	Aggressive	66	Chaeldar, Konar, Nieve, Duradel	Air spells 35%	Wyvern bones	Wyvern visage 1/12,000; Granite boots 1/2,560; Granite longsword 1/512
+Tar Monster	200	9	Typeless Ranged	Aggressive				Bones	Unidentified rare fossil 5/3,500
+Target	1	1	Crush						
+Tarik (Nardah)	22	3	Stab					Bones	
+Temple Guardian	45	3	Stab			Turael, Spria, Mazchna			
+Temple Spider	70	6	Crush	Aggressive		Turael, Spria	Fire spells 40%		Mushroom spore 1/602.3
+Tentacle (Abyssal Sire)	255	31	Typeless Melee	Aggressive					
+Tern	22	3	Stab					Bones	Bird nest (egg)#Blue egg 1/5,000; Bird nest (egg)#Green egg 1/5,000; Bird nest (egg)#Red egg 1/5,000
+Terror dog	82-87	11-15	Crush	Aggressive	40	Vannaka		Bones	
+Terrorbird	34	3	Stab			Turael, Spria		Bones	
+The Hueycoatl	250-2500	13-25	Melee, Magic, Ranged, Typeless	Aggressive			Earth spells 60%	Big bones	Huberte 1/400
+The Inadequacy	180	18 (Melee), 20+ (Ranged)	Crush, Ranged	Aggressive					
+The Kendal	50	9	Crush	Aggressive				Bones; Bearhead	
+The Leviathan	720-2700	50 (Melee orb & Bite), 24 (Ranged orb), 32 (Magic orb), 60 (Smoke Blast)	Melee, Ranged, Magic	Aggressive		Konar, Nieve, Duradel		Ancient blood ornament kit	Lil'viathan 1/2,500; Virtus mask 1/2,304; Virtus robe bottom 1/2,304
+The Shaikahan	100	9	Slash	Aggressive				Shaikahan bones	
+The Whisperer	660-2700	42 (x2) (Melee), 40 (Ranged), 36 (Magic), 45 (Screech), 50 (Soul Siphon)	All	Aggressive		Konar, Nieve, Duradel	Earth spells 60%	Ancient blood ornament kit	Wisp 1/2,000; Virtus mask 1/1,536; Virtus robe bottom 1/1,536
+Thermonuclear smoke devil	240	8	Magical ranged (100% prayer penetration)		93	Konar, Nieve, Duradel, Mortimer	Air spells 20%	Ashes	Pet Smoke Devil 1/3,000; Dragon chainbody 1/2,000; Jar of Smoke 1/2,000
+Thief	17-22	2-3	Stab, Crush					Bones	
+Thief (Varlamore)	17	2	Crush					Bones	
+Thora (Miscellania)	1	1	Crush					Bones	
+Thorhild	1	1	Crush					Bones	
+Thrower Troll	95	6	Ranged	Aggressive		Vannaka, Chaeldar, Konar, Nieve, Duradel	Earth spells 20%	Big bones	Curved bone 1/5,012.5; Long bone 1/400
+Thrower troll (Trollheim)	95	10	Ranged	Aggressive		Vannaka, Chaeldar, Konar, Nieve, Duradel	Earth spells 20%	Big bones	Curved bone 1/5,012.5; Long bone 1/400
+Thug	18	2	Stab	Aggressive				Bones	
+Tiger shark	174	9	Slash	Aggressive					Umbral frag 2/1,000
+Tormented Demon	600	*31 (auto) *45 (special)	All			Chaeldar, Nieve, Kuradal	Water spells 30%	Infernal ashes	Burning claw 499/250,000; Tormented synapse 1/500
+Tormented Warrior	90	10	Stab					Bones	
+Tortoise	100-120	10-11	Crush, Magic, Ranged				Earth spells 20%	Bones	
+Tortured gorilla	110-210	13-29	Magic, Ranged, Crush	Aggressive		Turael, Spria		Big bones	Heavy frame 1/15,000; Monkey tail 1/15,000; Light frame 1/7,500
+Tortured soul	51	7	Crush			Turael, Spria, Mazchna			
+Tower Archer	30-90	4-16	Ranged	Aggressive					
+Tower guard	22	4	Stab					Bones	
+Tribesman	39	4	Stab	Aggressive Poisonous				Bones	
+Tribeswoman	39	4	Stab	Aggressive Poisonous				Bones	
+Troll (Realm of Memories)	55								
+Troll general	140	38	Crush, Slash	Aggressive		Vannaka, Chaeldar, Konar, Nieve, Duradel	Earth spells 20%	Big bones; Prison key (Troll Stronghold)	Curved bone 1/5,012.5; Long bone 1/400
+Troll spectator	90	13	Crush			Vannaka, Chaeldar, Nieve, Duradel	Earth spells 20%	Big bones	Curved bone 1/5,012.5; Long bone 1/400
+Tstanon Karlak	142	15	Crush	Aggressive		Chaeldar, Nieve, Duradel	Water spells 40%	Malicious ashes	Zamorakian spear 3/16,129; Godsword shard 1 1/1,524; Godsword shard 2 1/1,524
+Turoth	76-81	9-10	Stab		55	Vannaka, Chaeldar, Konar, Nieve, Mortimer		Bones	Mystic robe bottom (light) 1/512; Leaf-bladed sword 1/500
+Twig	90	13 (approx)	Crush			Vannaka, Chaeldar, Konar, Nieve, Duradel	Earth spells 20%	Big bones; Cell key 1	Curved bone 1/5,012.5; Long bone 1/400
+Twisted Banshee	100	9	Magical melee	Aggressive	15	Turael, Spria, Mazchna, Mortimer	Air spells 25%		Mystic gloves (dark) 1/256
+Tyras guard	110	15	Stab					Bones	
+TzHaar-Hur	80	7	Crush			Chaeldar, Nieve, Duradel	Water spells 40%		Uncut diamond 1/2,048; Uncut ruby 4/2,048; Uncut emerald 8/2,048
+TzHaar-Ket	140-200	15-19	Crush			Chaeldar, Nieve, Duradel	Water spells 40%		Obsidian cape 1/512; Toktz-ket-xil 1/512; Tzhaar-ket-om 1/512
+TzHaar-Mej	100	13 Magic, 9 Melee	Magic, Crush			Chaeldar, Nieve, Duradel	Water spells 40%		Obsidian cape 1/4,096; Toktz-mej-tal 1/4,096; Uncut diamond 1/2,048
+TzHaar-Xil	120	11	Crush, Ranged			Chaeldar, Nieve, Duradel	Water spells 40%		Toktz-xil-ak 3/2,048; Toktz-xil-ek 3/2,048; Toktz-xil-ul 4/2,048
+Ugthanki	45	4	Stab	Aggressive				Bones; Raw ugthanki meat	
+Undead Druid	140	22 (Magic), 11 (Melee)	Crush, Magic	Aggressive		Turael, Spria, Mazchna	Fire spells 50%	Bones	Mask of Ranul 1/1,000; Mushroom spore 1/301.1
+Undead chicken	3	0	Stab			Turael, Spria, Mazchna	Fire spells 50%	Bones; Raw chicken (undead)	
+Undead cow	8	1	Crush			Turael, Spria, Mazchna	Fire spells 50%	Cowhide; Raw beef (undead); Bones	
+Undead one	47-59	7-8	Slash	Aggressive		Turael, Spria, Mazchna	Earth spells 50%	Bones	
+Ungadulu	65-150	7-16	Magic, Crush						
+Unicorn	19	2	Stab					Bones; Unicorn horn; Unicorn bone	
+Unicorn Foal	15	2	Stab					Bones	
+Urium Shade	130	13	Crush	Aggressive		Mazchna, Vannaka	Air spells 40%	Urium remains	
+Valgerd	1	1	Crush					Bones	
+Vampyre Juvenile	60	4	Crush			Mazchna, Vannaka, Chaeldar, Konar, Nieve, Duradel		Vampyre dust	
+Vampyre Juvinate	50-150	5-9	Slash, Crush	Aggressive		Mazchna, Vannaka, Chaeldar, Konar, Nieve, Duradel		Vampyre dust	
+Vampyre Snail	500	87+ (standard), 30 (slam)	Ranged, Melee	Aggressive			Earth spells 5%	Vampyre snelm	
+Vampyre kraken	311	22	Magic	Aggressive			Earth spells 50%		Inky paint 1/1,500; Bottled storm 1/350; Dragon keel parts 1/320
+Vardorvis	500-1400	32-43 (Melee)'"`UNIQ--ref-00000068-QINU`"', 35 (axes)	Slash			Konar, Nieve, Duradel	Fire spells 35%	Temple key (Desert Treasure II); Ancient blood ornament kit	Virtus mask 1/3,264; Virtus robe bottom 1/3,264; Virtus robe top 1/3,264
+Veiled kraken	225	19	Crush	Aggressive					Inky paint 1/1,900; Dragon cannon barrel 1/500; Dragon keel parts 1/360
+Venator	345	21	Stab, Ranged		74	Mazchna, Vannaka, Chaeldar, Konar, Nieve, Duradel, Mortimer		Bones; Venator heart	Blood shard 1/860
+Venenatis	850	21 (Melee), 35 (Ranged), 30 (Magic)	Stab, Magic, Ranged	Aggressive		Turael, Spria, Konar, Nieve, Duradel, Krystilia	Fire spells 40%	Big bones; Bones	Curved bone 1/5,012.5; Venenatis spiderling 1/1,500; Treasonous ring 1/512
+Vera	60	2	Crush					Wolf bones	Blamish oil 1/512; Eye of newt 2/512; Jangerberries 2/512
+Vet'ion	255	44	Slash, Magic	Aggressive		Turael, Spria, Mazchna, Konar, Nieve, Duradel, Krystilia		Big bones; Bones	Curved bone 1/5,012.5; Vet'ion Jr. 1/1,500; Ring of the gods 1/512
+Void Knight (Pest Control)	200	0 (Does not attack)							
+Vorkath	460-750	30 (Magic), 32 (Ranged), 32 (Melee), 80 (Dragonfire), 121 (Dragonfire Bomb/Special), 41 (Rapid Fire/Special)	Slash, Magic, Ranged, Dragonfire	Venomous		Turael, Spria, Mazchna, Vannaka, Chaeldar, Konar, Nieve, Duradel	Fire spells 40%	Superior dragon bones; Blue dragonhide	Draconic visage 1/5,000; Skeletal visage 1/5,000; Jar of Decay 1/3,000
+Vulture	10	5	Crush			Turael, Spria	Air spells 20%	Bones	
+Vyrewatch	75-110	8-13	Crush	Aggressive		Mazchna, Vannaka, Chaeldar, Konar, Nieve, Duradel		Vampyre dust	Mushroom spore 1/4,032; Jade bolt tips 3/5,376; Onyx bolt tips 3/5,376
+Vyrewatch Sentinel	150	17	Slash	Aggressive	38	Mazchna, Vannaka, Chaeldar, Konar, Nieve, Duradel		Vampyre dust	Mushroom spore 1/3,360.8; Jade bolt tips 3/5,208; Onyx bolt tips 3/5,208
+Wall beast	105	4 (Melee), 18 (without Spiny helmet)	Crush	Aggressive	35	Mazchna			Mystic hat (light) 1/512
+Wallasalki	120	30	Magic	Aggressive			Earth spells 30%	Bones	Chaos talisman 1/373.3; Nature talisman 1/373.3; Cosmic talisman 1/280
+Warped Jelly	140	10	Magical melee		52	Vannaka, Chaeldar, Konar, Mortimer	Earth spells 30%		
+Warped Terrorbird	150-200	10-16	Ranged, Crush	Aggressive	56	Chaeldar, Konar, Nieve, Duradel, Mortimer		Bones	Warped sceptre (uncharged) 1/320
+Warped Tortoise	200	12	Crush		56	Chaeldar, Konar, Nieve, Duradel, Mortimer	Earth spells 20%	Big bones	Curved bone 1/5,012.5; Long bone 1/400; Warped sceptre (uncharged) 1/320
+Warrior (Rellekka)	50	8	Crush					Bones	
+Warrior (Thieving)	20	3	Stab					Bones	
+Watchman	22	4	Crush					Bones	
+Water elemental	30	4	Stab				Earth spells 50%	Vial of water	
+Water wizard	25	2	Magic					Ashes	
+Waterfiend	128	11	Magic, Magical ranged	Aggressive		Konar, Duradel	Earth spells 100%	Water rune; Fiendish ashes	Mist battlestaff 1/3,000
+Weaponsmaster	20	3	Crush					Bones	
+Werewolf	92-100	8-9	Slash, Crush			Vannaka		Wolf bones	
+White Knight	52-55	6-7	Slash					Bones	
+White Knight (Burthorpe)	52	6	Slash					Bones	
+White jaguar	80	6	Slash	Aggressive				Bones; Jaguar fur	
+White wolf	34-44	3-4	Stab	Aggressive		Turael, Spria, Mazchna	Fire spells 25%	Wolf bones	
+Wild dog	62	6	Stab			Turael, Spria, Mazchna		Bones	
+Wilson	50	4	Crush					Bones	
+Wingman Skree	121	16	Magic	Aggressive		Chaeldar, Konar, Nieve, Duradel	Air spells 30%	Bones; Feather	Armadyl chainskirt 1/16,129; Armadyl chestplate 1/16,129; Armadyl helmet 1/16,129
+Wizard	14	4	Magic					Bones; Key (medium)	
+Wolf	10-69	2-6	Stab			Turael, Spria, Mazchna	Fire spells 25%	Wolf bones	
+Woman	7	1	Crush					Bones	
+Woman (East Ardougne)	7	1	Crush					Bones	
+Woman (West Ardougne)	10-23	1-2	Crush					Bones	
+Wormbrain	5	1	Crush			Turael, Spria		Map part (Lozar)	
+Wyrm	120	13 (Magic), 10 (Melee)	Magic, Slash		62	Chaeldar, Konar, Nieve, Duradel, Mortimer	Earth spells 50%	Wyrm bones	Dragon harpoon 1/10,000; Dragon knife 1/10,000; Dragon sword 1/10,000
+Wyrmling	65	5	Slash		62	Chaeldar, Konar, Nieve, Duradel, Mortimer	Earth spells 50%	Wyrmling bones	
+Yadviga	60	2	Crush					Wolf bones	Blamish oil 1/512; Eye of newt 2/512; Jangerberries 2/512
+Yak	50	2	Crush					Bones; Yak-hide; Hair; Raw yak meat	
+Young impling	10	N/A							
+Yuri	60	2	Crush					Wolf bones	Blamish oil 1/512; Eye of newt 2/512; Jangerberries 2/512
+Zakl'n Gritch	150	21	Ranged	Aggressive		Vannaka, Chaeldar	Water spells 40%	Malicious ashes	Zamorakian spear 3/16,129; Godsword shard 1 1/1,524; Godsword shard 2 1/1,524
+Zalcano	300-1000	53	Various	Aggressive				Crystal shard; Infernal ashes	Uncut onyx 1/8,000; Smolcano 1/2,250; Zalcano shard 1/750
+Zamorak crafter	25	2	Crush	Aggressive					
+Zamorak mage	50	9	Magic	Aggressive				Bones	
+Zamorak ranger	50	9	Ranged	Aggressive				Bones	
+Zamorak warrior	45	8	Slash, Crush	Aggressive				Bones	
+Zogre	71	5	Crush	Aggressive		Turael, Spria, Vannaka		Ogre coffin key; Zogre bones	
+Zoja	60	2	Crush					Wolf bones	Blamish oil 1/512; Eye of newt 2/512; Jangerberries 2/512
+Zombie	22-30	2-3	Crush, Slash	Aggressive		Turael, Spria, Mazchna, Krystilia	Fire spells 50%	Bones	
+Zombie (Entrana Dungeon)	30	3	Slash			Turael, Spria, Mazchna	Fire spells 50%	Bones	
+Zombie (Kourend)	50-71	7-9	Slash	Aggressive		Turael, Spria, Mazchna, Krystilia	Fire spells 50%	Bones	
+Zombie (Melzar's Maze)	30	3	Slash	Aggressive		Turael, Spria, Mazchna	Fire spells 50%	Bones; Key (blue)	
+Zombie (Sepulchre of Death)	170	14	Crush			Turael, Spria, Mazchna		Big bones	Curved bone 1/5,012.5; Long bone 1/400; Big bones 1/256
+Zombie (Shayzien Crypts)	54	19	Magic, Ranged, Slash	Aggressive		Turael, Spria, Mazchna	Fire spells 50%	Bones	Jade bolt tips 3/6,720; Onyx bolt tips 3/6,720; Sapphire bolt tips 3/6,720
+Zombie (Stronghold of Security)	30-50	4-5	Slash	Aggressive		Turael, Spria, Mazchna, Krystilia	Fire spells 50%	Bones	
+Zombie (Tarn's Lair)	38-102	5-11	Crush	Aggressive		Turael, Spria, Mazchna	Fire spells 50%	Bones	
+Zombie (Temple Trekking)	20	3	Slash			Turael, Spria, Mazchna		Bronze axe	
+Zombie (Wilderness)	24-30	2-3	Slash	Aggressive		Turael, Spria, Mazchna, Krystilia	Fire spells 50%	Bones	
+Zombie pirate	30-40	2-3	Crush	Aggressive		Turael, Spria, Mazchna, Krystilia	Fire spells 50%	Bones	Dragon dagger 1/378; Dragon longsword 1/378; Dragon scimitar 1/378
+Zombie pirate (Braindeath Island)	52	6	Crush	Aggressive		Turael, Spria, Mazchna	Fire spells 50%	Bones	
+Zombie pirate (Harmony Island)	52	6	Crush	Aggressive		Turael, Spria, Mazchna	Fire spells 50%	Bones	
+Zombie rat	5	1	Stab			Turael, Spria	Fire spells 50%	Bones; Key (red); Giant rat bone	
+Zombie swab	50	6	Crush			Turael, Spria, Mazchna	Fire spells 50%	Bones	
+Zygomite	65-75	7 (Melee), 6 (Ranged)	Magical melee, Magical ranged		57	Chaeldar, Konar, Nieve, Duradel	Fire spells 40%	Ashes	

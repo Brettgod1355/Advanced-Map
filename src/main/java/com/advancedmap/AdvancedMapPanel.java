@@ -136,9 +136,9 @@ class AdvancedMapPanel extends PluginPanel
 			+ " monster. Places come first, the bigger first (\"var\": Varlamore, Varrock); nicknames work (\"ardy\","
 			+ " \"fally\"); loose spelling too (\"d scim\", \"kbd\"). Up, Down and Enter pick a result, or click"
 			+ " one. A place moves the map there; an item lists the shops that sell it, nearest first; a monster marks"
-			+ " every spawn and lists them by area. Fairy ring codes (\"cks\"), fishing spots (\"lobster\"),"
-			+ " hunter areas and kinds of icon (\"bank\": every one, nearest first) are found too. Shops by name"
-			+ " only with the setting.")
+			+ " every spawn and lists them by area, under its hitpoints, Slayer level and masters, drops and a Wiki"
+			+ " button. Fairy ring codes (\"cks\"), fishing spots (\"lobster\"), hunter areas and kinds of icon"
+			+ " (\"bank\": every one, nearest first) are found too. Shops by name only with the setting.")
 			+ section("Markers", "Right-click anywhere and choose \"Add marker here\": name it, pick a picture and a"
 			+ " color, Save. Right-click a marker to edit or remove it. Markers show on all your accounts (a setting"
 			+ " keeps them apart). Other plugins' markers (a clue scroll's spot,"
@@ -152,10 +152,12 @@ class AdvancedMapPanel extends PluginPanel
 			+ " darkened underneath, so you can see where you are. Zoomed out, the ground floor shows every floor's"
 			+ " icons; zoomed in, each icon is on its own floor (Lumbridge Castle's bank is at the top). How floors"
 			+ " are numbered is a setting.")
-			+ section("Icons", "Click an icon for its details: a quest's difficulty and the levels it needs, a"
-			+ " shortcut's Agility level, a spell's Magic level. Shortcuts and teleports you can't use yet are grayed"
-			+ " out with a red mark, and so are bank chests you haven't built yet and banks a quest hasn't opened"
-			+ " for you; click one for what it needs. \"Icons\" at the top left turns every icon off or on at once;"
+			+ section("Dungeons", "Point at a dungeon's entrance for a look inside: its name, a small map of where"
+			+ " you come out and every monster inside. Click the entrance to go in.")
+			+ section("Icons", "Point at an icon, or click it to keep its box open, for its details: a quest's"
+			+ " difficulty and the levels it needs, a shortcut's Agility level, a spell's Magic level. Shortcuts and"
+			+ " teleports you can't use yet are grayed out with a red mark, and so are bank chests you haven't built"
+			+ " yet and banks a quest hasn't opened for you; point at one for what it needs. \"Icons\" at the top left turns every icon off or on at once;"
 			+ " place names stay.")
 			+ section("Shops and transports", "Click a shop for what it sells and for how much, in a list on the"
 			+ " right. Click a spirit tree, fairy ring, charter ship or other transport for lines to where it goes and"

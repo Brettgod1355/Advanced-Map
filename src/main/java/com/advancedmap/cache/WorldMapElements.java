@@ -46,6 +46,24 @@ public final class WorldMapElements
 		int plane;
 	}
 
+	/**
+	 * Part of the world a map shows: a 64-tile square or an 8-tile zone, from its south-west tile, on the floors from
+	 * {@code minLevel} up.
+	 */
+	@Value
+	public static class Piece
+	{
+		int x;
+		int y;
+		int size;
+		int minLevel;
+
+		public boolean contains(int tileX, int tileY, int plane)
+		{
+			return plane >= minLevel && tileX >= x && tileY >= y && tileX < x + size && tileY < y + size;
+		}
+	}
+
 	/** A square or zone of the world map drawn from somewhere else in the world. */
 	private static final class Moved
 	{
@@ -66,6 +84,19 @@ public final class WorldMapElements
 	}
 
 	public static List<Element> load(byte[] data)
+	{
+		return read(data, null);
+	}
+
+	/** The parts of the world one map shows (each square and zone it is drawn from), from the same file. */
+	public static List<Piece> pieces(byte[] data)
+	{
+		List<Piece> pieces = new ArrayList<>();
+		read(data, pieces);
+		return pieces;
+	}
+
+	private static List<Element> read(byte[] data, List<Piece> pieces)
 	{
 		InputStream in = new InputStream(data);
 		List<Moved> squares = new ArrayList<>();
@@ -99,6 +130,19 @@ public final class WorldMapElements
 			zone.displayZoneX = in.readUnsignedByte();
 			zone.displayZoneY = in.readUnsignedByte();
 			zones.add(zone);
+		}
+		if (pieces != null)
+		{
+			for (Moved square : squares)
+			{
+				pieces.add(new Piece(square.sourceX * 64, square.sourceY * 64, 64, square.minLevel));
+			}
+			for (Moved zone : zones)
+			{
+				pieces.add(new Piece(zone.sourceX * 64 + zone.sourceZoneX * 8, zone.sourceY * 64 + zone.sourceZoneY * 8, 8,
+					zone.minLevel));
+			}
+			return null;
 		}
 		List<Element> out = new ArrayList<>();
 		count = in.readUnsignedShort();

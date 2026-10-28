@@ -154,6 +154,12 @@ final class MapSearch
 	private volatile List<Entry> results = Collections.emptyList();
 	private volatile int highlighted;
 
+	/** The named entrances, fishing spots and hunter areas, as {@link #load} read them. */
+	List<Entry> places()
+	{
+		return places;
+	}
+
 	/** Reads the entrances, fishing spots and hunter areas from the plugin's resources. Off the client thread. */
 	void load()
 	{

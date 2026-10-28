@@ -27,6 +27,7 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.function.IntPredicate;
 import lombok.Value;
 import net.runelite.api.coords.WorldPoint;
@@ -108,6 +109,8 @@ final class MapPainter
 	private static final int FILTERS_WIDTH = 86;
 	private static final int MENU_ROW = 20;
 	private static final int PAD = 8;
+	/** The most monsters a dungeon preview lists, its "and more" line included, when taller than its map. */
+	private static final int MAX_PREVIEW_LINES = 16;
 	/** The Wilderness teleport limits show from this zoom in, as icons do. */
 	static final double WILDERNESS_ZOOM = MapIcons.ICON_ZOOM;
 
@@ -123,6 +126,9 @@ final class MapPainter
 	private static final Stroke TELEPORT_LIMIT_STROKE = new BasicStroke(2, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER,
 		10, new float[]{10, 6}, 0);
 	private static final Stroke THICK = new BasicStroke(2);
+
+	/** How long the mouse must rest on an icon before its info box shows, without a click. */
+	static final long HOVER_NANOS = 300_000_000L;
 
 	/** For measuring text outside a frame (where the menu's entry is, for a click). */
 	private static final Graphics2D MEASURE = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB).createGraphics();
@@ -141,6 +147,15 @@ final class MapPainter
 	private volatile Map<Farming.Site, List<Farming.Reading>> farming;
 	/** The pin a right-click menu is for, or null. */
 	private volatile MapPins.Pin menuPin;
+	private volatile boolean infoOnHover;
+	/** Set while a mouse button is held on the map (dragging it): nothing shows on hover meanwhile. */
+	private volatile boolean dragging;
+	/** Where a click on an icon would move the map to the other map (a dungeon's entrance), or null. */
+	private volatile Function<MapSpot, WorldPoint> links = spot -> null;
+	private final DungeonPreview preview;
+	/** The icon or pin the mouse rests on (a {@link MapSpot} or a {@link MapPins.Pin}), and since when. */
+	private Object hovered;
+	private long hoveredSince;
 
 	MapPainter(RegionImages images, MapMessages messages, MapIcons icons, MapLabels labels, MapFilters filters,
 		SideList sideList, MapSearch search)
@@ -152,6 +167,29 @@ final class MapPainter
 		this.labels = labels;
 		this.filters = filters;
 		this.sideList = sideList;
+		this.preview = new DungeonPreview(images);
+	}
+
+	/** Shows an icon's info box when the mouse rests on it, as well as on a click. */
+	void setInfoOnHover(boolean on)
+	{
+		infoOnHover = on;
+	}
+
+	void setDragging(boolean on)
+	{
+		dragging = on;
+	}
+
+	/** The parts of the world each of the game's underground maps shows, which keep a preview to one dungeon. */
+	void setDungeonMaps(List<List<com.advancedmap.cache.WorldMapElements.Piece>> maps)
+	{
+		preview.setMaps(maps);
+	}
+
+	void setLinks(Function<MapSpot, WorldPoint> links)
+	{
+		this.links = links;
 	}
 
 	void setPins(MapPins pins, MarkerEditor editor)
@@ -233,7 +271,7 @@ final class MapPainter
 	{
 		g.setColor(BACKGROUND);
 		g.fillRect(0, 0, view.width, view.height);
-		boolean loading = drawRegions(g, view, area, plane);
+		boolean loading = drawRegions(g, view, area, plane, true);
 		if (settings.isWildernessLines())
 		{
 			drawWilderness(g, view, area, id -> images.isAbsent(0, id));
@@ -291,7 +329,7 @@ final class MapPainter
 				drawInfo(g, view, selected, settings, progress, farmingLines(selected.getSpot(), farms));
 			}
 		}
-		drawBar(g, view, mouse, loading, window, !shown.isEmpty());
+		drawBar(g, view, mouse, loading, window, !shown.isEmpty(), infoOnHover);
 		Integer slayerArea = settings.isSlayerButton() ? filters.areaOf(IconGroup.SLAYER_MASTER) : null;
 		drawButtons(g, view, area, plane, window, settings, player != null, filters.isOpen(),
 			slayerArea == null ? null : icons.image(slayerArea, false));
@@ -309,6 +347,7 @@ final class MapPainter
 			sideList.draw(g, sideList.layout(buttons(view.width, view.height, window)), mouse);
 		}
 		search.draw(g, search.layout(buttons(view.width, view.height, window), view.width), mouse);
+		drawHovered(g, view, area, window, mouse, settings, progress, selection, shown, pinsShown, farms);
 		if (antialiasing != null)
 		{
 			g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, antialiasing);
@@ -316,25 +355,13 @@ final class MapPainter
 	}
 
 	/**
-	 * Draws the region pictures there are and asks for the rest. On a floor above the ground, the floors below are
-	 * drawn first and darkened, and the floor itself in full color on top, so it shows where it sits. True while some
-	 * of the floor are still being drawn.
+	 * Draws the region pictures there are and, with {@code request}, asks for the rest (a dungeon preview asks for its
+	 * own). On a floor above the ground, the floors below are drawn first and darkened, and the floor itself in full
+	 * color on top, so it shows where it sits. True while some of the floor are still being drawn.
 	 */
-	private boolean drawRegions(Graphics2D g, MapViewport.View view, MapArea area, int plane)
+	private boolean drawRegions(Graphics2D g, MapViewport.View view, MapArea area, int plane, boolean request)
 	{
-		int rx0 = Math.max(area.minRegionX, (int) Math.floor(view.worldX(0) / 64));
-		int rx1 = Math.min(area.maxRegionX, (int) Math.floor(view.worldX(view.width) / 64));
-		int ry0 = Math.max(area.minRegionY, (int) Math.floor(view.worldY(view.height) / 64));
-		int ry1 = Math.min(area.maxRegionY, (int) Math.floor(view.worldY(0) / 64));
-
-		List<Integer> visible = new ArrayList<>();
-		for (int rx = rx0; rx <= rx1; rx++)
-		{
-			for (int ry = ry0; ry <= ry1; ry++)
-			{
-				visible.add(rx << 8 | ry);
-			}
-		}
+		List<Integer> visible = regionsOn(view, area);
 		// the middle of the screen first
 		double cx = view.centerX / 64 - 0.5;
 		double cy = view.centerY / 64 - 0.5;
@@ -346,7 +373,10 @@ final class MapPainter
 		}));
 
 		RegionImages.Level level = RegionImages.Level.forZoom(view.zoom);
-		images.request(plane, visible, level);
+		if (request)
+		{
+			images.request(plane, visible, level);
+		}
 
 		Object interpolation = g.getRenderingHint(RenderingHints.KEY_INTERPOLATION);
 		g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, view.zoom > 4
@@ -757,6 +787,235 @@ final class MapPainter
 		return null;
 	}
 
+	/**
+	 * The info box of the icon or pin the mouse has rested on for {@link #HOVER_NANOS}, unless a click already opened
+	 * it, a menu is open, a mouse button is held, or the mouse is on a button or panel; for a dungeon's entrance, the
+	 * dungeon's preview. It goes when the mouse moves off; a click keeps it (as the selection).
+	 */
+	private void drawHovered(Graphics2D g, MapViewport.View view, MapArea area, boolean window, Point mouse,
+		MapSettings settings, Progress progress, Selection selection, List<MapIcons.Shown> shown,
+		List<MapPins.Shown> pinsShown, Map<Farming.Site, List<Farming.Reading>> farms)
+	{
+		Object target = null;
+		Rectangle at = null;
+		if (infoOnHover && mouse != null && !dragging && (selection == null || !selection.isMenu())
+			&& !onPanel(mouse, view, window, settings))
+		{
+			for (int i = pinsShown.size() - 1; i >= 0 && target == null; i--)
+			{
+				if (pinsShown.get(i).getBounds().contains(mouse))
+				{
+					target = pinsShown.get(i).getPin();
+					at = pinsShown.get(i).getBounds();
+				}
+			}
+			MapIcons.Shown icon = target == null ? MapIcons.at(shown, mouse.x, mouse.y) : null;
+			if (icon != null)
+			{
+				target = icon.getSpot();
+				at = icon.getBounds();
+			}
+		}
+		long now = System.nanoTime();
+		if (target == null || !target.equals(hovered))
+		{
+			hovered = target;
+			hoveredSince = now;
+			return;
+		}
+		if (now - hoveredSince < HOVER_NANOS)
+		{
+			return;
+		}
+		if (target instanceof MapPins.Pin)
+		{
+			MapPins.Pin pin = (MapPins.Pin) target;
+			if (!pin.equals(pins.selected()))
+			{
+				drawBox(g, view, at, pin.getName().isEmpty() ? "Marker" : pin.getName(),
+					pinLines(pin, settings.getFloorNumbers()));
+			}
+			return;
+		}
+		MapSpot spot = (MapSpot) target;
+		if (selection != null && spot.equals(selection.getSpot()))
+		{
+			return;
+		}
+		WorldPoint to = links.apply(spot);
+		if (to != null)
+		{
+			drawPreview(g, view, at, spot, to, settings, progress);
+			return;
+		}
+		for (MapIcons.Shown icon : shown)
+		{
+			if (icon.getSpot().equals(spot))
+			{
+				drawInfo(g, view, icon, settings, progress, farmingLines(spot, farms));
+			}
+		}
+	}
+
+	/** True when a point is on one of the map's buttons, its open lists or boxes, or the search bar. */
+	private boolean onPanel(Point mouse, MapViewport.View view, boolean window, MapSettings settings)
+	{
+		if (buttonAt(mouse.x, mouse.y, view.width, view.height, window, settings) != null)
+		{
+			return true;
+		}
+		Map<Button, Rectangle> buttons = buttons(view.width, view.height, window);
+		if (filters.isOpen() && MapFilters.layout(buttons.get(Button.FILTERS), view.height).getPanel().contains(mouse))
+		{
+			return true;
+		}
+		if (editor.isOpen() ? MarkerEditor.layout(buttons).getPanel().contains(mouse)
+			: sideList.isOpen() && sideList.layout(buttons).getPanel().contains(mouse))
+		{
+			return true;
+		}
+		MapSearch.Layout bar = search.layout(buttons, view.width);
+		return bar.getBox().contains(mouse) || bar.getResults().contains(mouse);
+	}
+
+	/**
+	 * A dungeon's preview beside its entrance: its name, a small map around where the entrance leads with that tile
+	 * marked, and (for a way underground) the monsters inside; how to go in under it.
+	 */
+	private void drawPreview(Graphics2D g, MapViewport.View view, Rectangle at, MapSpot spot, WorldPoint to,
+		MapSettings settings, Progress progress)
+	{
+		MapArea toArea = MapArea.of(to.getY());
+		String name = DungeonPreview.name(spot, to, search.places(), labels.all());
+		String title = name != null ? name : MapIcons.name(spot, progress);
+		if (toArea == MapArea.SURFACE && MapArea.of(spot.getY()) != MapArea.SURFACE)
+		{
+			title = name != null ? "Up to " + name : "Way out";
+		}
+		MapViewport.View small = new MapViewport.View(to.getX() + 0.5, to.getY() + 0.5, DungeonPreview.MAP_ZOOM,
+			DungeonPreview.MAP_WIDTH, DungeonPreview.MAP_HEIGHT);
+		boolean inside = toArea == MapArea.UNDERGROUND;
+		images.requestBesides(to.getPlane(), regionsOn(small, toArea),
+			RegionImages.Level.forZoom(DungeonPreview.MAP_ZOOM),
+			inside ? DungeonPreview.regionsAround(to) : Collections.emptyList());
+
+		java.awt.Font titleFont = FontManager.getRunescapeBoldFont();
+		java.awt.Font font = FontManager.getRunescapeSmallFont();
+		FontMetrics titleMetrics = g.getFontMetrics(titleFont);
+		FontMetrics metrics = g.getFontMetrics(font);
+		List<String> list = new ArrayList<>();
+		if (inside)
+		{
+			DungeonPreview.Look look = preview.look(to);
+			int room = Math.max(DungeonPreview.MAP_HEIGHT, MAX_PREVIEW_LINES * metrics.getHeight())
+				/ metrics.getHeight() - 1;
+			List<DungeonPreview.Inside> monsters = look.getMonsters();
+			for (int i = 0; i < monsters.size() && list.size() < room; i++)
+			{
+				if (i == room - 1 && monsters.size() > room)
+				{
+					list.add("and " + (monsters.size() - i) + " more");
+					break;
+				}
+				list.add(monsters.get(i).text());
+			}
+			if (list.isEmpty())
+			{
+				list.add(look.isComplete() ? "No monsters" : "Looking...");
+			}
+		}
+		String heading = "Monsters inside";
+		int listWidth = 0;
+		if (inside)
+		{
+			listWidth = titleMetrics.stringWidth(heading);
+			for (String line : list)
+			{
+				listWidth = Math.max(listWidth, metrics.stringWidth(line));
+			}
+		}
+		String hint = "Click to go there";
+		int contentHeight = Math.max(DungeonPreview.MAP_HEIGHT,
+			inside ? titleMetrics.getHeight() + metrics.getHeight() * list.size() : 0);
+		int width = PAD * 2 + Math.max(titleMetrics.stringWidth(title),
+			DungeonPreview.MAP_WIDTH + (inside ? PAD + listWidth : 0));
+		int height = PAD * 2 + titleMetrics.getHeight() + 4 + contentHeight + 4 + metrics.getHeight();
+		int x = at.x + at.width + 8;
+		if (x + width > view.width - GAP)
+		{
+			x = at.x - 8 - width;
+		}
+		x = Math.max(GAP, x);
+		int y = Math.max(GAP + BUTTON_HEIGHT + GAP, Math.min(at.y - PAD, view.height - height - GAP));
+		drawPanel(g, new Rectangle(x, y, width, height));
+
+		int baseline = y + PAD + titleMetrics.getAscent();
+		g.setFont(titleFont);
+		g.setColor(TEXT);
+		g.drawString(title, x + PAD, baseline);
+		int mapX = x + PAD;
+		int mapY = y + PAD + titleMetrics.getHeight() + 4;
+
+		Graphics2D map = (Graphics2D) g.create(mapX, mapY, DungeonPreview.MAP_WIDTH, DungeonPreview.MAP_HEIGHT);
+		try
+		{
+			map.setColor(BACKGROUND);
+			map.fillRect(0, 0, small.width, small.height);
+			drawRegions(map, small, toArea, to.getPlane(), false);
+			drawIcons(map, icons.visible(small, toArea, to.getPlane(), settings, progress), null);
+			double cx = small.screenX(to.getX() + 0.5);
+			double cy = small.screenY(to.getY() + 0.5);
+			map.setColor(OUTLINE);
+			map.fill(new Ellipse2D.Double(cx - 6, cy - 6, 12, 12));
+			map.setColor(PLAYER);
+			map.fill(new Ellipse2D.Double(cx - 4, cy - 4, 8, 8));
+		}
+		finally
+		{
+			map.dispose();
+		}
+		g.setColor(new Color(0x5A5040));
+		g.drawRect(mapX - 1, mapY - 1, DungeonPreview.MAP_WIDTH + 1, DungeonPreview.MAP_HEIGHT + 1);
+
+		if (inside)
+		{
+			int listX = mapX + DungeonPreview.MAP_WIDTH + PAD;
+			int line = mapY + titleMetrics.getAscent();
+			g.setFont(titleFont);
+			g.setColor(TEXT);
+			g.drawString(heading, listX, line);
+			line += titleMetrics.getDescent() + metrics.getAscent();
+			g.setFont(font);
+			g.setColor(MapIcons.PLAIN);
+			for (String text : list)
+			{
+				g.drawString(text, listX, line);
+				line += metrics.getHeight();
+			}
+		}
+		g.setFont(font);
+		g.setColor(MapIcons.QUIET);
+		g.drawString(hint, x + PAD, y + height - PAD - metrics.getDescent());
+	}
+
+	/** The ids of a map's regions a view shows. */
+	private static List<Integer> regionsOn(MapViewport.View view, MapArea area)
+	{
+		List<Integer> ids = new ArrayList<>();
+		int rx0 = Math.max(area.minRegionX, (int) Math.floor(view.worldX(0) / 64));
+		int rx1 = Math.min(area.maxRegionX, (int) Math.floor(view.worldX(view.width) / 64));
+		int ry0 = Math.max(area.minRegionY, (int) Math.floor(view.worldY(view.height) / 64));
+		int ry1 = Math.min(area.maxRegionY, (int) Math.floor(view.worldY(0) / 64));
+		for (int rx = rx0; rx <= rx1; rx++)
+		{
+			for (int ry = ry0; ry <= ry1; ry++)
+			{
+				ids.add(rx << 8 | ry);
+			}
+		}
+		return ids;
+	}
+
 	/** The info box beside an icon: its name, then what the player needs to know about it. Never cut short. */
 	private static void drawInfo(Graphics2D g, MapViewport.View view, MapIcons.Shown icon, MapSettings settings,
 		Progress progress, List<MapIcons.Line> extra)
@@ -1129,7 +1388,7 @@ final class MapPainter
 	}
 
 	private static void drawBar(Graphics2D g, MapViewport.View view, Point mouse, boolean loading, boolean window,
-		boolean icons)
+		boolean icons, boolean hover)
 	{
 		g.setFont(FontManager.getRunescapeSmallFont());
 		FontMetrics metrics = g.getFontMetrics();
@@ -1143,7 +1402,7 @@ final class MapPainter
 		text.append(window ? "Drag to move, scroll to zoom" : "Drag to move, scroll to zoom, Esc to close");
 		if (icons)
 		{
-			text.append(", click an icon for details");
+			text.append(hover ? ", point at an icon for details, click to keep them" : ", click an icon for details");
 		}
 		if (loading)
 		{

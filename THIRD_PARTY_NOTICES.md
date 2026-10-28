@@ -229,6 +229,14 @@ the wiki gave them that day (they can be out of date). The Shilo Village cart's 
 diary makes it free, are from the wiki's "Shilo Village cart system", "Hajedy" and "Vigroy" pages, checked the same day.
 Nothing is fetched from the wiki while the plugin runs.
 
+`src/main/resources/com/advancedmap/monsters.tsv` (each searchable monster's hitpoints, max hit, attack styles, whether
+it is aggressive or poisonous, Slayer level, the Slayer masters who assign it, what it is weak to, the drops it always
+gives and up to three rare ones) is adapted from the same wiki's Bucket tables `infobox_monster` and `dropsline`, read
+on 2026-10-28, under the same license and credit. Changes: one line a monster, the versions of a monster merged
+(hitpoints and max hit as a range), weakness taken as its lowest defence bonus and its elemental weakness, drops cut
+to "Always" and the three rarest at 1/256 or rarer that are not shared tables (clue scrolls, herbs, seeds,
+Wilderness loot). The Wiki button beside a monster opens its wiki page in the browser; nothing is fetched.
+
 ## Behavior references (no code copied)
 
 - Where each map link leads (a dungeon's entrance to the dungeon and back) is read at runtime from the game's own

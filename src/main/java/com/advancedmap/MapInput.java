@@ -72,6 +72,7 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 		else if (!plugin.pressMenu(e.getX(), e.getY(), w, h) && SwingUtilities.isLeftMouseButton(e))
 		{
 			dragging = true;
+			plugin.setDragging(true);
 			lastX = e.getX();
 			lastY = e.getY();
 			pressX = e.getX();
@@ -105,6 +106,10 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 	{
 		// whatever the mouse or keys do, the map over the game is drawn again at once
 		plugin.touched();
+		if (dragging)
+		{
+			plugin.setDragging(false);
+		}
 		if (!plugin.isMapOpen())
 		{
 			dragging = false;
