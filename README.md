@@ -10,12 +10,14 @@ A full-screen world map for RuneLite, drawn from the game's own map data with sm
   own world map or on another screen. **Over the game** brings it back.
 - **Wilderness teleport limits**: zoomed in, red dashed lines show where the Wilderness passes level 20 and level 30,
   above which most teleports stop working. Turn them off with the "Wilderness teleport limits" setting.
-- **Search** with the box at the top: places, dungeon and minigame entrances, shops, everything shops sell and
-  monsters, matched loosely as the Grand Exchange does ("d scim" and "dragon sim" find the dragon scimitar, "kbd"
-  the King Black Dragon). A place or shop moves the map there; an item lists the shops that sell it and the price,
-  nearest first; a monster or NPC marks every spawn and lists them by area. Fairy ring codes ("cks"), fishing spots
-  by catch ("lobster"), hunter areas by creature ("chinchompa") and kinds of icon ("bank", "anvil", "altar": every
-  one, nearest first) are found too, and among equally good matches the nearest to you comes first.
+- **Search** with the box at the top: places, dungeon and minigame entrances, everything shops sell and monsters,
+  matched loosely as the Grand Exchange does ("d scim" and "dragon sim" find the dragon scimitar, "kbd" the King
+  Black Dragon). Places come first, the bigger first: "var" lists Varlamore and Varrock before Varrock armour, and
+  nicknames work ("ardy", "fally", "zeah"). A place moves the map there; an item lists the shops that sell it and
+  the price, nearest first; a monster or NPC marks every spawn and lists them by area. Fairy ring codes ("cks"),
+  fishing spots by catch ("lobster"), hunter areas by creature ("chinchompa") and kinds of icon ("bank", "anvil",
+  "altar": every one, nearest first) are found too, and among equally good matches the nearest to you comes first.
+  Shops are found through what they sell; the setting "Search finds shops by name" lists them by name too.
 - **Your own markers**: right-click anywhere, "Add marker here", give it a name and pick one of 12 pictures and 9
   colors. Right-click a marker to edit or remove it; markers are found by search too. Markers are shared by every
   account you play on this computer, two at once included (each is its own small file in RuneLite's plugin data

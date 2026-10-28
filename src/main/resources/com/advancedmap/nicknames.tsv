@@ -1,0 +1,16 @@
+# Nicknames players use for places, found as the place itself when typed in full. Only names whose start is not
+# already the place's start ("tav", "civ" and "seers" find their places anyway). nickname, place names (;-separated),
+# as the game's own map writes them.
+ardy	East Ardougne;West Ardougne
+fally	Falador
+lumby	Lumbridge
+lummy	Lumbridge
+ge	Grand Exchange
+cammy	Camelot Castle
+brimmy	Brimhaven
+rimmy	Rimmington
+polly	Pollnivneach
+zeah	Kingdom of Great Kourend
+fremmy	Fremennik Province
+wildy	Wilderness
+morty	Morytania

@@ -132,12 +132,13 @@ class AdvancedMapPanel extends PluginPanel
 		return section("Moving around", "Drag to move, scroll to zoom around the pointer. The map opens on you, on"
 			+ " the surface or the underground map, whichever you are on. The round button at the bottom right brings"
 			+ " you back into view.")
-			+ section("Search", "Click the box at the top and type: a place, a dungeon, a shop, anything a shop"
-			+ " sells or a monster. Loose spelling works (\"d scim\", \"dragon sim\", \"kbd\"). Up, Down and"
-			+ " Enter pick a result, or click one. A place or shop moves the map there; an item lists the shops"
-			+ " that sell it, nearest first; a monster marks every spawn and lists them by area. Fairy ring codes"
-			+ " (\"cks\"), fishing spots (\"lobster\"), hunter areas and kinds of icon (\"bank\": every one,"
-			+ " nearest first) are found too; the nearest comes first among equal matches.")
+			+ section("Search", "Click the box at the top and type: a place, a dungeon, anything a shop sells or a"
+			+ " monster. Places come first, the bigger first (\"var\": Varlamore, Varrock); nicknames work (\"ardy\","
+			+ " \"fally\"); loose spelling too (\"d scim\", \"kbd\"). Up, Down and Enter pick a result, or click"
+			+ " one. A place moves the map there; an item lists the shops that sell it, nearest first; a monster marks"
+			+ " every spawn and lists them by area. Fairy ring codes (\"cks\"), fishing spots (\"lobster\"),"
+			+ " hunter areas and kinds of icon (\"bank\": every one, nearest first) are found too. Shops by name"
+			+ " only with the setting.")
 			+ section("Markers", "Right-click anywhere and choose \"Add marker here\": name it, pick a picture and a"
 			+ " color, Save. Right-click a marker to edit or remove it. Markers show on all your accounts (a setting"
 			+ " keeps them apart). Other plugins' markers (a clue scroll's spot,"

@@ -94,9 +94,21 @@ final class MapSearch
 		List<Shops.Shop> shops;
 		/** A monster or NPC; null otherwise. */
 		Spawns.Creature creature;
+		/**
+		 * How big a place it is, for listing places first and the bigger first: a kingdom 3, a town 2, a smaller place,
+		 * a dungeon or a marker 1 (from the size the game's map writes its name at); 0 for anything not a place.
+		 */
+		int importance;
 
 		Entry(Kind kind, String name, String note, List<WorldPoint> points, List<Shops.Shop> shops,
 			Spawns.Creature creature)
+		{
+			this(kind, name, note, points, shops, creature, kind == Kind.PLACE ? MapLabels.TOWN + 1
+				: kind == Kind.DUNGEON || kind == Kind.MINIGAME || kind == Kind.MARKER ? 1 : 0);
+		}
+
+		Entry(Kind kind, String name, String note, List<WorldPoint> points, List<Shops.Shop> shops,
+			Spawns.Creature creature, int importance)
 		{
 			this.kind = kind;
 			this.name = name;
@@ -105,6 +117,7 @@ final class MapSearch
 			this.points = points;
 			this.shops = shops;
 			this.creature = creature;
+			this.importance = importance;
 		}
 	}
 
@@ -133,6 +146,7 @@ final class MapSearch
 	}
 
 	private volatile List<Entry> places = Collections.emptyList();
+	private static volatile Map<String, java.util.Set<String>> nicknames = Collections.emptyMap();
 	private volatile List<Entry> index = Collections.emptyList();
 	private volatile int indexedLabels = -1;
 	private volatile boolean focused;
@@ -167,6 +181,40 @@ final class MapSearch
 			log.debug("could not read the fishing and hunter spots", e);
 		}
 		places = Collections.unmodifiableList(out);
+		try (InputStream in = MapSearch.class.getResourceAsStream("nicknames.tsv"))
+		{
+			if (in != null)
+			{
+				nicknames = parseNicknames(in);
+			}
+		}
+		catch (IOException | RuntimeException e)
+		{
+			log.debug("could not read the place nicknames", e);
+		}
+	}
+
+	/** Nicknames ("ardy") and the places they stand for, both {@link #normalize normalized}. */
+	static Map<String, java.util.Set<String>> parseNicknames(InputStream in) throws IOException
+	{
+		Map<String, java.util.Set<String>> out = new java.util.HashMap<>();
+		BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
+		String line;
+		while ((line = reader.readLine()) != null)
+		{
+			if (line.isEmpty() || line.startsWith("#"))
+			{
+				continue;
+			}
+			String[] f = line.split("\t");
+			java.util.Set<String> places = new java.util.HashSet<>();
+			for (String place : f[1].split(";"))
+			{
+				places.add(normalize(place));
+			}
+			out.put(normalize(f[0]), places);
+		}
+		return out;
 	}
 
 	/**
@@ -273,14 +321,16 @@ final class MapSearch
 	private List<Entry> build(List<MapLabels.Label> labels)
 	{
 		Map<String, List<WorldPoint>> names = new LinkedHashMap<>();
+		Map<String, Integer> sizes = new java.util.HashMap<>();
 		for (MapLabels.Label label : labels)
 		{
-			names.computeIfAbsent(String.join(" ", label.getLines()), k -> new ArrayList<>())
-				.add(new WorldPoint(label.getX(), label.getY(), 0));
+			String name = String.join(" ", label.getLines());
+			names.computeIfAbsent(name, k -> new ArrayList<>()).add(new WorldPoint(label.getX(), label.getY(), 0));
+			sizes.merge(name, label.getSize(), Math::max);
 		}
 		List<Entry> out = new ArrayList<>();
 		names.forEach((name, at) -> out.add(new Entry(Kind.PLACE, name, Kind.PLACE.label, at, Collections.emptyList(),
-			null)));
+			null, sizes.get(name) + 1)));
 		out.addAll(places);
 		Map<String, List<Shops.Shop>> sellers = new LinkedHashMap<>();
 		Map<String, String> prices = new LinkedHashMap<>();
@@ -323,9 +373,11 @@ final class MapSearch
 	}
 
 	/**
-	 * The best matches for a query, at most {@link #MAX_RESULTS}: by how well they match (whole name, start, words,
-	 * initials, loosely), and among as good matches the nearest to {@code from} first (when known), then by kind,
-	 * then shortest.
+	 * The best matches for a query, at most {@link #MAX_RESULTS}. First whatever is named exactly what was typed (or by
+	 * a nickname typed, "ardy"); then the places with a word starting with each word typed, the bigger first (a kingdom,
+	 * a town, then a smaller place, a dungeon, a marker), so "var" lists Varrock and Varlamore before Varrock armour; then
+	 * everything else by how well it matches (start, words, initials, loosely). Among equals the nearest to {@code from}
+	 * (when known) first, then the better score, the kind, the shorter name.
 	 */
 	static List<Entry> search(List<Entry> entries, String query, WorldPoint from)
 	{
@@ -334,31 +386,66 @@ final class MapSearch
 		{
 			return Collections.emptyList();
 		}
-		List<Object[]> scored = new ArrayList<>();
+		java.util.Set<String> nicknamed = nicknames.getOrDefault(wanted, Collections.emptySet());
+		List<Ranked> ranked = new ArrayList<>();
 		for (Entry entry : entries)
 		{
 			int score = score(wanted, entry.getKey());
+			if (nicknamed.contains(entry.getKey()))
+			{
+				score = Math.max(score, NICKNAME_SCORE);
+			}
 			if (score > 0)
 			{
-				scored.add(new Object[]{entry, score});
+				int group = score >= NICKNAME_SCORE ? 0 : entry.getImportance() > 0 && score >= PLACE_SCORE ? 1 : 2;
+				ranked.add(new Ranked(entry, score, group));
 			}
 		}
-		Comparator<Object[]> order = Comparator.<Object[]>comparingInt(s -> -(Integer) s[1] / 1000);
+		Comparator<Ranked> order = Comparator.<Ranked>comparingInt(r -> r.group)
+			.thenComparingInt(r -> r.group < 2 ? -r.entry.getImportance() : 0)
+			.thenComparingInt(r -> -r.score / 1000);
 		if (from != null)
 		{
 			Map<Entry, Integer> distances = new java.util.IdentityHashMap<>();
-			order = order.thenComparingInt(s -> distances.computeIfAbsent((Entry) s[0], e -> nearest(e, from)));
+			order = order.thenComparingInt(r -> distances.computeIfAbsent(r.entry, e -> nearest(e, from)));
 		}
-		scored.sort(order.thenComparingInt(s -> -(Integer) s[1])
-			.thenComparingInt(s -> ((Entry) s[0]).getKind().ordinal())
-			.thenComparingInt(s -> ((Entry) s[0]).getName().length()));
+		ranked.sort(order.thenComparingInt(r -> -r.score)
+			.thenComparingInt(r -> r.entry.getKind().ordinal())
+			.thenComparingInt(r -> r.entry.getName().length()));
 		List<Entry> out = new ArrayList<>();
-		for (int i = 0; i < scored.size() && out.size() < MAX_RESULTS; i++)
+		java.util.Set<String> placesListed = new java.util.HashSet<>();
+		for (int i = 0; i < ranked.size() && out.size() < MAX_RESULTS; i++)
 		{
-			out.add((Entry) scored.get(i)[0]);
+			Entry entry = ranked.get(i).entry;
+			// a dungeon's entrance and the game's name for it ("Ardougne Sewers" twice): the first only
+			if (entry.getImportance() > 0 && !placesListed.add(entry.getKey()))
+			{
+				continue;
+			}
+			out.add(entry);
 		}
 		return out;
 	}
+
+	/** A match with its score and its group in the list (0 named exactly, 1 a place, 2 anything else). */
+	private static final class Ranked
+	{
+		final Entry entry;
+		final int score;
+		final int group;
+
+		Ranked(Entry entry, int score, int group)
+		{
+			this.entry = entry;
+			this.score = score;
+			this.group = group;
+		}
+	}
+
+	/** A nickname typed in full scores as the place's own name typed in full would. */
+	static final int NICKNAME_SCORE = 10000;
+	/** A place matching at least this well (each word typed starts a word of its name) is listed with the places. */
+	static final int PLACE_SCORE = 7000;
 
 	/** A ring's codes as written ("CKS", "AIR / DLR"); a named one as a name ("ZANARIS" as "Zanaris"). */
 	static String ringName(String label)
@@ -390,7 +477,8 @@ final class MapSearch
 
 	/**
 	 * How well a name matches a query, both {@link #normalize normalized}; 0 for no match. Best first: the whole name;
-	 * its start; every query word starting or inside a word of the name ("d scim" finds "dragon scimitar"); the
+	 * its start; every query word starting a word of the name ("d scim" finds "dragon scimitar"); every one starting or
+	 * inside a word; the
 	 * name's initials ("kbd"); every query word matching a word's letters in order, or its start but the last letter
 	 * ("dragon sim", "anchovy" for "anchovies"); the query's letters close together in order anywhere. Shorter names
 	 * win ties within a kind of match.
@@ -426,6 +514,11 @@ final class MapSearch
 			{
 				break;
 			}
+		}
+		if (worst >= 10)
+		{
+			// every word typed starts a word of the name: "east ardougne" for "ardo"
+			return 7000 + total * 20 - name.length();
 		}
 		if (worst >= 6)
 		{
@@ -676,7 +769,7 @@ final class MapSearch
 		if (text.isEmpty() && !focused)
 		{
 			g.setColor(QUIET);
-			g.drawString(SideList.fit("Search places, shops, items, monsters, fairy rings", metrics, room), textX, baseline);
+			g.drawString(SideList.fit("Search places, items, monsters, fairy rings", metrics, room), textX, baseline);
 		}
 		else
 		{

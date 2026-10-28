@@ -1425,7 +1425,21 @@ public class AdvancedMapPlugin extends Plugin
 	/** Everything the search bar finds, built again once the place names are read. */
 	private List<MapSearch.Entry> searchIndex()
 	{
-		return search.index(labelsNow(), extraEntries());
+		List<MapSearch.Entry> all = search.index(labelsNow(), extraEntries());
+		if (config.searchShops())
+		{
+			return all;
+		}
+		// shops only through what they sell (an item's sellers) and their icons, unless the setting says otherwise
+		List<MapSearch.Entry> out = new ArrayList<>(all.size());
+		for (MapSearch.Entry entry : all)
+		{
+			if (entry.getKind() != MapSearch.Kind.SHOP)
+			{
+				out.add(entry);
+			}
+		}
+		return out;
 	}
 
 	/** Where search measures "nearest" from: the player, or the middle of the map while logged out. */

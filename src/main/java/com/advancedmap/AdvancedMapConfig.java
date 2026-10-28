@@ -31,6 +31,7 @@ public interface AdvancedMapConfig extends Config
 	String SLAYER_TASK = "slayerTask";
 	String SLAYER_SHOWN = "slayerShown";
 	String SHARE_MARKERS = "shareMarkers";
+	String SEARCH_SHOPS = "searchShops";
 	/** Before each hidden icon's own setting: "hidden.a1234@3222,3218" = true. */
 	String HIDDEN_PREFIX = "hidden.";
 
@@ -151,11 +152,23 @@ public interface AdvancedMapConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = SEARCH_SHOPS,
+		name = "Search finds shops by name",
+		description = "List shops in the search bar's results by their names (\"Varrock Swordshop\"). Off, a shop is"
+			+ " still found through what it sells, and by clicking its icon.",
+		position = 7
+	)
+	default boolean searchShops()
+	{
+		return false;
+	}
+
+	@ConfigItem(
 		keyName = SHARE_MARKERS,
 		name = "Share markers between accounts",
 		description = "Show the markers you make on every account you play on this computer. Off: each account shows only"
 			+ " the markers made on it.",
-		position = 7
+		position = 8
 	)
 	default boolean shareMarkers()
 	{
@@ -167,7 +180,7 @@ public interface AdvancedMapConfig extends Config
 		name = "Slayer task",
 		description = "Mark every spawn of your Slayer task's monsters, with what is left of the task. Uses the task"
 			+ " RuneLite's Slayer plugin keeps, so that plugin must be on.",
-		position = 8
+		position = 9
 	)
 	default boolean slayerTask()
 	{

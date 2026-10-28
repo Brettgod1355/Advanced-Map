@@ -238,4 +238,52 @@ public class MapSearchTest
 		assertEquals(far, MapSearch.search(both, "bank", lumbridge).get(0));
 		assertEquals(far, MapSearch.search(both, "ban", null).get(0));
 	}
+
+	private static MapSearch.Entry entry(MapSearch.Kind kind, String name, int importance)
+	{
+		return new MapSearch.Entry(kind, name, "", Collections.singletonList(new WorldPoint(2600, 3300, 0)),
+			Collections.emptyList(), null, importance);
+	}
+
+	@Test
+	public void placesComeFirstTheBiggerFirst()
+	{
+		List<MapSearch.Entry> entries = Arrays.asList(
+			entry(MapSearch.Kind.ITEM, "Ardougne cloak", 0),
+			entry(MapSearch.Kind.SHOP, "Ardougne Gem Stall", 0),
+			entry(MapSearch.Kind.PLACE, "Ardougne Zoo", 1),
+			entry(MapSearch.Kind.PLACE, "East Ardougne", 2),
+			entry(MapSearch.Kind.DUNGEON, "Ardougne Sewers", 1),
+			entry(MapSearch.Kind.PLACE, "Ardougne Sewers", 1),
+			entry(MapSearch.Kind.PLACE, "Nardah", 2),
+			entry(MapSearch.Kind.PLACE, "Kingdom of Varlamore", 3),
+			entry(MapSearch.Kind.PLACE, "Varrock", 2),
+			entry(MapSearch.Kind.ITEM, "Varrock armour", 0),
+			entry(MapSearch.Kind.PLACE, "Silvarea", 1));
+		List<String> ardougne = MapSearch.search(entries, "ardougne", null).stream().map(MapSearch.Entry::getName)
+			.collect(Collectors.toList());
+		// the town before the smaller places, places before the cloak and the stall; the sewers once
+		assertEquals(Arrays.asList("East Ardougne", "Ardougne Zoo", "Ardougne Sewers", "Ardougne cloak",
+			"Ardougne Gem Stall"), ardougne);
+		List<String> var = MapSearch.search(entries, "var", null).stream().map(MapSearch.Entry::getName)
+			.collect(Collectors.toList());
+		// the start of both names: the kingdom, then the town, then the armour; "var" inside a name comes last
+		assertEquals(Arrays.asList("Kingdom of Varlamore", "Varrock", "Varrock armour", "Silvarea"), var);
+		// a name typed in full still comes first
+		assertEquals("Ardougne cloak", MapSearch.search(entries, "ardougne cloak", null).get(0).getName());
+	}
+
+	@Test
+	public void nicknamesFindTheirPlaces()
+	{
+		List<MapSearch.Entry> entries = Arrays.asList(
+			entry(MapSearch.Kind.ITEM, "Armadyl halo", 0),
+			entry(MapSearch.Kind.PLACE, "West Ardougne", 2),
+			entry(MapSearch.Kind.PLACE, "East Ardougne", 2),
+			entry(MapSearch.Kind.PLACE, "Falador", 2));
+		List<String> ardy = MapSearch.search(entries, "ardy", null).stream().map(MapSearch.Entry::getName)
+			.collect(Collectors.toList());
+		assertTrue(ardy.indexOf("East Ardougne") < 2 && ardy.indexOf("West Ardougne") < 2);
+		assertEquals("Falador", MapSearch.search(entries, "Fally", null).get(0).getName());
+	}
 }
