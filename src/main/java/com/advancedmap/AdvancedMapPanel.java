@@ -176,6 +176,10 @@ class AdvancedMapPanel extends PluginPanel
 			+ " installed.")
 			+ section("Wilderness", "Zoomed in, red dashed lines show where the Wilderness passes level 20 and level"
 			+ " 30, above which most teleports stop working.")
+			+ section("Over the game", "The map opens in a box over the game; the game goes on around it, and a click"
+			+ " outside the box is the game's. Drag the bar along its top or bottom (the dots) to move it, a corner or"
+			+ " side to size it. The square button at the top right fills the game view with it; press it again to"
+			+ " go back.")
 			+ section("Pop out", "\"Pop out\" at the top right moves the map into a window of its own; \"Over"
 			+ " the game\" brings it back. Escape closes it in either.", false);
 	}

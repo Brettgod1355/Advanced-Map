@@ -175,6 +175,8 @@ public class AdvancedMapPlugin extends Plugin
 	private volatile MapSettings settings;
 	private volatile Progress progress = Progress.NONE;
 	private volatile MapPainter.Selection selection;
+	/** The map's box over the game: where it is, its size, maximized or not. */
+	private volatile GameBox gameBox = new GameBox("", false);
 	/** The map keeps itself on the player as they move: the locate button's doing, until the map is moved. */
 	private volatile boolean following;
 	/** The floor shown: 0 for the ground, up to 3. */
@@ -249,6 +251,8 @@ public class AdvancedMapPlugin extends Plugin
 		painter.setPlayerArrow(config.playerArrow());
 		painter.setLinks(this::leadsTo);
 		overlay = new MapOverlay(client, this, painter);
+		gameBox = new GameBox(config.gameBounds(), config.gameMaximized());
+		painter.setGameMaximized(gameBox.isMaximized());
 		input = new MapInput(this, client::getCanvasWidth, client::getCanvasHeight);
 		hotkey = new HotkeyListener(() -> config.toggleKey())
 		{
@@ -696,6 +700,35 @@ public class AdvancedMapPlugin extends Plugin
 		return mapOpen;
 	}
 
+	GameBox gameBox()
+	{
+		return gameBox;
+	}
+
+	/** Saves where the map's box over the game was moved or sized to ("x,y,width,height"). */
+	void saveGameBox(String bounds)
+	{
+		configManager.setConfiguration(AdvancedMapConfig.GROUP, AdvancedMapConfig.GAME_BOUNDS, bounds);
+	}
+
+	/** The maximize button: the box fills the game view, or goes back to its own place and size. */
+	private void toggleMaximized()
+	{
+		GameBox box = gameBox;
+		box.setMaximized(!box.isMaximized());
+		painter.setGameMaximized(box.isMaximized());
+		selection = null;
+		configManager.setConfiguration(AdvancedMapConfig.GROUP, AdvancedMapConfig.GAME_MAXIMIZED, box.isMaximized());
+	}
+
+	/** A press in the game outside the map's box: the search bar and the Filters list stop taking the keys. */
+	void clickedOutside()
+	{
+		search.setFocused(false);
+		filters.setOpen(false);
+		selection = null;
+	}
+
 	/** A mouse button is held on the map (dragging it), or let go: no info box shows on hover meanwhile. */
 	void setDragging(boolean on)
 	{
@@ -928,6 +961,9 @@ public class AdvancedMapPlugin extends Plugin
 		{
 			case CLOSE:
 				closeMap();
+				break;
+			case MAXIMIZE:
+				toggleMaximized();
 				break;
 			case AREA:
 				switchArea();

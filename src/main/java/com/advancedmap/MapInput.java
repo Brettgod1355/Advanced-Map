@@ -15,10 +15,10 @@ import net.runelite.client.input.MouseListener;
 import net.runelite.client.input.MouseWheelListener;
 
 /**
- * Mouse and keys while the map is open over the game: drag to move, the wheel to zoom about the pointer, the buttons,
- * a click on an icon for its info box and a right click for its menu, Escape or the close button to close. Every
- * event is kept from the game while the map covers it, so a click on the map never walks the player or opens the
- * game's menu.
+ * Mouse and keys while the map is open over the game, in its box ({@link GameBox}): inside, drag to move, the wheel
+ * to zoom about the pointer, the buttons, a click on an icon for its info box and a right click for its menu; the
+ * box's frame moves and sizes it; Escape or the close button closes the map. Events inside the box are kept from the
+ * game, so a click on the map never walks the player or opens the game's menu; outside it the game has the mouse.
  */
 class MapInput implements MouseListener, MouseWheelListener, KeyListener
 {
@@ -33,12 +33,25 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 	private int pressX;
 	private int pressY;
 	private boolean dragging;
+	/** A press began on the box (the map or its frame): its drags and release are the map's too. */
+	private boolean held;
 
 	MapInput(AdvancedMapPlugin plugin, IntSupplier width, IntSupplier height)
 	{
 		this.plugin = plugin;
 		this.width = width;
 		this.height = height;
+	}
+
+	private GameBox.Part partAt(MouseEvent e)
+	{
+		return plugin.gameBox().partAt(e.getX(), e.getY(), width.getAsInt(), height.getAsInt());
+	}
+
+	/** Where the map is drawn on the game view: its box less the frame. */
+	private java.awt.Rectangle map()
+	{
+		return plugin.gameBox().map(width.getAsInt(), height.getAsInt());
 	}
 
 	@Override
@@ -50,35 +63,52 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 		{
 			return e;
 		}
-		int w = width.getAsInt();
-		int h = height.getAsInt();
-		if (SwingUtilities.isLeftMouseButton(e) && plugin.pressPanels(e.getX(), e.getY(), w, h, false))
+		GameBox.Part part = partAt(e);
+		if (part == GameBox.Part.OUTSIDE)
 		{
-			e.consume();
+			// a click in the game: the map stops taking the keys
+			plugin.clickedOutside();
+			return e;
+		}
+		held = true;
+		e.consume();
+		if (part != GameBox.Part.MAP)
+		{
+			if (SwingUtilities.isLeftMouseButton(e))
+			{
+				plugin.gameBox().grab(e.getX(), e.getY(), width.getAsInt(), height.getAsInt());
+			}
+			return e;
+		}
+		java.awt.Rectangle map = map();
+		int x = e.getX() - map.x;
+		int y = e.getY() - map.y;
+		int w = map.width;
+		int h = map.height;
+		if (SwingUtilities.isLeftMouseButton(e) && plugin.pressPanels(x, y, w, h, false))
+		{
 			return e;
 		}
 		if (SwingUtilities.isRightMouseButton(e))
 		{
-			plugin.rightClick(e.getX(), e.getY(), w, h);
-			e.consume();
+			plugin.rightClick(x, y, w, h);
 			return e;
 		}
 		MapPainter.Button button = SwingUtilities.isLeftMouseButton(e)
-			? MapPainter.buttonAt(e.getX(), e.getY(), w, h, false, plugin.settings()) : null;
+			? MapPainter.buttonAt(x, y, w, h, false, plugin.settings()) : null;
 		if (button != null)
 		{
 			plugin.pressButton(button, false);
 		}
-		else if (!plugin.pressMenu(e.getX(), e.getY(), w, h) && SwingUtilities.isLeftMouseButton(e))
+		else if (!plugin.pressMenu(x, y, w, h) && SwingUtilities.isLeftMouseButton(e))
 		{
 			dragging = true;
 			plugin.setDragging(true);
-			lastX = e.getX();
-			lastY = e.getY();
-			pressX = e.getX();
-			pressY = e.getY();
+			lastX = x;
+			lastY = y;
+			pressX = x;
+			pressY = y;
 		}
-		e.consume();
 		return e;
 	}
 
@@ -87,21 +117,28 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 	{
 		// whatever the mouse or keys do, the map over the game is drawn again at once
 		plugin.touched();
-		if (!plugin.isMapOpen())
+		if (!plugin.isMapOpen() || !held)
 		{
 			return e;
 		}
-		if (dragging)
+		GameBox box = plugin.gameBox();
+		if (box.isGrabbed())
 		{
-			if (Math.abs(e.getX() - pressX) > AdvancedMapPlugin.CLICK_SLOP
-				|| Math.abs(e.getY() - pressY) > AdvancedMapPlugin.CLICK_SLOP)
+			box.dragTo(e.getX(), e.getY(), width.getAsInt(), height.getAsInt());
+		}
+		else if (dragging)
+		{
+			java.awt.Rectangle map = map();
+			int x = e.getX() - map.x;
+			int y = e.getY() - map.y;
+			if (Math.abs(x - pressX) > AdvancedMapPlugin.CLICK_SLOP || Math.abs(y - pressY) > AdvancedMapPlugin.CLICK_SLOP)
 			{
 				// moved by hand: the map stops following the player (a click that wobbles does not count)
 				plugin.setFollowing(false);
 			}
-			plugin.viewport().drag(e.getX() - lastX, e.getY() - lastY);
-			lastX = e.getX();
-			lastY = e.getY();
+			plugin.viewport().drag(x - lastX, y - lastY);
+			lastX = x;
+			lastY = y;
 		}
 		e.consume();
 		return e;
@@ -116,15 +153,25 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 		{
 			plugin.setDragging(false);
 		}
-		if (!plugin.isMapOpen())
+		String moved = plugin.gameBox().release();
+		if (moved != null)
+		{
+			plugin.saveGameBox(moved);
+		}
+		boolean wasHeld = held;
+		held = false;
+		if (!plugin.isMapOpen() || !wasHeld)
 		{
 			dragging = false;
 			return e;
 		}
-		if (dragging && Math.abs(e.getX() - pressX) <= AdvancedMapPlugin.CLICK_SLOP
-			&& Math.abs(e.getY() - pressY) <= AdvancedMapPlugin.CLICK_SLOP)
+		java.awt.Rectangle map = map();
+		int x = e.getX() - map.x;
+		int y = e.getY() - map.y;
+		if (dragging && Math.abs(x - pressX) <= AdvancedMapPlugin.CLICK_SLOP
+			&& Math.abs(y - pressY) <= AdvancedMapPlugin.CLICK_SLOP)
 		{
-			plugin.leftClick(e.getX(), e.getY(), width.getAsInt(), height.getAsInt());
+			plugin.leftClick(x, y, map.width, map.height);
 		}
 		dragging = false;
 		e.consume();
@@ -172,11 +219,20 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 		{
 			return e;
 		}
-		if (!plugin.wheelPanels(e.getX(), e.getY(), e.getPreciseWheelRotation(), width.getAsInt(),
-			height.getAsInt(), false))
+		GameBox.Part part = partAt(e);
+		if (part == GameBox.Part.OUTSIDE)
+		{
+			// the game's own camera zoom
+			return e;
+		}
+		java.awt.Rectangle map = map();
+		int x = e.getX() - map.x;
+		int y = e.getY() - map.y;
+		if (part == GameBox.Part.MAP && !plugin.wheelPanels(x, y, e.getPreciseWheelRotation(), map.width, map.height,
+			false))
 		{
 			double factor = Math.pow(WHEEL_STEP, -e.getPreciseWheelRotation());
-			plugin.viewport().zoomAt(factor, e.getX(), e.getY(), width.getAsInt(), height.getAsInt());
+			plugin.viewport().zoomAt(factor, x, y, map.width, map.height);
 		}
 		e.consume();
 		return e;
@@ -233,9 +289,10 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 		return !altGraph && (e.isControlDown() || e.isAltDown()) || e.isMetaDown();
 	}
 
+	/** Keeps an event on the box (or of a press that began there) from the game. */
 	private MouseEvent swallow(MouseEvent e)
 	{
-		if (plugin.isMapOpen())
+		if (plugin.isMapOpen() && (held || partAt(e) != GameBox.Part.OUTSIDE))
 		{
 			e.consume();
 		}

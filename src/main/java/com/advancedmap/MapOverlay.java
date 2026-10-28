@@ -7,6 +7,7 @@ package com.advancedmap;
 
 import java.awt.Dimension;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.util.Objects;
 import net.runelite.api.Client;
@@ -16,9 +17,10 @@ import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
 
 /**
- * The map over the whole game view, while it is open there rather than in its own window. The map is drawn into a
- * picture that each of the game's frames copies: drawn again at once when the mouse or keys do something, else every
- * {@link #REDRAW_NANOS} (as the pop-out window is), not for every one of the game's hundreds of frames a second.
+ * The map over the game view, in its box ({@link GameBox}: moved and sized by its frame, or maximized over the whole
+ * view), while it is open there rather than in its own window. The map is drawn into a picture that each of the
+ * game's frames copies: drawn again at once when the mouse or keys do something, else every {@link #REDRAW_NANOS}
+ * (as the pop-out window is), not for every one of the game's hundreds of frames a second.
  */
 class MapOverlay extends Overlay
 {
@@ -63,16 +65,20 @@ class MapOverlay extends Overlay
 		{
 			return null;
 		}
+		// the map in its box (the whole view when maximized); the game goes on around it
+		GameBox box = plugin.gameBox();
+		Rectangle map = box.map(width, height);
 		Point canvasMouse = client.getMouseCanvasPosition();
-		java.awt.Point mouse = canvasMouse == null ? null : new java.awt.Point(canvasMouse.getX(), canvasMouse.getY());
+		java.awt.Point mouse = canvasMouse == null || !map.contains(canvasMouse.getX(), canvasMouse.getY()) ? null
+			: new java.awt.Point(canvasMouse.getX() - map.x, canvasMouse.getY() - map.y);
 		long now = System.nanoTime();
 		int touches = plugin.touches();
-		boolean resized = frame == null || frame.getWidth() != width || frame.getHeight() != height;
+		boolean resized = frame == null || frame.getWidth() != map.width || frame.getHeight() != map.height;
 		if (resized || touches != drawnTouches || !Objects.equals(mouse, drawnMouse) || now - drawnAt >= REDRAW_NANOS)
 		{
 			if (resized)
 			{
-				frame = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+				frame = new BufferedImage(map.width, map.height, BufferedImage.TYPE_INT_RGB);
 			}
 			Graphics2D into = frame.createGraphics();
 			try
@@ -80,7 +86,7 @@ class MapOverlay extends Overlay
 				// the same font and smoothing RuneLite gives its overlays
 				into.setRenderingHints(g.getRenderingHints());
 				into.setFont(g.getFont());
-				painter.paint(into, plugin.viewport().view(width, height), plugin.area(), plugin.plane(),
+				painter.paint(into, plugin.viewport().view(map.width, map.height), plugin.area(), plugin.plane(),
 					plugin.playerLocation(), mouse, false, plugin.settings(), plugin.progress(), plugin.selection());
 			}
 			finally
@@ -91,7 +97,8 @@ class MapOverlay extends Overlay
 			drawnTouches = touches;
 			drawnMouse = mouse;
 		}
-		g.drawImage(frame, 0, 0, null);
+		g.drawImage(frame, map.x, map.y, null);
+		box.draw(g, width, height);
 		return new Dimension(width, height);
 	}
 }

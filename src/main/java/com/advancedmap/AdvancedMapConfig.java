@@ -21,6 +21,8 @@ public interface AdvancedMapConfig extends Config
 	String GROUP = "advancedmap";
 	String HIDDEN_ICONS = "hiddenIcons";
 	String WINDOW_BOUNDS = "windowBounds";
+	String GAME_BOUNDS = "gameBounds";
+	String GAME_MAXIMIZED = "gameMaximized";
 	String SHOW_HIDDEN = "showHidden";
 	String ICONS_OFF = "iconsOff";
 	String HIDDEN_TYPES = "hiddenTypes";
@@ -566,6 +568,30 @@ public interface AdvancedMapConfig extends Config
 	default String windowBounds()
 	{
 		return "";
+	}
+
+	/** Where the map's box over the game was last, and its size: "x,y,width,height" on the game view, or empty. */
+	@ConfigItem(
+		keyName = GAME_BOUNDS,
+		name = "",
+		description = "",
+		hidden = true
+	)
+	default String gameBounds()
+	{
+		return "";
+	}
+
+	/** The map's box over the game fills the whole game view. */
+	@ConfigItem(
+		keyName = GAME_MAXIMIZED,
+		name = "",
+		description = "",
+		hidden = true
+	)
+	default boolean gameMaximized()
+	{
+		return false;
 	}
 
 	/** An earlier version's hidden icons in one setting; moved to one setting each ({@link #HIDDEN_PREFIX}). */

@@ -44,6 +44,8 @@ final class MapPainter
 	enum Button
 	{
 		CLOSE,
+		/** Over the game only: the map's box fills the game view, or goes back to its size. */
+		MAXIMIZE,
 		AREA,
 		MODE,
 		/** Shows or hides every icon at once; place names stay. */
@@ -150,6 +152,8 @@ final class MapPainter
 	private volatile boolean infoOnHover;
 	/** An arrow at the edge points to the player when they are off the view. */
 	private volatile boolean playerArrow;
+	/** The map's box over the game fills the game view (the maximize button shows "restore"). */
+	private volatile boolean gameMaximized;
 	/** The map keeps itself on the player (the locate button lit). */
 	private volatile boolean following;
 	/** A dungeon preview lists its monsters the highest level first; else the lowest. */
@@ -190,6 +194,11 @@ final class MapPainter
 	boolean isPlayerArrow()
 	{
 		return playerArrow;
+	}
+
+	void setGameMaximized(boolean on)
+	{
+		gameMaximized = on;
 	}
 
 	void setFollowing(boolean on)
@@ -267,6 +276,8 @@ final class MapPainter
 		if (!window)
 		{
 			out.put(Button.CLOSE, new Rectangle(right - BUTTON_HEIGHT, GAP, BUTTON_HEIGHT, BUTTON_HEIGHT));
+			right -= BUTTON_HEIGHT + GAP;
+			out.put(Button.MAXIMIZE, new Rectangle(right - BUTTON_HEIGHT, GAP, BUTTON_HEIGHT, BUTTON_HEIGHT));
 			right -= BUTTON_HEIGHT + GAP;
 		}
 		out.put(Button.AREA, new Rectangle(right - AREA_WIDTH, GAP, AREA_WIDTH, BUTTON_HEIGHT));
@@ -364,7 +375,7 @@ final class MapPainter
 		}
 		drawBar(g, view, mouse, loading, window, !shown.isEmpty(), infoOnHover);
 		Integer slayerArea = settings.isSlayerButton() ? filters.areaOf(IconGroup.SLAYER_MASTER) : null;
-		drawButtons(g, view, area, plane, window, settings, player != null, following, filters.isOpen(),
+		drawButtons(g, view, area, plane, window, settings, player != null, following, gameMaximized, filters.isOpen(),
 			slayerArea == null ? null : icons.image(slayerArea, false));
 		if (filters.isOpen())
 		{
@@ -1531,7 +1542,8 @@ final class MapPainter
 	}
 
 	private static void drawButtons(Graphics2D g, MapViewport.View view, MapArea area, int plane, boolean window,
-		MapSettings settings, boolean located, boolean following, boolean filtersOpen, BufferedImage slayerIcon)
+		MapSettings settings, boolean located, boolean following, boolean maximized, boolean filtersOpen,
+		BufferedImage slayerIcon)
 	{
 		for (Map.Entry<Button, Rectangle> entry : buttons(view.width, view.height, window).entrySet())
 		{
@@ -1567,6 +1579,9 @@ final class MapPainter
 			{
 				case CLOSE:
 					drawCross(g, button);
+					break;
+				case MAXIMIZE:
+					drawMaximize(g, button, maximized);
 					break;
 				case AREA:
 					drawLabel(g, button, "Show " + area.other().label.toLowerCase(Locale.ROOT));
@@ -1732,6 +1747,30 @@ final class MapPainter
 		g.setColor(TEXT);
 		g.drawString(text, button.x + (button.width - metrics.stringWidth(text)) / 2,
 			button.y + (button.height + metrics.getAscent() - metrics.getDescent()) / 2);
+	}
+
+	/** The maximize button's square, or, while maximized, two overlapping squares to go back, as windows show. */
+	private static void drawMaximize(Graphics2D g, Rectangle button, boolean maximized)
+	{
+		Stroke stroke = g.getStroke();
+		g.setStroke(new BasicStroke(2f));
+		g.setColor(TEXT);
+		int inset = 8;
+		int size = button.width - inset * 2;
+		if (maximized)
+		{
+			int small = size - 4;
+			g.drawRect(button.x + inset + 4, button.y + inset, small, small);
+			g.setColor(BAR);
+			g.fillRect(button.x + inset, button.y + inset + 4, small, small);
+			g.setColor(TEXT);
+			g.drawRect(button.x + inset, button.y + inset + 4, small, small);
+		}
+		else
+		{
+			g.drawRect(button.x + inset, button.y + inset, size, size);
+		}
+		g.setStroke(stroke);
 	}
 
 	private static void drawCross(Graphics2D g, Rectangle button)
