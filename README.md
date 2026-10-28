@@ -9,8 +9,9 @@ A full-screen world map for RuneLite, drawn from the game's own map data with sm
 - **A box over the game**: the map opens in a box you move by its top or bottom bar and size by its corners, while
   the game goes on around it (a click outside the box is the game's). The square button next to the close button
   fills the game view with it, and back.
-- **Pop it out** into a window of its own with the **Pop out** button (or the setting), to keep it beside the game's
-  own world map or on another screen. **Over the game** brings it back.
+- **Pop it out** into a window of its own with the pop out button at the top right (a window with an arrow leaving it),
+  or the setting, to keep it beside the game's own world map or on another screen. The same button in the window
+  (an arrow going in) brings it back over the game.
 - **Wilderness teleport limits**: zoomed in, red dashed lines show where the Wilderness passes level 20 and level 30,
   above which most teleports stop working. Turn them off with the "Wilderness teleport limits" setting.
 - **Search** with the box at the top: places, dungeon and minigame entrances, everything shops sell and monsters,

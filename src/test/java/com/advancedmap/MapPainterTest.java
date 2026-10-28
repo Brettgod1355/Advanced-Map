@@ -76,8 +76,14 @@ public class MapPainterTest
 		MapSettings on = new MapSettings(EnumSet.allOf(IconGroup.class), Collections.emptySet(), Collections.emptySet(),
 			false, true, false, false, true, true, RoutingPlugin.NONE, FloorNumbers.GROUND_IS_FIRST, 100, true, true, true);
 		assertEquals(MapPainter.Button.SLAYER, MapPainter.buttonAt(slayer.x + 5, slayer.y + 5, 800, 600, false, on));
-		// it sits above the floor buttons, clear of them
-		assertFalse(slayer.intersects(MapPainter.buttons(800, 600, false).get(MapPainter.Button.FLOOR_UP)));
+		// it sits at the top, right of Filters
+		Rectangle filters = MapPainter.buttons(800, 600, false).get(MapPainter.Button.FILTERS);
+		assertEquals(filters.y, slayer.y);
+		assertTrue(slayer.x > filters.x + filters.width);
+		// the pop out button is a square beside the window's own buttons
+		Rectangle mode = MapPainter.buttons(800, 600, false).get(MapPainter.Button.MODE);
+		assertEquals(mode.width, mode.height);
+		assertTrue(mode.x < MapPainter.buttons(800, 600, false).get(MapPainter.Button.MAXIMIZE).x);
 	}
 
 	@Test

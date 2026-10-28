@@ -106,7 +106,6 @@ final class MapPainter
 	private static final int FLOOR_LABEL = 22;
 	private static final int GAP = 8;
 	private static final int AREA_WIDTH = 110;
-	private static final int MODE_WIDTH = 100;
 	private static final int ICONS_WIDTH = 76;
 	private static final int FILTERS_WIDTH = 86;
 	private static final int MENU_ROW = 20;
@@ -272,14 +271,14 @@ final class MapPainter
 		Map<Button, Rectangle> out = new EnumMap<>(Button.class);
 		out.put(Button.ICONS, new Rectangle(GAP, GAP, ICONS_WIDTH, BUTTON_HEIGHT));
 		out.put(Button.FILTERS, new Rectangle(GAP * 2 + ICONS_WIDTH, GAP, FILTERS_WIDTH, BUTTON_HEIGHT));
+		// right of Filters (there only while the Slayer task setting is on)
+		out.put(Button.SLAYER, new Rectangle(GAP * 3 + ICONS_WIDTH + FILTERS_WIDTH, GAP, BUTTON_HEIGHT, BUTTON_HEIGHT));
 		out.put(Button.LOCATE, new Rectangle(width - GAP - LOCATE_SIZE, height - GAP - LOCATE_SIZE, LOCATE_SIZE,
 			LOCATE_SIZE));
 		int down = height - GAP - LOCATE_SIZE - GAP - FLOOR_HEIGHT;
 		out.put(Button.FLOOR_DOWN, new Rectangle(width - GAP - FLOOR_WIDTH, down, FLOOR_WIDTH, FLOOR_HEIGHT));
 		out.put(Button.FLOOR_UP, new Rectangle(width - GAP - FLOOR_WIDTH, down - FLOOR_LABEL - FLOOR_HEIGHT, FLOOR_WIDTH,
 			FLOOR_HEIGHT));
-		out.put(Button.SLAYER, new Rectangle(width - GAP - FLOOR_WIDTH, down - FLOOR_LABEL - FLOOR_HEIGHT - GAP - FLOOR_WIDTH,
-			FLOOR_WIDTH, FLOOR_WIDTH));
 		int right = width - GAP;
 		if (!window)
 		{
@@ -288,9 +287,10 @@ final class MapPainter
 			out.put(Button.MAXIMIZE, new Rectangle(right - BUTTON_HEIGHT, GAP, BUTTON_HEIGHT, BUTTON_HEIGHT));
 			right -= BUTTON_HEIGHT + GAP;
 		}
+		// pop out (or, in the window, back over the game) as a square icon beside the window's own buttons
+		out.put(Button.MODE, new Rectangle(right - BUTTON_HEIGHT, GAP, BUTTON_HEIGHT, BUTTON_HEIGHT));
+		right -= BUTTON_HEIGHT + GAP;
 		out.put(Button.AREA, new Rectangle(right - AREA_WIDTH, GAP, AREA_WIDTH, BUTTON_HEIGHT));
-		right -= AREA_WIDTH + GAP;
-		out.put(Button.MODE, new Rectangle(right - MODE_WIDTH, GAP, MODE_WIDTH, BUTTON_HEIGHT));
 		return out;
 	}
 
@@ -1608,7 +1608,7 @@ final class MapPainter
 						|| !settings.getHiddenTypes().isEmpty());
 					break;
 				default:
-					drawLabel(g, button, window ? "Over the game" : "Pop out");
+					drawPopIcon(g, button, !window);
 					break;
 			}
 		}
@@ -1785,6 +1785,43 @@ final class MapPainter
 			g.drawRect(button.x + inset, button.y + inset, size, size);
 		}
 		g.setStroke(stroke);
+	}
+
+	/**
+	 * The pop out button's icon: a window with an arrow leaving it up and right ({@code out}), or, in the pop-out
+	 * window, coming into it down and left (back over the game).
+	 */
+	private static void drawPopIcon(Graphics2D g, Rectangle button, boolean out)
+	{
+		Stroke stroke = g.getStroke();
+		Object antialiasing = g.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
+		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g.setStroke(new BasicStroke(2f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+		g.setColor(TEXT);
+		int x = button.x + 7;
+		int y = button.y + 9;
+		int size = button.width - 16;
+		// the window, open at its top right corner where the arrow passes
+		g.drawLine(x, y, x + size / 2, y);
+		g.drawLine(x, y, x, y + size);
+		g.drawLine(x, y + size, x + size, y + size);
+		g.drawLine(x + size, y + size, x + size, y + size / 2);
+		int tipX = out ? button.x + button.width - 6 : x + size / 2 + 1;
+		int tipY = out ? button.y + 6 : y + size / 2 - 1;
+		int tailX = out ? x + size / 2 + 1 : button.x + button.width - 6;
+		int tailY = out ? y + size / 2 - 1 : button.y + 6;
+		g.drawLine(tailX, tailY, tipX, tipY);
+		// the arrow's head, at its tip: along the box's edges
+		int head = 5;
+		int dx = out ? -1 : 1;
+		int dy = out ? 1 : -1;
+		g.drawLine(tipX, tipY, tipX + dx * head, tipY);
+		g.drawLine(tipX, tipY, tipX, tipY + dy * head);
+		g.setStroke(stroke);
+		if (antialiasing != null)
+		{
+			g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, antialiasing);
+		}
 	}
 
 	private static void drawCross(Graphics2D g, Rectangle button)

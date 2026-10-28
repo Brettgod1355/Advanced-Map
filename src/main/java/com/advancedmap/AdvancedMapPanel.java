@@ -146,7 +146,8 @@ class AdvancedMapPanel extends PluginPanel
 			+ " Quest Helper's next step) show too; click one for what it says.")
 			+ section("Farming, multi-combat, Slayer", "A dot on each farming patch icon says how it is doing (from"
 			+ " RuneLite's Time Tracking plugin); click it for each crop and when it is ready. Zoomed in, multi-combat"
-			+ " areas are tinted red. The Slayer task setting marks every spawn of your task's monsters.")
+			+ " areas are tinted red. The Slayer task setting marks every spawn of your task's monsters; the Slayer"
+			+ " button beside Filters hides and shows the marks.")
 			+ section("Surface and underground", "The button at the top right switches between the two maps."
 			+ " Basements, caves and dungeons are on the underground map.")
 			+ section("Floors", "The arrows at the bottom right go up and down a floor. The floors below are shown"
@@ -180,8 +181,8 @@ class AdvancedMapPanel extends PluginPanel
 			+ " outside the box is the game's. Drag the bar along its top or bottom (the dots) to move it, a corner or"
 			+ " side to size it. The square button at the top right fills the game view with it; press it again to"
 			+ " go back.")
-			+ section("Pop out", "\"Pop out\" at the top right moves the map into a window of its own; \"Over"
-			+ " the game\" brings it back. Escape closes it in either.", false);
+			+ section("Pop out", "The pop out button at the top right (a window with an arrow leaving it) moves the map"
+			+ " into a window of its own; the same button there brings it back. Escape closes it in either.", false);
 	}
 
 	private static String section(String title, String text)
