@@ -195,17 +195,20 @@ class RegionImages
 	}
 
 	/**
-	 * Asks for pictures of regions off the screen, as well as those on it: a dungeon preview's {@code shown} at a
-	 * level, and the smallest of those it {@code looks} through. They replace the last ones asked for this way, never
-	 * the screen's.
+	 * Asks for pictures of regions off the screen, as well as those on it: a dungeon preview's {@code shown} on a
+	 * floor at a level, and the smallest of the floors it {@code looks} through (keys, {@link #key}). They replace the
+	 * last ones asked for this way, never the screen's.
 	 */
 	void requestBesides(int plane, Collection<Integer> shown, Level level, Collection<Integer> looks)
 	{
 		Set<Integer> keys = keys(plane, shown);
-		keys.addAll(keys(plane, looks));
+		keys.addAll(looks);
 		wantedBesides = keys;
 		queue(plane, shown, level);
-		queue(plane, looks, Level.SMALL);
+		for (int key : looks)
+		{
+			queue(key, Level.SMALL);
+		}
 	}
 
 	private static Set<Integer> keys(int plane, Collection<Integer> regionIds)
@@ -227,27 +230,36 @@ class RegionImages
 		{
 			for (int p = plane; p >= 0; p--)
 			{
-				int key = key(p, id);
-				if (isAbsent(p, id) || images.get(level).containsKey(key))
+				if (!queue(key(p, id), level))
 				{
-					continue;
-				}
-				long job = (long) level.ordinal() << 32 | key;
-				if (queued.add(job))
-				{
-					try
-					{
-						executor.execute(() -> make(key, level, job));
-					}
-					catch (RejectedExecutionException e)
-					{
-						// the plugin is stopping; a window may still repaint once before it closes
-						queued.remove(job);
-						return;
-					}
+					return;
 				}
 			}
 		}
+	}
+
+	/** Asks for one floor's picture unless it is there or asked for. False when the plugin is stopping. */
+	private boolean queue(int key, Level level)
+	{
+		if (isAbsent(plane(key), region(key)) || images.get(level).containsKey(key))
+		{
+			return true;
+		}
+		long job = (long) level.ordinal() << 32 | key;
+		if (queued.add(job))
+		{
+			try
+			{
+				executor.execute(() -> make(key, level, job));
+			}
+			catch (RejectedExecutionException e)
+			{
+				// the plugin is stopping; a window may still repaint once before it closes
+				queued.remove(job);
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/** Lets the biggest pictures go when the map closes; the smaller ones stay, so it opens again at once. */

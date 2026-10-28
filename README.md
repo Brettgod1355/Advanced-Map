@@ -39,7 +39,8 @@ A full-screen world map for RuneLite, drawn from the game's own map data with sm
   walls on the main map, with its icons, and puts you, its teleports and the transports that go there (the spirit
   tree, the teleport crystal) there too.
 - **Dungeon preview**: point at a dungeon's entrance for a look inside before going in: the dungeon's name, a small
-  map of where you come out, and every monster inside. Click the entrance to go in.
+  map of where you come out, and every monster inside, down its ladders and ropes to the lower floors too, the
+  highest level first ("Dungeon monsters" turns it round). Click the entrance to go in.
 - **Icons you can point at**: banks, quests, shops, shortcuts and every other icon of the game's map, plus teleport
   destinations. Rest the mouse on one for its details, or click it to keep them open (a quest's difficulty and the
   levels it needs, a shortcut's Agility level, a spell's Magic level and quest); the setting "Info on hover" makes

@@ -40,7 +40,7 @@ public interface AdvancedMapConfig extends Config
 		name = "Icons",
 		description = "Which icons the map shows is chosen with Filters at the top left of the map. Point at or click an"
 			+ " icon for its details; right-click it to hide just that one.",
-		position = 11
+		position = 12
 	)
 	String ICONS = "icons";
 
@@ -116,11 +116,22 @@ public interface AdvancedMapConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "monsterOrder",
+		name = "Dungeon monsters",
+		description = "The order a dungeon's preview (point at its entrance) lists the monsters inside in.",
+		position = 4
+	)
+	default MonsterOrder monsterOrder()
+	{
+		return MonsterOrder.HIGHEST_FIRST;
+	}
+
+	@ConfigItem(
 		keyName = "wildernessLines",
 		name = "Wilderness teleport limits",
 		description = "When zoomed in, show red dashed lines where the Wilderness passes level 20 and level 30, the levels"
 			+ " most teleports (and a few more) stop working above.",
-		position = 4
+		position = 5
 	)
 	default boolean wildernessLines()
 	{
@@ -132,7 +143,7 @@ public interface AdvancedMapConfig extends Config
 		name = "Multi-combat areas",
 		description = "When zoomed in, tint the areas where combat is multi-way (several can attack one), in the Wilderness"
 			+ " and everywhere else, with a red edge.",
-		position = 5
+		position = 6
 	)
 	default boolean multiCombat()
 	{
@@ -145,7 +156,7 @@ public interface AdvancedMapConfig extends Config
 		description = "Put a dot on farming patch icons: green ready, yellow growing, red diseased or dead, gray empty."
 			+ " Read from what RuneLite's Time Tracking plugin saved; click a patch for what is growing and when it is"
 			+ " ready.",
-		position = 6
+		position = 7
 	)
 	default boolean farmingStatus()
 	{
@@ -157,7 +168,7 @@ public interface AdvancedMapConfig extends Config
 		name = "Other plugins' markers",
 		description = "Show the markers other plugins put on the world map, such as a clue scroll's spot or Quest"
 			+ " Helper's next step. RuneLite's own World Map plugin's icons are left out (Advanced Map has its own).",
-		position = 7
+		position = 8
 	)
 	default boolean pluginMarkers()
 	{
@@ -169,7 +180,7 @@ public interface AdvancedMapConfig extends Config
 		name = "Search finds shops by name",
 		description = "List shops in the search bar's results by their names (\"Varrock Swordshop\"). Off, a shop is"
 			+ " still found through what it sells, and by clicking its icon.",
-		position = 8
+		position = 9
 	)
 	default boolean searchShops()
 	{
@@ -181,7 +192,7 @@ public interface AdvancedMapConfig extends Config
 		name = "Share markers between accounts",
 		description = "Show the markers you make on every account you play on this computer. Off: each account shows only"
 			+ " the markers made on it.",
-		position = 9
+		position = 10
 	)
 	default boolean shareMarkers()
 	{
@@ -193,7 +204,7 @@ public interface AdvancedMapConfig extends Config
 		name = "Slayer task",
 		description = "Mark every spawn of your Slayer task's monsters, with what is left of the task. Uses the task"
 			+ " RuneLite's Slayer plugin keeps, so that plugin must be on.",
-		position = 10
+		position = 11
 	)
 	default boolean slayerTask()
 	{
@@ -477,7 +488,7 @@ public interface AdvancedMapConfig extends Config
 		keyName = "placeNames",
 		name = "Place names",
 		description = "Show the names of kingdoms when zoomed far out, then towns and places as you zoom in.",
-		position = 5
+		position = 6
 	)
 	default boolean placeNames()
 	{
@@ -489,7 +500,7 @@ public interface AdvancedMapConfig extends Config
 		name = "Floor numbers",
 		description = "How the floors above the ground are numbered: \"Ground, 2, 3, 4\" counts the ground floor as the"
 			+ " first; \"Ground, 1, 2, 3\" counts the floor above it as the first, as in the UK and on the wiki.",
-		position = 6
+		position = 7
 	)
 	default FloorNumbers floorNumbers()
 	{
@@ -501,7 +512,7 @@ public interface AdvancedMapConfig extends Config
 		name = "Route with",
 		description = "The plugin that right-click \"Route here\" asks for a route: Shortest Path or GPS. \"Route"
 			+ " here\" shows only while that plugin is installed and on. With None the menu has no route entries.",
-		position = 7
+		position = 8
 	)
 	default RoutingPlugin routing()
 	{
@@ -513,7 +524,7 @@ public interface AdvancedMapConfig extends Config
 		name = "Save the map on this computer",
 		description = "Keep the drawn map in RuneLite's plugin data folder, shared by all your characters and profiles,"
 			+ " so it opens at once next time. A region is drawn again only when a game update changes it.",
-		position = 8
+		position = 9
 	)
 	default boolean saveMap()
 	{
@@ -526,7 +537,7 @@ public interface AdvancedMapConfig extends Config
 		description = "From the moment the client starts, draw the regions not saved yet in the background, nearest you"
 			+ " first, so the map is ready when you open it. Uses spare processor time for a few minutes the first time"
 			+ " and after updates.",
-		position = 9
+		position = 10
 	)
 	default boolean prepareMap()
 	{

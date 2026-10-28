@@ -670,7 +670,7 @@ S	Barman (Blurberry Bar)	2482	3487	1	Barman (Blurberry Bar)
 I	Lemon	20	Coins	∞
 I	Orange	20	Coins	∞
 I	Cocktail shaker	20	Coins	∞
-S	Bartender (The Warrens)	1825	10131	0	Bartender (The Warrens)
+S	Bartender (The Warrens)	1761	10131	0	Bartender (The Warrens)
 I	Beer	2	Coins	∞
 S	Battle Runes	3105	3558	0	Mage of Zamorak
 I	Fire rune	4	Coins	1000
@@ -875,7 +875,7 @@ I	Chisel	1	Coins	2
 I	Hammer	1	Coins	5
 I	Knife	7	Coins	2
 I	Empty cup	2	Coins	20
-S	Cam Torum Blacksmith	1449	9584	0	Blacksmith (Cam Torum)
+S	Cam Torum Blacksmith	1449	9584	1	Blacksmith (Cam Torum)
 I	Bronze dagger	10	Coins	5
 I	Iron dagger	35	Coins	4
 I	Steel dagger	125	Coins	4
@@ -3635,7 +3635,7 @@ I	Iron battleaxe	182	Coins	3
 I	Steel battleaxe	650	Coins	2
 I	Mithril battleaxe	1690	Coins	1
 I	Adamant battleaxe	4160	Coins	1
-S	Lundail's Arena-side Rune Shop	3109	10357	0	Lundail
+S	Lundail's Arena-side Rune Shop	2533	4717	0	Lundail
 I	Fire rune	4	Coins	200
 I	Water rune	4	Coins	200
 I	Air rune	4	Coins	200
@@ -3665,7 +3665,7 @@ I	Gardening trowel	12	Coins	∞
 I	Seed dibber	6	Coins	∞
 S	Mac	2791	3540	0	Mac
 I	Max cape	2376000	Coins	∞
-S	Mage Arena Staffs	3084	10336	0	Chamber guardian
+S	Mage Arena Staffs	2508	4696	0	Chamber guardian
 I	Saradomin staff	80000	Coins	5
 I	Guthix staff	80000	Coins	5
 I	Zamorak staff	80000	Coins	5
@@ -3710,7 +3710,7 @@ I	Carpenter's helmet	400	Points	∞
 I	Carpenter's shirt	800	Points	∞
 I	Carpenter's trousers	600	Points	∞
 I	Carpenter's boots	200	Points	∞
-S	Mairin's Market	3765	10290	0	Mairin
+S	Mairin's Market	3765	10290	1	Mairin
 I	Unidentified small fossil	100	Mermaid's tear	100
 I	Unidentified medium fossil	200	Mermaid's tear	100
 I	Unidentified large fossil	300	Mermaid's tear	100
@@ -4449,7 +4449,7 @@ I	Proselyte hauberk	12000	Coins	30
 I	Proselyte tasset	10000	Coins	30
 I	Proselyte harness m	25000	Coins	30
 I	Proselyte harness f	25000	Coins	30
-S	Prospector Percy's Nugget Shop	3116	9698	0	Prospector Percy
+S	Prospector Percy's Nugget Shop	3756	5666	0	Prospector Percy
 I	Prospector helmet#Motherlode Mine	40	Golden nugget	100
 I	Prospector jacket#Motherlode Mine	60	Golden nugget	100
 I	Prospector legs#Motherlode Mine	50	Golden nugget	100
@@ -5837,7 +5837,7 @@ I	Void mage helm	200	Void Knight commendation points	∞
 I	Void ranger helm	200	Void Knight commendation points	∞
 I	Void melee helm	200	Void Knight commendation points	∞
 I	Void seal	10	Void Knight commendation points	∞
-S	Warrens Fish Monger	1825	10145	0	Fish monger (The Warrens)
+S	Warrens Fish Monger	1761	10145	0	Fish monger (The Warrens)
 I	Small fishing net	6	Coins	5
 I	Fishing rod	6	Coins	5
 I	Fly fishing rod	6	Coins	5
@@ -5862,7 +5862,7 @@ I	Raw lobster	91	Coins	0
 I	Raw bass	52	Coins	0
 I	Raw swordfish	104	Coins	0
 I	Raw shark	221	Coins	0
-S	Warrens General Store	1840	10148	0	Shop keeper (The Warrens)
+S	Warrens General Store	1776	10148	0	Shop keeper (The Warrens)
 I	Pot	1	Coins	3
 I	Jug	1	Coins	2
 I	Empty jug pack	182	Coins	5

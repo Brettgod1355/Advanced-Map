@@ -208,6 +208,7 @@ public class AdvancedMapPlugin extends Plugin
 		Farming.load();
 		SlayerTask.load();
 		MonsterInfo.load();
+		DungeonPreview.load();
 		reader = new CacheReader(client);
 		shortestPathRoute = new ShortestPathRoute();
 		source = new ClientMapSource(reader);
@@ -241,6 +242,7 @@ public class AdvancedMapPlugin extends Plugin
 		painter.setPins(pins, editor);
 		painter.setMultiCombat(config.multiCombat());
 		painter.setInfoOnHover(config.infoOnHover());
+		painter.setHighestFirst(config.monsterOrder() == MonsterOrder.HIGHEST_FIRST);
 		painter.setLinks(this::leadsTo);
 		overlay = new MapOverlay(client, this, painter);
 		input = new MapInput(this, client::getCanvasWidth, client::getCanvasHeight);
@@ -653,6 +655,7 @@ public class AdvancedMapPlugin extends Plugin
 		{
 			drawing.setMultiCombat(config.multiCombat());
 			drawing.setInfoOnHover(config.infoOnHover());
+			drawing.setHighestFirst(config.monsterOrder() == MonsterOrder.HIGHEST_FIRST);
 			farmingRead = 0;
 			slayerShown = slayerShown == null ? null : "";
 		}
@@ -2069,6 +2072,7 @@ public class AdvancedMapPlugin extends Plugin
 				if (drawing != null)
 				{
 					drawing.setDungeonMaps(from.mapPieces());
+					drawing.setMapLinks(from.mapLinks());
 				}
 			}
 			catch (RuntimeException e)

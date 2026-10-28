@@ -110,7 +110,7 @@ final class MapPainter
 	private static final int MENU_ROW = 20;
 	private static final int PAD = 8;
 	/** The most monsters a dungeon preview lists, its "and more" line included, when taller than its map. */
-	private static final int MAX_PREVIEW_LINES = 16;
+	private static final int MAX_PREVIEW_LINES = 20;
 	/** The Wilderness teleport limits show from this zoom in, as icons do. */
 	static final double WILDERNESS_ZOOM = MapIcons.ICON_ZOOM;
 
@@ -148,6 +148,8 @@ final class MapPainter
 	/** The pin a right-click menu is for, or null. */
 	private volatile MapPins.Pin menuPin;
 	private volatile boolean infoOnHover;
+	/** A dungeon preview lists its monsters the highest level first; else the lowest. */
+	private volatile boolean highestFirst = true;
 	/** Set while a mouse button is held on the map (dragging it): nothing shows on hover meanwhile. */
 	private volatile boolean dragging;
 	/** Where a click on an icon would move the map to the other map (a dungeon's entrance), or null. */
@@ -174,6 +176,17 @@ final class MapPainter
 	void setInfoOnHover(boolean on)
 	{
 		infoOnHover = on;
+	}
+
+	void setHighestFirst(boolean on)
+	{
+		highestFirst = on;
+	}
+
+	/** The game's map links, for the ways from one underground place to another a preview follows. */
+	void setMapLinks(Map<Integer, Integer> links)
+	{
+		preview.setMapLinks(links);
 	}
 
 	void setDragging(boolean on)
@@ -895,9 +908,10 @@ final class MapPainter
 		MapViewport.View small = new MapViewport.View(to.getX() + 0.5, to.getY() + 0.5, DungeonPreview.MAP_ZOOM,
 			DungeonPreview.MAP_WIDTH, DungeonPreview.MAP_HEIGHT);
 		boolean inside = toArea == MapArea.UNDERGROUND;
+		DungeonPreview.Look look = inside ? preview.look(to) : null;
 		images.requestBesides(to.getPlane(), regionsOn(small, toArea),
 			RegionImages.Level.forZoom(DungeonPreview.MAP_ZOOM),
-			inside ? DungeonPreview.regionsAround(to) : Collections.emptyList());
+			inside ? DungeonPreview.regionsAround(look.getFloors()) : Collections.emptyList());
 
 		java.awt.Font titleFont = FontManager.getRunescapeBoldFont();
 		java.awt.Font font = FontManager.getRunescapeSmallFont();
@@ -906,10 +920,9 @@ final class MapPainter
 		List<String> list = new ArrayList<>();
 		if (inside)
 		{
-			DungeonPreview.Look look = preview.look(to);
 			int room = Math.max(DungeonPreview.MAP_HEIGHT, MAX_PREVIEW_LINES * metrics.getHeight())
 				/ metrics.getHeight() - 1;
-			List<DungeonPreview.Inside> monsters = look.getMonsters();
+			List<DungeonPreview.Inside> monsters = DungeonPreview.sorted(look.getMonsters(), highestFirst);
 			for (int i = 0; i < monsters.size() && list.size() < room; i++)
 			{
 				if (i == room - 1 && monsters.size() > room)

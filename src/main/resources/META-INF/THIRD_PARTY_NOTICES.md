@@ -115,7 +115,9 @@ merged into one spot; everything else (items, quests, skills, durations, varbits
 (the coins it needs) and what it needs to be taken (quests, skill levels, other items), by origin and destination
 tile; durations and varbits are left out. 28 rows of
 `src/main/resources/com/advancedmap/dungeon-links.tsv`, where surface dungeon entrances the game's own map does not
-link lead, are taken from its `transports.tsv` at the same pin (origin and destination tiles only). Shortest Path's license,
+link lead, are taken from its `transports.tsv` at the same pin (origin and destination tiles only), and so are the
+ways between two underground places (ladders, ropes, stairs, tunnels) in `src/main/resources/com/advancedmap/inner-links.tsv`,
+which a dungeon's preview follows to its lower floors (origin and destination tiles only). Shortest Path's license,
 as published in that repository (its copyright line is the license template's, unfilled):
 
 ```
@@ -224,8 +226,10 @@ levels) are adapted from the [Old School RuneScape Wiki](https://oldschool.runes
 2026-10-27. The wiki's content is licensed under
 [CC BY-NC-SA 3.0](https://creativecommons.org/licenses/by-nc-sa/3.0/); these two files are adaptations and are
 shared under the same license, credited to the Old School RuneScape Wiki's contributors. Changes: only names,
-tiles, prices and levels kept; each shop placed by its page's map, else its owner's spawn; prices and stock as
-the wiki gave them that day (they can be out of date). The Shilo Village cart's fare, and that the Karamja elite
+tiles, prices and levels kept; each shop placed by its page's map, else its owner's spawn; tiles the wiki gives on
+one of the game's other world maps (a dungeon that map draws somewhere else, such as the Kalphite Queen's chamber)
+moved back to where they are in the world, using that map's squares as the game's cache lists them; prices and stock
+as the wiki gave them that day (they can be out of date). The Shilo Village cart's fare, and that the Karamja elite
 diary makes it free, are from the wiki's "Shilo Village cart system", "Hajedy" and "Vigroy" pages, checked the same day.
 Nothing is fetched from the wiki while the plugin runs.
 

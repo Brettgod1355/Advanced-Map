@@ -26,7 +26,9 @@ import net.runelite.api.coords.WorldPoint;
  * entrance leads, and every monster inside. "Inside" is the floor reachable from where the entrance leads without
  * crossing a tile the game has nothing on (the dark between caves), found on the map's own smallest pictures, and
  * without leaving the game's own map of that part of the underground ("Taverley Underground" ends where the Dwarven
- * Mines begin, though their floors touch).
+ * Mines begin, though their floors touch). From there it follows the ladders, ropes and stairs that stay on that map
+ * ({@code inner-links.tsv}, and the game's own map links), so the floors below count too: the Kalphite Queen is a
+ * rope below the lair's tunnels.
  */
 final class DungeonPreview
 {
@@ -40,6 +42,8 @@ final class DungeonPreview
 	static final int NAME_REACH = 8;
 	/** How near where the entrance leads a place name of the game's must be to name the dungeon. */
 	static final int LABEL_REACH = 80;
+	/** The most floors (the first and those reached by ladders and ropes) one look goes through. */
+	static final int MAX_FLOORS = 8;
 	/** A dungeon not yet looked through whole (its pictures still being drawn) is looked through again this often. */
 	private static final long RETRY_NANOS = 500_000_000L;
 	private static final int KEPT = 64;
@@ -87,12 +91,24 @@ final class DungeonPreview
 		}
 	}
 
+	/** A way from one underground tile to another: a ladder, a rope, stairs. */
+	@Value
+	static class Way
+	{
+		WorldPoint from;
+		WorldPoint to;
+	}
+
 	@Value
 	static class Look
 	{
 		List<Inside> monsters;
+		/** Where each floor looked through was entered: the entrance's tile first. */
+		List<WorldPoint> floors;
 		boolean complete;
 	}
+
+	private static volatile List<Way> innerWays = Collections.emptyList();
 
 	private final RegionImages images;
 	private final Map<WorldPoint, Look> looked = Collections.synchronizedMap(
@@ -105,6 +121,8 @@ final class DungeonPreview
 			}
 		});
 	private volatile List<List<WorldMapElements.Piece>> maps = Collections.emptyList();
+	/** The game's own map links that join two underground places. */
+	private volatile List<Way> mapWays = Collections.emptyList();
 	private volatile WorldPoint lastTry;
 	private volatile long lastTryAt;
 
@@ -118,6 +136,59 @@ final class DungeonPreview
 	{
 		this.maps = maps;
 		looked.clear();
+	}
+
+	/** The game's map links (packed as {@code MapLinks.pack}): those from one underground place to another are ways. */
+	void setMapLinks(Map<Integer, Integer> links)
+	{
+		List<Way> ways = new ArrayList<>();
+		links.forEach((from, to) ->
+		{
+			Way way = new Way(new WorldPoint(com.advancedmap.cache.MapLinks.x(from), com.advancedmap.cache.MapLinks.y(from),
+				com.advancedmap.cache.MapLinks.plane(from)), new WorldPoint(com.advancedmap.cache.MapLinks.x(to),
+				com.advancedmap.cache.MapLinks.y(to), com.advancedmap.cache.MapLinks.plane(to)));
+			if (MapArea.of(way.getFrom().getY()) == MapArea.UNDERGROUND && MapArea.of(way.getTo().getY()) == MapArea.UNDERGROUND)
+			{
+				ways.add(way);
+			}
+		});
+		mapWays = ways;
+		looked.clear();
+	}
+
+	/** Reads the ways inside dungeons from the plugin's resources. Called once at start-up, off the client thread. */
+	static void load()
+	{
+		try (java.io.InputStream in = DungeonPreview.class.getResourceAsStream("inner-links.tsv"))
+		{
+			if (in != null)
+			{
+				innerWays = parseWays(in);
+			}
+		}
+		catch (java.io.IOException | RuntimeException e)
+		{
+			// no lower floors then; the first still shows
+		}
+	}
+
+	static List<Way> parseWays(java.io.InputStream in) throws java.io.IOException
+	{
+		List<Way> out = new ArrayList<>();
+		java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.InputStreamReader(in,
+			java.nio.charset.StandardCharsets.UTF_8));
+		String line;
+		while ((line = reader.readLine()) != null)
+		{
+			if (line.isEmpty() || line.startsWith("#"))
+			{
+				continue;
+			}
+			String[] f = line.split("\t");
+			out.add(new Way(new WorldPoint(Integer.parseInt(f[0]), Integer.parseInt(f[1]), Integer.parseInt(f[2])),
+				new WorldPoint(Integer.parseInt(f[3]), Integer.parseInt(f[4]), Integer.parseInt(f[5]))));
+		}
+		return Collections.unmodifiableList(out);
 	}
 
 	/** The game's map with the fewest parts that shows a tile (the most particular one), or null for none. */
@@ -184,27 +255,81 @@ final class DungeonPreview
 		}
 		lastTry = to;
 		lastTryAt = now;
-		Floor floor = floor(to.getPlane());
-		List<WorldMapElements.Piece> map = mapOf(to, maps);
-		Floor fenced = map == null ? floor : fence(map, to.getPlane(), floor);
-		Fill fill = flood(to.getX(), to.getY(), fenced);
-		Look look = new Look(monsters(fill, to.getPlane(), Spawns.all()), fill.isComplete());
+		List<Way> ways = new ArrayList<>(innerWays);
+		ways.addAll(mapWays);
+		Look look = look(to, maps, ways, this::floor, Spawns.all());
 		looked.put(to, look);
 		return look;
 	}
 
-	/** The regions a look at {@code to} reads: every one within {@link #REACH}. */
-	static Collection<Integer> regionsAround(WorldPoint to)
+	/**
+	 * Looks through the floor an entrance leads to, then each floor a way from it leads to on the same game map, and
+	 * so on, up to {@link #MAX_FLOORS}. Without a game map for the entrance (its map data not read yet) only the first.
+	 */
+	static Look look(WorldPoint to, List<List<WorldMapElements.Piece>> maps, List<Way> ways,
+		java.util.function.IntFunction<Floor> floors, List<Spawns.Creature> creatures)
 	{
-		Set<Integer> ids = new LinkedHashSet<>();
-		for (int rx = (to.getX() - REACH) >> 6; rx <= (to.getX() + REACH) >> 6; rx++)
+		List<WorldMapElements.Piece> map = mapOf(to, maps);
+		List<WorldPoint> starts = new ArrayList<>();
+		List<Fill> fills = new ArrayList<>();
+		java.util.ArrayDeque<WorldPoint> next = new java.util.ArrayDeque<>();
+		next.add(to);
+		boolean complete = true;
+		while (!next.isEmpty() && fills.size() < MAX_FLOORS)
 		{
-			for (int ry = (to.getY() - REACH) >> 6; ry <= (to.getY() + REACH) >> 6; ry++)
+			WorldPoint start = next.poll();
+			if (inside(start, starts, fills))
 			{
-				ids.add(rx << 8 | ry);
+				continue;
+			}
+			Floor floor = floors.apply(start.getPlane());
+			Fill fill = flood(start.getX(), start.getY(), map == null ? floor : fence(map, start.getPlane(), floor));
+			starts.add(start);
+			fills.add(fill);
+			complete &= fill.isComplete();
+			if (map == null)
+			{
+				break;
+			}
+			for (Way way : ways)
+			{
+				if (way.getFrom().getPlane() == start.getPlane() && fill.contains(way.getFrom().getX(), way.getFrom().getY())
+					&& shows(map, way.getTo().getX(), way.getTo().getY(), way.getTo().getPlane()))
+				{
+					next.add(way.getTo());
+				}
 			}
 		}
-		return ids;
+		return new Look(monsters(starts, fills, creatures), Collections.unmodifiableList(starts), complete);
+	}
+
+	private static boolean inside(WorldPoint at, List<WorldPoint> starts, List<Fill> fills)
+	{
+		for (int i = 0; i < fills.size(); i++)
+		{
+			if (starts.get(i).getPlane() == at.getPlane() && fills.get(i).contains(at.getX(), at.getY()))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/** The floors of regions ({@link RegionImages#key}) a look reads: every one within {@link #REACH} of each start. */
+	static Collection<Integer> regionsAround(Collection<WorldPoint> starts)
+	{
+		Set<Integer> keys = new LinkedHashSet<>();
+		for (WorldPoint to : starts)
+		{
+			for (int rx = (to.getX() - REACH) >> 6; rx <= (to.getX() + REACH) >> 6; rx++)
+			{
+				for (int ry = (to.getY() - REACH) >> 6; ry <= (to.getY() + REACH) >> 6; ry++)
+				{
+					keys.add(RegionImages.key(to.getPlane(), rx << 8 | ry));
+				}
+			}
+		}
+		return keys;
 	}
 
 	/** A floor as the map's pictures show it: ground where a picture has color, none where it is see-through. */
@@ -303,6 +428,13 @@ final class DungeonPreview
 	/** The monsters with a spawn on the fill's floor, the lowest level first. */
 	static List<Inside> monsters(Fill fill, int plane, List<Spawns.Creature> creatures)
 	{
+		return monsters(Collections.singletonList(new WorldPoint(0, 0, plane)), Collections.singletonList(fill),
+			creatures);
+	}
+
+	/** The monsters with a spawn in any of the fills, each on its start's floor, the lowest level first. */
+	static List<Inside> monsters(List<WorldPoint> starts, List<Fill> fills, List<Spawns.Creature> creatures)
+	{
 		List<Inside> out = new ArrayList<>();
 		for (Spawns.Creature creature : creatures)
 		{
@@ -313,7 +445,7 @@ final class DungeonPreview
 			int count = 0;
 			for (WorldPoint tile : creature.getTiles())
 			{
-				if (tile.getPlane() == plane && fill.contains(tile.getX(), tile.getY()))
+				if (inside(tile, starts, fills))
 				{
 					count++;
 				}
@@ -323,21 +455,39 @@ final class DungeonPreview
 				out.add(new Inside(creature.getName(), creature.getLevels(), count));
 			}
 		}
-		out.sort(Comparator.comparingInt((Inside inside) -> lowestLevel(inside.getLevels()))
+		return sorted(out, false);
+	}
+
+	/**
+	 * The monsters by level: the highest first (by each one's highest level) or the lowest first (by its lowest),
+	 * those without a level last either way, then by name.
+	 */
+	static List<Inside> sorted(List<Inside> monsters, boolean highestFirst)
+	{
+		List<Inside> out = new ArrayList<>(monsters);
+		out.sort(Comparator.comparingInt((Inside inside) -> inside.getLevels().isEmpty() ? Integer.MAX_VALUE
+			: highestFirst ? -level(inside.getLevels(), true) : level(inside.getLevels(), false))
 			.thenComparing(Inside::getName));
 		return out;
 	}
 
-	private static int lowestLevel(String levels)
+	/** The highest or lowest of levels written "13, 18, 24". */
+	private static int level(String levels, boolean highest)
 	{
-		try
+		int best = highest ? Integer.MIN_VALUE : Integer.MAX_VALUE;
+		for (String level : levels.split(","))
 		{
-			return Integer.parseInt(levels.split(",")[0].trim());
+			try
+			{
+				int value = Integer.parseInt(level.trim());
+				best = highest ? Math.max(best, value) : Math.min(best, value);
+			}
+			catch (NumberFormatException e)
+			{
+				// "?" and the like are left out
+			}
 		}
-		catch (NumberFormatException e)
-		{
-			return Integer.MAX_VALUE;
-		}
+		return best == Integer.MIN_VALUE || best == Integer.MAX_VALUE ? 0 : best;
 	}
 
 	/**

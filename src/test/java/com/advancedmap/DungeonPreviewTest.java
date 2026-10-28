@@ -101,6 +101,67 @@ public class DungeonPreviewTest
 	}
 
 	@Test
+	public void aRopeDownOnTheSameMapAddsTheFloorBelowAndOneOffItDoesNot()
+	{
+		// the tunnels on floor 2 (the first cave), a rope down to a chamber on the ground floor (the second cave), and
+		// a tunnel out to another map's cave
+		java.util.function.IntFunction<DungeonPreview.Floor> floors = plane -> plane == 2
+			? (x, y) -> x >= 100 && x < 110 && y >= 100 && y < 110 ? DungeonPreview.OPEN : DungeonPreview.CLOSED
+			: plane == 0 ? TWO_CAVES : (x, y) -> DungeonPreview.CLOSED;
+		List<WorldMapElements.Piece> map = Collections.singletonList(new WorldMapElements.Piece(64, 64, 64, 0));
+		List<DungeonPreview.Way> ways = Arrays.asList(
+			new DungeonPreview.Way(new WorldPoint(108, 104, 2), new WorldPoint(122, 104, 0)),
+			new DungeonPreview.Way(new WorldPoint(101, 101, 2), new WorldPoint(5000, 5000, 0)));
+		List<Spawns.Creature> creatures = Arrays.asList(
+			new Spawns.Creature("Kalphite Worker", true, "28", Collections.singletonList(new WorldPoint(105, 105, 2))),
+			new Spawns.Creature("Kalphite Queen", true, "333", Collections.singletonList(new WorldPoint(125, 105, 0))),
+			new Spawns.Creature("Elsewhere", true, "5", Collections.singletonList(new WorldPoint(5000, 5000, 0))),
+			new Spawns.Creature("Under the tunnels", true, "9", Collections.singletonList(new WorldPoint(105, 105, 0))));
+		DungeonPreview.Look look = DungeonPreview.look(new WorldPoint(103, 103, 2), Collections.singletonList(map), ways,
+			floors, creatures);
+		assertEquals(2, look.getFloors().size());
+		assertEquals(new WorldPoint(122, 104, 0), look.getFloors().get(1));
+		assertEquals(Arrays.asList("Kalphite Worker", "Kalphite Queen"), names(look.getMonsters()));
+		// without the game's maps read yet: the first floor only
+		assertEquals(1, DungeonPreview.look(new WorldPoint(103, 103, 2), Collections.emptyList(), ways, floors,
+			creatures).getFloors().size());
+	}
+
+	@Test
+	public void monstersAreListedTheHighestFirstOrTheLowestFirst()
+	{
+		List<DungeonPreview.Inside> inside = Arrays.asList(new DungeonPreview.Inside("Skeleton", "21, 22, 45", 3),
+			new DungeonPreview.Inside("Hill Giant", "28", 2), new DungeonPreview.Inside("Banshee", "", 1),
+			new DungeonPreview.Inside("Black demon", "172, 188", 1));
+		assertEquals(Arrays.asList("Black demon", "Skeleton", "Hill Giant", "Banshee"),
+			names(DungeonPreview.sorted(inside, true)));
+		assertEquals(Arrays.asList("Skeleton", "Hill Giant", "Black demon", "Banshee"),
+			names(DungeonPreview.sorted(inside, false)));
+	}
+
+	@Test
+	public void theWaysInsideDungeonsAreRead() throws Exception
+	{
+		try (java.io.InputStream in = DungeonPreview.class.getResourceAsStream("inner-links.tsv"))
+		{
+			List<DungeonPreview.Way> ways = DungeonPreview.parseWays(in);
+			assertTrue(ways.size() > 500);
+			// the rope down to the Kalphite Queen
+			assertTrue(ways.contains(new DungeonPreview.Way(new WorldPoint(3508, 9498, 2), new WorldPoint(3508, 9493, 0))));
+		}
+	}
+
+	private static List<String> names(List<DungeonPreview.Inside> inside)
+	{
+		List<String> out = new java.util.ArrayList<>();
+		for (DungeonPreview.Inside each : inside)
+		{
+			out.add(each.getName());
+		}
+		return out;
+	}
+
+	@Test
 	public void theNameIsTheNamedEntranceElseTheNearestPlaceName()
 	{
 		MapSpot icon = MapSpot.icon(3096, 3468, 0, 1, IconGroup.DUNGEON);

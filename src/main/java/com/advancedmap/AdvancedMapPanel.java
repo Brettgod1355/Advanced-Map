@@ -153,7 +153,8 @@ class AdvancedMapPanel extends PluginPanel
 			+ " icons; zoomed in, each icon is on its own floor (Lumbridge Castle's bank is at the top). How floors"
 			+ " are numbered is a setting.")
 			+ section("Dungeons", "Point at a dungeon's entrance for a look inside: its name, a small map of where"
-			+ " you come out and every monster inside. Click the entrance to go in.")
+			+ " you come out and every monster inside, on its lower floors too (the Kalphite Queen, a rope down), the"
+			+ " highest level first (a setting turns it round). Click the entrance to go in.")
 			+ section("Icons", "Point at an icon, or click it to keep its box open, for its details: a quest's"
 			+ " difficulty and the levels it needs, a shortcut's Agility level, a spell's Magic level. Shortcuts and"
 			+ " teleports you can't use yet are grayed out with a red mark, and so are bank chests you haven't built"
