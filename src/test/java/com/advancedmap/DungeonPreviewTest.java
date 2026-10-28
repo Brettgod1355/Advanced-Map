@@ -151,6 +151,31 @@ public class DungeonPreviewTest
 		}
 	}
 
+	@Test
+	public void theSmallMapShowsTheFloorNotTheDarkAroundIt()
+	{
+		WorldPoint to = new WorldPoint(1000, 1000, 0);
+		// a floor that fits, east and north of the arrival: centred on it, zoomed in to fill the box (220 / 84 wide,
+		// 150 / 54 high: the width decides), the arrival still well inside
+		MapViewport.View fits = DungeonPreview.framing(to, new java.awt.Rectangle(990, 990, 80, 50));
+		assertEquals(1030, fits.centerX, 0.01);
+		assertEquals(1015, fits.centerY, 0.01);
+		assertEquals(220.0 / 84, fits.zoom, 0.001);
+		// a tiny one: no further in than the most zoom
+		assertEquals(DungeonPreview.MAX_MAP_ZOOM, DungeonPreview.framing(to, new java.awt.Rectangle(995, 995, 10, 10))
+			.zoom, 0.001);
+		assertTrue(fits.screenX(1000.5) >= DungeonPreview.ARRIVAL_MARGIN);
+		// a floor bigger than the box: zoomed out, but no further than the least zoom
+		MapViewport.View big = DungeonPreview.framing(to, new java.awt.Rectangle(800, 900, 400, 200));
+		assertEquals(DungeonPreview.MIN_MAP_ZOOM, big.zoom, 0.001);
+		// the arrival far to one side of a wide floor: the view stops where the arrival would leave it
+		MapViewport.View side = DungeonPreview.framing(to, new java.awt.Rectangle(1000, 995, 300, 10));
+		double x = side.screenX(1000.5);
+		assertTrue(x >= DungeonPreview.ARRIVAL_MARGIN - 1 && x <= DungeonPreview.MAP_WIDTH);
+		// no floor known yet: on the arrival
+		assertEquals(1000.5, DungeonPreview.framing(to, null).centerX, 0.001);
+	}
+
 	private static List<String> names(List<DungeonPreview.Inside> inside)
 	{
 		List<String> out = new java.util.ArrayList<>();

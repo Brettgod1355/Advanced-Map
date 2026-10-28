@@ -905,12 +905,10 @@ final class MapPainter
 		{
 			title = name != null ? "Up to " + name : "Way out";
 		}
-		MapViewport.View small = new MapViewport.View(to.getX() + 0.5, to.getY() + 0.5, DungeonPreview.MAP_ZOOM,
-			DungeonPreview.MAP_WIDTH, DungeonPreview.MAP_HEIGHT);
 		boolean inside = toArea == MapArea.UNDERGROUND;
 		DungeonPreview.Look look = inside ? preview.look(to) : null;
-		images.requestBesides(to.getPlane(), regionsOn(small, toArea),
-			RegionImages.Level.forZoom(DungeonPreview.MAP_ZOOM),
+		MapViewport.View small = DungeonPreview.framing(to, look == null ? null : look.getFirstFloor());
+		images.requestBesides(to.getPlane(), regionsOn(small, toArea), RegionImages.Level.forZoom(small.zoom),
 			inside ? DungeonPreview.regionsAround(look.getFloors()) : Collections.emptyList());
 
 		java.awt.Font titleFont = FontManager.getRunescapeBoldFont();
@@ -922,6 +920,11 @@ final class MapPainter
 		{
 			int room = Math.max(DungeonPreview.MAP_HEIGHT, MAX_PREVIEW_LINES * metrics.getHeight())
 				/ metrics.getHeight() - 1;
+			if (!look.isComplete() && !look.getMonsters().isEmpty())
+			{
+				// floors still being drawn may hold more; the line goes once they are looked through
+				room--;
+			}
 			List<DungeonPreview.Inside> monsters = DungeonPreview.sorted(look.getMonsters(), highestFirst);
 			for (int i = 0; i < monsters.size() && list.size() < room; i++)
 			{
@@ -935,6 +938,10 @@ final class MapPainter
 			if (list.isEmpty())
 			{
 				list.add(look.isComplete() ? "No monsters" : "Looking...");
+			}
+			else if (!look.isComplete())
+			{
+				list.add("Still looking...");
 			}
 		}
 		String heading = "Monsters inside";

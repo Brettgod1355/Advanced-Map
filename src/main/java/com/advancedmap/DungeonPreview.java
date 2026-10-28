@@ -36,6 +36,12 @@ final class DungeonPreview
 	static final int MAP_WIDTH = 220;
 	static final int MAP_HEIGHT = 150;
 	static final double MAP_ZOOM = 2;
+	/** The farthest in the small map zooms to fill itself with a small dungeon floor. */
+	static final double MAX_MAP_ZOOM = 3;
+	/** The farthest out the small map zooms to show a big dungeon floor whole. */
+	static final double MIN_MAP_ZOOM = 1.25;
+	/** How far in from the small map's edge the tile an entrance leads to is always kept, in pixels. */
+	static final int ARRIVAL_MARGIN = 16;
 	/** How far from where the entrance leads a dungeon is looked through, in tiles. */
 	static final int REACH = 128;
 	/** How near an entrance's icon a named entrance ({@code places.tsv}) must be to name it. */
@@ -75,6 +81,23 @@ final class DungeonPreview
 			int dy = y - minY;
 			return dx >= 0 && dy >= 0 && dx < size && dy < size && tiles.get(dy * size + dx);
 		}
+
+		/** The world tiles the fill spans (x, y south-west), or null when it is empty. */
+		java.awt.Rectangle bounds()
+		{
+			int x0 = Integer.MAX_VALUE;
+			int y0 = Integer.MAX_VALUE;
+			int x1 = Integer.MIN_VALUE;
+			int y1 = Integer.MIN_VALUE;
+			for (int i = tiles.nextSetBit(0); i >= 0; i = tiles.nextSetBit(i + 1))
+			{
+				x0 = Math.min(x0, i % size);
+				x1 = Math.max(x1, i % size);
+				y0 = Math.min(y0, i / size);
+				y1 = Math.max(y1, i / size);
+			}
+			return x0 > x1 ? null : new java.awt.Rectangle(minX + x0, minY + y0, x1 - x0 + 1, y1 - y0 + 1);
+		}
 	}
 
 	/** One monster inside: its name, combat levels and how many spawn there. */
@@ -105,6 +128,8 @@ final class DungeonPreview
 		List<Inside> monsters;
 		/** Where each floor looked through was entered: the entrance's tile first. */
 		List<WorldPoint> floors;
+		/** The tiles the entrance's own floor spans, or null when none is known yet. */
+		java.awt.Rectangle firstFloor;
 		boolean complete;
 	}
 
@@ -300,7 +325,8 @@ final class DungeonPreview
 				}
 			}
 		}
-		return new Look(monsters(starts, fills, creatures), Collections.unmodifiableList(starts), complete);
+		return new Look(monsters(starts, fills, creatures), Collections.unmodifiableList(starts), fills.get(0).bounds(),
+			complete);
 	}
 
 	private static boolean inside(WorldPoint at, List<WorldPoint> starts, List<Fill> fills)
@@ -313,6 +339,28 @@ final class DungeonPreview
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * The small map's view: on the middle of the entrance's floor ({@code floor}, when known), zoomed to show it whole
+	 * (out as far as {@link #MIN_MAP_ZOOM}, in as far as {@link #MAX_MAP_ZOOM}), so it shows the dungeon rather than
+	 * the dark around its edge; the tile the entrance leads to always at least {@link #ARRIVAL_MARGIN} pixels inside.
+	 */
+	static MapViewport.View framing(WorldPoint to, java.awt.Rectangle floor)
+	{
+		double x = to.getX() + 0.5;
+		double y = to.getY() + 0.5;
+		if (floor == null)
+		{
+			return new MapViewport.View(x, y, MAP_ZOOM, MAP_WIDTH, MAP_HEIGHT);
+		}
+		double zoom = Math.max(MIN_MAP_ZOOM, Math.min(MAX_MAP_ZOOM, Math.min((double) MAP_WIDTH / (floor.width + 4),
+			(double) MAP_HEIGHT / (floor.height + 4))));
+		double reachX = Math.max(0, MAP_WIDTH / 2.0 - ARRIVAL_MARGIN) / zoom;
+		double reachY = Math.max(0, MAP_HEIGHT / 2.0 - ARRIVAL_MARGIN) / zoom;
+		double cx = Math.max(x - reachX, Math.min(x + reachX, floor.getCenterX()));
+		double cy = Math.max(y - reachY, Math.min(y + reachY, floor.getCenterY()));
+		return new MapViewport.View(cx, cy, zoom, MAP_WIDTH, MAP_HEIGHT);
 	}
 
 	/** The floors of regions ({@link RegionImages#key}) a look reads: every one within {@link #REACH} of each start. */
