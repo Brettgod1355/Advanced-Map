@@ -38,6 +38,9 @@ A full-screen world map for RuneLite, drawn from the game's own map data with sm
 - **Prifddinas in Tirannwn**: the game keeps the elven city on a map of its own; Advanced Map draws it inside its
   walls on the main map, with its icons, and puts you, its teleports and the transports that go there (the spirit
   tree, the teleport crystal) there too.
+- **Find and follow you**: the round button at the bottom right brings the map back to you and keeps it on you as you
+  walk, in the pop-out window too, until you drag the map. When you are out of view, an arrow at the edge points to
+  you with how many tiles away; click it to go back ("Arrow to you" turns it off).
 - **Dungeon preview**: point at a dungeon's entrance for a look inside before going in: the dungeon's name, a small
   map of where you come out, and every monster inside, down its ladders and ropes to the lower floors too, the
   highest level first ("Dungeon monsters" turns it round). Click the entrance to go in.

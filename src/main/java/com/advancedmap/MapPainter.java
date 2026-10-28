@@ -148,6 +148,10 @@ final class MapPainter
 	/** The pin a right-click menu is for, or null. */
 	private volatile MapPins.Pin menuPin;
 	private volatile boolean infoOnHover;
+	/** An arrow at the edge points to the player when they are off the view. */
+	private volatile boolean playerArrow;
+	/** The map keeps itself on the player (the locate button lit). */
+	private volatile boolean following;
 	/** A dungeon preview lists its monsters the highest level first; else the lowest. */
 	private volatile boolean highestFirst = true;
 	/** Set while a mouse button is held on the map (dragging it): nothing shows on hover meanwhile. */
@@ -176,6 +180,21 @@ final class MapPainter
 	void setInfoOnHover(boolean on)
 	{
 		infoOnHover = on;
+	}
+
+	void setPlayerArrow(boolean on)
+	{
+		playerArrow = on;
+	}
+
+	boolean isPlayerArrow()
+	{
+		return playerArrow;
+	}
+
+	void setFollowing(boolean on)
+	{
+		following = on;
 	}
 
 	void setHighestFirst(boolean on)
@@ -318,6 +337,7 @@ final class MapPainter
 		List<MapPins.Shown> pinsShown = pins.visible(view, area, plane, settings.getIconScale());
 		MapPins.draw(g, pinsShown, view.zoom);
 		drawPlayer(g, view, area, player);
+		drawPlayerArrow(g, view, area, player, playerArrow);
 		MapPins.Pin pin = pins.selected();
 		if (pin != null)
 		{
@@ -344,7 +364,7 @@ final class MapPainter
 		}
 		drawBar(g, view, mouse, loading, window, !shown.isEmpty(), infoOnHover);
 		Integer slayerArea = settings.isSlayerButton() ? filters.areaOf(IconGroup.SLAYER_MASTER) : null;
-		drawButtons(g, view, area, plane, window, settings, player != null, filters.isOpen(),
+		drawButtons(g, view, area, plane, window, settings, player != null, following, filters.isOpen(),
 			slayerArea == null ? null : icons.image(slayerArea, false));
 		if (filters.isOpen())
 		{
@@ -1367,6 +1387,81 @@ final class MapPainter
 		}
 	}
 
+	/** How far in from the view's edges the arrow to the player stays: clear of the buttons along the top, the bar. */
+	private static final int ARROW_SIDE = 26;
+	private static final int ARROW_TOP = GAP + BUTTON_HEIGHT + 22;
+	private static final int ARROW_BOTTOM = 40;
+	private static final int ARROW_SIZE = 13;
+
+	/**
+	 * Where the arrow to the player is drawn (a box around its tip, which a click takes to them), or null: not on,
+	 * the player not known, on the other map, or in view.
+	 */
+	static Rectangle playerArrow(MapViewport.View view, MapArea area, WorldPoint player, boolean on)
+	{
+		if (!on || player == null || MapArea.of(player.getY()) != area)
+		{
+			return null;
+		}
+		double px = view.screenX(player.getX() + 0.5);
+		double py = view.screenY(player.getY() + 0.5);
+		double left = ARROW_SIDE;
+		double right = view.width - ARROW_SIDE;
+		double top = ARROW_TOP;
+		double bottom = view.height - ARROW_BOTTOM;
+		if (px >= 0 && py >= 0 && px <= view.width && py <= view.height || right <= left || bottom <= top)
+		{
+			return null;
+		}
+		// from the middle of the view toward the player, to where that line leaves the inner box
+		double cx = (left + right) / 2;
+		double cy = (top + bottom) / 2;
+		double dx = px - cx;
+		double dy = py - cy;
+		double t = Math.min(dx == 0 ? Double.MAX_VALUE : (dx > 0 ? right - cx : left - cx) / dx,
+			dy == 0 ? Double.MAX_VALUE : (dy > 0 ? bottom - cy : top - cy) / dy);
+		int x = (int) Math.round(cx + dx * t);
+		int y = (int) Math.round(cy + dy * t);
+		return new Rectangle(x - ARROW_SIZE - 2, y - ARROW_SIZE - 2, ARROW_SIZE * 2 + 4, ARROW_SIZE * 2 + 4);
+	}
+
+	/** The arrow at the edge pointing to the player when they are off the view, with how many tiles away. */
+	private static void drawPlayerArrow(Graphics2D g, MapViewport.View view, MapArea area, WorldPoint player,
+		boolean on)
+	{
+		Rectangle at = playerArrow(view, area, player, on);
+		if (at == null)
+		{
+			return;
+		}
+		double tipX = at.getCenterX();
+		double tipY = at.getCenterY();
+		double angle = Math.atan2(view.screenY(player.getY() + 0.5) - tipY, view.screenX(player.getX() + 0.5) - tipX);
+		Path2D arrow = new Path2D.Double();
+		arrow.moveTo(ARROW_SIZE, 0);
+		arrow.lineTo(-ARROW_SIZE * 0.7, ARROW_SIZE * 0.75);
+		arrow.lineTo(-ARROW_SIZE * 0.35, 0);
+		arrow.lineTo(-ARROW_SIZE * 0.7, -ARROW_SIZE * 0.75);
+		arrow.closePath();
+		Shape shape = java.awt.geom.AffineTransform.getRotateInstance(angle, 0, 0).createTransformedShape(arrow);
+		shape = java.awt.geom.AffineTransform.getTranslateInstance(tipX, tipY).createTransformedShape(shape);
+		Stroke stroke = g.getStroke();
+		g.setStroke(new BasicStroke(3f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+		g.setColor(OUTLINE);
+		g.draw(shape);
+		g.setStroke(stroke);
+		g.setColor(LOCATED);
+		g.fill(shape);
+		int tiles = (int) Math.max(Math.abs(player.getX() - view.centerX), Math.abs(player.getY() - view.centerY));
+		String text = tiles + " tiles";
+		g.setFont(FontManager.getRunescapeSmallFont());
+		FontMetrics metrics = g.getFontMetrics();
+		// the distance on the arrow's inner side, toward the middle of the view
+		int tx = (int) Math.round(tipX - Math.cos(angle) * (ARROW_SIZE + 12) - metrics.stringWidth(text) / 2.0);
+		int ty = (int) Math.round(tipY - Math.sin(angle) * (ARROW_SIZE + 10) + metrics.getAscent() / 2.0);
+		drawShadowed(g, text, tx, ty, TEXT);
+	}
+
 	private static void drawPlayer(Graphics2D g, MapViewport.View view, MapArea area, WorldPoint point)
 	{
 		if (point == null || MapArea.of(point.getY()) != area)
@@ -1436,7 +1531,7 @@ final class MapPainter
 	}
 
 	private static void drawButtons(Graphics2D g, MapViewport.View view, MapArea area, int plane, boolean window,
-		MapSettings settings, boolean located, boolean filtersOpen, BufferedImage slayerIcon)
+		MapSettings settings, boolean located, boolean following, boolean filtersOpen, BufferedImage slayerIcon)
 	{
 		for (Map.Entry<Button, Rectangle> entry : buttons(view.width, view.height, window).entrySet())
 		{
@@ -1444,7 +1539,7 @@ final class MapPainter
 			g.setColor(BAR);
 			if (entry.getKey() == Button.LOCATE)
 			{
-				drawLocate(g, button, located);
+				drawLocate(g, button, located, following);
 				continue;
 			}
 			if (entry.getKey() == Button.SLAYER)
@@ -1615,14 +1710,15 @@ final class MapPainter
 	}
 
 	/** The find-me button: a round button with a location mark, dimmed while there is no player to find. */
-	private static void drawLocate(Graphics2D g, Rectangle button, boolean located)
+	/** The button that finds the player: lit (a blue disc, a white crosshair) while the map follows them. */
+	private static void drawLocate(Graphics2D g, Rectangle button, boolean located, boolean following)
 	{
 		Object antialiasing = g.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		g.setColor(BAR);
+		g.setColor(following && located ? LOCATED : BAR);
 		g.fillOval(button.x, button.y, button.width, button.height);
-		drawCrosshair(g, button.getCenterX(), button.getCenterY(), 1, located ? LOCATED : new Color(0x707070),
-			2);
+		drawCrosshair(g, button.getCenterX(), button.getCenterY(), 1, following && located ? PLAYER
+			: located ? LOCATED : new Color(0x707070), 2);
 		if (antialiasing != null)
 		{
 			g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, antialiasing);

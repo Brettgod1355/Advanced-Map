@@ -250,6 +250,12 @@ final class MapWindow extends JFrame
 					mouse = point(e);
 					if (dragFrom != null)
 					{
+						if (pressedAt != null && (Math.abs(x(e) - pressedAt.x) > AdvancedMapPlugin.CLICK_SLOP
+							|| Math.abs(y(e) - pressedAt.y) > AdvancedMapPlugin.CLICK_SLOP))
+						{
+							// moved by hand: the map stops following the player
+							plugin.setFollowing(false);
+						}
 						plugin.viewport().drag(x(e) - dragFrom.x, y(e) - dragFrom.y);
 						dragFrom = point(e);
 					}

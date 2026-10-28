@@ -93,6 +93,12 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 		}
 		if (dragging)
 		{
+			if (Math.abs(e.getX() - pressX) > AdvancedMapPlugin.CLICK_SLOP
+				|| Math.abs(e.getY() - pressY) > AdvancedMapPlugin.CLICK_SLOP)
+			{
+				// moved by hand: the map stops following the player (a click that wobbles does not count)
+				plugin.setFollowing(false);
+			}
 			plugin.viewport().drag(e.getX() - lastX, e.getY() - lastY);
 			lastX = e.getX();
 			lastY = e.getY();

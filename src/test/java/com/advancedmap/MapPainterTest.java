@@ -259,6 +259,25 @@ public class MapPainterTest
 			new Rectangle(0, 50, 500, 250)));
 	}
 
+	@Test
+	public void theArrowToThePlayerSitsAtTheEdgeTowardThemOnlyWhenTheyAreOutOfView()
+	{
+		MapViewport.View view = new MapViewport.View(3222, 3218, 4, 800, 600);
+		// in view: no arrow
+		assertNull(MapPainter.playerArrow(view, MapArea.SURFACE, new WorldPoint(3230, 3220, 0), true));
+		// far east: on the right edge, about level with the middle
+		Rectangle east = MapPainter.playerArrow(view, MapArea.SURFACE, new WorldPoint(3500, 3218, 0), true);
+		assertTrue(east.getCenterX() > 750 && east.getCenterX() < 800);
+		assertTrue(Math.abs(east.getCenterY() - 300) < 30);
+		// far north-west: the top-left corner, below the buttons along the top
+		Rectangle northWest = MapPainter.playerArrow(view, MapArea.SURFACE, new WorldPoint(2900, 3600, 0), true);
+		assertTrue(northWest.getCenterX() < 400 && northWest.getCenterY() >= MapPainter.BUTTON_HEIGHT + 8);
+		// off, on the other map, or not logged in: none
+		assertNull(MapPainter.playerArrow(view, MapArea.SURFACE, new WorldPoint(3500, 3218, 0), false));
+		assertNull(MapPainter.playerArrow(view, MapArea.SURFACE, new WorldPoint(3500, 9800, 0), true));
+		assertNull(MapPainter.playerArrow(view, MapArea.SURFACE, null, true));
+	}
+
 	private static MapSettings settings(RoutingPlugin routing)
 	{
 		return new MapSettings(EnumSet.allOf(IconGroup.class), Collections.emptySet(), Collections.emptySet(), false,

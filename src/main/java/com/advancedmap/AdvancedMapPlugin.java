@@ -7,6 +7,7 @@ package com.advancedmap;
 
 import com.advancedmap.cache.MapLinks;
 import com.google.inject.Provides;
+import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.util.Arrays;
@@ -174,6 +175,8 @@ public class AdvancedMapPlugin extends Plugin
 	private volatile MapSettings settings;
 	private volatile Progress progress = Progress.NONE;
 	private volatile MapPainter.Selection selection;
+	/** The map keeps itself on the player as they move: the locate button's doing, until the map is moved. */
+	private volatile boolean following;
 	/** The floor shown: 0 for the ground, up to 3. */
 	private volatile int plane;
 	private int ticks;
@@ -243,6 +246,7 @@ public class AdvancedMapPlugin extends Plugin
 		painter.setMultiCombat(config.multiCombat());
 		painter.setInfoOnHover(config.infoOnHover());
 		painter.setHighestFirst(config.monsterOrder() == MonsterOrder.HIGHEST_FIRST);
+		painter.setPlayerArrow(config.playerArrow());
 		painter.setLinks(this::leadsTo);
 		overlay = new MapOverlay(client, this, painter);
 		input = new MapInput(this, client::getCanvasWidth, client::getCanvasHeight);
@@ -361,6 +365,7 @@ public class AdvancedMapPlugin extends Plugin
 		if (mapOpen || windowOpen)
 		{
 			player = Prifddinas.toSurface(currentPlayerLocation());
+			follow();
 		}
 		if (windowOpen)
 		{
@@ -656,6 +661,7 @@ public class AdvancedMapPlugin extends Plugin
 			drawing.setMultiCombat(config.multiCombat());
 			drawing.setInfoOnHover(config.infoOnHover());
 			drawing.setHighestFirst(config.monsterOrder() == MonsterOrder.HIGHEST_FIRST);
+			drawing.setPlayerArrow(config.playerArrow());
 			farmingRead = 0;
 			slayerShown = slayerShown == null ? null : "";
 		}
@@ -912,6 +918,12 @@ public class AdvancedMapPlugin extends Plugin
 	/** Does what a map button does. {@code window} when pressed in the pop-out window. */
 	void pressButton(MapPainter.Button button, boolean window)
 	{
+		if (button == MapPainter.Button.AREA || button == MapPainter.Button.FLOOR_UP
+			|| button == MapPainter.Button.FLOOR_DOWN)
+		{
+			// the player looks somewhere else: the map stops following them
+			setFollowing(false);
+		}
 		switch (button)
 		{
 			case CLOSE:
@@ -1067,6 +1079,14 @@ public class AdvancedMapPlugin extends Plugin
 	/** A left click (pressed and released in place): opens the info box of the icon under it, or closes it. */
 	void leftClick(int x, int y, int width, int height)
 	{
+		MapPainter drawing = painter;
+		Rectangle arrow = MapPainter.playerArrow(viewport().view(width, height), area, player, drawing != null
+			&& drawing.isPlayerArrow());
+		if (arrow != null && arrow.contains(x, y))
+		{
+			locate();
+			return;
+		}
 		MapPins.Pin pin = pinAt(x, y, width, height);
 		pins.select(pin);
 		if (pin != null)
@@ -1237,6 +1257,7 @@ public class AdvancedMapPlugin extends Plugin
 	/** Moves the map to a tile: onto its map and floor, centered there. */
 	private void goTo(WorldPoint to)
 	{
+		setFollowing(false);
 		area = MapArea.of(to.getY());
 		plane = to.getPlane();
 		viewports.get(area).centerOn(to.getX(), to.getY());
@@ -1924,17 +1945,42 @@ public class AdvancedMapPlugin extends Plugin
 		return MapIcons.at(shown, x, y);
 	}
 
-	/** Moves the map back to the player, on whichever map they are. */
+	/**
+	 * Moves the map back to the player, on whichever map they are, and keeps it on them as they move ({@link #follow})
+	 * until the map is dragged or sent somewhere else.
+	 */
 	void locate()
 	{
+		if (player == null)
+		{
+			return;
+		}
+		setFollowing(true);
+		follow();
+	}
+
+	/** While following: the map on the player, on their map and floor. Each frame; also on the locate button. */
+	private void follow()
+	{
 		WorldPoint at = player;
-		if (at == null)
+		if (!following || at == null)
 		{
 			return;
 		}
 		area = MapArea.of(at.getY());
 		plane = at.getPlane();
 		viewports.get(area).centerOn(at.getX(), at.getY());
+	}
+
+	/** Starts or stops the map following the player; dragging the map or going somewhere stops it. */
+	void setFollowing(boolean on)
+	{
+		following = on;
+		MapPainter drawing = painter;
+		if (drawing != null)
+		{
+			drawing.setFollowing(on);
+		}
 	}
 
 	private void setHidden(MapSpot spot, boolean hide)

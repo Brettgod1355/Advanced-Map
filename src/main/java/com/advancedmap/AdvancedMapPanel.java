@@ -131,7 +131,8 @@ class AdvancedMapPanel extends PluginPanel
 	{
 		return section("Moving around", "Drag to move, scroll to zoom around the pointer. The map opens on you, on"
 			+ " the surface or the underground map, whichever you are on. The round button at the bottom right brings"
-			+ " you back into view.")
+			+ " you back into view and keeps you there as you move (lit blue) until you drag the map. When you are"
+			+ " out of view, an arrow at the edge points to you; click it to go back.")
 			+ section("Search", "Click the box at the top and type: a place, a dungeon, anything a shop sells or a"
 			+ " monster. Places come first, the bigger first (\"var\": Varlamore, Varrock); nicknames work (\"ardy\","
 			+ " \"fally\"); loose spelling too (\"d scim\", \"kbd\"). Up, Down and Enter pick a result, or click"
