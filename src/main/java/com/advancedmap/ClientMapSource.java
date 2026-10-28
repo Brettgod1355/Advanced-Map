@@ -662,6 +662,11 @@ class ClientMapSource implements MapSource
 			{
 				for (int file : files)
 				{
+					// Last Man Standing's copies of the world name their own places ("Wild Varrock"): not the world's
+					if (isLastManStanding(index.loadData(MAP_DETAILS, file)))
+					{
+						continue;
+					}
 					byte[] data = index.loadData(COMPOSITE_MAPS, file);
 					if (data != null)
 					{
@@ -776,6 +781,25 @@ class ClientMapSource implements MapSource
 			}
 		}
 		return out;
+	}
+
+	/** True for the details of one of the game's Last Man Standing maps ("LMS Wild Varrock", "LMS Desert Island"). */
+	static boolean isLastManStanding(byte[] details)
+	{
+		if (details == null)
+		{
+			return false;
+		}
+		try
+		{
+			InputStream in = new InputStream(details);
+			in.readString();
+			return in.readString().startsWith("LMS ");
+		}
+		catch (RuntimeException e)
+		{
+			return false;
+		}
 	}
 
 	private byte[] config(int group, int id)
