@@ -27,7 +27,7 @@ class CacheReader
 		T read(Client client);
 	}
 
-	private static final class Pending<T>
+	static final class Pending<T>
 	{
 		final Read<T> work;
 		final CompletableFuture<T> result = new CompletableFuture<>();
@@ -37,15 +37,23 @@ class CacheReader
 			this.work = work;
 		}
 
+		/**
+		 * Runs the read for the thread waiting on it. Whatever it throws, the waiter is told, so it never waits for
+		 * good; only an error of the virtual machine itself (out of memory) goes on to the client's frame.
+		 */
 		void run(Client client)
 		{
 			try
 			{
 				result.complete(work.read(client));
 			}
-			catch (RuntimeException e)
+			catch (Throwable t)
 			{
-				result.completeExceptionally(e);
+				result.completeExceptionally(t);
+				if (t instanceof VirtualMachineError)
+				{
+					throw (VirtualMachineError) t;
+				}
 			}
 		}
 	}
