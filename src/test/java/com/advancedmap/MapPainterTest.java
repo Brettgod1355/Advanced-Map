@@ -148,13 +148,62 @@ public class MapPainterTest
 		g.dispose();
 	}
 
+	/** Game data with nothing in it. */
+	static final class NoSource implements com.advancedmap.cache.MapSource
+	{
+		@Override
+		public com.advancedmap.cache.Region region(int regionX, int regionY)
+		{
+			return null;
+		}
+
+		@Override
+		public long regionHash(int regionX, int regionY)
+		{
+			return 0;
+		}
+
+		@Override
+		public com.advancedmap.cache.UnderlayDefinition underlay(int id)
+		{
+			return null;
+		}
+
+		@Override
+		public com.advancedmap.cache.OverlayDefinition overlay(int id)
+		{
+			return null;
+		}
+
+		@Override
+		public com.advancedmap.cache.ObjectDefinition object(int id)
+		{
+			return null;
+		}
+
+		@Override
+		public int textureColor(int textureId)
+		{
+			return 0;
+		}
+
+		@Override
+		public com.advancedmap.cache.MapSprite mapScene(int index)
+		{
+			return null;
+		}
+
+		@Override
+		public com.advancedmap.cache.MapSprite areaIcon(int areaId)
+		{
+			return null;
+		}
+	}
+
 	/** A painter over a world with no regions drawn, its pictures made on the calling thread. */
 	private static MapPainter blankPainter(MapIcons icons)
 	{
-		com.advancedmap.cache.MapSource none = (com.advancedmap.cache.MapSource) java.lang.reflect.Proxy.newProxyInstance(
-			MapPainterTest.class.getClassLoader(), new Class<?>[]{com.advancedmap.cache.MapSource.class},
-			(proxy, method, args) -> method.getReturnType() == int.class ? (Object) 0
-				: method.getReturnType() == long.class ? (Object) 0L : null);
+		com.advancedmap.cache.MapSource none = new NoSource();
 		java.util.concurrent.ExecutorService direct = new java.util.concurrent.AbstractExecutorService()
 		{
 			@Override
