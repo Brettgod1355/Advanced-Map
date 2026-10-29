@@ -149,4 +149,20 @@ public class MapStoreTest
 		assertNotNull(again.load(key, kept, MapStore.Kind.FULL));
 		assertNotNull(again.load(key, kept, MapStore.Kind.SMALL));
 	}
+
+	@Test
+	public void aFloorAnotherClientSavedMeanwhileIsFoundOnDisk() throws Exception
+	{
+		int key = RegionImages.key(0, 12850);
+		MapStore other = MapStore.open(root());
+		MapStore mine = MapStore.open(root());
+		// the other client (another account, open at the same time) saves the floor after my store read the folder
+		other.save(key, 0x1111L, picture(0xFF336699, 256), picture(0x80336699, 64));
+		assertNotNull("read from disk, not drawn and saved again", mine.load(key, 0x1111L, MapStore.Kind.FULL));
+		assertTrue(mine.has(key));
+		assertNull("other game data: drawn afresh", mine.load(key, 0x2222L, MapStore.Kind.FULL));
+		int emptyKey = RegionImages.key(2, 12850);
+		other.saveEmpty(emptyKey, 0x1111L);
+		assertTrue(mine.isEmpty(emptyKey, 0x1111L));
+	}
 }

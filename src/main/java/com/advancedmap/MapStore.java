@@ -141,6 +141,10 @@ final class MapStore
 	boolean isEmpty(int key, long hash)
 	{
 		Long known = saved.get(key);
+		if (known == null && lookFor(key, hash, Kind.EMPTY))
+		{
+			return true;
+		}
 		return known != null && known == hash && empty.containsKey(key);
 	}
 
@@ -150,10 +154,34 @@ final class MapStore
 		return saved.size();
 	}
 
+	/**
+	 * A floor the index has nothing for may have been saved by another client running alongside this one (two
+	 * accounts open, both preparing the map) since the folder was read: a file of that kind for this game data is
+	 * looked for and, when it is there, remembered. Render threads.
+	 */
+	private boolean lookFor(int key, long hash, Kind kind)
+	{
+		Filepath file = folder.joinSegment(name(RegionImages.plane(key), RegionImages.region(key), hash, kind));
+		if (!file.exists())
+		{
+			return false;
+		}
+		saved.put(key, hash);
+		if (kind == Kind.EMPTY)
+		{
+			empty.put(key, true);
+		}
+		return true;
+	}
+
 	/** A saved picture drawn from this game data, or null. */
 	BufferedImage load(int key, long hash, Kind kind)
 	{
 		Long known = saved.get(key);
+		if (known == null && lookFor(key, hash, kind))
+		{
+			known = hash;
+		}
 		if (known == null || known != hash || empty.containsKey(key))
 		{
 			return null;
