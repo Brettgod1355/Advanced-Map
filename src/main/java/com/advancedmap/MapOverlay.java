@@ -47,6 +47,25 @@ class MapOverlay extends Overlay
 		setResizable(false);
 	}
 
+	/** The picture is kept in steps of this many pixels, so sizing the box does not make a new one every frame. */
+	static final int FRAME_STEP = 256;
+
+	/**
+	 * The size to make the picture for a map of {@code width} x {@code height}, or null when the one there fits: the
+	 * picture only grows, in steps, since the box is sized by dragging and a new picture every frame of that cost a
+	 * few megabytes each.
+	 */
+	static Dimension frameSize(BufferedImage frame, int width, int height)
+	{
+		if (frame != null && frame.getWidth() >= width && frame.getHeight() >= height)
+		{
+			return null;
+		}
+		int w = Math.max(frame == null ? 0 : frame.getWidth(), (width + FRAME_STEP - 1) / FRAME_STEP * FRAME_STEP);
+		int h = Math.max(frame == null ? 0 : frame.getHeight(), (height + FRAME_STEP - 1) / FRAME_STEP * FRAME_STEP);
+		return new Dimension(w, h);
+	}
+
 	@Override
 	public Dimension render(Graphics2D g)
 	{
@@ -71,15 +90,15 @@ class MapOverlay extends Overlay
 			: new java.awt.Point(canvasMouse.x - map.x, canvasMouse.y - map.y);
 		long now = System.nanoTime();
 		int touches = plugin.touches();
-		boolean resized = frame == null || frame.getWidth() != map.width || frame.getHeight() != map.height;
+		Dimension bigger = frameSize(frame, map.width, map.height);
 		// drawn again at once after a press, a drag, the wheel or a key on the map; a moved pointer waits for the next
 		// redraw (hover boxes and tips take longer than that to appear), so a moving mouse does not cost the game a
 		// whole map paint every frame
-		if (resized || touches != drawnTouches || now - drawnAt >= REDRAW_NANOS)
+		if (bigger != null || touches != drawnTouches || now - drawnAt >= REDRAW_NANOS)
 		{
-			if (resized)
+			if (bigger != null)
 			{
-				frame = new BufferedImage(map.width, map.height, BufferedImage.TYPE_INT_RGB);
+				frame = new BufferedImage(bigger.width, bigger.height, BufferedImage.TYPE_INT_RGB);
 			}
 			Graphics2D into = frame.createGraphics();
 			try
@@ -87,6 +106,8 @@ class MapOverlay extends Overlay
 				// the same font and smoothing RuneLite gives its overlays
 				into.setRenderingHints(g.getRenderingHints());
 				into.setFont(g.getFont());
+				// the map takes the picture's top left corner; the rest is never shown
+				into.clipRect(0, 0, map.width, map.height);
 				painter.paint(into, plugin.viewport().view(map.width, map.height), plugin.area(), plugin.plane(),
 					plugin.playerLocation(), mouse, false, plugin.settings(), plugin.progress(), plugin.selection());
 			}
@@ -97,7 +118,7 @@ class MapOverlay extends Overlay
 			drawnAt = now;
 			drawnTouches = touches;
 		}
-		g.drawImage(frame, map.x, map.y, null);
+		g.drawImage(frame, map.x, map.y, map.x + map.width, map.y + map.height, 0, 0, map.width, map.height, null);
 		box.draw(g, width, height);
 		// no size claimed: RuneLite would make the whole view this overlay's, and Shift+right-click on the game beside
 		// the box would offer to move it
