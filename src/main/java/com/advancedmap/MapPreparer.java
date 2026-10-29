@@ -41,8 +41,8 @@ final class MapPreparer
 	/** Floors of regions still to prepare, in order; ticker thread, and {@link #restart} and {@link #remaining}. */
 	private final List<Integer> todo = new ArrayList<>();
 	/** Regions whose icons are still to be found, nearest the player first; null until listed. */
-	private List<Integer> iconTodo;
-	private boolean listed;
+	private volatile List<Integer> iconTodo;
+	private volatile boolean listed;
 	/** The region the list was last sorted around. */
 	private int sortedFor = -1;
 
@@ -137,21 +137,26 @@ final class MapPreparer
 		}
 	}
 
-	/** The next floor of a region to prepare, listing them first and sorting again when the player has moved. */
-	private synchronized Integer nextIconRegion()
+	/** The next region whose icons to find, listing the regions first. */
+	private Integer nextIconRegion()
 	{
-		if (iconTodo == null)
+		// the listing waits for the client thread: outside the monitor, which the sidebar's refresh takes each second
+		List<Integer> regions = iconTodo == null ? source.regionIds() : null;
+		synchronized (this)
 		{
-			List<Integer> regions = source.regionIds();
-			if (regions.isEmpty())
+			if (iconTodo == null)
 			{
-				return null;
+				if (regions == null || regions.isEmpty())
+				{
+					return null;
+				}
+				WorldPoint around = focus.get();
+				List<Integer> sorted = new ArrayList<>(regions);
+				sorted.sort(Comparator.comparingLong(region -> order(RegionImages.key(0, region), around)));
+				iconTodo = sorted;
 			}
-			WorldPoint around = focus.get();
-			iconTodo = new ArrayList<>(regions);
-			iconTodo.sort(Comparator.comparingLong(region -> order(RegionImages.key(0, region), around)));
+			return iconTodo.isEmpty() ? null : iconTodo.remove(0);
 		}
-		return iconTodo.isEmpty() ? null : iconTodo.remove(0);
 	}
 
 	private synchronized void requeueIcons(int region)
@@ -162,12 +167,22 @@ final class MapPreparer
 		}
 	}
 
-	private synchronized Integer next(MapStore store)
+	/** The next floor of a region to prepare, listing them first and sorting again when the player has moved. */
+	private Integer next(MapStore store)
+	{
+		// the listing waits for the client thread: outside the monitor, which the sidebar's refresh takes each second
+		List<Integer> regions = listed ? null : source.regionIds();
+		synchronized (this)
+		{
+			return next(store, regions);
+		}
+	}
+
+	private Integer next(MapStore store, List<Integer> regions)
 	{
 		if (!listed)
 		{
-			List<Integer> regions = source.regionIds();
-			if (regions.isEmpty())
+			if (regions == null || regions.isEmpty())
 			{
 				// the client has not loaded its map index yet: listed on a later step
 				return null;
