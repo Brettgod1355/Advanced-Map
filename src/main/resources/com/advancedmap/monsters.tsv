@@ -35,7 +35,7 @@ Animated spade	40	6	Stab				Earth spells 25%	Spade
 Anja	7	1	Crush					Bones	
 Ankou	60-100	8-10	Crush	Aggressive		Vannaka, Konar, Nieve, Duradel, Krystilia	Air spells 40%	Bones; Reward casket (elite)	Mushroom spore 1/3,613.8
 Aquanite	180	18	Magic		78	Nieve, Duradel, Mortimer		Big bones	Curved bone 1/5,012.5; Aquanite tendon 1/3,500; Long bone 1/400
-Araxxor	1020	38 (melee)  21 (magic)  34 (ranged)	Crush, '"`UNIQ--ref-00000005-QINU`"' Magic, Ranged, All	Aggressive Venomous	92	Turael, Spria, Konar, Nieve, Duradel, Mortimer	Fire spells 50%	Coagulated venom	Nid 1/3,000; Jar of Venom 1/1,500; Araxyte fang 1/600
+Araxxor	1020	38 (melee)  21 (magic)  34 (ranged)	Crush, Magic, Ranged, All	Aggressive Venomous	92	Turael, Spria, Konar, Nieve, Duradel, Mortimer	Fire spells 50%	Coagulated venom	Nid 1/3,000; Jar of Venom 1/1,500; Araxyte fang 1/600
 Araxyte	60-100	13-17	Crush	Aggressive Venomous	92	Turael, Spria, Nieve, Duradel, Mortimer	Fire spells 50%	Araxyte venom sac	Aranea boots 1/4,000; Araxyte head 1/2,000; Mushroom spore 1/459
 Archer (Ardougne)	50	6	Ranged					Bones	
 Archer (Burthorpe)	50	6	Ranged					Bones	
@@ -756,7 +756,7 @@ Vampyre Juvenile	60	4	Crush			Mazchna, Vannaka, Chaeldar, Konar, Nieve, Duradel	
 Vampyre Juvinate	50-150	5-9	Slash, Crush	Aggressive		Mazchna, Vannaka, Chaeldar, Konar, Nieve, Duradel		Vampyre dust	
 Vampyre Snail	500	87+ (standard), 30 (slam)	Ranged, Melee	Aggressive			Earth spells 5%	Vampyre snelm	
 Vampyre kraken	311	22	Magic	Aggressive			Earth spells 50%		Inky paint 1/1,500; Bottled storm 1/350; Dragon keel parts 1/320
-Vardorvis	500-1400	32-43 (Melee)'"`UNIQ--ref-00000068-QINU`"', 35 (axes)	Slash			Konar, Nieve, Duradel	Fire spells 35%	Temple key (Desert Treasure II); Ancient blood ornament kit	Virtus mask 1/3,264; Virtus robe bottom 1/3,264; Virtus robe top 1/3,264
+Vardorvis	500-1400	32-43 (Melee), 35 (axes)	Slash			Konar, Nieve, Duradel	Fire spells 35%	Temple key (Desert Treasure II); Ancient blood ornament kit	Virtus mask 1/3,264; Virtus robe bottom 1/3,264; Virtus robe top 1/3,264
 Veiled kraken	225	19	Crush	Aggressive					Inky paint 1/1,900; Dragon cannon barrel 1/500; Dragon keel parts 1/360
 Venator	345	21	Stab, Ranged		74	Mazchna, Vannaka, Chaeldar, Konar, Nieve, Duradel, Mortimer		Bones; Venator heart	Blood shard 1/860
 Venenatis	850	21 (Melee), 35 (Ranged), 30 (Magic)	Stab, Magic, Ranged	Aggressive		Turael, Spria, Konar, Nieve, Duradel, Krystilia	Fire spells 40%	Big bones; Bones	Curved bone 1/5,012.5; Venenatis spiderling 1/1,500; Treasonous ring 1/512

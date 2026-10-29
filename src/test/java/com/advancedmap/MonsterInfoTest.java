@@ -16,6 +16,7 @@ import net.runelite.client.ui.FontManager;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -112,5 +113,22 @@ public class MonsterInfoTest
 			}
 		}
 		assertEquals("85", all.get("Abyssal demon").getSlayerLevel());
+	}
+
+	@Test
+	public void noRowCarriesTheWikiParsersStripMarkers() throws Exception
+	{
+		// a <ref> inside a wiki field comes out of the Bucket API as a marker like '"`UNIQ--ref-00000005-QINU`"'
+		try (java.io.InputStream in = MonsterInfo.class.getResourceAsStream("monsters.tsv"))
+		{
+			for (MonsterInfo.Monster monster : MonsterInfo.parse(in).values())
+			{
+				for (String field : new String[]{monster.getMaxHit(), monster.getStyles(), monster.getTraits(),
+					monster.getWeakTo(), String.join(";", monster.getAlways()), String.join(";", monster.getRare())})
+				{
+					assertFalse(monster.getName() + ": " + field, field.contains("UNIQ"));
+				}
+			}
+		}
 	}
 }
