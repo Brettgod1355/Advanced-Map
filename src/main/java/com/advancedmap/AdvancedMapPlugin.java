@@ -130,7 +130,7 @@ public class AdvancedMapPlugin extends Plugin
 	private ClientMapSource source;
 	private MapIcons icons;
 	private MapLabels labels;
-	private MapFilters filters;
+	private final MapFilters filters = new MapFilters();
 	private final SideList sideList = new SideList();
 	private final MapSearch search = new MapSearch();
 	private final MapPins pins = new MapPins();
@@ -223,7 +223,6 @@ public class AdvancedMapPlugin extends Plugin
 		source = new ClientMapSource(reader);
 		icons = new MapIcons();
 		labels = new MapLabels();
-		filters = new MapFilters();
 		labelsLoading = false;
 		moveHiddenIcons();
 		settings = readSettings();
@@ -354,7 +353,6 @@ public class AdvancedMapPlugin extends Plugin
 		source = null;
 		icons = null;
 		labels = null;
-		filters = null;
 		images = null;
 		preparer = null;
 		panel = null;
@@ -744,11 +742,35 @@ public class AdvancedMapPlugin extends Plugin
 	/** A press in the game outside the map's box: the search bar and the Filters list stop taking the keys. */
 	void clickedOutside()
 	{
+		giveKeysBack();
+	}
+
+	/**
+	 * The keys go back to the game: the search bar, the Filters list and the marker box are closed or let go of, and
+	 * an info box or menu closes. Called for a click in the game beside the map and whenever the map closes, so a list
+	 * left open never takes the keys from the first frame of the next open.
+	 */
+	void giveKeysBack()
+	{
 		search.setFocused(false);
 		filters.setOpen(false);
-		// back to the game: the marker box would otherwise keep taking every key
 		editor.close();
 		selection = null;
+	}
+
+	MapSearch search()
+	{
+		return search;
+	}
+
+	MarkerEditor editor()
+	{
+		return editor;
+	}
+
+	MapFilters filters()
+	{
+		return filters;
 	}
 
 	/** A mouse button is held on the map (dragging it), or let go: no info box shows on hover meanwhile. */
@@ -2298,10 +2320,7 @@ public class AdvancedMapPlugin extends Plugin
 
 	private void closed()
 	{
-		selection = null;
-		// keys go back to the game: an open search box or marker box would otherwise take them when the map opens again
-		search.setFocused(false);
-		editor.close();
+		giveKeysBack();
 		// a window closed with the button down never sees the release: hover boxes and tips would stay off
 		setDragging(false);
 		RegionImages current = images;
