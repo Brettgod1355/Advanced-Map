@@ -951,13 +951,15 @@ public class AdvancedMapPlugin extends Plugin
 	{
 		RegionImages current = images;
 		MapPreparer currentPreparer = preparer;
-		if (current == null || current.store() == null)
+		MapStore store = current == null ? null : current.store();
+		if (store == null)
 		{
 			return;
 		}
+		// the store seen here, not the one there when the task runs: "Save the map" may be turned off meanwhile
 		executor.execute(() ->
 		{
-			current.store().clear();
+			store.clear();
 			currentPreparer.restart();
 		});
 	}
