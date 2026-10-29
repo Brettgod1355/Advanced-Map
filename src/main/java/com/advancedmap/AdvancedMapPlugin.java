@@ -203,6 +203,8 @@ public class AdvancedMapPlugin extends Plugin
 		viewports.get(MapArea.SURFACE).centerOn(LUMBRIDGE.getX(), LUMBRIDGE.getY());
 		viewports.get(MapArea.UNDERGROUND).centerOn(EDGEVILLE_DUNGEON.getX(), EDGEVILLE_DUNGEON.getY());
 		area = MapArea.SURFACE;
+		mapOpen = false;
+		windowOpen = false;
 		// what was read and drawn before the plugin was last stopped is gone with it: read and drawn again
 		slayerShown = null;
 		extrasRead = 0;
@@ -291,9 +293,12 @@ public class AdvancedMapPlugin extends Plugin
 	@Override
 	protected void shutDown()
 	{
+		boolean wasOpen = mapOpen || windowOpen;
 		mapOpen = false;
 		windowOpen = false;
-		SwingUtilities.invokeLater(() ->
+		// RuneLite stops a plugin on the Swing thread: the window goes at once, so no click on it can reach the plugin
+		// after what follows is gone (a later start would otherwise find the map open from such a click)
+		Runnable closeWindow = () ->
 		{
 			MapWindow open = window;
 			window = null;
@@ -301,7 +306,21 @@ public class AdvancedMapPlugin extends Plugin
 			{
 				open.dispose();
 			}
-		});
+		};
+		if (SwingUtilities.isEventDispatchThread())
+		{
+			closeWindow.run();
+		}
+		else
+		{
+			SwingUtilities.invokeLater(closeWindow);
+		}
+		giveKeysBack();
+		if (wasOpen)
+		{
+			// other plugins following the map's state learn it closed
+			clientThread.invokeLater(() -> postState(false));
+		}
 		// startUp may have stopped part way (it threw): undo only what it got to
 		if (button != null)
 		{
