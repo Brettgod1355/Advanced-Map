@@ -97,9 +97,10 @@ file carries the license above under "Copyright (c) 2019, Kyle Sergio <https://g
 <http://github.com/kyle1elyk>".
 
 The other copied files carry the same license under their own holders, named in each file's header: Adam
-<Adam@sigterm.info> (2016-2017 and 2017), Kyle Friz (2015), Abex (2020 and 2026), Christopher Brown
-<christoabrown@gmail.com> (2024, `WorldMapElements.java`) and Morgan Lewis <https://github.com/MESLewis> (2018,
-`Teleport.java`).
+<Adam@sigterm.info> (2016-2017 and 2017), Abex (2020 and 2026), Christopher Brown <christoabrown@gmail.com> (2024,
+`WorldMapElements.java`) and Morgan Lewis <https://github.com/MESLewis> (2018, `Teleport.java`); `HeightCalc.java`
+(Kyle Friz, 2015) is under the MIT license instead, and its header, which carries that license whole, is kept as it
+is.
 
 The test-only `logback-test.xml` comes from the example plugin (same license, Adam's notice kept in the file).
 
