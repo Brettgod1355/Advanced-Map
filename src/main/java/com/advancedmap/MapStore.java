@@ -210,7 +210,19 @@ final class MapStore
 		Filepath file = folder.joinSegment(name(RegionImages.plane(key), RegionImages.region(key), hash, kind));
 		try (java.io.InputStream in = file.openInputStream())
 		{
-			return ImageIO.read(in);
+			BufferedImage read = ImageIO.read(in);
+			if (read == null || read.getType() == BufferedImage.TYPE_INT_ARGB)
+			{
+				return read;
+			}
+			// the PNG reader gives bytes per channel, which Java2D scales slowly; the renderer's own pictures are
+			// packed ints, so the saved ones are made the same (a quarter off every paint of them)
+			BufferedImage packed = new BufferedImage(read.getWidth(), read.getHeight(), BufferedImage.TYPE_INT_ARGB);
+			java.awt.Graphics2D g = packed.createGraphics();
+			g.setComposite(java.awt.AlphaComposite.Src);
+			g.drawImage(read, 0, 0, null);
+			g.dispose();
+			return packed;
 		}
 		catch (IOException e)
 		{

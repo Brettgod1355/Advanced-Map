@@ -179,4 +179,26 @@ public class MapStoreTest
 		assertTrue(unrelated.exists());
 		assertTrue(root().joinSegment("map-v" + MapStore.VERSION).exists());
 	}
+
+	@Test
+	public void aSavedPictureComesBackPackedLikeADrawnOne() throws Exception
+	{
+		int key = RegionImages.key(0, 12850);
+		MapStore store = MapStore.open(root());
+		BufferedImage full = picture(0x80336699, 256);
+		full.setRGB(1, 2, 0x00000000);
+		full.setRGB(3, 4, 0xFFFFFFFF);
+		store.save(key, 0x1L, full, picture(0x80336699, 64));
+		BufferedImage back = store.load(key, 0x1L, MapStore.Kind.FULL);
+		assertEquals("the renderer's kind of picture, not the PNG reader's", BufferedImage.TYPE_INT_ARGB, back.getType());
+		for (int y = 0; y < 256; y += 5)
+		{
+			for (int x = 0; x < 256; x += 7)
+			{
+				assertEquals(full.getRGB(x, y), back.getRGB(x, y));
+			}
+		}
+		assertEquals(0x00000000, back.getRGB(1, 2));
+		assertEquals(0xFFFFFFFF, back.getRGB(3, 4));
+	}
 }
