@@ -129,6 +129,16 @@ public class TransportsTest
 	}
 
 	@Test
+	public void theKeldagrimFerryCrossesTheRiverKelda()
+	{
+		// its south dock has no icon on the game's map; Advanced Map gives it one, and a click shows both crossings
+		org.junit.Assert.assertTrue(Transports.boardingSpots().contains(new WorldPoint(2839, 10128, 0)));
+		List<Transports.Destination> to = Transports.from(2839, 10128, 0);
+		org.junit.Assert.assertTrue(to.stream().anyMatch(d -> d.getPoint().equals(new WorldPoint(2892, 10225, 0))));
+		org.junit.Assert.assertTrue(to.stream().anyMatch(d -> d.getPoint().equals(new WorldPoint(2837, 10143, 0))));
+	}
+
+	@Test
 	public void theEdgevilleCanoeShowsOnlyCanoeTrips()
 	{
 		List<Transports.Destination> to = Transports.from(3131, 3509, 0);

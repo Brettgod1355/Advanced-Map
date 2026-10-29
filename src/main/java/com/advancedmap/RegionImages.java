@@ -24,6 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.RejectedExecutionException;
 import lombok.extern.slf4j.Slf4j;
+import net.runelite.api.coords.WorldPoint;
 
 /**
  * The drawn pictures of map regions, one per floor, made on background threads as the map needs them and kept at
@@ -72,6 +73,11 @@ class RegionImages
 	private final Set<Integer> iconsFound = ConcurrentHashMap.newKeySet();
 	/** How far a link spot may be from an icon of the game's that stands for it. */
 	static final int LINK_REACH = 2;
+	/**
+	 * How near a transport icon of the game's (or a Sailing dock's, which sits on the jetty rather than the boarding tile)
+	 * must be to a place to board for that place to need none of its own.
+	 */
+	static final int TRANSPORT_REACH = 24;
 	/** Floors whose saved picture has been checked against the game's data this session. */
 	private final Set<Integer> checked = ConcurrentHashMap.newKeySet();
 	/** Floors waiting to be checked. */
@@ -597,6 +603,7 @@ class RegionImages
 			icons.addSprite(all.get(i).getAreaId(), source.areaIcon(all.get(i).getAreaId()));
 		}
 		addLinkIcons(region, all);
+		addTransportIcons(region, all);
 		icons.addRegion(region.getRegionID(), all);
 	}
 
@@ -632,6 +639,72 @@ class RegionImages
 				all.add(MapSpot.icon(x, y, MapLinks.plane(from), linkArea, IconGroup.MAP_LINK));
 			}
 		}
+	}
+
+	/**
+	 * A Transportation icon on each place to board a transport that the game's map shows none near (the Keldagrim
+	 * ferry's jetties on the River Kelda): a click on it draws where it goes, as on any transport icon.
+	 */
+	private void addTransportIcons(Region region, List<MapSpot> all)
+	{
+		int transportArea = source.categoryArea(IconGroup.TRANSPORT);
+		if (transportArea < 0)
+		{
+			return;
+		}
+		for (WorldPoint at : Transports.boardingSpots())
+		{
+			if ((at.getX() >> 6) != region.getRegionX() || (at.getY() >> 6) != region.getRegionY())
+			{
+				continue;
+			}
+			boolean marked = false;
+			for (MapSpot spot : all)
+			{
+				marked |= marksTransport(spot.getGroup()) && spot.getPlane() == at.getPlane()
+					&& Math.abs(spot.getX() - at.getX()) <= TRANSPORT_REACH && Math.abs(spot.getY() - at.getY()) <= TRANSPORT_REACH;
+			}
+			if (!marked && !transportIconBeside(region, at))
+			{
+				icons.addSprite(transportArea, source.areaIcon(transportArea));
+				all.add(MapSpot.icon(at.getX(), at.getY(), at.getPlane(), transportArea, IconGroup.TRANSPORT));
+			}
+		}
+	}
+
+	/** True for an icon that already shows a place to board: a transport, a farming patch (a planted spirit tree), a dock. */
+	private static boolean marksTransport(IconGroup group)
+	{
+		return group == IconGroup.TRANSPORTATION || group == IconGroup.FARMING || group == IconGroup.SAILING;
+	}
+
+	/** True when a neighboring region's objects put such an icon within {@link #TRANSPORT_REACH} of a place to board. */
+	private boolean transportIconBeside(Region own, WorldPoint at)
+	{
+		for (int rx = (at.getX() - TRANSPORT_REACH) >> 6; rx <= (at.getX() + TRANSPORT_REACH) >> 6; rx++)
+		{
+			for (int ry = (at.getY() - TRANSPORT_REACH) >> 6; ry <= (at.getY() + TRANSPORT_REACH) >> 6; ry++)
+			{
+				Region near = rx == own.getRegionX() && ry == own.getRegionY() ? null : source.region(rx, ry);
+				if (near == null)
+				{
+					continue;
+				}
+				for (Location location : near.getLocations())
+				{
+					int areaId = source.object(location.getId()).getMapAreaId();
+					int x = location.getPosition().getX();
+					int y = location.getPosition().getY();
+					if (areaId != -1 && marksTransport(IconGroup.of(source.areaCategory(areaId)))
+						&& Math.abs(x - at.getX()) <= TRANSPORT_REACH && Math.abs(y - at.getY()) <= TRANSPORT_REACH
+						&& floorOf(near, x, y, location.getPosition().getZ()) == at.getPlane())
+					{
+						return true;
+					}
+				}
+			}
+		}
+		return false;
 	}
 
 	/** The floor an object on a tile is drawn on: a floor lower over a bridge tile. */

@@ -312,6 +312,17 @@ final class Transports
 	}
 
 	/** Every stop of a network ("Fairy ring", "Spirit tree"), or none. */
+	/** Every place to board a transport: a network's spots, a boat's or ship's, a named transport icon that leads somewhere. */
+	static List<WorldPoint> boardingSpots()
+	{
+		List<WorldPoint> out = new ArrayList<>();
+		for (Station station : data.stations)
+		{
+			out.add(station.point);
+		}
+		return out;
+	}
+
 	static List<Destination> network(String kind)
 	{
 		return data.networks.getOrDefault(kind, Collections.emptyList());
