@@ -6,10 +6,18 @@
 package com.advancedmap;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.GridLayout;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -18,11 +26,14 @@ import javax.swing.Timer;
 import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.FontManager;
 import net.runelite.client.ui.PluginPanel;
+import net.runelite.client.util.ImageUtil;
+import net.runelite.client.util.LinkBrowser;
 
 /**
- * Advanced Map's sidebar tab: a button that opens and closes the map, a button that shows or hides how the map works,
- * and how much of the map is saved on this computer, with a button to draw it all again. Scrolls when the explanation
- * is taller than the sidebar. Swing thread only.
+ * Advanced Map's sidebar tab: the title with buttons to the Discord server and the GitHub repository, a button that
+ * opens and closes the map, a button that shows or hides how the map works, and how much of the map is saved on this
+ * computer, with a button to draw it all again. Scrolls when the explanation is taller than the sidebar. Swing thread
+ * only.
  */
 class AdvancedMapPanel extends PluginPanel
 {
@@ -33,6 +44,11 @@ class AdvancedMapPanel extends PluginPanel
 	 * screen pixel and a CSS pixel as 1.3.
 	 */
 	private static final int TEXT_WIDTH = 190;
+	static final String DISCORD_URL = "https://discord.gg/c85DK83jWx";
+	static final String GITHUB_URL = "https://github.com/Brettgod1355/Advanced-Map";
+	/** The link buttons beside the title, and the logos in them, as in the owner's other plugins. */
+	static final int LINK_ICON_SIZE = 16;
+	private static final int LINK_BUTTON_SIZE = 24;
 
 	private final AdvancedMapPlugin plugin;
 	private final JButton open = new JButton();
@@ -54,7 +70,19 @@ class AdvancedMapPanel extends PluginPanel
 
 		JLabel title = new JLabel("Advanced Map");
 		title.setFont(FontManager.getRunescapeBoldFont());
-		content.add(left(title));
+		// the community and the code, one click from the title, as in the owner's other plugins (owner, 2026-10-29)
+		JPanel links = new JPanel(new GridLayout(1, 2, 4, 0));
+		links.setOpaque(false);
+		links.add(link("discord_white.png", "discord_blurple.png",
+			"Advanced Map on Discord: ask a question, make a suggestion or report a bug", DISCORD_URL));
+		links.add(link("github_white.png", "github_green.png", "Advanced Map on GitHub: code, bug reports and requests",
+			GITHUB_URL));
+		JPanel titleRow = new JPanel(new BorderLayout());
+		titleRow.setOpaque(false);
+		titleRow.add(title, BorderLayout.WEST);
+		titleRow.add(links, BorderLayout.EAST);
+		titleRow.setMaximumSize(new Dimension(Integer.MAX_VALUE, LINK_BUTTON_SIZE));
+		content.add(left(titleRow));
 		content.add(Box.createVerticalStrut(8));
 
 		open.addActionListener(e ->
@@ -117,6 +145,66 @@ class AdvancedMapPanel extends PluginPanel
 	void stop()
 	{
 		refresh.stop();
+	}
+
+	/**
+	 * A square black button that opens a web page in the browser, showing the brand's white logo and, while the mouse
+	 * is over it, the brand's colored logo on the same black. Both are the brands' own files, only scaled: neither
+	 * Discord nor GitHub allows recoloring their logos, so the button swaps between their versions instead (see
+	 * THIRD_PARTY_NOTICES).
+	 */
+	private static JLabel link(String restingFile, String hoverFile, String tooltip, String url)
+	{
+		BufferedImage restingLogo = logo(restingFile);
+		ImageIcon resting = new ImageIcon(restingLogo);
+		ImageIcon hovered = new ImageIcon(logoLike(hoverFile, restingLogo));
+		JLabel label = new JLabel(resting);
+		label.setOpaque(true);
+		label.setBackground(Color.BLACK);
+		label.setHorizontalAlignment(JLabel.CENTER);
+		Dimension size = new Dimension(LINK_BUTTON_SIZE, LINK_BUTTON_SIZE);
+		label.setPreferredSize(size);
+		label.setMinimumSize(size);
+		label.setMaximumSize(size);
+		label.setToolTipText(tooltip);
+		label.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		label.addMouseListener(new MouseAdapter()
+		{
+			@Override
+			public void mouseClicked(MouseEvent e)
+			{
+				LinkBrowser.browse(url);
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e)
+			{
+				label.setIcon(hovered);
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e)
+			{
+				label.setIcon(resting);
+			}
+		});
+		return label;
+	}
+
+	/** A brand logo scaled to fit the link button's square, keeping its proportions. */
+	static BufferedImage logo(String file)
+	{
+		BufferedImage image = ImageUtil.loadImageResource(AdvancedMapPanel.class, file);
+		double scale = Math.min((double) LINK_ICON_SIZE / image.getWidth(), (double) LINK_ICON_SIZE / image.getHeight());
+		return ImageUtil.resizeImage(image, Math.max(1, (int) Math.round(image.getWidth() * scale)),
+			Math.max(1, (int) Math.round(image.getHeight() * scale)));
+	}
+
+	/** The other version of a logo at exactly the size of the first, so hovering never shifts it by a pixel. */
+	static BufferedImage logoLike(String file, BufferedImage like)
+	{
+		return ImageUtil.resizeImage(ImageUtil.loadImageResource(AdvancedMapPanel.class, file), like.getWidth(),
+			like.getHeight());
 	}
 
 	private void showHelp(boolean shown)

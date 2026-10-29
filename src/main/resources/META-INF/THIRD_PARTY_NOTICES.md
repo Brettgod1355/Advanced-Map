@@ -241,6 +241,25 @@ on 2026-10-28, under the same license and credit. Changes: one line a monster, t
 to "Always" and the three rarest at 1/256 or rarer that are not shared tables (clue scrolls, herbs, seeds,
 Wilderness loot). The Wiki button beside a monster opens its wiki page in the browser; nothing is fetched.
 
+## Discord and GitHub logos (trademarks, used as link buttons)
+
+The two buttons beside the title of the sidebar tab show the brands' own logos, taken from their official
+brand pages on 2026-10-04 and only scaled down, never recolored or redrawn:
+
+- Discord: `discord_white.png` and `discord_blurple.png` are `Discord-Symbol-White.png` and
+  `Discord-Symbol-Blurple.png` from the white and color "Symbol" downloads at
+  <https://discord.com/branding>, which lists white and Blurple among the logo's colors.
+- GitHub: `github_white.png` is `GitHub_Invertocat_White.png` from `GitHub_Logos.zip` at
+  <https://brand.github.com/foundations/logo>. The pack has no green file, so `github_green.png` is
+  the green Invertocat cut from the same page's color illustration
+  (<https://brand.github.com/_next/static/media/logo-04.c5edeefa.png>), with the black around it made
+  transparent and its pixels otherwise unchanged; the page allows the mark "in white, black, or in
+  few cases grey or green", and its use "as a social button to link to your GitHub profile or project".
+
+Discord and the Discord logo are trademarks of Discord Inc.; GitHub and the Invertocat are
+trademarks of GitHub, Inc. They are used only to link to this plugin's own Discord server and GitHub
+repository, and imply no endorsement by either company.
+
 ## Behavior references (no code copied)
 
 - Where each map link leads (a dungeon's entrance to the dungeon and back) is read at runtime from the game's own

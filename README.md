@@ -101,6 +101,12 @@ layer.put("lines", List.of(line));
 eventBus.post(new PluginMessage("advancedmap", "layer", layer));
 ```
 
+## Feedback
+
+Questions, ideas and bug reports: [GitHub issues](https://github.com/Brettgod1355/Advanced-Map/issues), or ask on
+[Discord](https://discord.gg/c85DK83jWx). The two buttons beside the title of the sidebar tab open them in your
+browser; the plugin itself sends nothing.
+
 ## Credits
 
 The map drawing is RuneLite's own map renderer from its cache library (BSD 2-Clause), adapted to read the
