@@ -40,15 +40,27 @@ public class HubRulesTest
 		{"Class\\.forName\\(", "reflection is forbidden (Hub wiki)"},
 		{"\\.getDeclared(Method|Field|Constructor)s?\\(", "reflection is forbidden (Hub wiki)"},
 		{"\\.getMethod\\(", "reflection is forbidden (Hub wiki)"},
-		{"\\bTypeToken\\b", "Gson TypeToken is reflection (reviewer, plugin-hub#16712)"},
+		{"\\bStackWalker\\b", "reading the call stack is introspection a reviewer asks about (shared rules)"},
+		{"\\.getStackTrace\\(|Thread\\.dumpStack\\(", "reading or dumping the stack is not for a plugin (shared rules)"},
+		{"\\.printStackTrace\\(", "printStackTrace writes to System.err; use a logger (review bot, plugin-hub#17265)"},
+		{"\\b(VarHandle|MethodHandles?)\\b", "handles are reflection (reviewer, plugin-hub#17424)"},
+		{"java\\.lang\\.management", "management beans are not allowed (reviewer, plugin-hub#17424)"},
 		{"Thread\\.sleep\\(", "Thread.sleep is not allowed; use a scheduled executor (reviewer, plugin-hub#16712)"},
 		{"\\.interrupt\\(\\)", "Thread.interrupt is not allowed (reviewer, plugin-hub#16712)"},
 		{"awaitTermination\\(", "never block in shutDown; use shutdownNow (Hub AGENTS.md)"},
 		{"java\\.awt\\.Desktop", "use LinkBrowser, not Desktop (reviewer, plugin-hub#16712)"},
+		{"LinkBrowser\\.open\\(", "LinkBrowser.open is not allowed; only LinkBrowser.browse (Hub wiki, 2026-10-05)"},
+		{"\\bToolkit\\b", "no JVM-wide hooks through the Toolkit (shared rules)"},
+		{"java\\.awt\\.Robot|\\.dispatchEvent\\(", "no injected input (Jagex rules, Hub wiki)"},
+		{"\\bClientUI\\b|setExtendedState\\(|toFront\\(|setAlwaysOnTop\\(", "no manipulation of the client window (Hub wiki)"},
 		{"KeyboardFocusManager", "KeyboardFocusManager is not allowed (reviewer, plugin-hub#17279)"},
 		{"addAWTEventListener", "JVM-wide input hooks are not allowed; use KeyManager (shared rules)"},
 		{"System\\.(out|err)\\.", "system i/o, use a logger instead (review bot, plugin-hub#17265)"},
 		{"System\\.getenv\\(", "environment access is not allowed (Hub review list)"},
+		{"System\\.exit\\(", "a plugin never ends the client"},
+		{"\\blog\\.info\\(", "INFO goes into every player's log: DEBUG for developer detail (Hub wiki, Plugin Development Logging)"},
+		{"ChatMessageManager\\b.*\\.update\\(", "ChatMessageManager.update is a no-op (packager disallowed-apis)"},
+		{"\\bSerializable\\b|\\bClassLoader\\b|defineClass\\(", "no Java serialization or class loading (Hub AGENTS.md)"},
 		{"javax\\.sound", "javax.sound is not allowed; use the Notifier (Hub review list)"},
 		{"Runtime\\.getRuntime\\(\\)", "no external processes (Hub wiki)"},
 		{"ProcessBuilder", "no external processes (Hub wiki)"},
@@ -58,6 +70,7 @@ public class HubRulesTest
 		{"\\.runScript\\(", "client scripts that act as input are automation (plugin-hub#12507); none are needed here"},
 		{"java\\.io\\.(File|FileInputStream|FileOutputStream|FileReader|FileWriter|RandomAccessFile)\\b", "file i/o only through Filepath (reviewers, many PRs)"},
 		{"java\\.nio\\.file", "file i/o only through Filepath (reviewers, many PRs)"},
+		{"Filepath\\.Unchecked", "Filepath.Unchecked forfeits automated review for good (reviewer, plugin-hub#17456)"},
 		{"JFileChooser", "use Filepath.Chooser (Hub AGENTS.md)"},
 		{"RuneLite\\.(CACHE_DIR|RUNELITE_DIR)", "no files in RuneLite's directories directly (reviewer, plugin-hub#15978)"},
 		{"HttpURLConnection", "use the injected OkHttpClient (Hub AGENTS.md)"},
@@ -89,6 +102,25 @@ public class HubRulesTest
 			}
 		}
 		assertTrue("Plugin Hub rule violations:\n" + String.join("\n", findings), findings.isEmpty());
+	}
+
+	@Test
+	public void testSourcesUseNoReflectionEither() throws IOException
+	{
+		// a reviewer reads the whole repository: reflection has been flagged in test code (plugin-hub#17424). A
+		// java.lang.reflect.Proxy standing in for the client's interfaces is the one thing left (RegionHashTest), since
+		// there is no other way to fake Client without a mocking library.
+		List<String> findings = new ArrayList<>();
+		for (Path file : javaFiles(Paths.get("src", "test", "java")))
+		{
+			String code = stripCommentsAndStrings(new String(Files.readAllBytes(file), StandardCharsets.UTF_8));
+			if (Pattern.compile("java\\.lang\\.reflect\\.(Method|Field|Modifier|Constructor|Array|AccessibleObject)|Class\\.forName\\("
+				+ "|\\.getDeclared(Method|Field|Constructor)s?\\(|\\.getMethods?\\(|setAccessible\\(").matcher(code).find())
+			{
+				findings.add(file.toString());
+			}
+		}
+		assertTrue("reflection in test code: " + findings, findings.isEmpty());
 	}
 
 	@Test
@@ -165,6 +197,10 @@ public class HubRulesTest
 		assertEquals(1, violations("import java.lang.reflect.Method;\nclass X {}").size());
 		assertEquals(1, violations("class X { void f() throws Exception { Thread.sleep(10); } }").size());
 		assertEquals(1, violations("class X { Object g = new Gson(); }").size());
+		assertEquals(1, violations("class X { void f() { log.info(\"x\"); } }").size());
+		assertEquals(1, violations("class X { void f(Exception e) { e.printStackTrace(); } }").size());
+		assertEquals(1, violations("class X { Object f = Filepath.Unchecked.getRooted(null); }").size());
+		assertTrue(violations("class X { Object t = new TypeToken<java.util.List<String>>() {}; }").isEmpty());
 		// ...and ignores the same words in comments and strings.
 		assertTrue(violations("// Thread.sleep( is forbidden\nclass X { String s = \"new Gson(\"; }").isEmpty());
 	}
