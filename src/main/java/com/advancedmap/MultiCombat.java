@@ -48,8 +48,13 @@ final class MultiCombat
 	}
 
 	private static volatile List<Zone> zones = Collections.emptyList();
-	/** Every area as one shape, so areas side by side are drawn without a seam between them. */
-	private static volatile Area all = new Area();
+	/**
+	 * The areas in groups of those that touch or nearly touch, each group one shape, so areas side by side are drawn
+	 * without a seam between them while a paint only draws the groups in view.
+	 */
+	private static volatile List<Zone> groups = Collections.emptyList();
+	/** Areas this close (tiles) are drawn as one shape. */
+	private static final int TOGETHER = 2;
 
 	private MultiCombat()
 	{
@@ -68,13 +73,8 @@ final class MultiCombat
 			if (in != null)
 			{
 				List<Zone> read = parse(in);
-				Area merged = new Area();
-				for (Zone zone : read)
-				{
-					merged.add(zone.getShape());
-				}
+				groups = group(read);
 				zones = read;
-				all = merged;
 			}
 		}
 		catch (IOException | RuntimeException e)
@@ -103,6 +103,46 @@ final class MultiCombat
 		return Collections.unmodifiableList(out);
 	}
 
+	/**
+	 * Joins areas that touch, or come within {@link #TOGETHER} tiles of each other, into one shape each. Joining a few
+	 * small shapes is quick; one shape of every area took most of a second to build and as long to draw each paint.
+	 */
+	static List<Zone> group(List<Zone> zones)
+	{
+		List<Zone> out = new ArrayList<>();
+		for (Zone zone : zones)
+		{
+			Area shape = new Area(zone.getShape());
+			StringBuilder name = new StringBuilder(zone.getName());
+			// every group this one comes near joins it, and then every group the joined shape comes near, until none
+			boolean joined = true;
+			while (joined)
+			{
+				joined = false;
+				Rectangle near = shape.getBounds();
+				near.grow(TOGETHER, TOGETHER);
+				for (java.util.Iterator<Zone> it = out.iterator(); it.hasNext(); )
+				{
+					Zone other = it.next();
+					if (near.intersects(other.getBounds()))
+					{
+						shape.add(other.getShape());
+						name.append(", ").append(other.getName());
+						it.remove();
+						joined = true;
+					}
+				}
+			}
+			out.add(new Zone(name.toString(), shape, shape.getBounds()));
+		}
+		return Collections.unmodifiableList(out);
+	}
+
+	static List<Zone> groups()
+	{
+		return groups;
+	}
+
 	/** True when a tile is in a multi-combat area. */
 	static boolean contains(int x, int y)
 	{
@@ -127,18 +167,20 @@ final class MultiCombat
 			(int) Math.ceil(view.width / view.zoom) + 2, (int) Math.ceil(view.height / view.zoom) + 2);
 		// world tiles to screen pixels: y grows north in the world and down on the screen
 		AffineTransform toScreen = new AffineTransform(view.zoom, 0, 0, -view.zoom, view.screenX(0), view.screenY(0));
-		Area shape = all;
-		if (!shape.getBounds().intersects(seen))
-		{
-			return;
-		}
-		Shape onScreen = toScreen.createTransformedShape(shape);
 		Stroke stroke = g.getStroke();
 		g.setStroke(EDGE_STROKE);
-		g.setColor(FILL);
-		g.fill(onScreen);
-		g.setColor(EDGE);
-		g.draw(onScreen);
+		for (Zone group : groups)
+		{
+			if (!group.getBounds().intersects(seen))
+			{
+				continue;
+			}
+			Shape onScreen = toScreen.createTransformedShape(group.getShape());
+			g.setColor(FILL);
+			g.fill(onScreen);
+			g.setColor(EDGE);
+			g.draw(onScreen);
+		}
 		g.setStroke(stroke);
 	}
 }
