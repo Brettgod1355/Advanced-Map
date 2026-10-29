@@ -50,7 +50,7 @@ final class MiningSites
 		{
 			sites = in == null ? Collections.emptyList() : parse(in);
 		}
-		catch (IOException e)
+		catch (IOException | RuntimeException e)
 		{
 			log.debug("could not read the mining sites", e);
 		}
