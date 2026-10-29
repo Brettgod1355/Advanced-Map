@@ -58,14 +58,36 @@ final class SideList
 		/** What a click on the row opens besides (a shop's stock), or null. */
 		Object target;
 
+		/** The lines under the text, each wrapped to the list's width. */
 		List<String> subLines()
 		{
-			return sub == null ? Collections.emptyList() : Arrays.asList(sub.split("; "));
+			if (sub == null)
+			{
+				return Collections.emptyList();
+			}
+			List<String> lines = new ArrayList<>();
+			for (String part : sub.split("; "))
+			{
+				lines.addAll(wrap(part, WIDTH - PAD * 3));
+			}
+			return lines;
+		}
+
+		/** The text, wrapped whole-word to what the row has beside its note; never cut short. */
+		List<String> textLines()
+		{
+			if (isHeading())
+			{
+				return wrap(text, WIDTH - PAD * 2, FontManager.getRunescapeBoldFont());
+			}
+			int noteWidth = note == null || note.isEmpty() ? 0
+				: MEASURE.getFontMetrics(FontManager.getRunescapeSmallFont()).stringWidth(note) + PAD;
+			return wrap(text, WIDTH - PAD * 2 - noteWidth);
 		}
 
 		int height()
 		{
-			return (isHeading() ? HEADING_GAP : 0) + ROW + SUB * subLines().size();
+			return (isHeading() ? HEADING_GAP : 0) + ROW + SUB * (textLines().size() - 1) + SUB * subLines().size();
 		}
 
 		/** A heading over the rows after it ("Locations (nearest first)"): bold and underlined; a click does nothing. */
@@ -156,27 +178,46 @@ final class SideList
 
 	/**
 	 * The list's place: down the right side, under the buttons at the top and above the floor buttons; no taller than
-	 * its rows need ({@code content} pixels).
+	 * its rows need ({@code content} pixels), with a one-line title.
 	 */
 	static Layout layout(Map<MapPainter.Button, Rectangle> buttons, int content)
+	{
+		return layout(buttons, content, HEADER);
+	}
+
+	/** As above, with a title {@code header} pixels tall. */
+	static Layout layout(Map<MapPainter.Button, Rectangle> buttons, int content, int header)
 	{
 		Rectangle area = buttons.get(MapPainter.Button.AREA);
 		Rectangle locate = buttons.get(MapPainter.Button.LOCATE);
 		Rectangle below = buttons.get(MapPainter.Button.FLOOR_UP);
 		int top = area.y + area.height + 6;
-		int room = Math.max(HEADER + ROW * 3, below.y - 6 - top);
-		int height = Math.min(room, HEADER + content + PAD / 2);
+		int room = Math.max(header + ROW * 3, below.y - 6 - top);
+		int height = Math.min(room, header + content + PAD / 2);
 		int x = locate.x + locate.width - WIDTH;
 		Rectangle panel = new Rectangle(x, top, WIDTH, height);
 		Rectangle close = new Rectangle(x + WIDTH - PAD - CLOSE, top + (HEADER - CLOSE) / 2, CLOSE, CLOSE);
-		Rectangle list = new Rectangle(x, top + HEADER, WIDTH, height - HEADER - PAD / 2);
+		Rectangle list = new Rectangle(x, top + header, WIDTH, height - header - PAD / 2);
 		return new Layout(panel, close, list);
 	}
 
-	/** The list's layout for its rows now. */
+	/** The list's layout for its rows and title now. */
 	Layout layout(Map<MapPainter.Button, Rectangle> buttons)
 	{
-		return layout(buttons, contentHeight());
+		return layout(buttons, contentHeight(), headerHeight());
+	}
+
+	/** The title in lines no wider than the room beside the close box: a long name wraps, it is never cut short. */
+	List<String> titleLines()
+	{
+		return wrap(title, WIDTH - PAD * 3 - CLOSE, FontManager.getRunescapeBoldFont());
+	}
+
+	/** The title's height: one line fits the usual header; each line more adds a line's height. */
+	int headerHeight()
+	{
+		int lines = titleLines().size();
+		return HEADER + (lines - 1) * MEASURE.getFontMetrics(FontManager.getRunescapeBoldFont()).getHeight();
 	}
 
 	/** What a press at a point is on. */
@@ -231,9 +272,13 @@ final class SideList
 		g.setFont(FontManager.getRunescapeBoldFont());
 		FontMetrics bold = g.getFontMetrics();
 		Rectangle close = layout.getClose();
-		String heading = fit(title, bold, close.x - panel.x - PAD * 2);
 		g.setColor(TEXT);
-		g.drawString(heading, panel.x + PAD, panel.y + (HEADER + bold.getAscent() - bold.getDescent()) / 2);
+		int titleY = panel.y + (HEADER + bold.getAscent() - bold.getDescent()) / 2;
+		for (String line : titleLines())
+		{
+			g.drawString(line, panel.x + PAD, titleY);
+			titleY += bold.getHeight();
+		}
 		g.setColor(QUIET);
 		g.drawLine(close.x + 4, close.y + 4, close.x + close.width - 5, close.y + close.height - 5);
 		g.drawLine(close.x + close.width - 5, close.y + 4, close.x + 4, close.y + close.height - 5);
@@ -263,20 +308,24 @@ final class SideList
 				}
 				int baseline = y + (ROW + metrics.getAscent() - metrics.getDescent()) / 2;
 				String note = row.getNote() == null ? "" : row.getNote();
-				int noteWidth = note.isEmpty() ? 0 : metrics.stringWidth(note) + PAD;
 				g.setColor(TEXT);
-				g.drawString(fit(row.getText(), metrics, list.width - PAD * 2 - noteWidth), list.x + PAD, baseline);
+				int line = baseline;
+				for (String text : row.textLines())
+				{
+					g.drawString(text, list.x + PAD, line);
+					line += SUB;
+				}
+				line -= SUB;
 				if (!note.isEmpty())
 				{
 					g.setColor(QUIET);
 					g.drawString(note, list.x + list.width - PAD - metrics.stringWidth(note), baseline);
 				}
 				g.setColor(row.getSubColor() == null ? QUIET : row.getSubColor());
-				int line = baseline;
 				for (String sub : row.subLines())
 				{
 					line += SUB;
-					g.drawString(fit(sub, metrics, list.width - PAD * 3), list.x + PAD * 2, line);
+					g.drawString(sub, list.x + PAD * 2, line);
 				}
 			}
 			y += height;
@@ -301,7 +350,12 @@ final class SideList
 		FontMetrics bold = g.getFontMetrics();
 		int baseline = top + (ROW + bold.getAscent() - bold.getDescent()) / 2;
 		g.setColor(TEXT);
-		g.drawString(fit(row.getText(), bold, list.width - PAD * 2), list.x + PAD, baseline);
+		for (String line : row.textLines())
+		{
+			g.drawString(line, list.x + PAD, baseline);
+			baseline += SUB;
+		}
+		baseline -= SUB;
 		g.setColor(HEADING_LINE);
 		g.fillRect(list.x + PAD, baseline + 3, list.width - PAD * 2, 1);
 		g.setFont(font);
@@ -310,7 +364,13 @@ final class SideList
 	/** Text in lines no wider than {@code width} in the list's font, broken between words only. */
 	static List<String> wrap(String text, int width)
 	{
-		FontMetrics metrics = MEASURE.getFontMetrics(FontManager.getRunescapeSmallFont());
+		return wrap(text, width, FontManager.getRunescapeSmallFont());
+	}
+
+	/** Text in lines no wider than {@code width} in a font, broken between words only (a lone long word stays). */
+	static List<String> wrap(String text, int width, java.awt.Font font)
+	{
+		FontMetrics metrics = MEASURE.getFontMetrics(font);
 		List<String> lines = new ArrayList<>();
 		StringBuilder line = new StringBuilder();
 		for (String word : text.split(" "))

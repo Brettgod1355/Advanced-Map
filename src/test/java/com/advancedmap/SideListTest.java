@@ -108,4 +108,32 @@ public class SideListTest
 		assertNull(heading.getPoint());
 		assertFalse(new SideList.Row("Fountain of Heroes", "1 spawn", null, null, null, null).isHeading());
 	}
+
+	@Test
+	public void longTitlesAndRowsWrapWholeWordsInsteadOfBeingCutShort()
+	{
+		SideList list = new SideList();
+		String title = "King Black Dragon Lair (dungeon entrance, Wilderness)";
+		List<SideList.Row> rows = new ArrayList<>();
+		rows.add(new SideList.Row("A row with a very long name that cannot fit beside its note", "14 spawns", null, null,
+			null, null));
+		rows.add(new SideList.Row("Short", null, null, null, null, null));
+		list.open(title, rows, null);
+		assertTrue("the title takes more than one line", list.titleLines().size() > 1);
+		assertEquals(title, String.join(" ", list.titleLines()));
+		assertTrue(list.headerHeight() > SideList.layout(MapPainter.buttons(1200, 800, true), 0).getList().y
+			- SideList.layout(MapPainter.buttons(1200, 800, true), 0).getPanel().y);
+		List<String> lines = rows.get(0).textLines();
+		assertTrue(lines.size() > 1);
+		assertEquals(rows.get(0).getText(), String.join(" ", lines));
+		assertEquals("a line per extra line of text", SideList.ROW + SideList.SUB * (lines.size() - 1),
+			rows.get(0).height());
+		assertEquals(SideList.ROW, rows.get(1).height());
+		SideList.Layout layout = list.layout(MapPainter.buttons(1200, 800, true));
+		assertEquals("the rows start under the whole title", layout.getPanel().y + list.headerHeight(),
+			layout.getList().y);
+		assertEquals(new SideList.Hit(0), list.hitAt(layout.getList().x + 10, layout.getList().y + 5, layout));
+		assertEquals(new SideList.Hit(1),
+			list.hitAt(layout.getList().x + 10, layout.getList().y + rows.get(0).height() + 5, layout));
+	}
 }
