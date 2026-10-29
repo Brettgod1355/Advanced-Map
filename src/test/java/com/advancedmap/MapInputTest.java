@@ -158,4 +158,47 @@ public class MapInputTest
 		assertFalse("a press on the game beside the box is the game's", outside.isConsumed());
 		assertEquals(1, plugin.outsideClicks);
 	}
+
+	@Test
+	public void aKeyReleaseIsTheMapsOnlyWhenItsPressWas()
+	{
+		Stub plugin = new Stub();
+		MapInput input = new MapInput(plugin, () -> 1280, () -> 800);
+		// an arrow held to turn the camera, then the search bar clicked, then the arrow let go: the game had the
+		// press, so it must get the release, or it keeps turning
+		KeyEvent pressed = key(KeyEvent.KEY_PRESSED, KeyEvent.VK_LEFT, 0);
+		input.keyPressed(pressed);
+		assertFalse(pressed.isConsumed());
+		plugin.typing = true;
+		KeyEvent released = key(KeyEvent.KEY_RELEASED, KeyEvent.VK_LEFT, 0);
+		input.keyReleased(released);
+		assertFalse("the release goes where the press went", released.isConsumed());
+
+		// typed into the search bar: both are the map's, even when the bar lost the keys in between
+		KeyEvent typedPress = key(KeyEvent.KEY_PRESSED, KeyEvent.VK_V, 0);
+		input.keyPressed(typedPress);
+		assertTrue(typedPress.isConsumed());
+		plugin.typing = false;
+		KeyEvent typedRelease = key(KeyEvent.KEY_RELEASED, KeyEvent.VK_V, 0);
+		input.keyReleased(typedRelease);
+		assertTrue("the release of a key the map took is the map's", typedRelease.isConsumed());
+		KeyEvent again = key(KeyEvent.KEY_RELEASED, KeyEvent.VK_V, 0);
+		input.keyReleased(again);
+		assertFalse("once", again.isConsumed());
+	}
+
+	@Test
+	public void altGrTypingLeavesTheGameItsCtrlPressAndRelease()
+	{
+		Stub plugin = new Stub();
+		plugin.typing = true;
+		MapInput input = new MapInput(plugin, () -> 1280, () -> 800);
+		// Windows reports AltGr as Ctrl then Alt: the Ctrl press is a shortcut (the game's), so its release is too
+		KeyEvent ctrl = key(KeyEvent.KEY_PRESSED, KeyEvent.VK_CONTROL, KeyEvent.CTRL_DOWN_MASK);
+		input.keyPressed(ctrl);
+		assertFalse(ctrl.isConsumed());
+		KeyEvent ctrlUp = key(KeyEvent.KEY_RELEASED, KeyEvent.VK_CONTROL, 0);
+		input.keyReleased(ctrlUp);
+		assertFalse(ctrlUp.isConsumed());
+	}
 }

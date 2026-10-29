@@ -8,6 +8,8 @@ package com.advancedmap;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.IntSupplier;
 import javax.swing.SwingUtilities;
 import net.runelite.client.input.KeyListener;
@@ -35,6 +37,11 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 	private boolean dragging;
 	/** A press began on the box (the map or its frame): its drags and release are the map's too. */
 	private boolean held;
+	/**
+	 * The keys whose press the map took: their release is the map's too, whatever is typed into by then, so the game
+	 * never gets a release without its press (it would keep the key as held: a camera key, Shift) or the reverse.
+	 */
+	private final Set<Integer> pressedHere = new HashSet<>();
 
 	MapInput(AdvancedMapPlugin plugin, IntSupplier width, IntSupplier height)
 	{
@@ -283,14 +290,18 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 			&& (mouseOnBox() || plugin.typing() || plugin.sideListOpen() || plugin.selection() != null))
 		{
 			plugin.escape();
-			e.consume();
 		}
 		else if (plugin.mapTakesInput() && plugin.typing() && !hasShortcutKey(e))
 		{
 			// typing in a search box: keep the keys from the game's chat
 			plugin.typingKey(e.getKeyCode());
-			e.consume();
 		}
+		else
+		{
+			return;
+		}
+		pressedHere.add(e.getKeyCode());
+		e.consume();
 	}
 
 	@Override
@@ -298,7 +309,7 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 	{
 		// whatever the mouse or keys do, the map over the game is drawn again at once
 		plugin.touched();
-		if (plugin.mapTakesInput() && plugin.typing() && !hasShortcutKey(e))
+		if (pressedHere.remove(e.getKeyCode()))
 		{
 			e.consume();
 		}
