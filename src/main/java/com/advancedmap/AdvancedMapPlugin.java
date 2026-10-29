@@ -137,11 +137,11 @@ public class AdvancedMapPlugin extends Plugin
 	private final MarkerEditor editor = new MarkerEditor();
 	private final java.util.concurrent.atomic.AtomicInteger touches = new java.util.concurrent.atomic.AtomicInteger();
 	private volatile MarkerStore markerStore;
-	/** When the pins, farming patches and Slayer task were last read, in milliseconds. */
-	private long extrasRead;
-	private long farmingRead;
+	/** When the pins, farming patches and Slayer task were last read, in milliseconds. Client thread, reset elsewhere. */
+	private volatile long extrasRead;
+	private volatile long farmingRead;
 	/** The Slayer task drawn now ("Goblins:24"), or null. */
-	private String slayerShown;
+	private volatile String slayerShown;
 	/** The search's extra entries and what they were built from. */
 	private List<MapSearch.Entry> extraEntries = Collections.emptyList();
 	/** The game's own world maps by name (Zanaris, Keldagrim), for the search; read with the place names. */

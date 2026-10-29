@@ -133,7 +133,8 @@ final class SideList
 	private volatile List<Row> rows = Collections.emptyList();
 	/** What the list is for, so the same kind of click can tell it is already open (a transport, a shop). */
 	private volatile Object owner;
-	private int scroll;
+	/** Scrolled by the wheel on the Swing thread, read when the list is drawn on the client thread. */
+	private volatile int scroll;
 
 	boolean isOpen()
 	{
