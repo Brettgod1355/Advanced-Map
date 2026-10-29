@@ -59,7 +59,11 @@ public class ObjectLoader
 				break;
 			}
 
-			processOp(opcode, def, is);
+			if (!processOp(opcode, def, is))
+			{
+				// an opcode added by a game update: nothing after it can be read in step, so what was read stands
+				break;
+			}
 		}
 
 		post(def);
@@ -67,7 +71,8 @@ public class ObjectLoader
 		return def;
 	}
 
-	private void processOp(int opcode, ObjectDefinition def, InputStream is)
+	/** Reads one attribute; false for an opcode this loader does not know. */
+	private boolean processOp(int opcode, ObjectDefinition def, InputStream is)
 	{
 		if (opcode == 1)
 		{
@@ -448,8 +453,10 @@ public class ObjectLoader
 		}
 		else
 		{
-			log.warn("Unrecognized opcode {}", opcode);
+			log.debug("Unrecognized object opcode {}", opcode);
+			return false;
 		}
+		return true;
 	}
 
 
