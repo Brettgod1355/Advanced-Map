@@ -131,4 +131,22 @@ public class MapStoreTest
 		assertEquals(3, RegionImages.plane(key));
 		assertEquals(12850, RegionImages.region(key));
 	}
+
+	@Test
+	public void aFloorTwoClientsSavedFromDifferentGameDataKeepsOneSetOfFiles() throws Exception
+	{
+		int key = RegionImages.key(0, 12850);
+		// both clients opened their store before either saved, so neither knew of the other's files
+		MapStore first = MapStore.open(root());
+		MapStore second = MapStore.open(root());
+		first.save(key, 0x1111L, picture(0xFF336699, 256), picture(0x80336699, 64));
+		second.save(key, 0x2222L, picture(0xFF996633, 256), picture(0x80996633, 64));
+		assertEquals("both clients' pictures are on disk", 4, folder.getRoot().listFiles()[0].listFiles().length);
+		MapStore again = MapStore.open(root());
+		assertTrue(again.has(key));
+		assertEquals("the next start keeps one of them", 2, folder.getRoot().listFiles()[0].listFiles().length);
+		long kept = again.savedHash(key);
+		assertNotNull(again.load(key, kept, MapStore.Kind.FULL));
+		assertNotNull(again.load(key, kept, MapStore.Kind.SMALL));
+	}
 }

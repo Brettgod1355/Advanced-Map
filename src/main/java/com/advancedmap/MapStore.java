@@ -60,7 +60,7 @@ final class MapStore
 		SafeFiles.cleanUp(store.folder);
 		try (Stream<Filepath> files = store.folder.walk(1))
 		{
-			files.forEach(file -> store.remember(file.getFileName()));
+			files.forEach(store::remember);
 		}
 		store.forgetCityCopy();
 		return store;
@@ -89,9 +89,9 @@ final class MapStore
 		return kind == Kind.EMPTY ? name : name + ".png";
 	}
 
-	private void remember(String fileName)
+	private void remember(Filepath file)
 	{
-		String[] parts = fileName.replace(".png", "").split("_");
+		String[] parts = file.getFileName().replace(".png", "").split("_");
 		if (parts.length != 4)
 		{
 			return;
@@ -99,7 +99,17 @@ final class MapStore
 		try
 		{
 			int key = RegionImages.key(Integer.parseInt(parts[0]), Integer.parseInt(parts[1]));
-			saved.put(key, Long.parseUnsignedLong(parts[2], 16));
+			long hash = Long.parseUnsignedLong(parts[2], 16);
+			Long known = saved.get(key);
+			if (known != null && known != hash)
+			{
+				// two clients on different game data each saved this floor: one of them is enough here (checked
+				// against the game's data when shown, and drawn again if it is the old one), the other would stay
+				// on disk for good
+				file.deleteIfExists();
+				return;
+			}
+			saved.put(key, hash);
 			if (Kind.EMPTY.suffix.equals(parts[3]))
 			{
 				empty.put(key, true);
@@ -108,6 +118,10 @@ final class MapStore
 		catch (NumberFormatException e)
 		{
 			// not one of ours
+		}
+		catch (IOException e)
+		{
+			log.debug("could not delete {}", file, e);
 		}
 	}
 
