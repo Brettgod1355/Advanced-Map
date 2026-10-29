@@ -14,6 +14,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import net.runelite.api.coords.WorldPoint;
+import net.runelite.client.ui.FontManager;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -423,5 +424,46 @@ public class MapPainterTest
 			settings, false, false));
 		assertEquals("Down a floor", MapPainter.tip(MapPainter.Button.FLOOR_DOWN, MapArea.SURFACE, 1, false, settings,
 			false, false));
+	}
+
+	@Test
+	public void noPlaceNameIsDrawnUnderTheBottomBarOrASpaceAlreadyTaken()
+	{
+		MapViewport.View view = new MapViewport.View(3222, 3218, 2, 500, 400);
+		BufferedImage image = new BufferedImage(500, 400, BufferedImage.TYPE_INT_RGB);
+		Graphics2D g = image.createGraphics();
+		g.setFont(FontManager.getRunescapeSmallFont());
+		Rectangle bar = MapPainter.barBounds(g, view);
+		assertEquals(0, bar.x);
+		assertEquals(500, bar.width);
+		assertEquals(400, bar.y + bar.height);
+		// one name in the middle of the view, one on the bar's strip along the bottom
+		java.util.List<MapLabels.Label> labels = java.util.Arrays.asList(
+			new MapLabels.Label(java.util.Collections.singletonList("Lumbridge"), 3222, 3218, MapLabels.TOWN, Color.WHITE),
+			new MapLabels.Label(java.util.Collections.singletonList("Swamp"), 3222, (int) view.worldY(bar.y + bar.height / 2),
+				MapLabels.TOWN, Color.WHITE));
+		MapPainter.drawLabels(g, view, MapArea.SURFACE, labels, java.util.Collections.singletonList(bar));
+		g.dispose();
+		boolean middle = false;
+		boolean onBar = false;
+		for (int y = 0; y < 400; y++)
+		{
+			for (int x = 0; x < 500; x++)
+			{
+				if (image.getRGB(x, y) != 0xFF000000)
+				{
+					if (y >= bar.y)
+					{
+						onBar = true;
+					}
+					else
+					{
+						middle = true;
+					}
+				}
+			}
+		}
+		assertTrue("the name in the open is drawn", middle);
+		assertFalse("the name under the bar's strip is not", onBar);
 	}
 }

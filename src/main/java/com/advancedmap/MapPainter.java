@@ -422,7 +422,11 @@ final class MapPainter
 		}
 		if (settings.isPlaceNames())
 		{
-			drawLabels(g, view, area, labels.all(), buttons(view.width, view.height, window).values());
+			// no name under the buttons, the search box or the bar of text along the bottom
+			List<Rectangle> taken = new ArrayList<>(buttons(view.width, view.height, window).values());
+			taken.add(search.layout(buttons(view.width, view.height, window), view.width).getBox());
+			taken.add(barBounds(g, view));
+			drawLabels(g, view, area, labels.all(), taken);
 		}
 		List<MapIcons.Shown> shown = icons.visible(view, area, plane, settings, progress);
 		drawIcons(g, shown, selection);
@@ -1638,11 +1642,18 @@ final class MapPainter
 		{
 			text.append("    Drawing the map...");
 		}
-		int barHeight = metrics.getHeight() + 8;
+		Rectangle bar = barBounds(g, view);
 		g.setColor(BAR);
-		g.fillRect(0, view.height - barHeight, metrics.stringWidth(text.toString()) + 16, barHeight);
+		g.fillRect(bar.x, bar.y, metrics.stringWidth(text.toString()) + 16, bar.height);
 		g.setColor(TEXT);
 		g.drawString(text.toString(), 8, view.height - 4 - metrics.getDescent());
+	}
+
+	/** The strip along the bottom where the bar's text goes (as wide as the view: its text changes with the mouse). */
+	static Rectangle barBounds(Graphics2D g, MapViewport.View view)
+	{
+		int barHeight = g.getFontMetrics(FontManager.getRunescapeSmallFont()).getHeight() + 8;
+		return new Rectangle(0, view.height - barHeight, view.width, barHeight);
 	}
 
 	private static void drawButtons(Graphics2D g, MapViewport.View view, MapArea area, int plane, boolean window,
