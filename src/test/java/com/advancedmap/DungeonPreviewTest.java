@@ -179,7 +179,7 @@ public class DungeonPreviewTest
 	public void theSmallMapShowsTheFloorNotTheDarkAroundIt()
 	{
 		WorldPoint to = new WorldPoint(1000, 1000, 0);
-		// a floor that fits, east and north of the arrival: centred on it, zoomed in to fill the box (220 / 84 wide,
+		// a floor that fits, east and north of the arrival: centered on it, zoomed in to fill the box (220 / 84 wide,
 		// 150 / 54 high: the width decides), the arrival still well inside
 		MapViewport.View fits = DungeonPreview.framing(to, new java.awt.Rectangle(990, 990, 80, 50));
 		assertEquals(1030, fits.centerX, 0.01);

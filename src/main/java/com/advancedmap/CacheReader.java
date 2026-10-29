@@ -113,7 +113,7 @@ class CacheReader
 		}
 	}
 
-	/** Stops serving: queued and future reads are cancelled. */
+	/** Stops serving: queued and future reads are canceled. */
 	void close()
 	{
 		open = false;
