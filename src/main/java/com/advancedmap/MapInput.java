@@ -78,7 +78,7 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 	{
 		// whatever the mouse or keys do, the map over the game is drawn again at once
 		plugin.touched();
-		if (!plugin.isMapOpen())
+		if (!plugin.mapTakesInput())
 		{
 			return e;
 		}
@@ -137,7 +137,7 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 		// whatever the mouse or keys do, the map over the game is drawn again at once
 		plugin.touched();
 		mouse = e.getPoint();
-		if (!plugin.isMapOpen() || !held)
+		if (!plugin.mapTakesInput() || !held)
 		{
 			return e;
 		}
@@ -180,7 +180,7 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 		}
 		boolean wasHeld = held;
 		held = false;
-		if (!plugin.isMapOpen() || !wasHeld)
+		if (!plugin.mapTakesInput() || !wasHeld)
 		{
 			dragging = false;
 			return e;
@@ -237,7 +237,7 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 	{
 		// whatever the mouse or keys do, the map over the game is drawn again at once
 		plugin.touched();
-		if (!plugin.isMapOpen())
+		if (!plugin.mapTakesInput())
 		{
 			return e;
 		}
@@ -265,7 +265,7 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 	{
 		// whatever the mouse or keys do, the map over the game is drawn again at once
 		plugin.touched();
-		if (plugin.isMapOpen() && plugin.typing() && !hasShortcutKey(e))
+		if (plugin.mapTakesInput() && plugin.typing() && !hasShortcutKey(e))
 		{
 			plugin.type(e.getKeyChar());
 			e.consume();
@@ -279,13 +279,13 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 		plugin.touched();
 		// Escape is the map's while the mouse is on its box or something of it is open or typed into; else it is the
 		// game's (closing the bank beside a small map)
-		if (plugin.isMapOpen() && e.getKeyCode() == KeyEvent.VK_ESCAPE
+		if (plugin.mapTakesInput() && e.getKeyCode() == KeyEvent.VK_ESCAPE
 			&& (mouseOnBox() || plugin.typing() || plugin.sideListOpen() || plugin.selection() != null))
 		{
 			plugin.escape();
 			e.consume();
 		}
-		else if (plugin.isMapOpen() && plugin.typing() && !hasShortcutKey(e))
+		else if (plugin.mapTakesInput() && plugin.typing() && !hasShortcutKey(e))
 		{
 			// typing in a search box: keep the keys from the game's chat
 			plugin.typingKey(e.getKeyCode());
@@ -298,7 +298,7 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 	{
 		// whatever the mouse or keys do, the map over the game is drawn again at once
 		plugin.touched();
-		if (plugin.isMapOpen() && plugin.typing() && !hasShortcutKey(e))
+		if (plugin.mapTakesInput() && plugin.typing() && !hasShortcutKey(e))
 		{
 			e.consume();
 		}
@@ -317,7 +317,7 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 	/** Keeps an event on the box (or of a press that began there) from the game. */
 	private MouseEvent swallow(MouseEvent e)
 	{
-		if (plugin.isMapOpen() && (held || partAt(e) != GameBox.Part.OUTSIDE))
+		if (plugin.mapTakesInput() && (held || partAt(e) != GameBox.Part.OUTSIDE))
 		{
 			e.consume();
 		}

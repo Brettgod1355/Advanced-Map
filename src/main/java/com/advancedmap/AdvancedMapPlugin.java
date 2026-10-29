@@ -706,6 +706,16 @@ public class AdvancedMapPlugin extends Plugin
 		return mapOpen;
 	}
 
+	/**
+	 * True while the map over the game takes the mouse and keys: open there, and the game logged in. RuneLite draws no
+	 * overlay on the login screen or while loading, so an open map must not take the clicks of what the player sees
+	 * instead (the login screen's fields, until it is drawn again after logging in).
+	 */
+	boolean mapTakesInput()
+	{
+		return mapOpen && client.getGameState() == GameState.LOGGED_IN;
+	}
+
 	GameBox gameBox()
 	{
 		return gameBox;
