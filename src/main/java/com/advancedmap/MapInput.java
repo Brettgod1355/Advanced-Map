@@ -83,8 +83,6 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 	@Override
 	public MouseEvent mousePressed(MouseEvent e)
 	{
-		// whatever the mouse or keys do, the map over the game is drawn again at once
-		plugin.touched();
 		if (!plugin.mapTakesInput())
 		{
 			return e;
@@ -96,6 +94,9 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 			plugin.clickedOutside();
 			return e;
 		}
+		// whatever the mouse or keys do on the map, it is drawn again at once; what happens on the game beside it
+		// is the game's and draws nothing
+		plugin.touched();
 		held = true;
 		e.consume();
 		if (part != GameBox.Part.MAP)
@@ -141,13 +142,12 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 	@Override
 	public MouseEvent mouseDragged(MouseEvent e)
 	{
-		// whatever the mouse or keys do, the map over the game is drawn again at once
-		plugin.touched();
 		mouse = e.getPoint();
 		if (!plugin.mapTakesInput() || !held)
 		{
 			return e;
 		}
+		plugin.touched();
 		GameBox box = plugin.gameBox();
 		if (box.isGrabbed())
 		{
@@ -174,8 +174,10 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 	@Override
 	public MouseEvent mouseReleased(MouseEvent e)
 	{
-		// whatever the mouse or keys do, the map over the game is drawn again at once
-		plugin.touched();
+		if (held)
+		{
+			plugin.touched();
+		}
 		if (dragging)
 		{
 			plugin.setDragging(false);
@@ -208,33 +210,26 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 	@Override
 	public MouseEvent mouseClicked(MouseEvent e)
 	{
-		// whatever the mouse or keys do, the map over the game is drawn again at once
-		plugin.touched();
 		return swallow(e);
 	}
 
 	@Override
 	public MouseEvent mouseEntered(MouseEvent e)
 	{
-		// whatever the mouse or keys do, the map over the game is drawn again at once
-		plugin.touched();
 		return e;
 	}
 
 	@Override
 	public MouseEvent mouseExited(MouseEvent e)
 	{
-		// whatever the mouse or keys do, the map over the game is drawn again at once
-		plugin.touched();
 		mouse = null;
 		return e;
 	}
 
+	/** A move only moves the pointer the map draws with at its next redraw (every 50 ms): nothing is drawn at once. */
 	@Override
 	public MouseEvent mouseMoved(MouseEvent e)
 	{
-		// whatever the mouse or keys do, the map over the game is drawn again at once
-		plugin.touched();
 		mouse = e.getPoint();
 		return swallow(e);
 	}
@@ -242,8 +237,6 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 	@Override
 	public MouseWheelEvent mouseWheelMoved(MouseWheelEvent e)
 	{
-		// whatever the mouse or keys do, the map over the game is drawn again at once
-		plugin.touched();
 		if (!plugin.mapTakesInput())
 		{
 			return e;
@@ -254,6 +247,7 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 			// the game's own camera zoom
 			return e;
 		}
+		plugin.touched();
 		java.awt.Rectangle map = map();
 		int x = e.getX() - map.x;
 		int y = e.getY() - map.y;
@@ -270,10 +264,9 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 	@Override
 	public void keyTyped(KeyEvent e)
 	{
-		// whatever the mouse or keys do, the map over the game is drawn again at once
-		plugin.touched();
 		if (plugin.mapTakesInput() && plugin.typing() && !hasShortcutKey(e))
 		{
+			plugin.touched();
 			plugin.type(e.getKeyChar());
 			e.consume();
 		}
@@ -282,8 +275,6 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 	@Override
 	public void keyPressed(KeyEvent e)
 	{
-		// whatever the mouse or keys do, the map over the game is drawn again at once
-		plugin.touched();
 		// Escape is the map's while the mouse is on its box or something of it is open or typed into; else it is the
 		// game's (closing the bank beside a small map)
 		if (plugin.mapTakesInput() && e.getKeyCode() == KeyEvent.VK_ESCAPE
@@ -300,6 +291,7 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 		{
 			return;
 		}
+		plugin.touched();
 		pressedHere.add(e.getKeyCode());
 		e.consume();
 	}
@@ -307,10 +299,9 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 	@Override
 	public void keyReleased(KeyEvent e)
 	{
-		// whatever the mouse or keys do, the map over the game is drawn again at once
-		plugin.touched();
 		if (pressedHere.remove(e.getKeyCode()))
 		{
+			plugin.touched();
 			e.consume();
 		}
 	}

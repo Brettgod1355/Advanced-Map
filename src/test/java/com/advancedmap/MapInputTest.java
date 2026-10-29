@@ -201,4 +201,24 @@ public class MapInputTest
 		input.keyReleased(ctrlUp);
 		assertFalse(ctrlUp.isConsumed());
 	}
+
+	@Test
+	public void onlyWhatHappensOnTheMapHasItDrawnAgainAtOnce()
+	{
+		Stub plugin = new Stub();
+		MapInput input = new MapInput(plugin, () -> 1280, () -> 800);
+		input.mouseMoved(move(10, 10));
+		input.mouseMoved(move(400, 300));
+		input.mouseEntered(move(400, 300));
+		input.mouseExited(move(400, 300));
+		input.keyPressed(key(KeyEvent.KEY_PRESSED, KeyEvent.VK_F2, 0));
+		input.keyReleased(key(KeyEvent.KEY_RELEASED, KeyEvent.VK_F2, 0));
+		input.mousePressed(press(10, 10));
+		assertEquals("moves, keys the game keeps and clicks beside the box draw nothing", 0, plugin.touches);
+		input.mousePressed(press(400, 300));
+		assertEquals(1, plugin.touches);
+		plugin.typing = true;
+		input.keyPressed(key(KeyEvent.KEY_PRESSED, KeyEvent.VK_A, 0));
+		assertEquals(2, plugin.touches);
+	}
 }

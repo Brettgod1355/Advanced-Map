@@ -9,7 +9,6 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
-import java.util.Objects;
 import net.runelite.api.Client;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
@@ -32,7 +31,6 @@ class MapOverlay extends Overlay
 	private BufferedImage frame;
 	private long drawnAt;
 	private int drawnTouches = -1;
-	private java.awt.Point drawnMouse;
 
 	MapOverlay(Client client, AdvancedMapPlugin plugin, MapPainter painter)
 	{
@@ -74,7 +72,10 @@ class MapOverlay extends Overlay
 		long now = System.nanoTime();
 		int touches = plugin.touches();
 		boolean resized = frame == null || frame.getWidth() != map.width || frame.getHeight() != map.height;
-		if (resized || touches != drawnTouches || !Objects.equals(mouse, drawnMouse) || now - drawnAt >= REDRAW_NANOS)
+		// drawn again at once after a press, a drag, the wheel or a key on the map; a moved pointer waits for the next
+		// redraw (hover boxes and tips take longer than that to appear), so a moving mouse does not cost the game a
+		// whole map paint every frame
+		if (resized || touches != drawnTouches || now - drawnAt >= REDRAW_NANOS)
 		{
 			if (resized)
 			{
@@ -95,7 +96,6 @@ class MapOverlay extends Overlay
 			}
 			drawnAt = now;
 			drawnTouches = touches;
-			drawnMouse = mouse;
 		}
 		g.drawImage(frame, map.x, map.y, null);
 		box.draw(g, width, height);
