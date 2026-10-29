@@ -161,7 +161,7 @@ enum Teleport
 	KHAREDSTS_MEMOIRS_HOSIDIUS(Type.OTHER, "Kharedst's Memoirs", "Lunch by the Lancalliums (Hosidius)", 1713, 3612, 0),
 	KHAREDSTS_MEMOIRS_PISCARILIUS(Type.OTHER, "Kharedst's Memoirs", "The Fisher's Flute (Piscarilius)", 1802, 3748, 0),
 	KHAREDSTS_MEMOIRS_SHAYZIEN(Type.OTHER, "Kharedst's Memoirs", "History and Hearsay (Shayzien)", 1478, 3576, 0),
-	KHAREDSTS_MEMOIRS_LOVAKENGJ(Type.OTHER, "Kharedst's Memoirs", "Jewelry of Jubilation (Lovakengj)", 1544, 3762, 0),
+	KHAREDSTS_MEMOIRS_LOVAKENGJ(Type.OTHER, "Kharedst's Memoirs", "Jewellery of Jubilation (Lovakengj)", 1544, 3762, 0),
 	KHAREDSTS_MEMOIRS_ARCEUUS(Type.OTHER, "Kharedst's Memoirs", "A Dark Disposition (Arceuus)", 1680, 3746, 0),
 	PHARAOHS_SCEPTRE_JALSAVRAH(Type.OTHER, "Pharaoh's Sceptre", "Jalsavrah (Pyramid Plunder)", 3288, 2795, 0),
 	PHARAOHS_SCEPTRE_JALEUSTROPHOS(Type.OTHER, "Pharaoh's Sceptre", "Jaleustrophos (Agility Pyramid)", 3341, 2827, 0),

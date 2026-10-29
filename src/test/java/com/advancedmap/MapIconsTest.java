@@ -144,6 +144,8 @@ public class MapIconsTest
 			&& line.getColor().equals(MapIcons.BAD)));
 		assertEquals("Varrock Teleport", Teleport.VARROCK.title());
 		assertEquals("Games Necklace: Barbarian Assault", Teleport.BARBARIAN_ASSAULT.title());
+		// the game's own spelling of its names, as the wiki page of Kharedst's memoirs writes it
+		assertEquals("Kharedst's Memoirs: Jewellery of Jubilation (Lovakengj)", Teleport.KHAREDSTS_MEMOIRS_LOVAKENGJ.title());
 	}
 
 	@Test
