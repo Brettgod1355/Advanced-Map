@@ -23,8 +23,8 @@ import static org.junit.Assert.assertNotEquals;
 
 /**
  * The renderer on a made-up region. Its output on real game data was compared with RuneLite's own MapImageDumper
- * on a 5x5 region area around Lumbridge (2026-10-25): equal apart from the inter-map link icons, which Advanced
- * Map leaves out for now.
+ * on a 5x5 region area around Lumbridge: equal apart from the inter-map link icons, which Advanced Map leaves out
+ * for now.
  */
 public class MapImageRendererTest
 {

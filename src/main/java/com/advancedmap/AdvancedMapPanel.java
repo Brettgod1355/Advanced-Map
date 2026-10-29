@@ -70,7 +70,7 @@ class AdvancedMapPanel extends PluginPanel
 
 		JLabel title = new JLabel("Advanced Map");
 		title.setFont(FontManager.getRunescapeBoldFont());
-		// the community and the code, one click from the title, as in the owner's other plugins (owner, 2026-10-29)
+		// the community and the code, one click from the title
 		JPanel links = new JPanel(new GridLayout(1, 2, 4, 0));
 		links.setOpaque(false);
 		links.add(link("discord_white.png", "discord_blurple.png",

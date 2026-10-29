@@ -13,8 +13,8 @@ import static org.junit.Assert.assertTrue;
 public class WildernessTest
 {
 	/**
-	 * Tiles from a run through every level on 2026-10-25, recorded by Black Box (format 13): x, y, and the level the
-	 * game showed there. Each is the first tile the run reached at that level.
+	 * Tiles from a recorded run through every level: x, y, and the level the game showed there. Each is the first
+	 * tile the run reached at that level.
 	 */
 	private static final int[][] RUN = {
 		{3100, 3527, 1}, {3100, 3535, 2}, {3102, 3591, 9}, {3102, 3599, 10}, {3059, 3664, 19}, {3061, 3673, 20},

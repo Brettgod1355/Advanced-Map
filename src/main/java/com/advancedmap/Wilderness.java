@@ -14,8 +14,8 @@ import java.util.List;
  * Where the Wilderness levels are, as the game works them out for the level it shows on screen; the map draws only the
  * level 20 and 30 teleport limits from them. The rules were read
  * from the game's client script that sets that text (RuneLite's published cs2 scripts, {@code wilderness_level}, at
- * runelite/cs2-scripts {@code 1d418ff}) and written here from scratch; they match all 471 ticks of a run through
- * levels 1 to 56 recorded by Black Box on 2026-10-25. Where the Wilderness starts (the ditch) and the Ferox Enclave's
+ * runelite/cs2-scripts {@code 1d418ff}) and written here from scratch; they match all 471 ticks of a recorded run
+ * through levels 1 to 56 (WildernessTest). Where the Wilderness starts (the ditch) and the Ferox Enclave's
  * "Level: --" come from the game's server, not from these rules, so they are not drawn.
  */
 final class Wilderness
@@ -94,8 +94,7 @@ final class Wilderness
 
 	/**
 	 * Underground, the teleport lines start east of this region column: the Wilderness God Wars Dungeon's (47, 158),
-	 * which has a level of its own, and nothing west of it (owner, 2026-10-26: "remove the lines to the left of the
-	 * icy area / wilderness god wars dungeon").
+	 * which has a level of its own; nothing is drawn west of it (the icy area has no levels to mark).
 	 */
 	static final int UNDERGROUND_LINES_FROM_COLUMN = 48;
 

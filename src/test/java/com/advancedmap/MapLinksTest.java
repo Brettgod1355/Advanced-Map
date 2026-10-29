@@ -16,7 +16,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * The map link script's decoding, on a script built here in the game's compiled form (the real one, read from the
- * live cache on 2026-10-25, decoded to the same 406 links as RuneLite's own script loader).
+ * live cache, decoded to the same 406 links as RuneLite's own script loader).
  */
 public class MapLinksTest
 {
