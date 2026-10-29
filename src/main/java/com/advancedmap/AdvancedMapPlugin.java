@@ -2302,6 +2302,8 @@ public class AdvancedMapPlugin extends Plugin
 		// keys go back to the game: an open search box or marker box would otherwise take them when the map opens again
 		search.setFocused(false);
 		editor.close();
+		// a window closed with the button down never sees the release: hover boxes and tips would stay off
+		setDragging(false);
 		RegionImages current = images;
 		if (current != null)
 		{
