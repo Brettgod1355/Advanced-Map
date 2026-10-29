@@ -203,6 +203,10 @@ public class AdvancedMapPlugin extends Plugin
 		viewports.get(MapArea.SURFACE).centerOn(LUMBRIDGE.getX(), LUMBRIDGE.getY());
 		viewports.get(MapArea.UNDERGROUND).centerOn(EDGEVILLE_DUNGEON.getX(), EDGEVILLE_DUNGEON.getY());
 		area = MapArea.SURFACE;
+		// what was read and drawn before the plugin was last stopped is gone with it: read and drawn again
+		slayerShown = null;
+		extrasRead = 0;
+		farmingRead = 0;
 		MiningSites.load();
 		RareTrees.load();
 		Transports.load();
