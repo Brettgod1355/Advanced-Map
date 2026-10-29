@@ -1667,7 +1667,7 @@ public class AdvancedMapPlugin extends Plugin
 				{
 					// what the monster is like first, then where it is
 					rows.addAll(MonsterInfo.rows(monster));
-					rows.add(new SideList.Row("Where, nearest first", null, null, null, null, null));
+					rows.add(SideList.Row.heading("Locations (nearest first)"));
 				}
 				rows.addAll(SearchSpots.rows(areas, entry.getKind() == MapSearch.Kind.FISHING ? "spot"
 					: entry.getKind() == MapSearch.Kind.HUNTER ? "area" : "spawn"));
@@ -1761,6 +1761,7 @@ public class AdvancedMapPlugin extends Plugin
 	/** A key typed while {@link #typing}: into the search bar, else the Filters list's search box. */
 	void type(char c)
 	{
+		Caret.typed();
 		if (Character.isISOControl(c))
 		{
 			return;
@@ -1782,6 +1783,7 @@ public class AdvancedMapPlugin extends Plugin
 	/** A key pressed while {@link #typing}: Backspace, and in the search bar Up, Down and Enter to pick a result. */
 	void typingKey(int keyCode)
 	{
+		Caret.typed();
 		if (editor.isOpen())
 		{
 			if (keyCode == KeyEvent.VK_BACK_SPACE)
@@ -1854,6 +1856,7 @@ public class AdvancedMapPlugin extends Plugin
 			{
 				showShop((Shops.Shop) row.getTarget());
 			}
+
 			else if (row.getTarget() instanceof MonsterInfo.WikiPage)
 			{
 				LinkBrowser.browse(((MonsterInfo.WikiPage) row.getTarget()).getUrl());
@@ -1941,6 +1944,16 @@ public class AdvancedMapPlugin extends Plugin
 	/** The mouse wheel over the Filters list or a transport's places scrolls it. True when it did. */
 	boolean wheelPanels(int x, int y, double notches, int width, int height, boolean window)
 	{
+		if (!search.results().isEmpty())
+		{
+			// the search's results scroll under the mouse
+			MapSearch.Layout found = search.layout(MapPainter.buttons(width, height, window), width);
+			if (found.getResults().contains(x, y))
+			{
+				search.scroll(notches);
+				return true;
+			}
+		}
 		if (sideList.isOpen() && !editor.isOpen())
 		{
 			SideList.Layout places = sideList.layout(MapPainter.buttons(width, height, window));

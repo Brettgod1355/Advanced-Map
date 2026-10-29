@@ -14,6 +14,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 public class SideListTest
@@ -97,5 +98,14 @@ public class SideListTest
 		assertTrue(list.isOpen());
 		list.close();
 		assertFalse(list.isOpen());
+	}
+	@Test
+	public void aHeadingIsTallerAndOpensNothing()
+	{
+		SideList.Row heading = SideList.Row.heading("Locations (nearest first)");
+		assertTrue(heading.isHeading());
+		assertTrue(heading.height() > new SideList.Row("Fountain of Heroes", "1 spawn", null, null, null, null).height());
+		assertNull(heading.getPoint());
+		assertFalse(new SideList.Row("Fountain of Heroes", "1 spawn", null, null, null, null).isHeading());
 	}
 }

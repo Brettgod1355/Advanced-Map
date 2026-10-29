@@ -406,4 +406,22 @@ public class MapPainterTest
 		}
 		assertTrue("the line still runs east of it", east);
 	}
+	@Test
+	public void everyButtonSaysWhatItDoes()
+	{
+		MapSettings settings = settings(RoutingPlugin.NONE);
+		for (MapPainter.Button button : MapPainter.Button.values())
+		{
+			String tip = MapPainter.tip(button, MapArea.SURFACE, 0, false, settings, false, false);
+			assertTrue(button + " has a tip", tip != null && !tip.isEmpty());
+		}
+		assertEquals("Show the underground map", MapPainter.tip(MapPainter.Button.AREA, MapArea.SURFACE, 0, false,
+			settings, false, false));
+		assertEquals("Back over the game", MapPainter.tip(MapPainter.Button.MODE, MapArea.SURFACE, 0, true, settings,
+			false, false));
+		assertEquals("Underground, below here", MapPainter.tip(MapPainter.Button.FLOOR_DOWN, MapArea.SURFACE, 0, false,
+			settings, false, false));
+		assertEquals("Down a floor", MapPainter.tip(MapPainter.Button.FLOOR_DOWN, MapArea.SURFACE, 1, false, settings,
+			false, false));
+	}
 }

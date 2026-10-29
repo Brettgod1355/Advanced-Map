@@ -11,6 +11,7 @@ import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.Shape;
 import java.awt.RenderingHints;
 import java.awt.Stroke;
 import java.io.BufferedReader;
@@ -39,10 +40,60 @@ import net.runelite.client.ui.FontManager;
 final class MapSearch
 {
 	static final int WIDTH = 340;
-	/** Narrower than this, the box moves under the left buttons. */
+	/** With less room than this between the top buttons at their full width, they get shorter to make room. */
 	static final int MIN_WIDTH = 160;
+	/** The narrowest the box gets on the top row: the glass and a few letters. */
+	private static final int SMALLEST = 60;
 	static final int ROW = 22;
-	static final int MAX_RESULTS = 8;
+	/** The most results of one group listed; the list scrolls when they do not all fit. */
+	static final int MAX_RESULTS = 50;
+	/** Room kept under the results for the bar at the bottom of the map. */
+	private static final int BOTTOM_ROOM = 30;
+	/** The height of a group's heading in the results ("Places", "Monsters"). */
+	static final int HEADING_ROW = 16;
+
+	/** The groups the results are listed in, in this order, each under its heading. */
+	enum Group
+	{
+		PLACES("Places"),
+		MONSTERS("Monsters"),
+		ITEMS("Items"),
+		OTHER("Other");
+
+		final String label;
+
+		Group(String label)
+		{
+			this.label = label;
+		}
+	}
+
+	/** The group a result is listed in. */
+	static Group groupOf(Entry entry)
+	{
+		return groupOf(entry.getKind());
+	}
+
+	/** The group a kind of result is listed in: NPCs (characters that cannot be attacked) under Other, not Monsters. */
+	static Group groupOf(Kind kind)
+	{
+		switch (kind)
+		{
+			case PLACE:
+			case DUNGEON:
+			case MINIGAME:
+			case MARKER:
+			case ICON:
+			case FAIRY_RING:
+				return Group.PLACES;
+			case MONSTER:
+				return Group.MONSTERS;
+			case ITEM:
+				return Group.ITEMS;
+			default:
+				return Group.OTHER;
+		}
+	}
 	private static final int PAD = 8;
 	private static final int GAP = 8;
 	private static final int CLEAR = 14;
@@ -54,6 +105,7 @@ final class MapSearch
 	private static final Color TEXT = new Color(0xE8E2D0);
 	private static final Color QUIET = new Color(0x8C8676);
 	private static final Color LIT = new Color(255, 255, 255, 34);
+	private static final Color HEADING = new Color(0xA08C64);
 
 	enum Kind
 	{
@@ -153,6 +205,10 @@ final class MapSearch
 	private volatile String query = "";
 	private volatile List<Entry> results = Collections.emptyList();
 	private volatile int highlighted;
+	/** How far the results are scrolled, in pixels. */
+	private volatile int scroll;
+	/** How tall the results' list was last laid out. */
+	private volatile int listHeight = Integer.MAX_VALUE;
 
 	/** The named entrances, fishing spots and hunter areas, as {@link #load} read them. */
 	List<Entry> places()
@@ -335,8 +391,16 @@ final class MapSearch
 			sizes.merge(name, label.getSize(), Math::max);
 		}
 		List<Entry> out = new ArrayList<>();
-		names.forEach((name, at) -> out.add(new Entry(Kind.PLACE, name, Kind.PLACE.label, at, Collections.emptyList(),
-			null, sizes.get(name) + 1)));
+		// the map's names for where monsters are ("Blue dragons") are left out: the monsters themselves are found
+		CreatureNames creatures = new CreatureNames(Spawns.all());
+		names.forEach((name, at) ->
+		{
+			if (!creatures.named(name))
+			{
+				out.add(new Entry(Kind.PLACE, name, Kind.PLACE.label, at, Collections.emptyList(), null,
+					sizes.get(name) + 1));
+			}
+		});
 		out.addAll(places);
 		Map<String, List<Shops.Shop>> sellers = new LinkedHashMap<>();
 		Map<String, String> prices = new LinkedHashMap<>();
@@ -373,13 +437,101 @@ final class MapSearch
 		return out;
 	}
 
+	/**
+	 * The names of monsters and NPCs, to tell a place name of the map that only says what is there ("Blue dragons",
+	 * "Chaos druids", "Brutal black, blue & red dragons") from a place ("Goblin Village", "Dragon Forge").
+	 */
+	static final class CreatureNames
+	{
+		private final java.util.Set<String> names = new java.util.HashSet<>();
+		/** By a monster name's last word ("dragon"), the other words of the names ending with it ("brutal", "black"). */
+		private final Map<String, java.util.Set<String>> wordsByLast = new java.util.HashMap<>();
+
+		CreatureNames(List<Spawns.Creature> creatures)
+		{
+			for (Spawns.Creature creature : creatures)
+			{
+				// monsters only: an NPC's spot keeps its place name ("Boot"), and some are scenery ("Iceberg")
+				if (!creature.isMonster())
+				{
+					continue;
+				}
+				// "Goblin (Lumbridge farm)": the name without the wiki's version
+				String name = normalize(creature.getName().replaceAll("\\s*\\(.*\\)", ""));
+				if (name.isEmpty())
+				{
+					continue;
+				}
+				names.add(name);
+				String[] parts = name.split(" ");
+				wordsByLast.computeIfAbsent(parts[parts.length - 1], k -> new java.util.HashSet<>())
+					.addAll(java.util.Arrays.asList(parts).subList(0, parts.length - 1));
+			}
+		}
+
+		/**
+		 * True for a place name that is a monster's or NPC's name (or its plural), or a list of them: every word a word
+		 * of their names, the last a plural of a name's last word.
+		 */
+		boolean named(String place)
+		{
+			String key = normalize(place);
+			if (key.isEmpty())
+			{
+				return false;
+			}
+			String[] parts = key.split(" ");
+			String head = key.substring(0, key.length() - parts[parts.length - 1].length());
+			for (String last : singulars(parts[parts.length - 1]))
+			{
+				if (names.contains(head + last))
+				{
+					return true;
+				}
+				// a list ("Brutal black, blue & red dragons"): a plural, and every other word one of those monsters'
+				java.util.Set<String> others = last.equals(parts[parts.length - 1]) ? null : wordsByLast.get(last);
+				if (others != null && parts.length > 1
+					&& others.containsAll(java.util.Arrays.asList(parts).subList(0, parts.length - 1)))
+				{
+					return true;
+				}
+			}
+			return false;
+		}
+
+		/** A word and what it could be the plural of: "dragons" dragon, "dwarves" dwarf, "axes" axe or ax. */
+		static List<String> singulars(String word)
+		{
+			List<String> out = new ArrayList<>();
+			out.add(word);
+			if (word.endsWith("ies") && word.length() > 3)
+			{
+				out.add(word.substring(0, word.length() - 3) + "y");
+			}
+			if (word.endsWith("ves") && word.length() > 3)
+			{
+				out.add(word.substring(0, word.length() - 3) + "f");
+			}
+			if (word.endsWith("es") && word.length() > 2)
+			{
+				out.add(word.substring(0, word.length() - 2));
+			}
+			if (word.endsWith("s") && !word.endsWith("ss") && word.length() > 1)
+			{
+				out.add(word.substring(0, word.length() - 1));
+			}
+			return out;
+		}
+	}
+
 	static List<Entry> search(List<Entry> entries, String query)
 	{
 		return search(entries, query, null);
 	}
 
 	/**
-	 * The best matches for a query, at most {@link #MAX_RESULTS}. First whatever is named exactly what was typed (or by
+	 * The best matches for a query, by group (places, monsters, items, the rest), at most {@link #MAX_RESULTS} a
+	 * group. Within a group: first whatever is named exactly what was typed (or by
 	 * a nickname typed, "ardy"); then the places with a word starting with each word typed, the bigger first (a kingdom,
 	 * a town, then a smaller place, a dungeon, a marker), so "var" lists Varrock and Varlamore before Varrock armour; then
 	 * everything else by how well it matches (start, words, initials, loosely). Among equals the nearest to {@code from}
@@ -418,18 +570,26 @@ final class MapSearch
 		ranked.sort(order.thenComparingInt(r -> -r.score)
 			.thenComparingInt(r -> r.entry.getKind().ordinal())
 			.thenComparingInt(r -> r.entry.getName().length()));
-		List<Entry> out = new ArrayList<>();
+		// listed by group (places, monsters, items, the rest), each group best first, up to MAX_RESULTS a group: the list
+		// scrolls
+		Map<Group, List<Entry>> byGroup = new java.util.EnumMap<>(Group.class);
 		java.util.Set<String> placesListed = new java.util.HashSet<>();
-		for (int i = 0; i < ranked.size() && out.size() < MAX_RESULTS; i++)
+		for (Ranked match : ranked)
 		{
-			Entry entry = ranked.get(i).entry;
+			Entry entry = match.entry;
 			// a dungeon's entrance and the game's name for it ("Ardougne Sewers" twice): the first only
 			if (entry.getImportance() > 0 && entry.getKind() != Kind.MARKER && !placesListed.add(entry.getKey()))
 			{
 				continue;
 			}
-			out.add(entry);
+			List<Entry> group = byGroup.computeIfAbsent(groupOf(entry.getKind()), k -> new ArrayList<>());
+			if (group.size() < MAX_RESULTS)
+			{
+				group.add(entry);
+			}
 		}
+		List<Entry> out = new ArrayList<>();
+		byGroup.values().forEach(out::addAll);
 		return out;
 	}
 
@@ -671,6 +831,7 @@ final class MapSearch
 		query = "";
 		results = Collections.emptyList();
 		highlighted = 0;
+		scroll = 0;
 	}
 
 	private void setQuery(String text, List<Entry> entries, WorldPoint from)
@@ -678,6 +839,7 @@ final class MapSearch
 		query = text;
 		results = search(entries, text, from);
 		highlighted = 0;
+		scroll = 0;
 	}
 
 	/** Moves the lit result up or down, kept within the results. */
@@ -685,6 +847,14 @@ final class MapSearch
 	{
 		int count = results.size();
 		highlighted = count == 0 ? 0 : Math.max(0, Math.min(count - 1, highlighted + delta));
+		if (count > 0)
+		{
+			// the lit result kept in view, its heading too when it is the first of its group
+			int top = rowTops(results)[highlighted];
+			int from = highlighted == 0 ? 0 : top - (startsGroup(results, highlighted) ? HEADING_ROW : 0);
+			int room = Math.max(ROW, listHeight - 4);
+			scroll = Math.max(Math.min(scroll, from), top + ROW - room);
+		}
 	}
 
 	/** The result Enter chooses: the lit one, or null when there is none. */
@@ -700,6 +870,12 @@ final class MapSearch
 	 */
 	static Layout layout(Map<MapPainter.Button, Rectangle> buttons, int width, int rows)
 	{
+		return layout(buttons, width, rows, 0);
+	}
+
+	/** As above, with {@code headings} group headings among the rows. */
+	static Layout layout(Map<MapPainter.Button, Rectangle> buttons, int width, int rows, int headings)
+	{
 		Rectangle icons = buttons.get(MapPainter.Button.ICONS);
 		Rectangle filters = buttons.get(MapPainter.Button.FILTERS);
 		// after the Slayer button's place (kept whether it shows or not), before "Show underground"
@@ -708,7 +884,9 @@ final class MapSearch
 		int left = Math.max(filters.x + filters.width, slayer.x + slayer.width) + GAP;
 		int right = area.x - GAP;
 		Rectangle box;
-		if (right - left >= MIN_WIDTH)
+		// on the top row between the buttons (which get shorter on a narrow map, see MapPainter.buttons), however
+		// little room that leaves; under them only on a map too narrow for even a small box
+		if (right - left >= SMALLEST)
 		{
 			int boxWidth = Math.min(WIDTH, right - left);
 			int x = Math.max(left, Math.min(width / 2 - boxWidth / 2, right - boxWidth));
@@ -722,13 +900,65 @@ final class MapSearch
 		int x = box.x;
 		int boxWidth = box.width;
 		Rectangle clear = new Rectangle(box.x + box.width - PAD - CLEAR, box.y + (box.height - CLEAR) / 2, CLEAR, CLEAR);
-		Rectangle results = new Rectangle(x, box.y + box.height + 2, boxWidth, rows * ROW + (rows > 0 ? 4 : 0));
+		// as tall as the results, but no lower than the map's bottom (above its bar): a small map scrolls them
+		Rectangle locate = buttons.get(MapPainter.Button.LOCATE);
+		int bottom = locate.y + locate.height - BOTTOM_ROOM;
+		int top = box.y + box.height + 2;
+		int content = rows * ROW + headings * HEADING_ROW + (rows > 0 ? 4 : 0);
+		Rectangle results = new Rectangle(x, top, boxWidth, Math.min(content, Math.max(rows > 0 ? ROW + 4 : 0,
+			bottom - top)));
 		return new Layout(box, clear, results);
 	}
 
 	Layout layout(Map<MapPainter.Button, Rectangle> buttons, int width)
 	{
-		return layout(buttons, width, results().size());
+		List<Entry> shown = results();
+		Layout layout = layout(buttons, width, shown.size(), headings(shown));
+		listHeight = layout.getResults().height;
+		return layout;
+	}
+
+	/** How tall all the results are, headings counted; more than the list when it scrolls. */
+	private static int contentHeight(List<Entry> shown)
+	{
+		return shown.isEmpty() ? 0 : shown.size() * ROW + headings(shown) * HEADING_ROW + 4;
+	}
+
+	/** The mouse wheel over the results scrolls them. */
+	void scroll(double notches)
+	{
+		int max = Math.max(0, contentHeight(results()) - listHeight);
+		scroll = (int) Math.max(0, Math.min(max, scroll + Math.round(notches * ROW * 3)));
+	}
+
+	/** How many group headings a list of results shows: one where each group begins. */
+	static int headings(List<Entry> shown)
+	{
+		int count = 0;
+		for (int i = 0; i < shown.size(); i++)
+		{
+			count += startsGroup(shown, i) ? 1 : 0;
+		}
+		return count;
+	}
+
+	private static boolean startsGroup(List<Entry> shown, int i)
+	{
+		return i == 0 || groupOf(shown.get(i)) != groupOf(shown.get(i - 1));
+	}
+
+	/** Where each result's row begins under the top of the list, headings counted. */
+	static int[] rowTops(List<Entry> shown)
+	{
+		int[] tops = new int[shown.size()];
+		int y = 0;
+		for (int i = 0; i < shown.size(); i++)
+		{
+			y += startsGroup(shown, i) ? HEADING_ROW : 0;
+			tops[i] = y;
+			y += ROW;
+		}
+		return tops;
 	}
 
 	Hit hitAt(int x, int y, Layout layout)
@@ -744,10 +974,29 @@ final class MapSearch
 		Rectangle list = layout.getResults();
 		if (list.height > 0 && list.contains(x, y))
 		{
-			int index = (y - list.y - 2) / ROW;
-			return new Hit(Part.RESULT, Math.max(0, Math.min(results().size() - 1, index)));
+			int[] tops = rowTops(results());
+			for (int i = 0; i < tops.length; i++)
+			{
+				int top = list.y + 2 + tops[i] - scroll;
+				if (y >= top && y < top + ROW)
+				{
+					return new Hit(Part.RESULT, i);
+				}
+			}
+			// on a group's heading: nothing to choose
+			return new Hit(Part.BOX, -1);
 		}
 		return new Hit(Part.OUTSIDE, -1);
+	}
+
+	/** A group's heading in the results: its name, small and quiet, with a line to the list's edge. */
+	private static void drawGroupHeading(Graphics2D g, String label, Rectangle list, int top, FontMetrics metrics)
+	{
+		int baseline = top + (HEADING_ROW + metrics.getAscent() - metrics.getDescent()) / 2 + 1;
+		g.setColor(HEADING);
+		g.drawString(label, list.x + PAD, baseline);
+		int lineX = list.x + PAD + metrics.stringWidth(label) + 6;
+		g.fillRect(lineX, baseline - metrics.getAscent() / 2 + 1, list.x + list.width - PAD - lineX, 1);
 	}
 
 	void draw(Graphics2D g, Layout layout, Point mouse)
@@ -777,7 +1026,7 @@ final class MapSearch
 		if (text.isEmpty() && !focused)
 		{
 			g.setColor(QUIET);
-			g.drawString(SideList.fit("Search places, items, monsters, fairy rings", metrics, room), textX, baseline);
+			g.drawString(SideList.fit("Search places, items, monsters", metrics, room), textX, baseline);
 		}
 		else
 		{
@@ -788,7 +1037,7 @@ final class MapSearch
 				shown = shown.substring(1);
 			}
 			g.setColor(TEXT);
-			g.drawString(shown, textX, baseline);
+			g.drawString(Caret.draw(shown), textX, baseline);
 		}
 		if (!text.isEmpty())
 		{
@@ -806,10 +1055,21 @@ final class MapSearch
 			g.fillRoundRect(list.x, list.y, list.width, list.height, 8, 8);
 			g.setColor(EDGE);
 			g.drawRoundRect(list.x, list.y, list.width - 1, list.height - 1, 8, 8);
-			int y = list.y + 2;
+			int[] tops = rowTops(shown);
+			Shape clip = g.getClip();
+			g.clip(list);
 			for (int i = 0; i < shown.size(); i++)
 			{
 				Entry entry = shown.get(i);
+				int y = list.y + 2 + tops[i] - scroll;
+				if (y + ROW < list.y || y - HEADING_ROW > list.y + list.height)
+				{
+					continue;
+				}
+				if (startsGroup(shown, i))
+				{
+					drawGroupHeading(g, groupOf(entry).label, list, y - HEADING_ROW, metrics);
+				}
 				boolean lit = i == highlighted || mouse != null && list.contains(mouse) && mouse.y >= y
 					&& mouse.y < y + ROW;
 				if (lit)
@@ -825,11 +1085,20 @@ final class MapSearch
 				g.setColor(TEXT);
 				g.drawString(SideList.fit(entry.getName(), metrics, list.width - PAD * 2 - noteWidth), list.x + PAD,
 					rowBaseline);
-				y += ROW;
+			}
+			g.setClip(clip);
+			int content = contentHeight(shown);
+			if (content > list.height)
+			{
+				int thumb = Math.max(20, list.height * list.height / content);
+				int top = list.y + (list.height - thumb) * scroll / Math.max(1, content - list.height);
+				g.setColor(new Color(255, 255, 255, 60));
+				g.fillRoundRect(list.x + list.width - 5, top, 3, thumb, 3, 3);
 			}
 		}
 		else if (focused && !text.isEmpty())
 		{
+			// nothing to scroll
 			g.setColor(PANEL);
 			g.fillRoundRect(list.x, list.y, list.width, ROW + 4, 8, 8);
 			g.setColor(QUIET);

@@ -98,6 +98,8 @@ final class MapPainter
 	static final double PLAYER_MARKER_SCALE = 1.4;
 	private static final float PLAYER_STROKE = 2.5f;
 	private static final Color LOCATED = new Color(0x5AA9FF);
+	private static final Color TIP = new Color(0x10, 0x18, 0x22, 235);
+	private static final Color TIP_EDGE = new Color(0x5A5040);
 	/** The names beside transport icons. */
 	private static final Color STOP_NAME = Transports.LINE;
 	static final int FLOOR_WIDTH = LOCATE_SIZE;
@@ -106,7 +108,13 @@ final class MapPainter
 	private static final int FLOOR_LABEL = 22;
 	private static final int GAP = 8;
 	private static final int AREA_WIDTH = 110;
-	private static final int ICONS_WIDTH = 76;
+	/** "Underground" / "Surface", on a map too narrow for the full name and the search box beside it. */
+	private static final int AREA_COMPACT = 86;
+	/** The Filters button's funnel and arrow alone, likewise. */
+	private static final int FILTERS_COMPACT = 44;
+	private static final int ICONS_WIDTH = 64;
+	/** The Icons button's tick box alone, on a narrow map. */
+	private static final int ICONS_COMPACT = BUTTON_HEIGHT;
 	private static final int FILTERS_WIDTH = 86;
 	private static final int MENU_ROW = 20;
 	private static final int PAD = 8;
@@ -266,13 +274,94 @@ final class MapPainter
 	 * switch, and the button that moves the map between the game view and its own window; at the top left, the Icons
 	 * switch and the Filters list's button; at the bottom right, the button that finds the player.
 	 */
+	/** How long the mouse rests on a button before its tip shows. */
+	static final long TIP_NANOS = 400_000_000L;
+	private volatile Button tipFor;
+	private volatile long tipSince;
+
+	/**
+	 * What a map button does, said in a small tip beside it when the mouse rests on it: under the buttons along the top,
+	 * left of those on the right side. Not while a mouse button is held.
+	 */
+	private void drawButtonTip(Graphics2D g, MapViewport.View view, MapArea area, int plane, boolean window, Point mouse,
+		MapSettings settings)
+	{
+		Button button = mouse == null || dragging ? null
+			: buttonAt(mouse.x, mouse.y, view.width, view.height, window, settings);
+		long now = System.nanoTime();
+		if (button != tipFor)
+		{
+			tipFor = button;
+			tipSince = now;
+			return;
+		}
+		if (button == null || now - tipSince < TIP_NANOS)
+		{
+			return;
+		}
+		String text = tip(button, area, plane, window, settings, following, gameMaximized);
+		Rectangle at = buttons(view.width, view.height, window).get(button);
+		g.setFont(FontManager.getRunescapeSmallFont());
+		FontMetrics metrics = g.getFontMetrics();
+		int width = metrics.stringWidth(text) + 12;
+		int height = metrics.getHeight() + 6;
+		boolean top = at.y + at.height / 2 < view.height / 2;
+		int x = top ? at.x + at.width / 2 - width / 2 : at.x - GAP - width;
+		int y = top ? at.y + at.height + 6 : at.y + at.height / 2 - height / 2;
+		x = Math.max(GAP / 2, Math.min(view.width - width - GAP / 2, x));
+		g.setColor(TIP);
+		g.fillRoundRect(x, y, width, height, 6, 6);
+		g.setColor(TIP_EDGE);
+		g.drawRoundRect(x, y, width - 1, height - 1, 6, 6);
+		g.setColor(TEXT);
+		g.drawString(text, x + 6, y + (height + metrics.getAscent() - metrics.getDescent()) / 2);
+	}
+
+	/** A button's tip, as it is now: the Icons button's says whether it shows or hides them, and so on. */
+	static String tip(Button button, MapArea area, int plane, boolean window, MapSettings settings, boolean following,
+		boolean maximized)
+	{
+		switch (button)
+		{
+			case ICONS:
+				return settings.isIconsOff() ? "Show the map's icons" : "Hide the map's icons";
+			case FILTERS:
+				return "Choose which icons show";
+			case SLAYER:
+				return settings.isSlayerShown() ? "Hide your Slayer task's spawns" : "Show your Slayer task's spawns";
+			case AREA:
+				return "Show the " + area.other().label.toLowerCase(Locale.ROOT) + " map";
+			case MODE:
+				return window ? "Back over the game" : "Pop out into a window of its own";
+			case MAXIMIZE:
+				return maximized ? "Back to the smaller box" : "Fill the game view";
+			case CLOSE:
+				return "Close the map (Esc)";
+			case LOCATE:
+				return following ? "Following you; drag the map to stop" : "Back to you, and follow you";
+			case FLOOR_UP:
+				return "Up a floor";
+			default:
+				return area == MapArea.SURFACE && plane == 0 ? "Underground, below here" : "Down a floor";
+		}
+	}
+
 	static Map<Button, Rectangle> buttons(int width, int height, boolean window)
 	{
 		Map<Button, Rectangle> out = new EnumMap<>(Button.class);
-		out.put(Button.ICONS, new Rectangle(GAP, GAP, ICONS_WIDTH, BUTTON_HEIGHT));
-		out.put(Button.FILTERS, new Rectangle(GAP * 2 + ICONS_WIDTH, GAP, FILTERS_WIDTH, BUTTON_HEIGHT));
+		// a map too narrow for the search box between the top buttons at their full width gets the shorter ones, so the
+		// box stays on the top row
+		int squares = window ? 1 : 3;
+		int full = GAP * 4 + ICONS_WIDTH + FILTERS_WIDTH + BUTTON_HEIGHT + squares * (BUTTON_HEIGHT + GAP) + AREA_WIDTH
+			+ GAP * 2;
+		boolean compact = width - full < MapSearch.MIN_WIDTH;
+		int iconsWidth = compact ? ICONS_COMPACT : ICONS_WIDTH;
+		int filters = compact ? FILTERS_COMPACT : FILTERS_WIDTH;
+		int areaWidth = compact ? AREA_COMPACT : AREA_WIDTH;
+		out.put(Button.ICONS, new Rectangle(GAP, GAP, iconsWidth, BUTTON_HEIGHT));
+		out.put(Button.FILTERS, new Rectangle(GAP * 2 + iconsWidth, GAP, filters, BUTTON_HEIGHT));
 		// right of Filters (there only while the Slayer task setting is on)
-		out.put(Button.SLAYER, new Rectangle(GAP * 3 + ICONS_WIDTH + FILTERS_WIDTH, GAP, BUTTON_HEIGHT, BUTTON_HEIGHT));
+		out.put(Button.SLAYER, new Rectangle(GAP * 3 + iconsWidth + filters, GAP, BUTTON_HEIGHT, BUTTON_HEIGHT));
 		out.put(Button.LOCATE, new Rectangle(width - GAP - LOCATE_SIZE, height - GAP - LOCATE_SIZE, LOCATE_SIZE,
 			LOCATE_SIZE));
 		int down = height - GAP - LOCATE_SIZE - GAP - FLOOR_HEIGHT;
@@ -290,7 +379,7 @@ final class MapPainter
 		// pop out (or, in the window, back over the game) as a square icon beside the window's own buttons
 		out.put(Button.MODE, new Rectangle(right - BUTTON_HEIGHT, GAP, BUTTON_HEIGHT, BUTTON_HEIGHT));
 		right -= BUTTON_HEIGHT + GAP;
-		out.put(Button.AREA, new Rectangle(right - AREA_WIDTH, GAP, AREA_WIDTH, BUTTON_HEIGHT));
+		out.put(Button.AREA, new Rectangle(right - areaWidth, GAP, areaWidth, BUTTON_HEIGHT));
 		return out;
 	}
 
@@ -401,6 +490,7 @@ final class MapPainter
 		search.draw(g, search.layout(buttons(view.width, view.height, window), view.width), mouse);
 		previewShown = false;
 		drawHovered(g, view, area, window, mouse, settings, progress, selection, shown, pinsShown, farms);
+		drawButtonTip(g, view, area, plane, window, mouse, settings);
 		if (!previewShown)
 		{
 			images.clearBesides();
@@ -1598,7 +1688,9 @@ final class MapPainter
 					drawMaximize(g, button, maximized);
 					break;
 				case AREA:
-					drawLabel(g, button, "Show " + area.other().label.toLowerCase(Locale.ROOT));
+					// the short name on a narrow map; its tip says the rest
+					drawLabel(g, button, button.width < AREA_WIDTH ? area.other().label
+						: "Show " + area.other().label.toLowerCase(Locale.ROOT));
 					break;
 				case ICONS:
 					drawSwitch(g, button, "Icons", !settings.isIconsOff());
@@ -1711,6 +1803,11 @@ final class MapPainter
 		{
 			g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, antialiasing);
 		}
+		if (button.width < FILTERS_WIDTH)
+		{
+			// the funnel alone on a narrow map; its tip says what it is
+			return;
+		}
 		g.setFont(FontManager.getRunescapeSmallFont());
 		FontMetrics metrics = g.getFontMetrics();
 		g.drawString("Filters", x + 18, button.y + (button.height + metrics.getAscent() - metrics.getDescent()) / 2);
@@ -1720,7 +1817,9 @@ final class MapPainter
 	private static void drawSwitch(Graphics2D g, Rectangle button, String text, boolean on)
 	{
 		int box = 12;
-		int bx = button.x + PAD;
+		// the tick box alone, in the middle, on a narrow map; its tip says what it is
+		boolean boxOnly = button.width < ICONS_WIDTH;
+		int bx = boxOnly ? button.x + (button.width - box) / 2 : button.x + PAD;
 		int by = button.y + (button.height - box) / 2;
 		g.setColor(on ? new Color(0x3FA34D) : new Color(0x2A333D));
 		g.fillRect(bx, by, box, box);
@@ -1732,6 +1831,10 @@ final class MapPainter
 			g.setStroke(new BasicStroke(2f));
 			g.drawPolyline(new int[]{bx + 3, bx + 5, bx + 10}, new int[]{by + 6, by + 9, by + 3}, 3);
 			g.setStroke(stroke);
+		}
+		if (boxOnly)
+		{
+			return;
 		}
 		g.setFont(FontManager.getRunescapeSmallFont());
 		FontMetrics metrics = g.getFontMetrics();

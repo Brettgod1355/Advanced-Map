@@ -95,7 +95,9 @@ public class MapSearchTest
 		assertEquals(MapSearch.Kind.PLACE, MapSearch.search(index, "lumbridge").get(0).getKind());
 		assertTrue(MapSearch.search(index, "lumbridge general").stream()
 			.anyMatch(e -> e.getKind() == MapSearch.Kind.SHOP && e.getName().equals("Lumbridge General Store")));
-		MapSearch.Entry goblin = MapSearch.search(index, "goblin").get(0);
+		// places come first ("Goblin Cave"), then the monsters, the best named first
+		MapSearch.Entry goblin = MapSearch.search(index, "goblin").stream()
+			.filter(e -> e.getKind() == MapSearch.Kind.MONSTER).findFirst().orElse(null);
 		assertEquals("Goblin", goblin.getName());
 		assertEquals(MapSearch.Kind.MONSTER, goblin.getKind());
 		assertTrue(goblin.getPoints().size() > 50);
@@ -140,7 +142,9 @@ public class MapSearchTest
 		{
 			search.type(c, index, null);
 		}
-		assertEquals(MapSearch.MAX_RESULTS, search.results().size());
+		// several groups match "rune": all of them listed, at most MAX_RESULTS a group
+		assertTrue(search.results().size() > MapSearch.Group.values().length);
+		assertTrue(search.results().size() <= MapSearch.MAX_RESULTS * MapSearch.Group.values().length);
 		search.move(1);
 		assertEquals(search.results().get(1), search.chosen());
 		search.move(-5);
@@ -212,7 +216,8 @@ public class MapSearchTest
 		MapSearch.Entry cks = MapSearch.search(index, "cks").get(0);
 		assertEquals(MapSearch.Kind.FAIRY_RING, cks.getKind());
 		assertEquals("Fairy ring CKS", cks.getName());
-		assertTrue(MapSearch.search(index, "fairy ring").size() == MapSearch.MAX_RESULTS);
+		// every ring listed (the list scrolls)
+		assertTrue(MapSearch.search(index, "fairy ring").size() > 40);
 	}
 
 	@Test
@@ -256,6 +261,112 @@ public class MapSearchTest
 	}
 
 	@Test
+	public void theMapsNamesForMonstersAreNotPlaces()
+	{
+		List<Spawns.Creature> creatures = Arrays.asList(
+			new Spawns.Creature("Blue dragon", true, "111", Collections.emptyList()),
+			new Spawns.Creature("Brutal black dragon", true, "318", Collections.emptyList()),
+			new Spawns.Creature("Brutal blue dragon", true, "271", Collections.emptyList()),
+			new Spawns.Creature("Red dragon", true, "152", Collections.emptyList()),
+			new Spawns.Creature("Chaos dwarf", true, "48", Collections.emptyList()),
+			new Spawns.Creature("Goblin", true, "2", Collections.emptyList()),
+			new Spawns.Creature("Lost soul", true, "5", Collections.emptyList()),
+			new Spawns.Creature("Sea snake", true, "51", Collections.emptyList()),
+			new Spawns.Creature("Iceberg (scenery)", false, "", Collections.emptyList()));
+		MapSearch.CreatureNames names = new MapSearch.CreatureNames(creatures);
+		assertTrue(names.named("Blue dragons"));
+		assertTrue(names.named("Brutal black, blue & red dragons"));
+		assertTrue(names.named("Chaos dwarves"));
+		assertTrue(names.named("Goblin"));
+		// places, and an NPC's
+		assertFalse(names.named("Goblin Village"));
+		assertFalse(names.named("Dragon Forge"));
+		assertFalse(names.named("Sea of Souls"));
+		assertFalse(names.named("Iceberg"));
+		assertFalse(names.named("Varrock"));
+	}
+
+	@Test
+	public void noMonsterOrShopTheGameRemovedIsBundled() throws IOException
+	{
+		// the wiki's discontinued content (the Realm of Memories, past holiday events) is left out of the data
+		Spawns.load();
+		assertTrue(Spawns.all().stream().noneMatch(c -> c.getName().contains("(Realm of Memories)")));
+		assertTrue(Spawns.all().stream().anyMatch(c -> c.getName().equals("Blue dragon")));
+	}
+
+	@Test
+	public void resultsAreGroupedPlacesMonstersItemsThenTheRest()
+	{
+		List<MapSearch.Entry> found = MapSearch.search(index, "dragon");
+		int last = -1;
+		for (MapSearch.Entry e : found)
+		{
+			int group = MapSearch.groupOf(e).ordinal();
+			assertTrue("in group order: " + found, group >= last);
+			last = group;
+		}
+		// NPCs (characters that cannot be attacked) are not listed with the monsters
+		assertEquals(MapSearch.Group.OTHER, MapSearch.groupOf(MapSearch.Kind.NPC));
+		assertEquals(MapSearch.Group.MONSTERS, MapSearch.groupOf(MapSearch.Kind.MONSTER));
+		// a heading where each group starts, and rows below their heading
+		int[] tops = MapSearch.rowTops(found);
+		assertEquals(MapSearch.HEADING_ROW, tops[0]);
+		assertEquals(MapSearch.headings(found) * MapSearch.HEADING_ROW + (found.size() - 1) * MapSearch.ROW,
+			tops[found.size() - 1]);
+	}
+
+	@Test
+	public void theResultsFitTheMapAndScroll()
+	{
+		MapSearch search = new MapSearch();
+		search.setFocused(true);
+		for (char c : "dragon".toCharArray())
+		{
+			search.type(c, index, null);
+		}
+		// a small map: the list stops above its bar and scrolls
+		java.util.Map<MapPainter.Button, Rectangle> small = MapPainter.buttons(600, 400, false);
+		MapSearch.Layout layout = search.layout(small, 600);
+		Rectangle list = layout.getResults();
+		Rectangle locate = small.get(MapPainter.Button.LOCATE);
+		assertTrue(list.y + list.height <= locate.y + locate.height);
+		assertTrue(list.height < search.results().size() * MapSearch.ROW);
+		// the arrow keys keep the lit result in view
+		search.move(search.results().size());
+		int last = search.results().size() - 1;
+		MapSearch.Hit hit = search.hitAt(list.x + 10, list.y + list.height - 6, layout);
+		assertEquals(last, hit.getIndex());
+		// a big map shows them all
+		Rectangle tall = search.layout(MapPainter.buttons(1200, 3000, false), 1200).getResults();
+		assertEquals(search.results().size() * MapSearch.ROW + MapSearch.headings(search.results()) * MapSearch.HEADING_ROW
+			+ 4, tall.height);
+	}
+
+	@Test
+	public void theBoxStaysOnTheTopRowOfASmallMap()
+	{
+		// the smallest box over the game (520 wide) and a small pop-out: shorter buttons, the box between them
+		for (int width : new int[]{520, 600})
+		{
+			for (boolean window : new boolean[]{false, true})
+			{
+				java.util.Map<MapPainter.Button, Rectangle> buttons = MapPainter.buttons(width, 400, window);
+				Rectangle box = MapSearch.layout(buttons, width, 0).getBox();
+				Rectangle filters = buttons.get(MapPainter.Button.FILTERS);
+				assertEquals(width + " " + window, filters.y, box.y);
+				for (Rectangle button : buttons.values())
+				{
+					assertFalse(width + " " + window, button.intersects(box));
+				}
+			}
+		}
+		// a wide map keeps the full buttons
+		assertTrue(MapPainter.buttons(1200, 800, false).get(MapPainter.Button.FILTERS).width
+			> MapPainter.buttons(520, 400, false).get(MapPainter.Button.FILTERS).width);
+	}
+
+	@Test
 	public void placesComeFirstTheBiggerFirst()
 	{
 		List<MapSearch.Entry> entries = Arrays.asList(
@@ -278,7 +389,8 @@ public class MapSearchTest
 		List<String> var = MapSearch.search(entries, "var", null).stream().map(MapSearch.Entry::getName)
 			.collect(Collectors.toList());
 		// the start of both names: the kingdom, then the town, then the armour; "var" inside a name comes last
-		assertEquals(Arrays.asList("Kingdom of Varlamore", "Varrock", "Varrock armour", "Silvarea"), var);
+		// grouped: the places (bigger first), then the items
+		assertEquals(Arrays.asList("Kingdom of Varlamore", "Varrock", "Silvarea", "Varrock armour"), var);
 		// a name typed in full still comes first
 		assertEquals("Ardougne cloak", MapSearch.search(entries, "ardougne cloak", null).get(0).getName());
 	}

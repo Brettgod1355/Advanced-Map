@@ -65,9 +65,26 @@ final class SideList
 
 		int height()
 		{
-			return ROW + SUB * subLines().size();
+			return (isHeading() ? HEADING_GAP : 0) + ROW + SUB * subLines().size();
+		}
+
+		/** A heading over the rows after it ("Locations (nearest first)"): bold and underlined; a click does nothing. */
+		static Row heading(String text)
+		{
+			return new Row(text, null, null, null, null, HEADING);
+		}
+
+		boolean isHeading()
+		{
+			return target == HEADING;
 		}
 	}
+
+	/** What a heading row holds as its target: nothing to open. */
+	private static final Object HEADING = new Object();
+	/** Space above a heading, apart from the rows before it. */
+	private static final int HEADING_GAP = 8;
+	private static final Color HEADING_LINE = new Color(0xC8A050);
 
 	/** Where the list and its parts are on screen. */
 	@Value
@@ -232,6 +249,12 @@ final class SideList
 			int height = row.height();
 			if (y + height >= list.y && y <= list.y + list.height)
 			{
+				if (row.isHeading())
+				{
+					drawHeading(g, row, list, y + HEADING_GAP);
+					y += height;
+					continue;
+				}
 				if ((row.getPoint() != null || row.getTarget() != null) && mouse != null && list.contains(mouse) && mouse.y >= y
 					&& mouse.y < y + height)
 				{
@@ -268,6 +291,20 @@ final class SideList
 			g.setColor(new Color(255, 255, 255, 60));
 			g.fillRoundRect(list.x + list.width - 5, top, 3, thumb, 3, 3);
 		}
+	}
+
+	/** A heading row: its text in bold, underlined across the list. */
+	private static void drawHeading(Graphics2D g, Row row, Rectangle list, int top)
+	{
+		java.awt.Font font = g.getFont();
+		g.setFont(FontManager.getRunescapeBoldFont());
+		FontMetrics bold = g.getFontMetrics();
+		int baseline = top + (ROW + bold.getAscent() - bold.getDescent()) / 2;
+		g.setColor(TEXT);
+		g.drawString(fit(row.getText(), bold, list.width - PAD * 2), list.x + PAD, baseline);
+		g.setColor(HEADING_LINE);
+		g.fillRect(list.x + PAD, baseline + 3, list.width - PAD * 2, 1);
+		g.setFont(font);
 	}
 
 	/** Text in lines no wider than {@code width} in the list's font, broken between words only. */

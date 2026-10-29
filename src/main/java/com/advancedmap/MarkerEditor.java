@@ -250,7 +250,7 @@ final class MarkerEditor
 			g.setColor(QUIET);
 			g.drawString("Name (optional)", field.x + PAD, baseline);
 			g.setColor(TEXT);
-			g.drawString("|", field.x + PAD - 3, baseline);
+			g.drawString(Caret.draw("|"), field.x + PAD - 3, baseline);
 		}
 		else
 		{
@@ -259,6 +259,7 @@ final class MarkerEditor
 			{
 				shown = shown.substring(1);
 			}
+			shown = Caret.draw(shown);
 			g.setColor(TEXT);
 			g.drawString(shown, field.x + PAD, baseline);
 		}

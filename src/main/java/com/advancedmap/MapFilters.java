@@ -319,7 +319,7 @@ final class MapFilters
 		else
 		{
 			g.setColor(TEXT);
-			g.drawString(typed + "|", search.x + 6, textY);
+			g.drawString(Caret.draw(typed + "|"), search.x + 6, textY);
 		}
 		drawButton(g, layout.getAllOn(), "All on", metrics);
 		drawButton(g, layout.getAllOff(), "All off", metrics);
