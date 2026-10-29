@@ -106,7 +106,10 @@ class RegionImages
 					@Override
 					protected boolean removeEldestEntry(Map.Entry<Integer, BufferedImage> eldest)
 					{
-						return size() > level.kept;
+						// never a floor that is on screen: the next paint would ask for it again, and with more floors
+						// in view than are kept the drawing would never end
+						return size() > level.kept && !wanted.contains(eldest.getKey())
+							&& !wantedBesides.contains(eldest.getKey());
 					}
 				}));
 		}
