@@ -42,7 +42,7 @@ public interface AdvancedMapConfig extends Config
 		name = "Icons",
 		description = "Which icons the map shows is chosen with Filters at the top left of the map. Point at or click an"
 			+ " icon for its details; right-click it to hide just that one.",
-		position = 13
+		position = 18
 	)
 	String ICONS = "icons";
 
@@ -502,7 +502,7 @@ public interface AdvancedMapConfig extends Config
 		keyName = "placeNames",
 		name = "Place names",
 		description = "Show the names of kingdoms when zoomed far out, then towns and places as you zoom in.",
-		position = 7
+		position = 13
 	)
 	default boolean placeNames()
 	{
@@ -514,7 +514,7 @@ public interface AdvancedMapConfig extends Config
 		name = "Floor numbers",
 		description = "How the floors above the ground are numbered: \"Ground, 2, 3, 4\" counts the ground floor as the"
 			+ " first; \"Ground, 1, 2, 3\" counts the floor above it as the first, as in the UK and on the wiki.",
-		position = 8
+		position = 14
 	)
 	default FloorNumbers floorNumbers()
 	{
@@ -526,7 +526,7 @@ public interface AdvancedMapConfig extends Config
 		name = "Route with",
 		description = "The plugin that right-click \"Route here\" asks for a route: Shortest Path or GPS. \"Route"
 			+ " here\" shows only while that plugin is installed and on. With None the menu has no route entries.",
-		position = 9
+		position = 15
 	)
 	default RoutingPlugin routing()
 	{
@@ -538,7 +538,7 @@ public interface AdvancedMapConfig extends Config
 		name = "Save the map on this computer",
 		description = "Keep the drawn map in RuneLite's plugin data folder, shared by all your characters and profiles,"
 			+ " so it opens at once next time. A region is drawn again only when a game update changes it.",
-		position = 10
+		position = 16
 	)
 	default boolean saveMap()
 	{
@@ -551,7 +551,7 @@ public interface AdvancedMapConfig extends Config
 		description = "From the moment the client starts, draw the regions not saved yet in the background, nearest you"
 			+ " first, so the map is ready when you open it. Uses spare processor time for a few minutes the first time"
 			+ " and after updates.",
-		position = 11
+		position = 17
 	)
 	default boolean prepareMap()
 	{
