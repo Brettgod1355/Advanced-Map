@@ -316,20 +316,20 @@ final class MapIcons
 			default:
 				break;
 		}
-		switch (teleport)
+		switch (teleport.getName())
 		{
-			case ARDOUGNE:
+			case "ARDOUGNE":
 				return Quest.PLAGUE_CITY;
-			case WATCHTOWER:
-			case WATCHTOWER_YANILLE:
+			case "WATCHTOWER":
+			case "WATCHTOWER_YANILLE":
 				return Quest.WATCHTOWER;
-			case TROLLHEIM:
+			case "TROLLHEIM":
 				return Quest.EADGARS_RUSE;
-			case APE_ATOLL:
+			case "APE_ATOLL":
 				return Quest.RECIPE_FOR_DISASTER__KING_AWOWOGEI;
-			case KOUREND:
+			case "KOUREND":
 				return Quest.CLIENT_OF_KOUREND;
-			case CIVITAS_ILLA_FORTIS:
+			case "CIVITAS_ILLA_FORTIS":
 				return Quest.TWILIGHTS_PROMISE;
 			default:
 				return null;

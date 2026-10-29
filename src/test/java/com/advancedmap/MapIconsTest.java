@@ -122,30 +122,30 @@ public class MapIconsTest
 	public void teleportSpellsNeedTheirLevelAndQuest()
 	{
 		MapSettings shown = settings(Collections.emptySet(), false, false, false);
-		MapSpot varrock = MapSpot.teleport(Teleport.VARROCK);
+		MapSpot varrock = MapSpot.teleport(Teleport.named("VARROCK"));
 		assertEquals(MapIcons.Look.NORMAL, MapIcons.look(varrock, shown, progress(1, 25, QuestState.NOT_STARTED)));
 		assertEquals(MapIcons.Look.LOCKED, MapIcons.look(varrock, shown, progress(1, 24, QuestState.NOT_STARTED)));
 		// Ancient Magicks need Desert Treasure I, not started here
-		assertEquals(MapIcons.Look.LOCKED, MapIcons.look(MapSpot.teleport(Teleport.PADDEWWA), shown,
+		assertEquals(MapIcons.Look.LOCKED, MapIcons.look(MapSpot.teleport(Teleport.named("PADDEWWA")), shown,
 			progress(1, 99, QuestState.NOT_STARTED)));
-		assertEquals(Quest.PLAGUE_CITY, MapIcons.requiredQuest(Teleport.ARDOUGNE));
-		assertNull(MapIcons.requiredQuest(Teleport.LUMBRIDGE));
+		assertEquals(Quest.PLAGUE_CITY, MapIcons.requiredQuest(Teleport.named("ARDOUGNE")));
+		assertNull(MapIcons.requiredQuest(Teleport.named("LUMBRIDGE")));
 		// a teleport by item is never marked: whether the player has the item is not known
-		assertEquals(MapIcons.Look.NORMAL, MapIcons.look(MapSpot.teleport(Teleport.BARBARIAN_ASSAULT), shown,
+		assertEquals(MapIcons.Look.NORMAL, MapIcons.look(MapSpot.teleport(Teleport.named("BARBARIAN_ASSAULT")), shown,
 			progress(1, 1, QuestState.NOT_STARTED)));
 	}
 
 	@Test
 	public void theInfoBoxSaysWhatIsMissing()
 	{
-		List<MapIcons.Line> lines = MapIcons.info(MapSpot.teleport(Teleport.VARROCK), progress(1, 20, QuestState.NOT_STARTED),
+		List<MapIcons.Line> lines = MapIcons.info(MapSpot.teleport(Teleport.named("VARROCK")), progress(1, 20, QuestState.NOT_STARTED),
 			false, FloorNumbers.GROUND_IS_FIRST);
 		assertTrue(lines.stream().anyMatch(line -> line.getText().equals("Needs 25 Magic (you have 20)")
 			&& line.getColor().equals(MapIcons.BAD)));
-		assertEquals("Varrock Teleport", Teleport.VARROCK.title());
-		assertEquals("Games Necklace: Barbarian Assault", Teleport.BARBARIAN_ASSAULT.title());
+		assertEquals("Varrock Teleport", Teleport.named("VARROCK").title());
+		assertEquals("Games Necklace: Barbarian Assault", Teleport.named("BARBARIAN_ASSAULT").title());
 		// the game's own spelling of its names, as the wiki page of Kharedst's memoirs writes it
-		assertEquals("Kharedst's Memoirs: Jewellery of Jubilation (Lovakengj)", Teleport.KHAREDSTS_MEMOIRS_LOVAKENGJ.title());
+		assertEquals("Kharedst's Memoirs: Jewellery of Jubilation (Lovakengj)", Teleport.named("KHAREDSTS_MEMOIRS_LOVAKENGJ").title());
 	}
 
 	@Test
@@ -170,7 +170,7 @@ public class MapIconsTest
 			false), Progress.NONE);
 		MapIcons.Shown varrock = MapIcons.at(shown, 400, 300);
 		assertNotNull(varrock);
-		assertEquals(Teleport.VARROCK, varrock.getSpot().getTeleport());
+		assertEquals(Teleport.named("VARROCK"), varrock.getSpot().getTeleport());
 		assertNull(MapIcons.at(shown, 5, 5));
 	}
 

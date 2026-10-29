@@ -101,8 +101,8 @@ public class MapPainterTest
 	@Test
 	public void theMenuStaysOnScreenWithOneRowPerEntry()
 	{
-		MapSpot varrock = MapSpot.teleport(Teleport.VARROCK);
-		MapPainter.Selection near = new MapPainter.Selection(varrock, true, 790, 590, Teleport.VARROCK.getLocation());
+		MapSpot varrock = MapSpot.teleport(Teleport.named("VARROCK"));
+		MapPainter.Selection near = new MapPainter.Selection(varrock, true, 790, 590, Teleport.named("VARROCK").getLocation());
 		List<MapPainter.MenuEntry> entries = MapPainter.menuEntries(near, settings(RoutingPlugin.SHORTEST_PATH));
 		assertEquals(4, entries.size());
 		assertEquals(MapPainter.Action.HIDE, entries.get(0).getAction());
@@ -140,7 +140,7 @@ public class MapPainterTest
 		// a tile's selection has no icon; drawing the icons beside it once threw on every frame
 		MapPainter painter = new MapPainter(null, null, new MapIcons(), null, null, new SideList(), new MapSearch());
 		MapPainter.Selection tile = new MapPainter.Selection(null, true, 10, 10, new WorldPoint(3222, 3218, 0));
-		List<MapIcons.Shown> shown = Collections.singletonList(new MapIcons.Shown(MapSpot.teleport(Teleport.VARROCK),
+		List<MapIcons.Shown> shown = Collections.singletonList(new MapIcons.Shown(MapSpot.teleport(Teleport.named("VARROCK")),
 			new Rectangle(100, 100, 12, 12), MapIcons.Look.NORMAL));
 		BufferedImage image = new BufferedImage(200, 200, BufferedImage.TYPE_INT_RGB);
 		Graphics2D g = image.createGraphics();
@@ -282,12 +282,12 @@ public class MapPainterTest
 	public void restingOnAnIconShowsItsBoxUnlessOffOrDragging() throws InterruptedException
 	{
 		MapIcons icons = new MapIcons();
-		MapViewport.View view = new MapViewport.View(Teleport.VARROCK.getLocation().getX(),
-			Teleport.VARROCK.getLocation().getY(), 4, 500, 400);
+		MapViewport.View view = new MapViewport.View(Teleport.named("VARROCK").getLocation().getX(),
+			Teleport.named("VARROCK").getLocation().getY(), 4, 500, 400);
 		MapIcons.Shown varrock = null;
 		for (MapIcons.Shown shown : icons.visible(view, MapArea.SURFACE, 0, settings(RoutingPlugin.NONE), Progress.NONE))
 		{
-			if (shown.getSpot().getTeleport() == Teleport.VARROCK)
+			if (shown.getSpot().getTeleport() == Teleport.named("VARROCK"))
 			{
 				varrock = shown;
 			}

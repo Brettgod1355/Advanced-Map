@@ -97,7 +97,7 @@ final class MapSpot
 	static MapSpot teleport(Teleport teleport)
 	{
 		WorldPoint at = Prifddinas.toSurface(teleport.getLocation());
-		return new MapSpot("t" + teleport.name(), at.getX(), at.getY(), at.getPlane(), -1, -1, IconGroup.TELEPORTS,
+		return new MapSpot("t" + teleport.getName(), at.getX(), at.getY(), at.getPlane(), -1, -1, IconGroup.TELEPORTS,
 			teleport, null, null, null, null, null);
 	}
 
