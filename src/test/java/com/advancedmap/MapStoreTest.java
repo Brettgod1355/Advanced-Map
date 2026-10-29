@@ -165,4 +165,18 @@ public class MapStoreTest
 		other.saveEmpty(emptyKey, 0x1111L);
 		assertTrue(mine.isEmpty(emptyKey, 0x1111L));
 	}
+
+	@Test
+	public void anOlderFormatsFolderIsDeletedWhenTheStoreOpens() throws Exception
+	{
+		Filepath old = root().joinSegment("map-v" + (MapStore.VERSION - 1));
+		old.createDirectories();
+		old.joinSegment("0_12850_1_f.png").write(new byte[]{1, 2, 3});
+		Filepath unrelated = root().joinSegment("markers");
+		unrelated.createDirectories();
+		MapStore.open(root());
+		assertFalse("nothing reads the old format again", old.exists());
+		assertTrue(unrelated.exists());
+		assertTrue(root().joinSegment("map-v" + MapStore.VERSION).exists());
+	}
 }

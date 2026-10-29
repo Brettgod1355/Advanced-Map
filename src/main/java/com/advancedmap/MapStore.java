@@ -8,6 +8,7 @@ package com.advancedmap;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
@@ -56,6 +57,7 @@ final class MapStore
 	static MapStore open(Filepath pluginFolder) throws IOException
 	{
 		MapStore store = new MapStore(pluginFolder.joinSegment("map-v" + VERSION));
+		forgetOlderVersions(pluginFolder);
 		store.folder.createDirectories();
 		SafeFiles.cleanUp(store.folder);
 		try (Stream<Filepath> files = store.folder.walk(1))
@@ -64,6 +66,25 @@ final class MapStore
 		}
 		store.forgetCityCopy();
 		return store;
+	}
+
+	/** Deletes what an older format of the saved map left (a whole map, 100 MB or more), which nothing reads again. */
+	private static void forgetOlderVersions(Filepath pluginFolder) throws IOException
+	{
+		if (!pluginFolder.exists())
+		{
+			return;
+		}
+		List<Filepath> older = new ArrayList<>();
+		try (Stream<Filepath> files = pluginFolder.walk(1))
+		{
+			files.filter(file -> file.getFileName().matches("map-v\\d+") && !file.getFileName().equals("map-v" + VERSION))
+				.forEach(older::add);
+		}
+		for (Filepath old : older)
+		{
+			old.deleteRecursively();
+		}
 	}
 
 	/**
