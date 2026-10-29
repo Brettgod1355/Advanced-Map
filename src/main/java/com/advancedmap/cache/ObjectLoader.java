@@ -38,12 +38,6 @@ public class ObjectLoader
 	private boolean rev220SoundData = true;
 	private EntityOpsLoader entityOpsLoader = new EntityOpsLoader();
 
-	public ObjectLoader configureForRevision(int rev)
-	{
-		this.rev220SoundData = rev >= REV_220_OBJ_ARCHIVE_REV;
-		return this;
-	}
-
 	public ObjectDefinition load(int id, byte[] b)
 	{
 		ObjectDefinition def = new ObjectDefinition();

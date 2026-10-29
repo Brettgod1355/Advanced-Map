@@ -202,11 +202,6 @@ public class Region
 		return baseY;
 	}
 
-	public int getTileHeight(int z, int x, int y)
-	{
-		return tileHeights[z][x][y];
-	}
-
 	public byte getTileSetting(int z, int x, int y)
 	{
 		return tileSettings[z][x][y];

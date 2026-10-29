@@ -47,12 +47,6 @@ public class InputStream
 		this.buffer = ByteBuffer.wrap(buffer);
 	}
 
-	public byte[] getArray()
-	{
-		assert buffer.hasArray();
-		return buffer.array();
-	}
-
 	@Override
 	public String toString()
 	{
@@ -69,16 +63,6 @@ public class InputStream
 		int pos = buffer.position();
 		pos += length;
 		buffer.position(pos);
-	}
-
-	public void setOffset(int offset)
-	{
-		buffer.position(offset);
-	}
-
-	public int getOffset()
-	{
-		return buffer.position();
 	}
 
 	public int getLength()
@@ -136,11 +120,6 @@ public class InputStream
 		return buffer.get(buffer.position());
 	}
 
-	public int readBigSmart()
-	{
-		return peek() >= 0 ? (this.readUnsignedShort() & 0xFFFF) : (this.readInt() & Integer.MAX_VALUE);
-	}
-
 	public int readBigSmart2()
 	{
 		if (peek() < 0)
@@ -149,18 +128,6 @@ public class InputStream
 		}
 		int value = readUnsignedShort();
 		return value == 32767 ? -1 : value;
-	}
-
-	public int readShortSmart()
-	{
-		int peek = this.peek() & 0xFF;
-		return peek < 128 ? this.readUnsignedByte() - 64 : this.readUnsignedShort() - 0xc000;
-	}
-
-	public int readUnsignedShortSmartMinusOne()
-	{
-		int peek = this.peek() & 0xFF;
-		return peek < 128 ? this.readUnsignedByte() - 1 : this.readUnsignedShort() - 0x8001;
 	}
 
 	public int readUnsignedShortSmart()
@@ -212,58 +179,6 @@ public class InputStream
 		return sb.toString();
 	}
 
-	public String readString2()
-	{
-		if (this.readByte() != 0)
-		{
-			throw new IllegalStateException("Invalid jstr2");
-		}
-		else
-		{
-			return readString();
-		}
-	}
-
-	public String readStringOrNull()
-	{
-		if (this.peek() != 0)
-		{
-			return readString();
-		}
-		else
-		{
-			this.readByte(); // discard
-			return null;
-		}
-	}
-
-	public int readVarInt()
-	{
-		byte var1 = this.readByte();
-
-		int var2;
-		for (var2 = 0; var1 < 0; var1 = this.readByte())
-		{
-			var2 = (var2 | var1 & 127) << 7;
-		}
-
-		return var2 | var1;
-	}
-
-	public int readVarInt2()
-	{
-		int value = 0;
-		int bits = 0;
-		int read;
-		do
-		{
-			read = readUnsignedByte();
-			value |= (read & 0x7F) << bits;
-			bits += 7;
-		} while (read > 127);
-		return value;
-	}
-
 	public Map<Integer, Object> readParams()
 	{
 		var out = new HashMap<Integer, Object>();
@@ -293,10 +208,4 @@ public class InputStream
 		return out;
 	}
 
-	public byte[] getRemaining()
-	{
-		byte[] b = new byte[buffer.remaining()];
-		buffer.get(b);
-		return b;
-	}
 }

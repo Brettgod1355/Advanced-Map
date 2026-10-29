@@ -38,13 +38,6 @@ public final class JagexColor
 	{
 	}
 
-	public static short packHSL(int hue, int saturation, int luminance)
-	{
-		return (short) ((short) (hue & 63) << 10
-			| (short) (saturation & 7) << 7
-			| (short) (luminance & 127));
-	}
-
 	public static int packHSLFull(int hue, int saturation, int luminance)
 	{
 		return (hue & 0xFF) << 16
@@ -81,11 +74,6 @@ public final class JagexColor
 	public static int unpackLuminanceFull(int hsl)
 	{
 		return (hsl & 0xFF);
-	}
-
-	public static String formatHSL(short hsl)
-	{
-		return String.format("%02Xh%Xs%02Xl", unpackHue(hsl), unpackSaturation(hsl), unpackLuminance(hsl));
 	}
 
 	public static int HSLtoRGB(short hsl, double brightness)
@@ -207,16 +195,6 @@ public final class JagexColor
 		return ((int) (r * 256.0D) << 16)
 			| ((int) (g * 256.0D) << 8)
 			| (int) (b * 256.0D);
-	}
-
-	public static int[] createPalette(double brightness)
-	{
-		int[] colorPalette = new int[65536];
-		for (int i = 0; i < colorPalette.length; i++)
-		{
-			colorPalette[i] = HSLtoRGB((short) i, brightness);
-		}
-		return colorPalette;
 	}
 
 	public static int getRGBFull(int hsl)
