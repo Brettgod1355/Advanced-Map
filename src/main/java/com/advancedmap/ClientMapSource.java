@@ -653,29 +653,8 @@ class ClientMapSource implements MapSource
 	List<MapLabels.Label> labels()
 	{
 		loadTables();
-		List<byte[]> maps = reader.read(client ->
-		{
-			List<byte[]> out = new ArrayList<>();
-			IndexDataBase index = client.getIndex(WORLD_MAP);
-			int[] files = index == null ? null : index.getFileIds(COMPOSITE_MAPS);
-			if (files != null)
-			{
-				for (int file : files)
-				{
-					// Last Man Standing's copies of the world name their own places ("Wild Varrock"): not the world's
-					if (isLastManStanding(index.loadData(MAP_DETAILS, file)))
-					{
-						continue;
-					}
-					byte[] data = index.loadData(COMPOSITE_MAPS, file);
-					if (data != null)
-					{
-						out.add(data);
-					}
-				}
-			}
-			return out;
-		});
+		// Last Man Standing's copies of the world name their own places ("Wild Varrock"): not the world's
+		List<byte[]> maps = worldMapFiles(COMPOSITE_MAPS, false, true);
 		List<MapLabels.Label> labels = new ArrayList<>();
 		Set<String> seen = new HashSet<>();
 		for (byte[] map : maps)
@@ -703,25 +682,8 @@ class ClientMapSource implements MapSource
 	 */
 	Map<String, WorldPoint> gameMaps()
 	{
-		List<byte[]> details = reader.read(client ->
-		{
-			List<byte[]> out = new ArrayList<>();
-			IndexDataBase index = client.getIndex(WORLD_MAP);
-			int[] files = index == null ? null : index.getFileIds(MAP_DETAILS);
-			if (files != null)
-			{
-				for (int file : files)
-				{
-					// file 0 is the surface, the map Advanced Map shows already
-					byte[] data = file == 0 ? null : index.loadData(MAP_DETAILS, file);
-					if (data != null)
-					{
-						out.add(data);
-					}
-				}
-			}
-			return out;
-		});
+		// file 0 is the surface, the map Advanced Map shows already
+		List<byte[]> details = worldMapFiles(MAP_DETAILS, true, false);
 		Map<String, WorldPoint> maps = new LinkedHashMap<>();
 		for (byte[] data : details)
 		{
@@ -749,25 +711,8 @@ class ClientMapSource implements MapSource
 	 */
 	List<List<WorldMapElements.Piece>> mapPieces()
 	{
-		List<byte[]> maps = reader.read(client ->
-		{
-			List<byte[]> out = new ArrayList<>();
-			IndexDataBase index = client.getIndex(WORLD_MAP);
-			int[] files = index == null ? null : index.getFileIds(COMPOSITE_MAPS);
-			if (files != null)
-			{
-				for (int file : files)
-				{
-					// file 0 is the surface
-					byte[] data = file == 0 ? null : index.loadData(COMPOSITE_MAPS, file);
-					if (data != null)
-					{
-						out.add(data);
-					}
-				}
-			}
-			return out;
-		});
+		// file 0 is the surface
+		List<byte[]> maps = worldMapFiles(COMPOSITE_MAPS, true, false);
 		List<List<WorldMapElements.Piece>> out = new ArrayList<>();
 		for (byte[] map : maps)
 		{
@@ -781,6 +726,37 @@ class ClientMapSource implements MapSource
 			}
 		}
 		return out;
+	}
+
+	/**
+	 * The files of one group of the world map index, read in one wait for the client thread; empty while the client
+	 * has no world map data yet. Skips the surface (file 0) and the Last Man Standing maps when asked.
+	 */
+	private List<byte[]> worldMapFiles(int group, boolean skipSurface, boolean skipLastManStanding)
+	{
+		return reader.read(client ->
+		{
+			List<byte[]> out = new ArrayList<>();
+			IndexDataBase index = client.getIndex(WORLD_MAP);
+			int[] files = index == null ? null : index.getFileIds(group);
+			if (files != null)
+			{
+				for (int file : files)
+				{
+					if (skipSurface && file == 0
+						|| skipLastManStanding && isLastManStanding(index.loadData(MAP_DETAILS, file)))
+					{
+						continue;
+					}
+					byte[] data = index.loadData(group, file);
+					if (data != null)
+					{
+						out.add(data);
+					}
+				}
+			}
+			return out;
+		});
 	}
 
 	/** True for the details of one of the game's Last Man Standing maps ("LMS Wild Varrock", "LMS Desert Island"). */
