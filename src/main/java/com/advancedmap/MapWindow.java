@@ -105,8 +105,7 @@ final class MapWindow extends JFrame
 	private final Timer redraw;
 	private final Timer saveSoon;
 	private static final int SAVE_DELAY_MS = 1000;
-	/** Set while the player has the window minimized, from the window's own events. */
-	private volatile boolean minimized;
+	private final Minimizing minimizing;
 
 	/**
 	 * Opens where the window was last ({@code savedBounds}, "x,y,width,height") when that is still on a screen, else
@@ -132,6 +131,8 @@ final class MapWindow extends JFrame
 			setLocationByPlatform(true);
 		}
 		redraw = new Timer(REDRAW_MS, e -> panel.repaint());
+		minimizing = new Minimizing(redraw);
+		addWindowListener(minimizing);
 		// saved a moment after the last move or resize too, in case RuneLite is quit with the window still open
 		saveSoon = new Timer(SAVE_DELAY_MS, e -> save(saveBounds));
 		saveSoon.setRepeats(false);
@@ -151,18 +152,6 @@ final class MapWindow extends JFrame
 		});
 		addWindowListener(new WindowAdapter()
 		{
-			@Override
-			public void windowIconified(WindowEvent e)
-			{
-				minimized = true;
-			}
-
-			@Override
-			public void windowDeiconified(WindowEvent e)
-			{
-				minimized = false;
-			}
-
 			@Override
 			public void windowClosed(WindowEvent e)
 			{
@@ -193,7 +182,41 @@ final class MapWindow extends JFrame
 
 	boolean isMinimized()
 	{
-		return minimized;
+		return minimizing.isMinimized();
+	}
+
+	/**
+	 * Knows, from the window's own events, when the player has the window minimized, and stops the redraw meanwhile:
+	 * nothing of it can be seen, and Swing would still paint it every time.
+	 */
+	static final class Minimizing extends WindowAdapter
+	{
+		private final Timer redraw;
+		private volatile boolean minimized;
+
+		Minimizing(Timer redraw)
+		{
+			this.redraw = redraw;
+		}
+
+		@Override
+		public void windowIconified(WindowEvent e)
+		{
+			minimized = true;
+			redraw.stop();
+		}
+
+		@Override
+		public void windowDeiconified(WindowEvent e)
+		{
+			minimized = false;
+			redraw.restart();
+		}
+
+		boolean isMinimized()
+		{
+			return minimized;
+		}
 	}
 
 	/** The drawing surface: the shared painter, and the mouse for dragging, zooming and the buttons. */

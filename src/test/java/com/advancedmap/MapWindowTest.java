@@ -9,10 +9,13 @@ import java.awt.Rectangle;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import javax.swing.Timer;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class MapWindowTest
 {
@@ -52,5 +55,26 @@ public class MapWindowTest
 	{
 		assertEquals(new Rectangle(10, 10, MapWindow.MIN_WIDTH, MapWindow.MIN_HEIGHT),
 			MapWindow.restoredBounds("10,10,50,40", ONE_SCREEN));
+	}
+
+	@Test
+	public void aMinimizedWindowStopsRedrawing()
+	{
+		Timer redraw = new Timer(1_000_000, e -> { });
+		redraw.start();
+		MapWindow.Minimizing minimizing = new MapWindow.Minimizing(redraw);
+		try
+		{
+			minimizing.windowIconified(null);
+			assertTrue(minimizing.isMinimized());
+			assertFalse("nothing of a minimized window can be seen", redraw.isRunning());
+			minimizing.windowDeiconified(null);
+			assertFalse(minimizing.isMinimized());
+			assertTrue("brought back up, it redraws again", redraw.isRunning());
+		}
+		finally
+		{
+			redraw.stop();
+		}
 	}
 }
