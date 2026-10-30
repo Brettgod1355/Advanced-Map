@@ -515,4 +515,16 @@ public class MapPainterTest
 		assertTrue("the name in the open is drawn", middle);
 		assertFalse("the name under the bar's strip is not", onBar);
 	}
+
+	@Test
+	public void theSlayerButtonsSquareKeepsNamesAwayOnlyWhileTheButtonIsShown()
+	{
+		Map<MapPainter.Button, Rectangle> buttons = MapPainter.buttons(1280, 800, false);
+		Rectangle slayer = buttons.get(MapPainter.Button.SLAYER);
+		assertTrue(MapPainter.spaceTaken(buttons, true).contains(slayer));
+		// the setting off: plain ground there, and a town's name may sit on it
+		java.util.List<Rectangle> taken = MapPainter.spaceTaken(buttons, false);
+		assertFalse(taken.contains(slayer));
+		assertEquals(buttons.size() - 1, taken.size());
+	}
 }

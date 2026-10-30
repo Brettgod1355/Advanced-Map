@@ -425,7 +425,7 @@ final class MapPainter
 		if (settings.isPlaceNames())
 		{
 			// no name under the buttons, the search box or the bar of text along the bottom (as wide as its text)
-			List<Rectangle> taken = new ArrayList<>(buttons(view.width, view.height, window).values());
+			List<Rectangle> taken = spaceTaken(buttons(view.width, view.height, window), settings.isSlayerButton());
 			taken.add(search.layout(buttons(view.width, view.height, window), view.width).getBox());
 			taken.add(barBounds(g, view, bar));
 			drawLabels(g, view, area, labels.all(), taken);
@@ -1156,6 +1156,20 @@ final class MapPainter
 		g.setFont(font);
 		g.setColor(MapIcons.QUIET);
 		g.drawString(hint, x + PAD, y + height - PAD - metrics.getDescent());
+	}
+
+	/** The buttons' squares, which no place name may cross: the Slayer button's only while it is shown. */
+	static List<Rectangle> spaceTaken(Map<Button, Rectangle> buttons, boolean slayerButton)
+	{
+		List<Rectangle> taken = new ArrayList<>();
+		for (Map.Entry<Button, Rectangle> entry : buttons.entrySet())
+		{
+			if (slayerButton || entry.getKey() != Button.SLAYER)
+			{
+				taken.add(entry.getValue());
+			}
+		}
+		return taken;
 	}
 
 	/** The ids of a map's regions a view shows. */
