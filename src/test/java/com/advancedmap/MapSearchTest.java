@@ -408,4 +408,19 @@ public class MapSearchTest
 		assertTrue(ardy.indexOf("East Ardougne") < 2 && ardy.indexOf("West Ardougne") < 2);
 		assertEquals("Falador", MapSearch.search(entries, "Fally", null).get(0).getName());
 	}
+
+	@Test
+	public void anIndexBuiltBeforeTheTablesWereReadIsBuiltAgainAfter()
+	{
+		// the tables are read in the background as the plugin starts: a search typed before they are read sees an
+		// index without places, which must not be kept once they are
+		MapSearch fresh = new MapSearch();
+		List<MapLabels.Label> labels = Collections.singletonList(new MapLabels.Label(
+			Collections.singletonList("Lumbridge"), 3239, 3234, 2, Color.WHITE));
+		List<MapSearch.Entry> before = fresh.index(labels);
+		assertTrue(before.stream().noneMatch(e -> e.getName().equals("Edgeville Dungeon")));
+		fresh.load();
+		List<MapSearch.Entry> after = fresh.index(labels);
+		assertTrue(after.stream().anyMatch(e -> e.getName().equals("Edgeville Dungeon")));
+	}
 }

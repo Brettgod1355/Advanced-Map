@@ -209,17 +209,9 @@ public class AdvancedMapPlugin extends Plugin
 		slayerShown = null;
 		extrasRead = 0;
 		farmingRead = 0;
-		MiningSites.load();
-		RareTrees.load();
-		Transports.load();
-		Shops.load();
-		Spawns.load();
-		search.load();
-		MultiCombat.load();
-		Farming.load();
-		SlayerTask.load();
-		MonsterInfo.load();
-		DungeonPreview.load();
+		// RuneLite starts a plugin on the Swing thread: the bundled tables (845 KB, a quarter second) are read off it;
+		// everything reads them through fields that are empty until then, so a map opened at once shows them a moment late
+		executor.execute(this::loadTables);
 		reader = new CacheReader(client);
 		shortestPathRoute = new ShortestPathRoute();
 		source = new ClientMapSource(reader);
@@ -288,6 +280,22 @@ public class AdvancedMapPlugin extends Plugin
 		{
 			clientToolbar.addNavigation(button);
 		}
+	}
+
+	/** Reads every bundled table; the search's last, so that its index is built again with what the others read. */
+	private void loadTables()
+	{
+		MiningSites.load();
+		RareTrees.load();
+		Transports.load();
+		Shops.load();
+		Spawns.load();
+		MultiCombat.load();
+		Farming.load();
+		SlayerTask.load();
+		MonsterInfo.load();
+		DungeonPreview.load();
+		search.load();
 	}
 
 	@Override

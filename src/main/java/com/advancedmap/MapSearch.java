@@ -254,6 +254,8 @@ final class MapSearch
 		{
 			log.debug("could not read the place nicknames", e);
 		}
+		// an index built before this (a search typed as the plugin started) lacks the places, shops and monsters
+		indexedLabels = -1;
 	}
 
 	/** Nicknames ("ardy") and the places they stand for, both {@link #normalize normalized}. */
