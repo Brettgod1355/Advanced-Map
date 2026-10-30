@@ -112,7 +112,7 @@ on this computer, two clients at once included; turn off "Share markers between 
 ### Routes
 
 Right-click anywhere on the map, or on an icon, and choose "Route here" to have
-[Shortest Path](https://github.com/Skretzo/shortest-path) or [GPS](https://runelite.net/plugin-hub/show/gps)
+[Shortest Path](https://runelite.net/plugin-hub/show/shortest-path) or [GPS](https://runelite.net/plugin-hub/show/gps)
 show the way ("Route with" in the settings). The plugin you pick must be installed and on.
 
 ## Settings
