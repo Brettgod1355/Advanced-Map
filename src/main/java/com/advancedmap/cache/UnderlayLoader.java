@@ -51,6 +51,11 @@ public class UnderlayLoader
 				int color = is.read24BitInt();
 				def.setColor(color);
 			}
+			else
+			{
+				// an opcode added by a game update: nothing after it can be read in step, so what was read stands
+				break;
+			}
 		}
 
 		def.calculateHsl();

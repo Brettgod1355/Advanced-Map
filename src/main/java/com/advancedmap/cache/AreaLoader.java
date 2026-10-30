@@ -41,13 +41,18 @@ public class AreaLoader
 				break;
 			}
 
-			processOpcode(def, in, opcode);
+			if (!processOpcode(def, in, opcode))
+			{
+				// an opcode added by a game update: nothing after it can be read in step, so what was read stands
+				break;
+			}
 		}
 
 		return def;
 	}
 
-	private void processOpcode(AreaDefinition def, InputStream in, int opcode)
+	/** Reads one attribute; false for an opcode this loader does not know. */
+	private boolean processOpcode(AreaDefinition def, InputStream in, int opcode)
 	{
 		if (opcode == 1)
 		{
@@ -183,6 +188,10 @@ public class AreaLoader
 //			};
 //			this.field3306 = (class239) Item.method1751(var7, var1.readUnsignedByte());
 		}
-
+		else
+		{
+			return false;
+		}
+		return true;
 	}
 }
