@@ -406,9 +406,11 @@ public class AdvancedMapPlugin extends Plugin
 	@Subscribe
 	public void onBeforeRender(BeforeRender event)
 	{
-		if (reader != null)
+		// one read of each field: the plugin may be stopping on the Swing thread while this frame runs
+		CacheReader reads = reader;
+		if (reads != null)
 		{
-			reader.service();
+			reads.service();
 		}
 		if (mapOpen || windowOpen)
 		{
@@ -648,9 +650,10 @@ public class AdvancedMapPlugin extends Plugin
 		{
 			readProgress();
 		}
-		if ((mapOpen || windowOpen) && ticks % ROUTE_TICKS == 0 && messages != null)
+		MapMessages layers = messages;
+		if ((mapOpen || windowOpen) && ticks % ROUTE_TICKS == 0 && layers != null)
 		{
-			askForRoute();
+			askForRoute(layers);
 		}
 	}
 
@@ -671,14 +674,19 @@ public class AdvancedMapPlugin extends Plugin
 	@Subscribe
 	public void onPluginMessage(PluginMessage event)
 	{
-		if (messages != null && MapMessages.NAMESPACE.equals(event.getNamespace()))
+		MapMessages layers = messages;
+		ShortestPathRoute route = shortestPathRoute;
+		if (layers == null || route == null)
 		{
-			messages.handle(event.getName(), event.getData());
+			return;
 		}
-		else if (messages != null && ShortestPathRoute.NAMESPACE.equals(event.getNamespace()))
+		if (MapMessages.NAMESPACE.equals(event.getNamespace()))
 		{
-			Map<String, Object> query = shortestPathRoute.onMessage(event.getName(), event.getData(),
-				currentPlayerLocation(), messages);
+			layers.handle(event.getName(), event.getData());
+		}
+		else if (ShortestPathRoute.NAMESPACE.equals(event.getNamespace()))
+		{
+			Map<String, Object> query = route.onMessage(event.getName(), event.getData(), currentPlayerLocation(), layers);
 			if (query != null)
 			{
 				clientThread.invokeLater(() -> eventBus.post(new PluginMessage(ShortestPathRoute.NAMESPACE, "query",
@@ -691,11 +699,15 @@ public class AdvancedMapPlugin extends Plugin
 	 * Asks Shortest Path what route it is showing, so the map can draw it, while the map is open and Shortest Path
 	 * is the routing plugin that is on. Client thread.
 	 */
-	private void askForRoute()
+	private void askForRoute(MapMessages layers)
 	{
+		ShortestPathRoute route = shortestPathRoute;
 		if (settings.getRouting() != RoutingPlugin.SHORTEST_PATH)
 		{
-			shortestPathRoute.clear(messages);
+			if (route != null)
+			{
+				route.clear(layers);
+			}
 			return;
 		}
 		eventBus.post(new PluginMessage(ShortestPathRoute.NAMESPACE, "getTarget", ShortestPathRoute.getTarget()));
@@ -1206,7 +1218,14 @@ public class AdvancedMapPlugin extends Plugin
 				eventBus.post(new PluginMessage(namespace, "path", Collections.<String, Object>singletonMap("target",
 					Prifddinas.toCity(target))));
 				// Shortest Path's new route, drawn here as soon as it says what it is showing
-				clientThread.invokeLater(this::askForRoute);
+				clientThread.invokeLater(() ->
+				{
+					MapMessages layers = messages;
+					if (layers != null)
+					{
+						askForRoute(layers);
+					}
+				});
 			});
 		}
 	}
