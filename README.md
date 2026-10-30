@@ -17,7 +17,8 @@ their details.
 
 Install **Advanced Map** from RuneLite's Plugin Hub, then open the map in any of these ways:
 
-- **Ctrl+M** (change the key in the settings). Ctrl+M again, Escape or the close button close it.
+- **Ctrl+M** (change the key in the settings). Ctrl+M again or the close button close it, and so does Escape
+  while the pointer is on the map.
 - The **Advanced Map** tab in RuneLite's sidebar. Its "How the map works" section explains each part of the map.
 - Right-click the **world map orb** by the minimap and choose "Open Advanced Map".
 
@@ -39,9 +40,10 @@ The map opens on your character, on the surface or the underground map, whicheve
 | Move or size the box over the game | Drag its top or bottom bar, or a corner |
 | Fill the game view with the map | The square button next to the close button |
 | Pop the map out into its own window | The button with an arrow leaving a window, at the top right |
-| Close a search, a list or an info box | Escape (then Escape again closes the map) |
+| Close a search, a list or an info box | Escape, with the pointer on the map (then Escape again closes the map) |
 
-While the box is open the game goes on around it: a click beside the box is the game's. While you type in the
+While the box is open the game goes on around it: a click beside the box is the game's, and so is Escape with
+the pointer over the game (closing the bank, say), unless you are typing in the search box. While you type in the
 search box, the F-keys still open the game's tabs.
 
 ## What's on the map
