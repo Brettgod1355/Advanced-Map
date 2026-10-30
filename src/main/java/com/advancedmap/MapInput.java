@@ -275,14 +275,20 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 	@Override
 	public void keyPressed(KeyEvent e)
 	{
+		boolean typing = plugin.mapTakesInput() && plugin.typing() && !hasShortcutKey(e);
+		char remapped = typing ? remappedChar(e) : KeyEvent.CHAR_UNDEFINED;
+		if (remapped != KeyEvent.CHAR_UNDEFINED)
+		{
+			plugin.type(remapped);
+		}
 		// Escape is the map's while the mouse is on its box or something of it is open or typed into; else it is the
 		// game's (closing the bank beside a small map)
-		if (plugin.mapTakesInput() && e.getKeyCode() == KeyEvent.VK_ESCAPE
+		else if (plugin.mapTakesInput() && e.getKeyCode() == KeyEvent.VK_ESCAPE
 			&& (mouseOnBox() || plugin.typing() || plugin.sideListOpen() || plugin.selection() != null))
 		{
 			plugin.escape();
 		}
-		else if (plugin.mapTakesInput() && plugin.typing() && !hasShortcutKey(e))
+		else if (typing)
 		{
 			// typing in a search box: keep the keys from the game's chat
 			plugin.typingKey(e.getKeyCode());
@@ -304,6 +310,24 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 			plugin.touched();
 			e.consume();
 		}
+	}
+
+	/**
+	 * The letter or digit a key was pressed as when RuneLite's Key Remapping plugin, whose listener runs before this
+	 * one, had turned it into a camera, F or other key: it changes the key code, drops the character and eats the
+	 * typed event that follows, since the game's chat is not typed into; the extended key code still names the key.
+	 * {@link KeyEvent#CHAR_UNDEFINED} for a key pressed as itself.
+	 */
+	static char remappedChar(KeyEvent e)
+	{
+		int key = e.getExtendedKeyCode();
+		boolean letter = key >= KeyEvent.VK_A && key <= KeyEvent.VK_Z;
+		boolean digit = key >= KeyEvent.VK_0 && key <= KeyEvent.VK_9;
+		if (key == e.getKeyCode() || !(letter || digit) || e.getKeyChar() != KeyEvent.CHAR_UNDEFINED)
+		{
+			return KeyEvent.CHAR_UNDEFINED;
+		}
+		return letter && !e.isShiftDown() ? Character.toLowerCase((char) key) : (char) key;
 	}
 
 	/**

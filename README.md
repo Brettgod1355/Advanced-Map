@@ -23,7 +23,9 @@ A full-screen world map for RuneLite, drawn from the game's own map data with sm
   ring codes ("cks"),
   fishing spots by catch ("lobster"), hunter areas by creature ("chinchompa") and kinds of icon ("bank", "anvil",
   "altar": every one, nearest first) are found too, and among equally good matches the nearest to you comes first.
-  Shops are found through what they sell; the setting "Search finds shops by name" lists them by name too.
+  Shops are found through what they sell; the setting "Search finds shops by name" lists them by name too. With
+  RuneLite's Key Remapping plugin on, the letters it remaps are still typed into the search, but Enter on a result
+  also unlocks the game's chat, as that plugin does for any Enter: press Escape or click the chat to lock it again.
 - **Your own markers**: right-click anywhere, "Add marker here", give it a name and pick one of 12 pictures and 9
   colors. Right-click a marker to edit or remove it; markers are found by search too. Markers are shared by every
   account you play on this computer, two at once included (each is its own small file in RuneLite's plugin data

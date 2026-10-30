@@ -93,14 +93,19 @@ public class MapInputTest
 			return null;
 		}
 
+		final StringBuilder typed = new StringBuilder();
+		final java.util.List<Integer> typingKeys = new java.util.ArrayList<>();
+
 		@Override
 		void type(char c)
 		{
+			typed.append(c);
 		}
 
 		@Override
 		void typingKey(int keyCode)
 		{
+			typingKeys.add(keyCode);
 		}
 
 		@Override
@@ -126,6 +131,23 @@ public class MapInputTest
 	static MouseEvent move(int x, int y)
 	{
 		return new MouseEvent(SOURCE, MouseEvent.MOUSE_MOVED, 0, 0, x, y, 0, false, MouseEvent.NOBUTTON);
+	}
+
+	/**
+	 * A press of a key that Key Remapping turned into another: the key code changed, the character dropped; the
+	 * extended key code, which only the platform's own code sets on a real event, still names the key.
+	 */
+	static KeyEvent remapped(int key, int modifiers, int mappedTo)
+	{
+		KeyEvent e = new KeyEvent(SOURCE, KeyEvent.KEY_PRESSED, 0, modifiers, mappedTo, KeyEvent.CHAR_UNDEFINED)
+		{
+			@Override
+			public int getExtendedKeyCode()
+			{
+				return key;
+			}
+		};
+		return e;
 	}
 
 	static KeyEvent key(int id, int code, int modifiers)
@@ -220,5 +242,32 @@ public class MapInputTest
 		plugin.typing = true;
 		input.keyPressed(key(KeyEvent.KEY_PRESSED, KeyEvent.VK_A, 0));
 		assertEquals(2, plugin.touches);
+	}
+
+	@Test
+	public void aLetterTheKeyRemappingPluginTurnedIntoACameraKeyIsStillTypedIntoTheSearch()
+	{
+		Stub plugin = new Stub();
+		plugin.typing = true;
+		MapInput input = new MapInput(plugin, () -> 1280, () -> 800);
+		// RuneLite's Key Remapping plugin runs first: "a" becomes Left with no character, and the typed event never comes
+		KeyEvent a = remapped(KeyEvent.VK_A, 0, KeyEvent.VK_LEFT);
+		input.keyPressed(a);
+		assertTrue(a.isConsumed());
+		input.keyPressed(remapped(KeyEvent.VK_D, KeyEvent.SHIFT_DOWN_MASK, KeyEvent.VK_RIGHT));
+		input.keyPressed(remapped(KeyEvent.VK_1, 0, KeyEvent.VK_F1));
+		assertEquals("aD1", plugin.typed.toString());
+		assertTrue("the arrow it was turned into does not move the highlight", plugin.typingKeys.isEmpty());
+
+		// a real arrow, and a letter nobody remapped, are handled as before
+		input.keyPressed(key(KeyEvent.KEY_PRESSED, KeyEvent.VK_LEFT, 0));
+		assertEquals(java.util.Collections.singletonList(KeyEvent.VK_LEFT), plugin.typingKeys);
+		KeyEvent plain = new KeyEvent(SOURCE, KeyEvent.KEY_PRESSED, 0, 0, KeyEvent.VK_A, 'a');
+		input.keyPressed(plain);
+		assertEquals("typed by the typed event that follows, not twice", "aD1", plugin.typed.toString());
+		assertEquals(KeyEvent.CHAR_UNDEFINED, MapInput.remappedChar(plain));
+		// a key of another layout with no plain key code, which keeps its character: typed once, by its typed event
+		KeyEvent umlaut = new KeyEvent(SOURCE, KeyEvent.KEY_PRESSED, 0, 0, KeyEvent.VK_UNDEFINED, '\u00e4');
+		assertEquals(KeyEvent.CHAR_UNDEFINED, MapInput.remappedChar(umlaut));
 	}
 }
