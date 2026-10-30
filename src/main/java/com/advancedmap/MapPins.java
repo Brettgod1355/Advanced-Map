@@ -112,9 +112,41 @@ final class MapPins
 		return out;
 	}
 
-	void setMarkers(List<Marker> markers)
+	synchronized void setMarkers(List<Marker> markers)
 	{
 		this.markers = Collections.unmodifiableList(new ArrayList<>(markers));
+	}
+
+	/**
+	 * Replaces a marker ({@code old} null to add one) with another ({@code fresh} null to remove it), found by id: the
+	 * list may have been read again since {@code old} was, with another client's change to it. Doing it twice is
+	 * doing it once, so it can be done again after a reading that missed it.
+	 */
+	synchronized void replace(Marker old, Marker fresh)
+	{
+		String id = old != null ? old.getId() : fresh != null ? fresh.getId() : null;
+		if (id == null)
+		{
+			return;
+		}
+		List<Marker> out = new ArrayList<>(markers);
+		int at = -1;
+		for (int i = 0; i < out.size() && at < 0; i++)
+		{
+			if (out.get(i).getId().equals(id))
+			{
+				at = i;
+			}
+		}
+		if (at >= 0)
+		{
+			out.remove(at);
+		}
+		if (fresh != null)
+		{
+			out.add(at >= 0 ? at : out.size(), fresh);
+		}
+		markers = Collections.unmodifiableList(out);
 	}
 
 	void setOthers(List<Pin> others)

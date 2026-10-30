@@ -162,4 +162,36 @@ public class MapPinsTest
 		}
 		assertEquals(MarkerEditor.Part.OUTSIDE, editor.hitAt(5, 400, layout).getPart());
 	}
+
+	@Test
+	public void aMarkerChangeSurvivesAReadingThatMissedIt()
+	{
+		MapPins pins = new MapPins();
+		MapPins.Marker spot = new MapPins.Marker("18f-9", new WorldPoint(3000, 3000, 0), MarkerIcons.Design.PIN, 0,
+			"Spot", "");
+		MapPins.Marker renamed = new MapPins.Marker("18f-9", new WorldPoint(3000, 3000, 0), MarkerIcons.Design.PIN, 0,
+			"Spot 2", "");
+		pins.setMarkers(Collections.singletonList(HOME));
+
+		// added on the client thread; a reading of the folder from before its save then lands; the save puts it back
+		pins.replace(null, spot);
+		assertEquals(Arrays.asList(HOME, spot), pins.markers());
+		pins.setMarkers(Collections.singletonList(HOME));
+		pins.replace(null, spot);
+		pins.replace(null, spot);
+		assertEquals("done twice is done once", Arrays.asList(HOME, spot), pins.markers());
+
+		// changed in place, by id
+		pins.replace(spot, renamed);
+		pins.setMarkers(Arrays.asList(HOME, spot));
+		pins.replace(spot, renamed);
+		assertEquals(Arrays.asList(HOME, renamed), pins.markers());
+
+		// removed: a reading from before the removal does not bring it back once the removal is done again
+		pins.replace(renamed, null);
+		pins.setMarkers(Arrays.asList(HOME, renamed));
+		pins.replace(renamed, null);
+		pins.replace(renamed, null);
+		assertEquals(Collections.singletonList(HOME), pins.markers());
+	}
 }

@@ -1562,25 +1562,7 @@ public class AdvancedMapPlugin extends Plugin
 	 */
 	private void saveMarkers(MapPins.Marker old, MapPins.Marker fresh)
 	{
-		List<MapPins.Marker> markers = new ArrayList<>(pins.markers());
-		// by id: the list may have been read again meanwhile, with another client's change to this marker
-		int at = -1;
-		for (int i = 0; old != null && i < markers.size() && at < 0; i++)
-		{
-			if (markers.get(i).getId().equals(old.getId()))
-			{
-				at = i;
-			}
-		}
-		if (at >= 0)
-		{
-			markers.remove(at);
-		}
-		if (fresh != null)
-		{
-			markers.add(at >= 0 ? at : markers.size(), fresh);
-		}
-		pins.setMarkers(markers);
+		pins.replace(old, fresh);
 		ExecutorService files = markerFiles;
 		if (files != null)
 		{
@@ -1600,6 +1582,9 @@ public class AdvancedMapPlugin extends Plugin
 				{
 					store.remove(old);
 				}
+				// a reading queued before this one may have read the folder without the change and put that list on
+				// the map since; readings queued after this one find it on disk
+				pins.replace(old, fresh);
 			});
 		}
 	}
