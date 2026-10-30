@@ -2238,14 +2238,11 @@ public class AdvancedMapPlugin extends Plugin
 				viewport.setZoom(zoom);
 			}
 			boolean wasOpen = mapOpen || windowOpen;
-			if (opensInWindow(windowOpen, config.popOut(), client.getGameState() == GameState.LOGGED_IN))
+			boolean inWindow = opensInWindow(windowOpen, config.popOut(), client.getGameState() == GameState.LOGGED_IN);
+			showIn(inWindow);
+			if (inWindow)
 			{
-				windowOpen = true;
 				SwingUtilities.invokeLater(this::showWindow);
-			}
-			else
-			{
-				mapOpen = true;
 			}
 			if (!wasOpen)
 			{
@@ -2263,6 +2260,22 @@ public class AdvancedMapPlugin extends Plugin
 	static boolean opensInWindow(boolean windowOpen, boolean popOut, boolean loggedIn)
 	{
 		return windowOpen || popOut || !loggedIn;
+	}
+
+	/**
+	 * Shows the map in its window or in the box over the game, never both: a box open when the window is asked for
+	 * (the pop-out setting turned on meanwhile, then the orb or another plugin's message) closes as the window opens,
+	 * as it does for the pop-out button.
+	 */
+	void showIn(boolean window)
+	{
+		mapOpen = !window;
+		windowOpen = window;
+	}
+
+	boolean isWindowOpen()
+	{
+		return windowOpen;
 	}
 
 	/** Reads the place names in the background, once; again next time if the client had no world map data yet. */

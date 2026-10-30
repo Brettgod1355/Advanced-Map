@@ -49,6 +49,14 @@ public class PluginStateTest
 		assertTrue(AdvancedMapPlugin.opensInWindow(false, true, true));
 		assertTrue("no overlay is drawn on the login screen", AdvancedMapPlugin.opensInWindow(false, false, false));
 		assertFalse(AdvancedMapPlugin.opensInWindow(false, false, true));
+		// and the other way: the box open, "Pop out" ticked meanwhile, the orb clicked: the window replaces the box
+		AdvancedMapPlugin plugin = new AdvancedMapPlugin();
+		plugin.showIn(false);
+		assertTrue(plugin.isMapOpen());
+		assertFalse(plugin.isWindowOpen());
+		plugin.showIn(true);
+		assertFalse("never both at once", plugin.isMapOpen());
+		assertTrue(plugin.isWindowOpen());
 	}
 
 	@Test
