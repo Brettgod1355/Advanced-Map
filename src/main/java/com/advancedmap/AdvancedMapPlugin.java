@@ -782,6 +782,12 @@ public class AdvancedMapPlugin extends Plugin
 		return mapOpen && client.getGameState() == GameState.LOGGED_IN;
 	}
 
+	/** True while the game's own right-click menu is open. */
+	boolean gameMenuOpen()
+	{
+		return client.isMenuOpen();
+	}
+
 	GameBox gameBox()
 	{
 		return gameBox;

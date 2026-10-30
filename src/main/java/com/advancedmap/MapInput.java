@@ -247,11 +247,19 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 		return e;
 	}
 
-	/** A move only moves the pointer the map draws with at its next redraw (every 50 ms): nothing is drawn at once. */
+	/**
+	 * A move only moves the pointer the map draws with at its next redraw (every 50 ms): nothing is drawn at once. While
+	 * the game's right-click menu is open the game sees the pointer go onto the box too: it closes its menu itself once
+	 * the pointer has left it, which it never saw happen when the move stopped at the box.
+	 */
 	@Override
 	public MouseEvent mouseMoved(MouseEvent e)
 	{
 		mouse = e.getPoint();
+		if (heldButtons == 0 && plugin.gameMenuOpen())
+		{
+			return e;
+		}
 		return swallow(e);
 	}
 

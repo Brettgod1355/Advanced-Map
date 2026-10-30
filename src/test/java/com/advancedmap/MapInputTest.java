@@ -23,6 +23,7 @@ public class MapInputTest
 		boolean open = true;
 		boolean loggedIn = true;
 		boolean typing;
+		boolean menuOpen;
 		int outsideClicks;
 		int touches;
 		final GameBox box = new GameBox("100,100,600,400", false);
@@ -43,6 +44,12 @@ public class MapInputTest
 		GameBox gameBox()
 		{
 			return box;
+		}
+
+		@Override
+		boolean gameMenuOpen()
+		{
+			return menuOpen;
 		}
 
 		@Override
@@ -523,5 +530,25 @@ public class MapInputTest
 		input.mouseReleased(releaseWith(401, 300, MouseEvent.BUTTON1));
 		assertFalse(plugin.drag);
 		assertEquals("the left release, close to its press, is the click", 1, plugin.leftClicks);
+	}
+
+	@Test
+	public void theGameSeesThePointerLeaveItsOpenMenu()
+	{
+		Stub plugin = new Stub();
+		MapInput input = new MapInput(plugin, () -> 1280, () -> 800);
+		MouseEvent onTheBox = move(400, 300);
+		input.mouseMoved(onTheBox);
+		assertTrue("over the box, moves are the map's", onTheBox.isConsumed());
+
+		// a menu opened beside the box: the game follows the pointer onto it and closes the menu itself
+		plugin.menuOpen = true;
+		MouseEvent away = move(400, 300);
+		input.mouseMoved(away);
+		assertFalse(away.isConsumed());
+		assertEquals("and draws nothing for it", 0, plugin.touches);
+
+		// a press on the box stays the map's: the game is never handed a click under the map
+		assertTrue(input.mousePressed(press(400, 300)).isConsumed());
 	}
 }
