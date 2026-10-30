@@ -297,7 +297,7 @@ class RegionImages
 	/** Asks for one floor's picture unless it is there or asked for. False when the plugin is stopping. */
 	private boolean queue(int key, Level level)
 	{
-		if (isAbsent(plane(key), region(key)) || failed.contains(key) || images.get(level).containsKey(key))
+		if (dataFailed || isAbsent(plane(key), region(key)) || failed.contains(key) || images.get(level).containsKey(key))
 		{
 			return true;
 		}
@@ -343,6 +343,11 @@ class RegionImages
 		{
 			// the plugin stopped, or the client is still downloading this part of the cache: asked again later
 		}
+		catch (MapDataException e)
+		{
+			// a format this plugin cannot read: nothing of the game is missing, nothing is drawn until it is updated
+			warnOnce(e);
+		}
 		catch (RuntimeException e)
 		{
 			log.debug("could not draw region {} floor {}", region(key), plane(key), e);
@@ -386,6 +391,10 @@ class RegionImages
 		{
 			// the client has not downloaded this part of the cache yet: the preparer puts it back in its queue
 			throw e;
+		}
+		catch (MapDataException e)
+		{
+			warnOnce(e);
 		}
 		catch (RuntimeException e)
 		{
@@ -462,6 +471,20 @@ class RegionImages
 		return full == null ? null : new Drawn(full, shrink(shrink(full, 2), 2));
 	}
 
+	/** True once the game's data could not be read: nothing is asked for again (every read would fail the same way). */
+	private volatile boolean dataFailed;
+
+	/** Says once, where the player can find it, that the game's data cannot be read; every region would say it else. */
+	private void warnOnce(MapDataException e)
+	{
+		if (!dataFailed)
+		{
+			dataFailed = true;
+			log.warn("Advanced Map cannot read the game's map data (a game update may have changed it): the map stays"
+				+ " blank until the plugin is updated", e);
+		}
+	}
+
 	/** Checks a floor shown from disk against the game's data, once, behind the pictures waiting to be shown. */
 	private void checkLater(int key)
 	{
@@ -524,6 +547,10 @@ class RegionImages
 		{
 			// checked again while the floor is on screen (retryCheck)
 			recheck.add(key);
+		}
+		catch (MapDataException e)
+		{
+			warnOnce(e);
 		}
 		catch (RuntimeException e)
 		{

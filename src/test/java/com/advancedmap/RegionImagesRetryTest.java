@@ -127,4 +127,16 @@ public class RegionImagesRetryTest
 		}
 		assertTrue("the saved picture must be compared with the game's data once it can be", redrawn);
 	}
+
+	@Test
+	public void aFormatThePluginCannotReadMarksNothingAsMissingFromTheGame() throws Exception
+	{
+		RegionImagesCacheTest.Flat source = new RegionImagesCacheTest.Flat();
+		source.failWith = new MapDataException(new IllegalStateException("an opcode's payload grew"));
+		RegionImages images = new RegionImages(source, executor, new MapIcons());
+		assertTrue(settle(images, RegionImages.Level.SMALL, 10_000));
+		// before, the floor was marked as one the game has nothing for, for the session, with a debug line only
+		assertFalse(images.isAbsent(0, REGION));
+		assertTrue(images.get(0, REGION, RegionImages.Level.SMALL) == null);
+	}
 }

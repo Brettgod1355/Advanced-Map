@@ -100,6 +100,8 @@ class ClientMapSource implements MapSource
 	private final Map<Integer, AreaDefinition> labelAreas = new ConcurrentHashMap<>();
 	private volatile MapSprite[] mapScenes;
 	private volatile boolean tablesLoaded;
+	/** Set once the shared tables, or an object, could not be decoded: every read after that throws it at once. */
+	private volatile MapDataException dataFailure;
 	private volatile Map<Integer, Integer> mapLinks;
 
 	ClientMapSource(CacheReader reader)
@@ -250,63 +252,86 @@ class ClientMapSource implements MapSource
 			{
 				return;
 			}
-			Map<Integer, Map<Integer, byte[]>> tables = reader.read(client ->
+			if (dataFailure != null)
 			{
-				Map<Integer, Map<Integer, byte[]>> out = new HashMap<>();
-				for (int group : new int[]{UNDERLAYS, OVERLAYS, AREAS})
-				{
-					out.put(group, files(client.getIndexConfig(), group));
-				}
-				IndexDataBase textureIndex = client.getIndex(TEXTURES);
-				out.put(-TEXTURES, textureIndex == null ? new HashMap<>() : files(textureIndex, 0));
-				return out;
-			});
-			tablesCrc = crc(tables.get(UNDERLAYS), tables.get(OVERLAYS), tables.get(-TEXTURES));
-			tables.get(UNDERLAYS).forEach((id, bytes) -> underlays.put(id, new UnderlayLoader().load(id, bytes)));
-			tables.get(OVERLAYS).forEach((id, bytes) -> overlays.put(id, new OverlayLoader().load(id, bytes)));
-			tables.get(-TEXTURES).forEach((id, bytes) -> textures.put(id, textureColor(bytes)));
-			Map<Integer, Integer> areaSprites = new HashMap<>();
-			tables.get(AREAS).forEach((id, bytes) ->
-			{
-				AreaDefinition area = new AreaLoader().load(bytes, id);
-				areaCategories.put(id, area.category);
-				if (area.spriteId < 0)
-				{
-					areaIcons.put(id, Optional.empty());
-					if (area.name != null && !area.name.isEmpty())
-					{
-						labelAreas.put(id, area);
-					}
-				}
-				else
-				{
-					areaSprites.put(id, area.spriteId);
-				}
-			});
-			Map<Integer, MapSprite[]> sprites = reader.read(client ->
-			{
-				Map<Integer, MapSprite[]> out = new HashMap<>();
-				out.put(SpriteID.MAPSCENE, sprites(client, SpriteID.MAPSCENE));
-				for (int sprite : new TreeSet<>(areaSprites.values()))
-				{
-					out.put(sprite, sprites(client, sprite));
-				}
-				return out;
-			});
-			if (sprites.values().stream().anyMatch(frames -> frames == null))
-			{
-				// the client has not loaded these sprites yet: draw nothing now rather than pictures without them
-				throw new CacheNotReadyException();
+				throw dataFailure;
 			}
-			mapScenes = sprites.get(SpriteID.MAPSCENE);
-			spritesCrc = crcOf(mapScenes);
-			areaSprites.forEach((id, sprite) ->
+			try
 			{
-				MapSprite[] frames = sprites.get(sprite);
-				areaIcons.put(id, frames == null || frames.length == 0 ? Optional.empty() : Optional.ofNullable(frames[0]));
-			});
-			tablesLoaded = true;
+				decodeTables();
+			}
+			catch (CacheNotReadyException | java.util.concurrent.CancellationException e)
+			{
+				throw e;
+			}
+			catch (RuntimeException e)
+			{
+				// read again next session, with a plugin that knows the new format
+				dataFailure = new MapDataException(e);
+				throw dataFailure;
+			}
 		}
+	}
+
+	/** The tables and sprites every region is drawn from; read once. Holds the monitor. */
+	private void decodeTables()
+	{
+		Map<Integer, Map<Integer, byte[]>> tables = reader.read(client ->
+		{
+			Map<Integer, Map<Integer, byte[]>> out = new HashMap<>();
+			for (int group : new int[]{UNDERLAYS, OVERLAYS, AREAS})
+			{
+				out.put(group, files(client.getIndexConfig(), group));
+			}
+			IndexDataBase textureIndex = client.getIndex(TEXTURES);
+			out.put(-TEXTURES, textureIndex == null ? new HashMap<>() : files(textureIndex, 0));
+			return out;
+		});
+		tablesCrc = crc(tables.get(UNDERLAYS), tables.get(OVERLAYS), tables.get(-TEXTURES));
+		tables.get(UNDERLAYS).forEach((id, bytes) -> underlays.put(id, new UnderlayLoader().load(id, bytes)));
+		tables.get(OVERLAYS).forEach((id, bytes) -> overlays.put(id, new OverlayLoader().load(id, bytes)));
+		tables.get(-TEXTURES).forEach((id, bytes) -> textures.put(id, textureColor(bytes)));
+		Map<Integer, Integer> areaSprites = new HashMap<>();
+		tables.get(AREAS).forEach((id, bytes) ->
+		{
+			AreaDefinition area = new AreaLoader().load(bytes, id);
+			areaCategories.put(id, area.category);
+			if (area.spriteId < 0)
+			{
+				areaIcons.put(id, Optional.empty());
+				if (area.name != null && !area.name.isEmpty())
+				{
+					labelAreas.put(id, area);
+				}
+			}
+			else
+			{
+				areaSprites.put(id, area.spriteId);
+			}
+		});
+		Map<Integer, MapSprite[]> sprites = reader.read(client ->
+		{
+			Map<Integer, MapSprite[]> out = new HashMap<>();
+			out.put(SpriteID.MAPSCENE, sprites(client, SpriteID.MAPSCENE));
+			for (int sprite : new TreeSet<>(areaSprites.values()))
+			{
+				out.put(sprite, sprites(client, sprite));
+			}
+			return out;
+		});
+		if (sprites.values().stream().anyMatch(frames -> frames == null))
+		{
+			// the client has not loaded these sprites yet: draw nothing now rather than pictures without them
+			throw new CacheNotReadyException();
+		}
+		mapScenes = sprites.get(SpriteID.MAPSCENE);
+		spritesCrc = crcOf(mapScenes);
+		areaSprites.forEach((id, sprite) ->
+		{
+			MapSprite[] frames = sprites.get(sprite);
+			areaIcons.put(id, frames == null || frames.length == 0 ? Optional.empty() : Optional.ofNullable(frames[0]));
+		});
+		tablesLoaded = true;
 	}
 
 	/** Every file of a group, by id. Client thread. */
@@ -359,7 +384,7 @@ class ClientMapSource implements MapSource
 		});
 	}
 
-	private static ObjectDefinition decodeObject(int id, byte[] bytes)
+	private ObjectDefinition decodeObject(int id, byte[] bytes)
 	{
 		if (bytes == null)
 		{
@@ -367,7 +392,15 @@ class ClientMapSource implements MapSource
 			none.setId(id);
 			return none;
 		}
-		return new ObjectLoader().load(id, bytes);
+		try
+		{
+			return new ObjectLoader().load(id, bytes);
+		}
+		catch (RuntimeException e)
+		{
+			dataFailure = new MapDataException(e);
+			throw dataFailure;
+		}
 	}
 
 	@Override
