@@ -24,7 +24,7 @@ public class ConfigDefaultsTest
 	public void overlaysThatPaintOverTheMapStartOff()
 	{
 		assertFalse("the multi-combat tint paints over the map, so it is opt-in", defaults.multiCombat());
-		assertFalse(defaults.slayerTask());
+		assertFalse("the Slayer task's marks, ticked in the Filters list", defaults.slayerShown());
 	}
 
 	@Test

@@ -42,9 +42,7 @@ class MapSettings
 	int iconScale;
 	/** Fairy ring codes and the places of spirit trees, balloons and other stops beside their icons. */
 	boolean transportNames;
-	/** The map's Slayer button is there: the "Slayer task" setting is on. */
-	boolean slayerButton;
-	/** The Slayer task's spawns are shown (the button lit). */
+	/** The Slayer task's spawns are shown ("Your Slayer task" ticked at the top of the Filters list). */
 	boolean slayerShown;
 
 	static final int MIN_ICON_SCALE = 50;
@@ -72,7 +70,7 @@ class MapSettings
 			config.hideCompletedQuests(), config.markLocked(), config.iconsOff(), config.showHidden(),
 			config.placeNames(), config.wildernessLines(), routingRunning ? config.routing() : RoutingPlugin.NONE, config.floorNumbers(),
 			Math.max(MIN_ICON_SCALE, Math.min(MAX_ICON_SCALE, config.iconSize())), config.transportNames(),
-			config.slayerTask(), config.slayerShown());
+			config.slayerShown());
 	}
 
 	boolean shows(IconGroup group)

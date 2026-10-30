@@ -994,10 +994,9 @@ final class MapSearch
 	{
 		Rectangle icons = buttons.get(MapPainter.Button.ICONS);
 		Rectangle filters = buttons.get(MapPainter.Button.FILTERS);
-		// after the Slayer button's place (kept whether it shows or not), before "Show underground"
-		Rectangle slayer = buttons.get(MapPainter.Button.SLAYER);
+		// after Filters, before "Show underground"
 		Rectangle area = buttons.get(MapPainter.Button.AREA);
-		int left = Math.max(filters.x + filters.width, slayer.x + slayer.width) + GAP;
+		int left = filters.x + filters.width + GAP;
 		int right = area.x - GAP;
 		Rectangle box;
 		// on the top row between the buttons (which get shorter on a narrow map, see MapPainter.buttons), however

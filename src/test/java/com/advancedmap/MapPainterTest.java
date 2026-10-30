@@ -29,12 +29,11 @@ public class MapPainterTest
 	{
 		assertTrue(MapPainter.buttons(1200, 800, false).containsKey(MapPainter.Button.CLOSE));
 		assertFalse(MapPainter.buttons(1200, 800, true).containsKey(MapPainter.Button.CLOSE));
-		// with the Slayer button's place, kept whether the button shows or not
-		assertEquals(10, MapPainter.buttons(1200, 800, false).size());
+		assertEquals(9, MapPainter.buttons(1200, 800, false).size());
 		// maximize, over the game only
 		assertTrue(MapPainter.buttons(1200, 800, false).containsKey(MapPainter.Button.MAXIMIZE));
 		assertFalse(MapPainter.buttons(1200, 800, true).containsKey(MapPainter.Button.MAXIMIZE));
-		assertEquals(8, MapPainter.buttons(1200, 800, true).size());
+		assertEquals(7, MapPainter.buttons(1200, 800, true).size());
 	}
 
 	@Test
@@ -59,7 +58,7 @@ public class MapPainterTest
 	{
 		Rectangle locate = MapPainter.buttons(1000, 700, false).get(MapPainter.Button.LOCATE);
 		assertTrue(locate.x > 900 && locate.y > 600);
-		assertEquals(MapPainter.Button.LOCATE, MapPainter.buttonAt(985, 685 - 10, 1000, 700, false, null));
+		assertEquals(MapPainter.Button.LOCATE, MapPainter.buttonAt(985, 685 - 10, 1000, 700, false));
 	}
 
 	@Test
@@ -68,19 +67,10 @@ public class MapPainterTest
 		for (Map.Entry<MapPainter.Button, Rectangle> button : MapPainter.buttons(800, 600, false).entrySet())
 		{
 			Rectangle r = button.getValue();
-			MapPainter.Button found = MapPainter.buttonAt(r.x + r.width / 2, r.y + r.height / 2, 800, 600, false, null);
-			// the Slayer button is only there while the Slayer task setting is on
-			assertEquals(button.getKey() == MapPainter.Button.SLAYER ? null : button.getKey(), found);
+			MapPainter.Button found = MapPainter.buttonAt(r.x + r.width / 2, r.y + r.height / 2, 800, 600, false);
+			assertEquals(button.getKey(), found);
 		}
-		assertNull(MapPainter.buttonAt(400, 300, 800, 600, false, null));
-		Rectangle slayer = MapPainter.buttons(800, 600, false).get(MapPainter.Button.SLAYER);
-		MapSettings on = new MapSettings(EnumSet.allOf(IconGroup.class), Collections.emptySet(), Collections.emptySet(),
-			false, true, false, false, true, true, RoutingPlugin.NONE, FloorNumbers.GROUND_IS_FIRST, 100, true, true, true);
-		assertEquals(MapPainter.Button.SLAYER, MapPainter.buttonAt(slayer.x + 5, slayer.y + 5, 800, 600, false, on));
-		// it sits at the top, right of Filters
-		Rectangle filters = MapPainter.buttons(800, 600, false).get(MapPainter.Button.FILTERS);
-		assertEquals(filters.y, slayer.y);
-		assertTrue(slayer.x > filters.x + filters.width);
+		assertNull(MapPainter.buttonAt(400, 300, 800, 600, false));
 		// the pop out button is a square beside the window's own buttons
 		Rectangle mode = MapPainter.buttons(800, 600, false).get(MapPainter.Button.MODE);
 		assertEquals(mode.width, mode.height);
@@ -340,7 +330,7 @@ public class MapPainterTest
 	private static MapSettings settings(RoutingPlugin routing)
 	{
 		return new MapSettings(EnumSet.allOf(IconGroup.class), Collections.emptySet(), Collections.emptySet(), false,
-			true, false, false, true, true, routing, FloorNumbers.GROUND_IS_FIRST, 100, true, false, true);
+			true, false, false, true, true, routing, FloorNumbers.GROUND_IS_FIRST, 100, true, true);
 	}
 
 	@Test
@@ -517,14 +507,16 @@ public class MapPainterTest
 	}
 
 	@Test
-	public void theSlayerButtonsSquareKeepsNamesAwayOnlyWhileTheButtonIsShown()
+	public void theSearchBoxStartsRightAfterFiltersWithNoButtonBetween()
 	{
+		// the Slayer task moved into the Filters list: its button's square on the top row is the search box's again
 		Map<MapPainter.Button, Rectangle> buttons = MapPainter.buttons(1280, 800, false);
-		Rectangle slayer = buttons.get(MapPainter.Button.SLAYER);
-		assertTrue(MapPainter.spaceTaken(buttons, true).contains(slayer));
-		// the setting off: plain ground there, and a town's name may sit on it
-		java.util.List<Rectangle> taken = MapPainter.spaceTaken(buttons, false);
-		assertFalse(taken.contains(slayer));
-		assertEquals(buttons.size() - 1, taken.size());
+		assertEquals(buttons.size(), MapPainter.spaceTaken(buttons).size());
+		Rectangle filters = buttons.get(MapPainter.Button.FILTERS);
+		Rectangle box = MapSearch.layout(MapPainter.buttons(560, 400, false), 560, 0).getBox();
+		Rectangle small = MapPainter.buttons(560, 400, false).get(MapPainter.Button.FILTERS);
+		assertEquals(small.y, box.y);
+		assertTrue(box.x - (small.x + small.width) < MapPainter.BUTTON_HEIGHT);
+		assertTrue(filters.x + filters.width < MapSearch.layout(buttons, 1280, 0).getBox().x);
 	}
 }

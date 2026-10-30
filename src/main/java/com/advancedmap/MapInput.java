@@ -130,7 +130,7 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 			return e;
 		}
 		MapPainter.Button button = SwingUtilities.isLeftMouseButton(e)
-			? MapPainter.buttonAt(x, y, w, h, false, plugin.settings()) : null;
+			? MapPainter.buttonAt(x, y, w, h, false) : null;
 		if (button != null)
 		{
 			plugin.pressButton(button, false);

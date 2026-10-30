@@ -45,7 +45,7 @@ public class MapFiltersTest
 	private static MapSettings settings(Set<IconGroup> groups, Set<String> hiddenTypes)
 	{
 		return new MapSettings(groups, Collections.emptySet(), hiddenTypes, false, true, false, false, true, true,
-			RoutingPlugin.SHORTEST_PATH, FloorNumbers.GROUND_IS_FIRST, 100, true, false, true);
+			RoutingPlugin.SHORTEST_PATH, FloorNumbers.GROUND_IS_FIRST, 100, true, true);
 	}
 
 	@Test
@@ -99,6 +99,11 @@ public class MapFiltersTest
 		assertEquals(MapFilters.Part.SHOW_HIDDEN, filters.hitAt(showHidden.x + 5, showHidden.y + 5, layout, entries)
 			.getPart());
 		assertTrue(showHidden.y + showHidden.height < layout.getSearch().y);
+		// "Your Slayer task" is the list's first row, above "Show hidden icons"
+		Rectangle slayer = layout.getSlayer();
+		assertEquals(MapFilters.Part.SLAYER, filters.hitAt(slayer.x + 5, slayer.y + 5, layout, entries).getPart());
+		assertTrue(slayer.y + slayer.height <= showHidden.y);
+		assertTrue(slayer.y >= layout.getPanel().y);
 	}
 
 	@Test

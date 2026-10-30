@@ -55,9 +55,7 @@ final class MapPainter
 		/** Moves the map back to the player. */
 		LOCATE,
 		FLOOR_UP,
-		FLOOR_DOWN,
-		/** Shows or hides the Slayer task's spawns; there only while the "Slayer task" setting is on. */
-		SLAYER
+		FLOOR_DOWN
 	}
 
 	/**
@@ -287,7 +285,7 @@ final class MapPainter
 		MapSettings settings)
 	{
 		Button button = mouse == null || dragging ? null
-			: buttonAt(mouse.x, mouse.y, view.width, view.height, window, settings);
+			: buttonAt(mouse.x, mouse.y, view.width, view.height, window);
 		long now = System.nanoTime();
 		if (button != tipFor)
 		{
@@ -327,8 +325,6 @@ final class MapPainter
 				return settings.isIconsOff() ? "Show the map's icons" : "Hide the map's icons";
 			case FILTERS:
 				return "Choose which icons show";
-			case SLAYER:
-				return settings.isSlayerShown() ? "Hide your Slayer task's spawns" : "Show your Slayer task's spawns";
 			case AREA:
 				return "Show the " + area.other().label.toLowerCase(Locale.ROOT) + " map";
 			case MODE:
@@ -352,16 +348,13 @@ final class MapPainter
 		// a map too narrow for the search box between the top buttons at their full width gets the shorter ones, so the
 		// box stays on the top row
 		int squares = window ? 1 : 3;
-		int full = GAP * 4 + ICONS_WIDTH + FILTERS_WIDTH + BUTTON_HEIGHT + squares * (BUTTON_HEIGHT + GAP) + AREA_WIDTH
-			+ GAP * 2;
+		int full = GAP * 3 + ICONS_WIDTH + FILTERS_WIDTH + squares * (BUTTON_HEIGHT + GAP) + AREA_WIDTH + GAP * 2;
 		boolean compact = width - full < MapSearch.MIN_WIDTH;
 		int iconsWidth = compact ? ICONS_COMPACT : ICONS_WIDTH;
 		int filters = compact ? FILTERS_COMPACT : FILTERS_WIDTH;
 		int areaWidth = compact ? AREA_COMPACT : AREA_WIDTH;
 		out.put(Button.ICONS, new Rectangle(GAP, GAP, iconsWidth, BUTTON_HEIGHT));
 		out.put(Button.FILTERS, new Rectangle(GAP * 2 + iconsWidth, GAP, filters, BUTTON_HEIGHT));
-		// right of Filters (there only while the Slayer task setting is on)
-		out.put(Button.SLAYER, new Rectangle(GAP * 3 + iconsWidth + filters, GAP, BUTTON_HEIGHT, BUTTON_HEIGHT));
 		out.put(Button.LOCATE, new Rectangle(width - GAP - LOCATE_SIZE, height - GAP - LOCATE_SIZE, LOCATE_SIZE,
 			LOCATE_SIZE));
 		int down = height - GAP - LOCATE_SIZE - GAP - FLOOR_HEIGHT;
@@ -384,15 +377,10 @@ final class MapPainter
 	}
 
 	/** The button under a point, or null. */
-	static Button buttonAt(int x, int y, int width, int height, boolean window, MapSettings settings)
+	static Button buttonAt(int x, int y, int width, int height, boolean window)
 	{
 		for (Map.Entry<Button, Rectangle> button : buttons(width, height, window).entrySet())
 		{
-			// the Slayer button is not there while the setting is off: the map under it takes the press
-			if (button.getKey() == Button.SLAYER && (settings == null || !settings.isSlayerButton()))
-			{
-				continue;
-			}
 			if (button.getValue().contains(x, y))
 			{
 				return button.getKey();
@@ -425,7 +413,7 @@ final class MapPainter
 		if (settings.isPlaceNames())
 		{
 			// no name under the buttons, the search box or the bar of text along the bottom (as wide as its text)
-			List<Rectangle> taken = spaceTaken(buttons(view.width, view.height, window), settings.isSlayerButton());
+			List<Rectangle> taken = spaceTaken(buttons(view.width, view.height, window));
 			taken.add(search.layout(buttons(view.width, view.height, window), view.width).getBox());
 			taken.add(barBounds(g, view, bar));
 			drawLabels(g, view, area, labels.all(), taken);
@@ -476,9 +464,7 @@ final class MapPainter
 			}
 		}
 		drawBar(g, view, bar);
-		Integer slayerArea = settings.isSlayerButton() ? filters.areaOf(IconGroup.SLAYER_MASTER) : null;
-		drawButtons(g, view, area, plane, window, settings, player != null, following, gameMaximized, filters.isOpen(),
-			slayerArea == null ? null : icons.image(slayerArea, false));
+		drawButtons(g, view, area, plane, window, settings, player != null, following, gameMaximized, filters.isOpen());
 		if (filters.isOpen())
 		{
 			Rectangle button = buttons(view.width, view.height, window).get(Button.FILTERS);
@@ -1018,7 +1004,7 @@ final class MapPainter
 	/** True when a point is on one of the map's buttons, its open lists or boxes, or the search bar. */
 	private boolean onPanel(Point mouse, MapViewport.View view, boolean window, MapSettings settings)
 	{
-		if (buttonAt(mouse.x, mouse.y, view.width, view.height, window, settings) != null)
+		if (buttonAt(mouse.x, mouse.y, view.width, view.height, window) != null)
 		{
 			return true;
 		}
@@ -1163,18 +1149,10 @@ final class MapPainter
 		g.drawString(hint, x + PAD, y + height - PAD - metrics.getDescent());
 	}
 
-	/** The buttons' squares, which no place name may cross: the Slayer button's only while it is shown. */
-	static List<Rectangle> spaceTaken(Map<Button, Rectangle> buttons, boolean slayerButton)
+	/** The buttons' squares, which no place name may cross. */
+	static List<Rectangle> spaceTaken(Map<Button, Rectangle> buttons)
 	{
-		List<Rectangle> taken = new ArrayList<>();
-		for (Map.Entry<Button, Rectangle> entry : buttons.entrySet())
-		{
-			if (slayerButton || entry.getKey() != Button.SLAYER)
-			{
-				taken.add(entry.getValue());
-			}
-		}
-		return taken;
+		return new ArrayList<>(buttons.values());
 	}
 
 	/** The ids of a map's regions a view shows. */
@@ -1684,8 +1662,7 @@ final class MapPainter
 	}
 
 	private static void drawButtons(Graphics2D g, MapViewport.View view, MapArea area, int plane, boolean window,
-		MapSettings settings, boolean located, boolean following, boolean maximized, boolean filtersOpen,
-		BufferedImage slayerIcon)
+		MapSettings settings, boolean located, boolean following, boolean maximized, boolean filtersOpen)
 	{
 		for (Map.Entry<Button, Rectangle> entry : buttons(view.width, view.height, window).entrySet())
 		{
@@ -1694,14 +1671,6 @@ final class MapPainter
 			if (entry.getKey() == Button.LOCATE)
 			{
 				drawLocate(g, button, located, following);
-				continue;
-			}
-			if (entry.getKey() == Button.SLAYER)
-			{
-				if (settings.isSlayerButton())
-				{
-					drawSlayerButton(g, button, slayerIcon, settings.isSlayerShown());
-				}
 				continue;
 			}
 			if (entry.getKey() == Button.FLOOR_UP || entry.getKey() == Button.FLOOR_DOWN)
@@ -1745,32 +1714,6 @@ final class MapPainter
 	}
 
 	/** The Slayer button: the game's Slayer master icon, lit while the task's spawns show, faded while hidden. */
-	private static void drawSlayerButton(Graphics2D g, Rectangle button, BufferedImage icon, boolean shown)
-	{
-		g.setColor(shown ? new Color(0x4A3A1C) : BAR);
-		g.fillRoundRect(button.x, button.y, button.width, button.height, 8, 8);
-		if (shown)
-		{
-			g.setColor(new Color(0xC8A050));
-			g.drawRoundRect(button.x, button.y, button.width - 1, button.height - 1, 8, 8);
-		}
-		java.awt.Composite composite = g.getComposite();
-		if (!shown)
-		{
-			g.setComposite(java.awt.AlphaComposite.getInstance(java.awt.AlphaComposite.SRC_OVER, 0.4f));
-		}
-		if (icon != null)
-		{
-			g.drawImage(icon, button.x + (button.width - icon.getWidth()) / 2, button.y + (button.height - icon.getHeight()) / 2,
-				null);
-		}
-		else
-		{
-			drawLabel(g, button, "S");
-		}
-		g.setComposite(composite);
-	}
-
 	/** An arrow button that moves up or down a floor, dimmed when there is no floor that way. */
 	private static void drawFloorButton(Graphics2D g, Rectangle button, boolean up, boolean enabled)
 	{

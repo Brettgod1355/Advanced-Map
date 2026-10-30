@@ -30,8 +30,8 @@ public interface AdvancedMapConfig extends Config
 	String MULTI_COMBAT = "multiCombat";
 	String FARMING_STATUS = "farmingStatus";
 	String PLUGIN_MARKERS = "pluginMarkers";
-	String SLAYER_TASK = "slayerTask";
-	String SLAYER_SHOWN = "slayerShown";
+	/** A new key: the earlier "slayerShown" was the map button's, under a setting that is gone. */
+	String SLAYER_SHOWN = "slayerTaskShown";
 	String SHARE_MARKERS = "shareMarkers";
 	String SEARCH_SHOPS = "searchShops";
 	/** What the search does not look in, as the "Search in" list by its box left it: "MONSTERS;NPCS". */
@@ -213,18 +213,6 @@ public interface AdvancedMapConfig extends Config
 	default boolean shareMarkers()
 	{
 		return true;
-	}
-
-	@ConfigItem(
-		keyName = SLAYER_TASK,
-		name = "Slayer task",
-		description = "Mark every spawn of your Slayer task's monsters, with what is left of the task. Uses the task"
-			+ " RuneLite's Slayer plugin keeps, so that plugin must be on.",
-		position = 12
-	)
-	default boolean slayerTask()
-	{
-		return false;
 	}
 
 	@ConfigItem(
@@ -653,7 +641,10 @@ public interface AdvancedMapConfig extends Config
 		return false;
 	}
 
-	/** The map's Slayer button: the task's spawns shown (on) or not, while "Slayer task" is on. */
+	/**
+	 * "Your Slayer task" at the top of the Filters list: every spawn of the task RuneLite's Slayer plugin keeps marked,
+	 * with what is left of it. Off until ticked.
+	 */
 	@ConfigItem(
 		keyName = SLAYER_SHOWN,
 		name = "",
@@ -662,7 +653,7 @@ public interface AdvancedMapConfig extends Config
 	)
 	default boolean slayerShown()
 	{
-		return true;
+		return false;
 	}
 
 	@ConfigItem(

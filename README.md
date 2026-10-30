@@ -35,7 +35,7 @@ The map opens on your character, on the surface or the underground map, whicheve
 | Switch surface / underground | The button at the top |
 | See what an icon is | Rest the pointer on it; click it to keep its box open |
 | Add a marker, route somewhere, hide an icon | Right-click the spot or the icon |
-| Choose which icons show | The Filters button at the top left |
+| Choose which icons show, and mark your Slayer task | The Filters button at the top left |
 | Search | Click the search box at the top and type; Enter or a click on a result goes there |
 | Choose what the search looks in | The three lines beside the magnifying glass |
 | Move or size the box over the game | Drag its top or bottom bar, or a corner |
@@ -112,8 +112,8 @@ on this computer, two clients at once included; turn off "Share markers between 
   everywhere else.
 - **Farming patches**: a dot on each patch icon, green ready, yellow growing, red diseased or dead, gray empty;
   click one for its crop and when it is ready. Read from what RuneLite's Time Tracking plugin saved.
-- **Slayer task** (off by default): every spawn of your task's monsters, with how many are left, from the task
-  RuneLite's Slayer plugin keeps.
+- **Your Slayer task** (off by default): tick it at the top of the Filters list to mark every spawn of your task's
+  monsters, with how many are left. The row names the task RuneLite's Slayer plugin keeps, or says there is none.
 - **Other plugins' markers**: a clue scroll's spot, Quest Helper's next step and other plugins' world map markers
   show on this map as well.
 - **Arrow to you**: when you are out of view, an arrow at the map's edge points to you with how many tiles away.
@@ -145,7 +145,6 @@ choose with Filters on the map itself.
 | Other plugins' markers | On | Other plugins' world map markers |
 | Search finds shops by name | Off | Shops in the search results by their own names |
 | Share markers between accounts | On | Your markers on every account, or only on the one they were made on |
-| Slayer task | Off | Your Slayer task's spawns |
 | Place names | On | Kingdom, town and place names |
 | Floor numbers | Ground, 2, 3, 4 | How floors above the ground are numbered (or Ground, 1, 2, 3) |
 | Route with | Shortest Path | The plugin "Route here" asks |

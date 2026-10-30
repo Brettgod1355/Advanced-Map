@@ -72,6 +72,8 @@ final class MapFilters
 	static class Layout
 	{
 		Rectangle panel;
+		/** "Your Slayer task", at the top. */
+		Rectangle slayer;
 		Rectangle showHidden;
 		Rectangle search;
 		Rectangle allOn;
@@ -83,6 +85,7 @@ final class MapFilters
 	{
 		OUTSIDE,
 		PANEL,
+		SLAYER,
 		SHOW_HIDDEN,
 		SEARCH,
 		ALL_ON,
@@ -101,8 +104,15 @@ final class MapFilters
 	/** For each icon category the game has, the map area whose picture the list shows; empty until read. */
 	private volatile Map<Integer, Integer> categoryIcons = Collections.emptyMap();
 	private volatile boolean open;
+	/** The Slayer task RuneLite's Slayer plugin has saved, "Kalphite workers (34 left)"; null when there is none. */
+	private volatile String slayerTask;
 	private volatile String search = "";
 	private volatile int scroll;
+
+	void setSlayerTask(String task)
+	{
+		slayerTask = task;
+	}
 
 	/** The map area whose picture stands for an icon category, or null while not read or for no such category. */
 	Integer areaOf(int category)
@@ -241,7 +251,8 @@ final class MapFilters
 		int y = button.y + button.height + 4;
 		int panelHeight = Math.max(ROW * 8, Math.min(MAX_HEIGHT, height - y - BOTTOM_ROOM));
 		Rectangle panel = new Rectangle(x, y, WIDTH, panelHeight);
-		Rectangle showHidden = new Rectangle(x + PAD, y + PAD / 2, WIDTH - PAD * 2, ROW);
+		Rectangle slayer = new Rectangle(x + PAD, y + PAD / 2, WIDTH - PAD * 2, ROW);
+		Rectangle showHidden = new Rectangle(x + PAD, slayer.y + slayer.height, WIDTH - PAD * 2, ROW);
 		int searchY = showHidden.y + showHidden.height + HINT + PAD;
 		Rectangle search = new Rectangle(x + PAD, searchY, WIDTH - PAD * 2, SEARCH_HEIGHT);
 		int half = (WIDTH - PAD * 3) / 2;
@@ -250,7 +261,7 @@ final class MapFilters
 		Rectangle allOff = new Rectangle(x + PAD * 2 + half, buttonsY, half, ROW);
 		int listY = buttonsY + ROW + 6;
 		Rectangle list = new Rectangle(x, listY, WIDTH, y + panelHeight - PAD / 2 - listY);
-		return new Layout(panel, showHidden, search, allOn, allOff, list);
+		return new Layout(panel, slayer, showHidden, search, allOn, allOff, list);
 	}
 
 	/** What a press at a point is on. */
@@ -259,6 +270,10 @@ final class MapFilters
 		if (!layout.getPanel().contains(x, y))
 		{
 			return new Hit(Part.OUTSIDE, null);
+		}
+		if (layout.getSlayer().contains(x, y))
+		{
+			return new Hit(Part.SLAYER, null);
 		}
 		if (layout.getShowHidden().contains(x, y))
 		{
@@ -308,6 +323,7 @@ final class MapFilters
 
 		g.setFont(FontManager.getRunescapeSmallFont());
 		FontMetrics metrics = g.getFontMetrics();
+		drawSlayer(g, layout.getSlayer(), settings, icons, metrics);
 		drawShowHidden(g, layout.getShowHidden(), settings, metrics);
 		Rectangle search = layout.getSearch();
 		g.setColor(FIELD);
@@ -395,6 +411,30 @@ final class MapFilters
 	 * "Show hidden icons", with how many the player has hidden, and under it how to hide one. A line under it sets it
 	 * apart from the filters.
 	 */
+	/** "Your Slayer task", ticked while its spawns are marked, with a Slayer master's picture and the task. */
+	private void drawSlayer(Graphics2D g, Rectangle row, MapSettings settings, MapIcons icons, FontMetrics metrics)
+	{
+		drawBox(g, row.x, row.y + (ROW - BOX) / 2, settings.isSlayerShown());
+		int textX = row.x + BOX + 8;
+		Integer area = areaOf(IconGroup.SLAYER_MASTER);
+		BufferedImage image = area == null ? null : icons.image(area, false);
+		if (image != null)
+		{
+			g.drawImage(image, textX + (15 - image.getWidth()) / 2, row.y + (ROW - image.getHeight()) / 2, null);
+		}
+		textX += 15 + 6;
+		int textY = row.y + (ROW + metrics.getAscent() - metrics.getDescent()) / 2;
+		String label = "Your Slayer task";
+		g.setColor(TEXT);
+		g.drawString(label, textX, textY);
+		// the task, or that there is none (RuneLite's Slayer plugin keeps it)
+		String task = slayerTask;
+		String note = SideList.fit(task != null ? task : "no task", metrics,
+			row.x + row.width - textX - metrics.stringWidth(label) - 8);
+		g.setColor(QUIET);
+		g.drawString(note, row.x + row.width - metrics.stringWidth(note), textY);
+	}
+
 	private static void drawShowHidden(Graphics2D g, Rectangle row, MapSettings settings, FontMetrics metrics)
 	{
 		drawBox(g, row.x, row.y + (ROW - BOX) / 2, settings.isShowHidden());

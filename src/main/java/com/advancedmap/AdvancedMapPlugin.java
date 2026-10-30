@@ -490,7 +490,10 @@ public class AdvancedMapPlugin extends Plugin
 		return out;
 	}
 
-	/** Marks the Slayer task's spawns while the setting is on and RuneLite's Slayer plugin has a task saved. */
+	/**
+	 * Names the Slayer task RuneLite's Slayer plugin has saved at the top of the Filters list, and marks its spawns
+	 * while "Your Slayer task" is ticked there.
+	 */
 	private void showSlayerTask()
 	{
 		MapMessages layers = messages;
@@ -498,13 +501,12 @@ public class AdvancedMapPlugin extends Plugin
 		{
 			return;
 		}
-		String task = config.slayerTask() ? configManager.getRSProfileConfiguration(SlayerTask.GROUP,
-			SlayerTask.TASK_NAME) : null;
+		String task = configManager.getRSProfileConfiguration(SlayerTask.GROUP, SlayerTask.TASK_NAME);
 		String amount = task == null ? null : configManager.getRSProfileConfiguration(SlayerTask.GROUP,
 			SlayerTask.AMOUNT);
-		// the map's Slayer button hides the spawns without turning the setting off
-		boolean active = task != null && !task.isEmpty() && amount != null && !"0".equals(amount)
-			&& config.slayerShown();
+		boolean assigned = task != null && !task.isEmpty() && amount != null && !"0".equals(amount);
+		filters.setSlayerTask(assigned ? task + " (" + amount + " left)" : null);
+		boolean active = assigned && config.slayerShown();
 		// the place names narrow a Konar task to its area: drawn again once they have loaded
 		String key = active ? task + ":" + amount + ":" + !labelsNow().isEmpty() : null;
 		if (java.util.Objects.equals(key, slayerShown))
@@ -1116,10 +1118,6 @@ public class AdvancedMapPlugin extends Plugin
 			case ICONS:
 				setSwitch(AdvancedMapConfig.ICONS_OFF, !settings.isIconsOff());
 				selection = null;
-				break;
-			case SLAYER:
-				setSwitch(AdvancedMapConfig.SLAYER_SHOWN, !settings.isSlayerShown());
-				clientThread.invokeLater(this::showSlayerTask);
 				break;
 			case FILTERS:
 				filters.setOpen(!filters.isOpen());
@@ -2058,6 +2056,10 @@ public class AdvancedMapPlugin extends Plugin
 			case SHOW_HIDDEN:
 				configManager.setConfiguration(AdvancedMapConfig.GROUP, AdvancedMapConfig.SHOW_HIDDEN,
 					!settings.isShowHidden());
+				break;
+			case SLAYER:
+				setSwitch(AdvancedMapConfig.SLAYER_SHOWN, !settings.isSlayerShown());
+				clientThread.invokeLater(this::showSlayerTask);
 				break;
 			case ENTRY:
 				toggle(hit.getEntry());
