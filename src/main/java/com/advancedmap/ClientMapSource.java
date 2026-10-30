@@ -692,17 +692,25 @@ class ClientMapSource implements MapSource
 		Set<String> seen = new HashSet<>();
 		for (byte[] map : maps)
 		{
-			for (WorldMapElements.Element element : WorldMapElements.load(map))
+			try
 			{
-				AreaDefinition area = labelAreas.get(element.getAreaId());
-				// Prifddinas's own map repeats the surface's names around it, at the copy's tiles
-				if (area == null || element.getPlane() != 0 || Prifddinas.COPY.contains(element.getX(), element.getY())
-					|| !seen.add(area.id + "@" + element.getX() + "," + element.getY()))
+				for (WorldMapElements.Element element : WorldMapElements.load(map))
 				{
-					continue;
+					AreaDefinition area = labelAreas.get(element.getAreaId());
+					// Prifddinas's own map repeats the surface's names around it, at the copy's tiles
+					if (area == null || element.getPlane() != 0 || Prifddinas.COPY.contains(element.getX(), element.getY())
+						|| !seen.add(area.id + "@" + element.getX() + "," + element.getY()))
+					{
+						continue;
+					}
+					labels.add(new MapLabels.Label(Arrays.asList(area.name.split("<br>")), element.getX(), element.getY(),
+						area.textScale, new Color(area.textColor)));
 				}
-				labels.add(new MapLabels.Label(Arrays.asList(area.name.split("<br>")), element.getX(), element.getY(),
-					area.textScale, new Color(area.textColor)));
+			}
+			catch (RuntimeException e)
+			{
+				// one map file in a shape this reader does not know: the others' names still show
+				log.debug("could not read the place names of a map", e);
 			}
 		}
 		return labels;
