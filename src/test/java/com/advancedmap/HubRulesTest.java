@@ -181,13 +181,55 @@ public class HubRulesTest
 		assertTrue("icon.png is " + width + "x" + height + "; the Hub allows at most 48x72", width <= 48 && height <= 72);
 	}
 
+	/**
+	 * RuneLite's own LICENSE, which the Hub's reviewers hold a plugin's to (numbered conditions, a "Project
+	 * maintainer:" line or other wrapping were rejected, plugin-hub#16712, #16590): only the holder's line may differ.
+	 */
+	private static final String[] LICENSE_TEMPLATE = {
+		"BSD 2-Clause License",
+		"",
+		"Copyright (c) 2016-2017, Adam <Adam@sigterm.info>",
+		"All rights reserved.",
+		"",
+		"Redistribution and use in source and binary forms, with or without",
+		"modification, are permitted provided that the following conditions are met:",
+		"",
+		"* Redistributions of source code must retain the above copyright notice, this",
+		"  list of conditions and the following disclaimer.",
+		"",
+		"* Redistributions in binary form must reproduce the above copyright notice,",
+		"  this list of conditions and the following disclaimer in the documentation",
+		"  and/or other materials provided with the distribution.",
+		"",
+		"THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\"",
+		"AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE",
+		"IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE",
+		"DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE",
+		"FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL",
+		"DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR",
+		"SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER",
+		"CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,",
+		"OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE",
+		"OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.",
+	};
+
 	@Test
-	public void licenseIsTheHubTemplateShape() throws IOException
+	public void licenseIsTheHubTemplateWithOnlyTheHolderChanged() throws IOException
 	{
-		String license = new String(Files.readAllBytes(Paths.get("LICENSE")), StandardCharsets.UTF_8);
-		assertTrue("LICENSE must be the BSD 2-Clause text the Hub uses", license.contains("BSD 2-Clause License"));
-		assertTrue("LICENSE must keep 'All rights reserved.' (reviewer, plugin-hub#16590)", license.contains("All rights reserved."));
-		assertTrue("LICENSE must say COPYRIGHT HOLDERS, plural (reviewer, plugin-hub#16590)", license.contains("COPYRIGHT HOLDERS"));
+		String[] license = new String(Files.readAllBytes(Paths.get("LICENSE")), StandardCharsets.UTF_8)
+			.replace("\r\n", "\n").split("\n", -1);
+		assertEquals("LICENSE must have the template's lines, and a line break at the end", LICENSE_TEMPLATE.length + 1,
+			license.length);
+		assertEquals("", license[LICENSE_TEMPLATE.length]);
+		for (int i = 0; i < LICENSE_TEMPLATE.length; i++)
+		{
+			if (i == 2)
+			{
+				assertTrue("line 3 is the holder's: " + license[i], license[i].matches("Copyright \\(c\\) \\d{4}(-\\d{4})?, .+"));
+				continue;
+			}
+			assertEquals("LICENSE line " + (i + 1) + " differs from RuneLite's", LICENSE_TEMPLATE[i], license[i]);
+		}
 	}
 
 	@Test
