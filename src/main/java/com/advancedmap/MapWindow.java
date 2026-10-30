@@ -219,6 +219,21 @@ final class MapWindow extends JFrame
 		}
 	}
 
+	/**
+	 * Paints {@code paint} at {@code scale} over a panel of {@code width} by {@code height} real pixels, filled first:
+	 * at a fractional scale the map's own size, rounded, can fall a pixel short of the panel's edge, which would
+	 * otherwise keep what was there before.
+	 */
+	static void paintScaled(Graphics g, int width, int height, double scale, Consumer<Graphics2D> paint)
+	{
+		g.setColor(MapPainter.BACKGROUND);
+		g.fillRect(0, 0, width, height);
+		Graphics2D scaled = (Graphics2D) g.create();
+		scaled.scale(scale, scale);
+		paint.accept(scaled);
+		scaled.dispose();
+	}
+
 	/** The drawing surface: the shared painter, and the mouse for dragging, zooming and the buttons. */
 	private static final class MapPanel extends JPanel
 	{
@@ -360,12 +375,9 @@ final class MapWindow extends JFrame
 		protected void paintComponent(Graphics g)
 		{
 			// drawn bigger by Stretched Mode's factor, as the map over the game is
-			Graphics2D scaled = (Graphics2D) g.create();
-			double scale = plugin.windowScale();
-			scaled.scale(scale, scale);
-			painter.paint(scaled, plugin.viewport().view(width(), height()), plugin.area(), plugin.plane(),
-				plugin.playerLocation(), mouse, true, plugin.settings(), plugin.progress(), plugin.selection());
-			scaled.dispose();
+			paintScaled(g, getWidth(), getHeight(), plugin.windowScale(), scaled -> painter.paint(scaled,
+				plugin.viewport().view(width(), height()), plugin.area(), plugin.plane(), plugin.playerLocation(),
+				mouse, true, plugin.settings(), plugin.progress(), plugin.selection()));
 		}
 
 		/** The panel's size and the mouse, in the map's units: real pixels divided by the scale it is drawn at. */

@@ -123,7 +123,7 @@ final class MapPainter
 	/** The Wilderness teleport limits show from this zoom in, as icons do. */
 	static final double WILDERNESS_ZOOM = MapIcons.ICON_ZOOM;
 
-	private static final Color BACKGROUND = new Color(0x0B1520);
+	static final Color BACKGROUND = new Color(0x0B1520);
 	private static final Color LOADING = new Color(0x13202D);
 	/** Laid over the floors below the one shown: darker and duller, so the floor itself stands out. */
 	private static final Color LOWER_FLOORS = new Color(0x0B, 0x15, 0x20, 165);
