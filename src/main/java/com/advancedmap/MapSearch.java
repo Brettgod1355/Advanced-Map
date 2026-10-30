@@ -201,6 +201,9 @@ final class MapSearch
 	private static volatile Map<String, java.util.Set<String>> nicknames = Collections.emptyMap();
 	private volatile List<Entry> index = Collections.emptyList();
 	private volatile int indexedLabels = -1;
+	/** How many loads have finished; the index is cached against it too, so a build that straddled a load is not kept. */
+	private volatile int loads;
+	private volatile int indexedLoads = -1;
 	private volatile boolean focused;
 	private volatile String query = "";
 	private volatile List<Entry> results = Collections.emptyList();
@@ -254,8 +257,9 @@ final class MapSearch
 		{
 			log.debug("could not read the place nicknames", e);
 		}
-		// an index built before this (a search typed as the plugin started) lacks the places, shops and monsters
-		indexedLabels = -1;
+		// an index built before or while this ran (a search typed as the plugin started) lacks the places, shops and
+		// monsters: the next index() builds again
+		loads++;
 	}
 
 	/** Nicknames ("ardy") and the places they stand for, both {@link #normalize normalized}. */
@@ -358,13 +362,15 @@ final class MapSearch
 	 */
 	List<Entry> index(List<MapLabels.Label> labels)
 	{
-		if (labels.size() == indexedLabels)
+		int loadsNow = loads;
+		if (labels.size() == indexedLabels && loadsNow == indexedLoads)
 		{
 			return index;
 		}
 		List<Entry> out = new ArrayList<>(build(labels));
 		index = Collections.unmodifiableList(out);
 		indexedLabels = labels.size();
+		indexedLoads = loadsNow;
 		return index;
 	}
 
