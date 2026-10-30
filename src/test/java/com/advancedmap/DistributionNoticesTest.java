@@ -64,7 +64,9 @@ public class DistributionNoticesTest
 			"Arman S <https://github.com/Rman887>", "Magic fTail", "melky <https://github.com/melkypie>",
 			"Seth <Sethtroll3@gmail.com>", "NotFoxtrot <https://github.com/NotFoxtrot>", "2018 Abex", "2019 Abex",
 			"Torkel Velure <https://github.com/TorkelV>", "Tyler <https://github.com/tylerthardy>",
-			"Shaun Dreclin <shaundreclin@gmail.com>"})
+			"Shaun Dreclin <shaundreclin@gmail.com>",
+			// multi-combat.tsv's Wilderness rectangles, from Wilderness Lines' WildernessLinesPlugin.java
+			"Woox <https://github.com/wooxsolo>", "Jordan <nightfirecat@protonmail.com>", "tsbreuer <tsbreuer@gmail.com>"})
 		{
 			assertTrue(holder + " is not named in THIRD_PARTY_NOTICES.md", notices.contains(holder));
 		}

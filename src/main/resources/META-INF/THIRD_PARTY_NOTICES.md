@@ -167,8 +167,10 @@ outside the Wilderness, the areas of [Multi Lines](https://github.com/tsbreuer/M
 it marks enabled and not removed); in the Wilderness, the rectangles of
 [Wilderness Lines](https://github.com/Nightfirecat/plugin-hub-plugins) (`WILDERNESS_MULTI_AREAS` in
 `WildernessLinesPlugin.java` at its Plugin Hub pin `d81bb4c444c3772b1563be8a8fcc2252c84a0a4f`). Only the areas' names
-and tiles are kept; no code is included, and nothing is downloaded while the plugin runs. Both repositories publish
-the same license, with the same copyright line:
+and tiles are kept; no code is included, and nothing is downloaded while the plugin runs. `WildernessLinesPlugin.java`
+itself carries the license under its own holders, reproduced here: "Copyright (c) 2018, Woox
+<https://github.com/wooxsolo>", "Copyright (c) 2021, Jordan <nightfirecat@protonmail.com>" and "Copyright (c) 2024,
+tsbreuer <tsbreuer@gmail.com>". Both repositories publish the same license, with the same copyright line:
 
 ```
 BSD 2-Clause License
