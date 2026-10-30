@@ -33,13 +33,12 @@ public class CaretTest
 	}
 
 	@Test
-	public void aQueryEndingInABarKeepsItWhileTheBoxIsNotTypedInto() throws InterruptedException
+	public void aQueryEndingInABarKeepsItWhileTheBoxIsNotTypedInto()
 	{
-		// a typed "|" looks like the cursor: unfocused, the box has no cursor, so nothing is taken away as it blinks
-		Caret.typed();
-		Thread.sleep(Caret.BLINK_NANOS / 1_000_000 + 20);
-		assertFalse("the cursor is in its off phase", Caret.on());
+		// a typed "|" looks like the cursor: unfocused, the box has no cursor, so nothing is taken away whatever the
+		// phase; focused, the off phase takes the cursor away (no clock: the phases are given)
 		assertEquals("a|", Caret.draw("a|", false));
-		assertEquals("a", Caret.draw("a|", true));
+		assertEquals("a", Caret.cursor("a|", false));
+		assertEquals("a|", Caret.cursor("a|", true));
 	}
 }

@@ -43,7 +43,13 @@ final class Caret
 	 */
 	static String draw(String shown)
 	{
-		return on() || !shown.endsWith("|") ? shown : shown.substring(0, shown.length() - 1);
+		return cursor(shown, on());
+	}
+
+	/** {@code shown} with its cursor while it is {@code on}, without it while it is off. */
+	static String cursor(String shown, boolean on)
+	{
+		return on || !shown.endsWith("|") ? shown : shown.substring(0, shown.length() - 1);
 	}
 
 	/** As {@link #draw(String)} while the box is typed into; a box not typed into has no cursor to take away. */
