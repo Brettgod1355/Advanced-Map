@@ -43,6 +43,8 @@ final class SideList
 	private static final Color HOVER = new Color(255, 255, 255, 28);
 	/** For measuring text outside a frame, to wrap a row's lines before the list is drawn. */
 	private static final Graphics2D MEASURE = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB).createGraphics();
+	/** The step between two lines of a wrapped title or heading, in the bold font (taller than {@link #SUB}). */
+	static final int BOLD_LINE = MEASURE.getFontMetrics(FontManager.getRunescapeBoldFont()).getHeight();
 
 	/** One row: its text, a note on its right (a fare, a price, the other map), an optional second line, a place. */
 	@Value
@@ -87,7 +89,13 @@ final class SideList
 
 		int height()
 		{
-			return (isHeading() ? HEADING_GAP : 0) + ROW + SUB * (textLines().size() - 1) + SUB * subLines().size();
+			return height(textLines(), subLines());
+		}
+
+		/** The height of a row laid out as these lines. */
+		int height(List<String> text, List<String> sub)
+		{
+			return (isHeading() ? HEADING_GAP : 0) + ROW + SUB * (text.size() - 1) + SUB * sub.size();
 		}
 
 		/** A heading over the rows after it ("Locations (nearest first)"): bold and underlined; a click does nothing. */
@@ -129,52 +137,78 @@ final class SideList
 		int index;
 	}
 
-	private volatile String title = "";
-	private volatile List<Row> rows = Collections.emptyList();
-	/** What the list is for, so the same kind of click can tell it is already open (a transport, a shop). */
-	private volatile Object owner;
+	/** A row's lines, wrapped when the list opened (they are the same every paint), and its height. */
+	@Value
+	static class Laid
+	{
+		List<String> text;
+		List<String> sub;
+		int height;
+	}
+
+	/** What is open: the rows and their lines, the title and its lines, whose it is; one object, so a paint sees one. */
+	@Value
+	private static class Content
+	{
+		String title;
+		List<String> titleLines;
+		List<Row> rows;
+		List<Laid> laid;
+		int height;
+		Object owner;
+	}
+
+	private static final Content NOTHING = new Content("", Collections.singletonList(""), Collections.emptyList(),
+		Collections.emptyList(), 0, null);
+
+	private volatile Content content = NOTHING;
 	/** Scrolled by the wheel on the Swing thread, read when the list is drawn on the client thread. */
 	private volatile int scroll;
 
 	boolean isOpen()
 	{
-		return !rows.isEmpty();
+		return !content.rows.isEmpty();
 	}
 
-	/** Opens a list of rows, named {@code title}, for {@code owner}. */
+	/** Opens a list of rows, named {@code title}, for {@code owner}: the rows' text is wrapped here, once. */
 	void open(String title, List<Row> rows, Object owner)
 	{
-		this.title = title;
-		this.rows = Collections.unmodifiableList(rows);
-		this.owner = owner;
+		List<Laid> laid = new ArrayList<>(rows.size());
+		int height = 0;
+		for (Row row : rows)
+		{
+			List<String> text = row.textLines();
+			List<String> sub = row.subLines();
+			Laid lines = new Laid(text, sub, row.height(text, sub));
+			laid.add(lines);
+			height += lines.height;
+		}
+		List<String> titleLines = wrap(title, WIDTH - PAD * 3 - CLOSE, FontManager.getRunescapeBoldFont());
+		content = new Content(title, titleLines.isEmpty() ? Collections.singletonList("") : titleLines,
+			Collections.unmodifiableList(new ArrayList<>(rows)), Collections.unmodifiableList(laid), height, owner);
 		scroll = 0;
 	}
 
 	void close()
 	{
-		rows = Collections.emptyList();
-		owner = null;
+		content = NOTHING;
 	}
 
 	List<Row> rows()
 	{
-		return rows;
+		return content.rows;
 	}
 
+	/** What the list is for, so the same kind of click can tell it is already open (a transport, a shop). */
 	Object owner()
 	{
-		return owner;
+		return content.owner;
 	}
 
 	/** The rows' height together. */
 	int contentHeight()
 	{
-		int height = 0;
-		for (Row row : rows)
-		{
-			height += row.height();
-		}
-		return height;
+		return content.height;
 	}
 
 	/**
@@ -211,14 +245,13 @@ final class SideList
 	/** The title in lines no wider than the room beside the close box: a long name wraps, it is never cut short. */
 	List<String> titleLines()
 	{
-		return wrap(title, WIDTH - PAD * 3 - CLOSE, FontManager.getRunescapeBoldFont());
+		return content.titleLines;
 	}
 
 	/** The title's height: one line fits the usual header; each line more adds a line's height. */
 	int headerHeight()
 	{
-		int lines = titleLines().size();
-		return HEADER + (lines - 1) * MEASURE.getFontMetrics(FontManager.getRunescapeBoldFont()).getHeight();
+		return HEADER + (content.titleLines.size() - 1) * BOLD_LINE;
 	}
 
 	/** What a press at a point is on. */
@@ -236,10 +269,10 @@ final class SideList
 		if (list.contains(x, y))
 		{
 			int top = list.y - scroll;
-			List<Row> shown = rows;
+			List<Laid> shown = content.laid;
 			for (int i = 0; i < shown.size(); i++)
 			{
-				int bottom = top + shown.get(i).height();
+				int bottom = top + shown.get(i).height;
 				if (y >= top && y < bottom)
 				{
 					return new Hit(i);
@@ -263,7 +296,7 @@ final class SideList
 	 */
 	void draw(Graphics2D g, Layout layout, Point mouse)
 	{
-		List<Row> shown = rows;
+		Content shown = content;
 		Rectangle panel = layout.getPanel();
 		g.setColor(PANEL);
 		g.fillRoundRect(panel.x, panel.y, panel.width, panel.height, 8, 8);
@@ -275,10 +308,10 @@ final class SideList
 		Rectangle close = layout.getClose();
 		g.setColor(TEXT);
 		int titleY = panel.y + (HEADER + bold.getAscent() - bold.getDescent()) / 2;
-		for (String line : titleLines())
+		for (String line : shown.titleLines)
 		{
 			g.drawString(line, panel.x + PAD, titleY);
-			titleY += bold.getHeight();
+			titleY += BOLD_LINE;
 		}
 		g.setColor(QUIET);
 		g.drawLine(close.x + 4, close.y + 4, close.x + close.width - 5, close.y + close.height - 5);
@@ -290,14 +323,16 @@ final class SideList
 		Shape clip = g.getClip();
 		g.clip(list);
 		int y = list.y - scroll;
-		for (Row row : shown)
+		for (int i = 0; i < shown.rows.size(); i++)
 		{
-			int height = row.height();
+			Row row = shown.rows.get(i);
+			Laid lines = shown.laid.get(i);
+			int height = lines.height;
 			if (y + height >= list.y && y <= list.y + list.height)
 			{
 				if (row.isHeading())
 				{
-					drawHeading(g, row, list, y + HEADING_GAP);
+					drawHeading(g, lines, list, y + HEADING_GAP);
 					y += height;
 					continue;
 				}
@@ -311,7 +346,7 @@ final class SideList
 				String note = row.getNote() == null ? "" : row.getNote();
 				g.setColor(TEXT);
 				int line = baseline;
-				for (String text : row.textLines())
+				for (String text : lines.text)
 				{
 					g.drawString(text, list.x + PAD, line);
 					line += SUB;
@@ -323,7 +358,7 @@ final class SideList
 					g.drawString(note, list.x + list.width - PAD - metrics.stringWidth(note), baseline);
 				}
 				g.setColor(row.getSubColor() == null ? QUIET : row.getSubColor());
-				for (String sub : row.subLines())
+				for (String sub : lines.sub)
 				{
 					line += SUB;
 					g.drawString(sub, list.x + PAD * 2, line);
@@ -333,25 +368,25 @@ final class SideList
 		}
 		g.setClip(clip);
 
-		int content = contentHeight();
-		if (content > list.height)
+		int all = shown.height;
+		if (all > list.height)
 		{
-			int thumb = Math.max(20, list.height * list.height / content);
-			int top = list.y + (list.height - thumb) * scroll / Math.max(1, content - list.height);
+			int thumb = Math.max(20, list.height * list.height / all);
+			int top = list.y + (list.height - thumb) * scroll / Math.max(1, all - list.height);
 			g.setColor(new Color(255, 255, 255, 60));
 			g.fillRoundRect(list.x + list.width - 5, top, 3, thumb, 3, 3);
 		}
 	}
 
 	/** A heading row: its text in bold, underlined across the list. */
-	private static void drawHeading(Graphics2D g, Row row, Rectangle list, int top)
+	private static void drawHeading(Graphics2D g, Laid lines, Rectangle list, int top)
 	{
 		java.awt.Font font = g.getFont();
 		g.setFont(FontManager.getRunescapeBoldFont());
 		FontMetrics bold = g.getFontMetrics();
 		int baseline = top + (ROW + bold.getAscent() - bold.getDescent()) / 2;
 		g.setColor(TEXT);
-		for (String line : row.textLines())
+		for (String line : lines.text)
 		{
 			g.drawString(line, list.x + PAD, baseline);
 			baseline += SUB;

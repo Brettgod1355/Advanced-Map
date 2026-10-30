@@ -136,4 +136,41 @@ public class SideListTest
 		assertEquals(new SideList.Hit(1),
 			list.hitAt(layout.getList().x + 10, layout.getList().y + rows.get(0).height() + 5, layout));
 	}
+
+	@Test
+	public void theRowsAreWrappedOnceWhenTheListOpensAndDrawnFromThat()
+	{
+		// a long list repaints 20 times a second: measuring every word of every row each time cost milliseconds
+		SideList list = new SideList();
+		List<SideList.Row> rows = new ArrayList<>();
+		rows.add(SideList.Row.heading("Locations (nearest first)"));
+		for (int i = 0; i < 150; i++)
+		{
+			rows.add(new SideList.Row("Lesser demon spawn area " + i, i + " tiles",
+				"needs 40 Agility; needs Dragon Slayer II to enter", null, new WorldPoint(3200 + i, 3200, 0), null));
+		}
+		list.open("Nearest: Lesser demon", rows, "a search");
+		int expected = 0;
+		for (SideList.Row row : rows)
+		{
+			expected += row.height();
+		}
+		assertEquals("the height kept is the rows' own", expected, list.contentHeight());
+		Map<MapPainter.Button, Rectangle> buttons = MapPainter.buttons(1280, 800, false);
+		SideList.Layout layout = list.layout(buttons);
+		// hits still land on the right row from the kept heights, and a rendering of the list reads nothing from
+		// the rows themselves (the wrap below would trip on a row that is no longer in the list)
+		int y = layout.getList().y + rows.get(0).height() + rows.get(1).height() + 2;
+		assertEquals(new SideList.Hit(2), list.hitAt(layout.getList().x + 10, y, layout));
+		rows.clear();
+		assertEquals(151, list.rows().size());
+		java.awt.image.BufferedImage image = new java.awt.image.BufferedImage(1280, 800,
+			java.awt.image.BufferedImage.TYPE_INT_ARGB);
+		list.draw(image.createGraphics(), layout, null);
+		assertEquals(expected, list.contentHeight());
+		list.close();
+		assertFalse(list.isOpen());
+		assertEquals(0, list.contentHeight());
+		assertEquals(1, list.titleLines().size());
+	}
 }
