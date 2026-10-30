@@ -66,6 +66,11 @@ class CacheReader
 		this.client = client;
 	}
 
+	boolean onClientThread()
+	{
+		return client.isClientThread();
+	}
+
 	/**
 	 * Runs {@code work} on the client thread and returns its result, waiting for it when called from another
 	 * thread. Throws {@link CancellationException} once the plugin has stopped.

@@ -35,6 +35,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.zip.CRC32;
 import lombok.extern.slf4j.Slf4j;
@@ -77,6 +78,8 @@ class ClientMapSource implements MapSource
 				return size() > REGIONS_KEPT;
 			}
 		});
+	/** The regions being read now, each by one render thread: another that wants one waits for that reading. */
+	private final Map<Integer, CompletableFuture<Void>> reading = new ConcurrentHashMap<>();
 	private final Map<Integer, UnderlayDefinition> underlays = new ConcurrentHashMap<>();
 	private final Map<Integer, OverlayDefinition> overlays = new ConcurrentHashMap<>();
 	private final Map<Integer, ObjectDefinition> objects = new ConcurrentHashMap<>();
@@ -162,6 +165,7 @@ class ClientMapSource implements MapSource
 	 */
 	private void loadBlock(int centerX, int centerY)
 	{
+		CompletableFuture<Void> mine = new CompletableFuture<>();
 		List<Integer> ids = new ArrayList<>();
 		for (int dx = -BLOCK_REACH; dx <= BLOCK_REACH; dx++)
 		{
@@ -169,12 +173,38 @@ class ClientMapSource implements MapSource
 			{
 				int rx = centerX + dx;
 				int ry = centerY + dy;
-				if (rx >= 0 && ry >= 0 && rx <= 255 && ry <= 255 && !regions.containsKey(rx << 8 | ry))
+				int id = rx << 8 | ry;
+				if (rx >= 0 && ry >= 0 && rx <= 255 && ry <= 255 && !regions.containsKey(id)
+					&& reading.putIfAbsent(id, mine) == null)
 				{
-					ids.add(rx << 8 | ry);
+					ids.add(id);
 				}
 			}
 		}
+		try
+		{
+			if (!ids.isEmpty())
+			{
+				readBlock(ids);
+			}
+		}
+		finally
+		{
+			ids.forEach(reading::remove);
+			mine.complete(null);
+		}
+		// the region itself being read by another thread: its reading is waited for rather than done twice (never on
+		// the client thread, which that reading may be waiting for)
+		CompletableFuture<Void> other = reading.get(centerX << 8 | centerY);
+		if (other != null && !reader.onClientThread())
+		{
+			other.join();
+		}
+	}
+
+	/** Reads these regions, which this thread has taken to read, in one wait for the client thread. */
+	private void readBlock(List<Integer> ids)
+	{
 		Map<Integer, byte[][]> files = reader.read(client ->
 		{
 			IndexDataBase maps = client.getIndex(MAPS);

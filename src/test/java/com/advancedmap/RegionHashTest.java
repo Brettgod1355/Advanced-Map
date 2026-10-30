@@ -40,6 +40,12 @@ public class RegionHashTest
 		int[] scenery = {0xFF00FF00};
 		/** Thrown by the next read of the config index, once, as the client's own cache code might. */
 		RuntimeException failNextConfigRead;
+		/** The client thread when a test has one; else every thread is it, and reads run where they are asked. */
+		volatile Thread clientThread;
+		/** Each read of a region's terrain is counted, and the reading of {@link #held} waits for this, when set. */
+		final Map<Integer, java.util.concurrent.atomic.AtomicInteger> terrainReads = new java.util.concurrent.ConcurrentHashMap<>();
+		int held = -1;
+		java.util.concurrent.CountDownLatch hold;
 
 		void put(int index, int group, int file, byte[] bytes)
 		{
@@ -55,13 +61,54 @@ public class RegionHashTest
 		@Override
 		public boolean isClientThread()
 		{
-			return true;
+			Thread client = clientThread;
+			return client == null || client == Thread.currentThread();
 		}
 
 		@Override
 		public IndexDataBase getIndex(int id)
 		{
-			return new Index(indexes.getOrDefault(id, new HashMap<>()));
+			Index index = new Index(indexes.getOrDefault(id, new HashMap<>()));
+			if (id != MAPS)
+			{
+				return index;
+			}
+			return new IndexDataBase()
+			{
+				@Override
+				public boolean isOverlayOutdated()
+				{
+					return false;
+				}
+
+				@Override
+				public int[] getFileIds(int group)
+				{
+					return index.getFileIds(group);
+				}
+
+				@Override
+				public byte[] loadData(int group, int file)
+				{
+					if (file == 0)
+					{
+						terrainReads.computeIfAbsent(group, k -> new java.util.concurrent.atomic.AtomicInteger())
+							.incrementAndGet();
+						if (group == held && hold != null)
+						{
+							try
+							{
+								hold.await();
+							}
+							catch (InterruptedException e)
+							{
+								throw new IllegalStateException(e);
+							}
+						}
+					}
+					return index.loadData(group, file);
+				}
+			};
 		}
 
 		@Override
@@ -348,5 +395,57 @@ public class RegionHashTest
 				// every read after the first throws it at once
 			}
 		}
+	}
+
+	@Test(timeout = 20_000)
+	public void twoRenderThreadsReadARegionOnce() throws Exception
+	{
+		Cache cache = world();
+		CacheReader reader = new CacheReader(cache);
+		ClientMapSource source = new ClientMapSource(reader);
+		int center = 50 << 8 | 50;
+		cache.held = center;
+		cache.hold = new java.util.concurrent.CountDownLatch(1);
+		java.util.concurrent.atomic.AtomicBoolean done = new java.util.concurrent.atomic.AtomicBoolean();
+		Thread client = new Thread(() ->
+		{
+			while (!done.get())
+			{
+				reader.service();
+				Thread.yield();
+			}
+		});
+		cache.clientThread = client;
+		client.start();
+		Region[] drawn = new Region[2];
+		Thread first = new Thread(() -> drawn[0] = source.region(50, 50));
+		Thread second = new Thread(() -> drawn[1] = source.region(50, 50));
+		try
+		{
+			first.start();
+			// the first render thread's reading is on the client thread, held in the region's terrain
+			while (cache.terrainReads.getOrDefault(center, new java.util.concurrent.atomic.AtomicInteger()).get() == 0)
+			{
+				Thread.yield();
+			}
+			second.start();
+			while (second.getState() != Thread.State.WAITING && second.isAlive())
+			{
+				Thread.yield();
+			}
+			cache.hold.countDown();
+			first.join();
+			second.join();
+		}
+		finally
+		{
+			cache.hold.countDown();
+			done.set(true);
+			client.join();
+		}
+		assertEquals("read once, by the first thread", 1, cache.terrainReads.get(center).get());
+		assertEquals(1, cache.terrainReads.get(49 << 8 | 50).get());
+		org.junit.Assert.assertNotNull(drawn[0]);
+		org.junit.Assert.assertSame("the second gets the first's reading", drawn[0], drawn[1]);
 	}
 }
