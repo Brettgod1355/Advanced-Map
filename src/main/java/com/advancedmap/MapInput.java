@@ -334,9 +334,10 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 		{
 			plugin.escape();
 		}
-		else if (typing)
+		else if (typing && (code < KeyEvent.VK_F1 || code > KeyEvent.VK_F12))
 		{
-			// typing in a search box: keep the keys from the game's chat
+			// typing in a search box: keep the keys from the game's chat; the F-keys still open the game's tabs, as
+			// they do while typing in the game's own chat
 			plugin.typingKey(code);
 		}
 		else if (!pressedHere.contains(code))

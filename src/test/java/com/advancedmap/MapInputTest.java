@@ -551,4 +551,28 @@ public class MapInputTest
 		// a press on the box stays the map's: the game is never handed a click under the map
 		assertTrue(input.mousePressed(press(400, 300)).isConsumed());
 	}
+
+	@Test
+	public void theFKeysOpenTheGamesTabsWhileTheSearchIsTypedInto()
+	{
+		Stub plugin = new Stub();
+		plugin.typing = true;
+		MapInput input = new MapInput(plugin, () -> 1280, () -> 800);
+		KeyEvent letter = key(KeyEvent.KEY_PRESSED, KeyEvent.VK_A, 0);
+		input.keyPressed(letter);
+		assertTrue("a letter is the search's", letter.isConsumed());
+		for (int code = KeyEvent.VK_F1; code <= KeyEvent.VK_F12; code++)
+		{
+			KeyEvent down = key(KeyEvent.KEY_PRESSED, code, 0);
+			input.keyPressed(down);
+			assertFalse("F" + (code - KeyEvent.VK_F1 + 1) + " is the game's", down.isConsumed());
+			KeyEvent up = key(KeyEvent.KEY_RELEASED, code, 0);
+			input.keyReleased(up);
+			assertFalse("and so is its release", up.isConsumed());
+		}
+
+		// Key Remapping turns 1 into F1 outside the game's chat: in the search it is still a 1
+		input.keyPressed(remapped(KeyEvent.VK_1, 0, KeyEvent.VK_F1));
+		assertEquals("1", plugin.typed.toString());
+	}
 }
