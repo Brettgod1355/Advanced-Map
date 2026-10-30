@@ -183,12 +183,20 @@ public class RegionImagesRetryTest
 		}
 		source.notReady = false;
 		long start = System.nanoTime();
-		while (source.draws.get() < regions.size() && System.nanoTime() - start < 4_000_000_000L)
+		int redrawn = 0;
+		while (redrawn < regions.size() && System.nanoTime() - start < 4_000_000_000L)
 		{
 			images.request(0, regions, RegionImages.Level.SMALL);
 			TimeUnit.MILLISECONDS.sleep(10);
+			redrawn = 0;
+			for (int region : regions)
+			{
+				// a floor redrawn from the new data is saved under its new fingerprint
+				Long saved = store.savedHash(RegionImages.key(0, region));
+				redrawn += saved != null && saved == 2L ? 1 : 0;
+			}
 		}
-		assertTrue("all six checked within a few seconds of the cache answering: " + source.draws.get(),
-			source.draws.get() >= regions.size());
+		assertTrue("all six redrawn within a few seconds of the cache answering (one a second took six): " + redrawn,
+			redrawn == regions.size());
 	}
 }
