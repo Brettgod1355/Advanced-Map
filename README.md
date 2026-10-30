@@ -55,7 +55,9 @@ loosely the way the Grand Exchange does ("d scim" and "dragon sim" both find the
 Black Dragon). Places come first, the bigger first, and nicknames work ("ardy", "fally", "zeah").
 
 - **A place** moves the map there.
-- **An item** lists the shops that sell it and the price, nearest first.
+- **An item** lists the shops that sell it and the price, nearest first. Items that lie on the ground (a knife on a
+  table, a bucket by a well, flax in a field) are a result of their own: every spot marked, listed by area, nearest
+  first.
 - **A monster or NPC** marks every spawn and lists them by area. A monster comes with its hitpoints, max hit,
   weakness, Slayer level and masters, sure and rare drops, and a button to its wiki page.
 - **Fairy ring codes** ("cks"), **fishing spots by catch** ("lobster"), **hunter areas by creature**

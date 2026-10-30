@@ -1770,6 +1770,7 @@ public class AdvancedMapPlugin extends Plugin
 				break;
 			case MONSTER:
 			case NPC:
+			case GROUND_ITEM:
 			case FISHING:
 			case HUNTER:
 				List<SearchSpots.Area> areas = SearchSpots.areas(entry.getPoints(), from, labelsNow(),

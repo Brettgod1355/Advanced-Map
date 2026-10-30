@@ -20,8 +20,8 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.coords.WorldPoint;
 
 /**
- * Where monsters and other NPCs are, with monsters' combat levels, from {@code spawns.tsv} (the OSRS Wiki's spawn
- * and monster tables; see THIRD_PARTY_NOTICES.md), for search.
+ * Where monsters, other NPCs and items lying on the ground are, with monsters' combat levels, from {@code spawns.tsv}
+ * (the OSRS Wiki's spawn, monster and item tables; see THIRD_PARTY_NOTICES.md), for search.
  */
 @Slf4j
 final class Spawns
@@ -31,6 +31,8 @@ final class Spawns
 	{
 		String name;
 		boolean monster;
+		/** An item lying on the ground (a knife on a table, a bucket by a well), not a creature. */
+		boolean item;
 		/** Combat levels, "28" or "2, 5, 13"; empty for an NPC. */
 		String levels;
 		List<WorldPoint> tiles;
@@ -42,13 +44,15 @@ final class Spawns
 
 		Creature(String name, boolean monster, String levels, List<WorldPoint> tiles)
 		{
-			this(name, monster, levels, tiles, Collections.emptyMap());
+			this(name, monster, false, levels, tiles, Collections.emptyMap());
 		}
 
-		Creature(String name, boolean monster, String levels, List<WorldPoint> tiles, Map<WorldPoint, Integer> floors)
+		Creature(String name, boolean monster, boolean item, String levels, List<WorldPoint> tiles,
+			Map<WorldPoint, Integer> floors)
 		{
 			this.name = name;
 			this.monster = monster;
+			this.item = item;
 			this.levels = levels;
 			this.tiles = tiles;
 			this.floors = floors;
@@ -113,7 +117,7 @@ final class Spawns
 			}
 			if (!tiles.isEmpty())
 			{
-				out.add(new Creature(f[1], "M".equals(f[0]), f[2].replace(",", ", "),
+				out.add(new Creature(f[1], "M".equals(f[0]), "I".equals(f[0]), f[2].replace(",", ", "),
 					Collections.unmodifiableList(tiles), floors.isEmpty() ? Collections.emptyMap() : floors));
 			}
 		}

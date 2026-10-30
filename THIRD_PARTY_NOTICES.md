@@ -235,10 +235,11 @@ plugin runs. Which chests and banks there are, and whether a player has built or
 ## Data from the Old School RuneScape Wiki (CC BY-NC-SA 3.0)
 
 `src/main/resources/com/advancedmap/shops.tsv` (shops, where they are, what they sell, the price, currency and
-stock) and `src/main/resources/com/advancedmap/spawns.tsv` (where monsters and NPCs are, and monsters' combat
-levels) are adapted from the [Old School RuneScape Wiki](https://oldschool.runescape.wiki/)'s structured data
-(its Bucket tables `infobox_shop`, `storeline`, `map`, `locline`, `infobox_monster` and `infobox_npc`), read on
-2026-10-27. The wiki's content is licensed under
+stock) and `src/main/resources/com/advancedmap/spawns.tsv` (where monsters, NPCs and items lying on the ground are,
+and monsters' combat levels) are adapted from the [Old School RuneScape Wiki](https://oldschool.runescape.wiki/)'s
+structured data (its Bucket tables `infobox_shop`, `storeline`, `map`, `locline`, `infobox_monster` and
+`infobox_npc`, read on 2026-10-27, and the item names of `infobox_item`, read on 2026-10-30, to tell items' spawns
+in `locline` from scenery's). The wiki's content is licensed under
 [CC BY-NC-SA 3.0](https://creativecommons.org/licenses/by-nc-sa/3.0/); these two files are adaptations and are
 shared under the same license, credited to the Old School RuneScape Wiki's contributors. Changes: only names,
 tiles, prices and levels kept; each shop placed by its page's map, else its owner's spawn; tiles the wiki gives on

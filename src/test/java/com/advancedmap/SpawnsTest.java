@@ -73,7 +73,8 @@ public class SpawnsTest
 	public void everyBundledTileIsOnAFloorWithGroundOrSaysWhereItReallyIs()
 	{
 		// the moved tiles keep a floor above the one they are shown on (the generator moves them down only): 228 of the
-		// 388 monster and NPC tiles the 2026-10-29 check found over no ground; the others have ground only above, or none
+		// 388 monster and NPC tiles the 2026-10-29 check found over no ground (the others have ground only above, or none),
+		// and 12 of the items on the ground
 		Spawns.load();
 		int moved = 0;
 		for (Spawns.Creature creature : Spawns.all())
@@ -84,6 +85,6 @@ public class SpawnsTest
 				moved++;
 			}
 		}
-		assertEquals(228, moved);
+		assertEquals(240, moved);
 	}
 }

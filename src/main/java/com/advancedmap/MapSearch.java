@@ -89,6 +89,7 @@ final class MapSearch
 			case MONSTER:
 				return Group.MONSTERS;
 			case ITEM:
+			case GROUND_ITEM:
 				return Group.ITEMS;
 			default:
 				return Group.OTHER;
@@ -117,6 +118,7 @@ final class MapSearch
 		ICON("Map icon"),
 		SHOP("Shop"),
 		ITEM("Item"),
+		GROUND_ITEM("On the ground"),
 		MONSTER("Monster"),
 		NPC("NPC"),
 		FISHING("Fishing"),
@@ -130,7 +132,10 @@ final class MapSearch
 		}
 	}
 
-	/** Something to find: a place, a shop, an item (with its shops), a monster or NPC (with its spawns). */
+	/**
+	 * Something to find: a place, a shop, an item (with its shops, or where it lies on the ground), a monster or NPC
+	 * (with its spawns).
+	 */
 	@Value
 	static class Entry
 	{
@@ -144,7 +149,7 @@ final class MapSearch
 		List<WorldPoint> points;
 		/** A shop's or an item's sellers (the shop first for a shop); empty otherwise. */
 		List<Shops.Shop> shops;
-		/** A monster or NPC; null otherwise. */
+		/** A monster, an NPC or an item on the ground, with its spawns; null otherwise. */
 		Spawns.Creature creature;
 		/**
 		 * How big a place it is, for listing places first and the bigger first: a kingdom 3, a town 2, a smaller place,
@@ -431,7 +436,7 @@ final class MapSearch
 		});
 		for (Spawns.Creature creature : Spawns.all())
 		{
-			Kind kind = creature.isMonster() ? Kind.MONSTER : Kind.NPC;
+			Kind kind = creature.isItem() ? Kind.GROUND_ITEM : creature.isMonster() ? Kind.MONSTER : Kind.NPC;
 			String note = creature.getLevels().isEmpty() ? kind.label : "Lvl " + creature.getLevels();
 			out.add(new Entry(kind, creature.getName(), note, creature.getTiles(), Collections.emptyList(), creature));
 		}

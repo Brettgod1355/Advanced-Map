@@ -423,4 +423,22 @@ public class MapSearchTest
 		List<MapSearch.Entry> after = fresh.index(labels);
 		assertTrue(after.stream().anyMatch(e -> e.getName().equals("Edgeville Dungeon")));
 	}
+
+	@Test
+	public void anItemIsFoundInShopsAndOnTheGround()
+	{
+		// a knife: sold in shops, and lying on tables (42 spots); both under Items, each its own result
+		List<MapSearch.Entry> knife = MapSearch.search(index, "knife", new WorldPoint(3222, 3218, 0)).stream()
+			.filter(entry -> entry.getName().equals("Knife")).collect(Collectors.toList());
+		assertEquals(2, knife.size());
+		MapSearch.Entry ground = knife.stream().filter(entry -> entry.getKind() == MapSearch.Kind.GROUND_ITEM)
+			.findFirst().orElse(null);
+		assertEquals("On the ground", ground.getNote());
+		assertEquals(42, ground.getPoints().size());
+		assertEquals(MapSearch.Group.ITEMS, MapSearch.groupOf(ground));
+		assertTrue(ground.getCreature().isItem());
+		assertTrue(knife.stream().anyMatch(entry -> entry.getKind() == MapSearch.Kind.ITEM));
+		// an item on the ground is no creature: it names no place away ("Bucket" is not a monster's name)
+		assertTrue(!new MapSearch.CreatureNames(Spawns.all()).named("Buckets"));
+	}
 }
