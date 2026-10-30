@@ -92,10 +92,11 @@ final class SideList
 			return height(textLines(), subLines());
 		}
 
-		/** The height of a row laid out as these lines. */
+		/** The height of a row laid out as these lines (a heading's lines are bold, and step by that font's height). */
 		int height(List<String> text, List<String> sub)
 		{
-			return (isHeading() ? HEADING_GAP : 0) + ROW + SUB * (text.size() - 1) + SUB * sub.size();
+			int step = isHeading() ? BOLD_LINE : SUB;
+			return (isHeading() ? HEADING_GAP : 0) + ROW + step * (text.size() - 1) + SUB * sub.size();
 		}
 
 		/** A heading over the rows after it ("Locations (nearest first)"): bold and underlined; a click does nothing. */
@@ -389,9 +390,9 @@ final class SideList
 		for (String line : lines.text)
 		{
 			g.drawString(line, list.x + PAD, baseline);
-			baseline += SUB;
+			baseline += BOLD_LINE;
 		}
-		baseline -= SUB;
+		baseline -= BOLD_LINE;
 		g.setColor(HEADING_LINE);
 		g.fillRect(list.x + PAD, baseline + 3, list.width - PAD * 2, 1);
 		g.setFont(font);

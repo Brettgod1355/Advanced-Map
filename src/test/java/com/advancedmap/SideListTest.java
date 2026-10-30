@@ -173,4 +173,16 @@ public class SideListTest
 		assertEquals(0, list.contentHeight());
 		assertEquals(1, list.titleLines().size());
 	}
+
+	@Test
+	public void aWrappedHeadingStepsItsBoldLinesByTheBoldFont()
+	{
+		SideList.Row heading = SideList.Row.heading("Locations of this monster, nearest to you first, on every floor");
+		List<String> lines = heading.textLines();
+		assertTrue("the heading wraps", lines.size() > 1);
+		assertTrue("the bold font is taller than a sub line", SideList.BOLD_LINE > SideList.SUB);
+		// stepped by the small font's line, two bold lines ran into each other
+		assertEquals(heading.height(), heading.height(lines, java.util.Collections.emptyList()));
+		assertEquals(SideList.Row.heading("Short").height() + SideList.BOLD_LINE * (lines.size() - 1), heading.height());
+	}
 }
