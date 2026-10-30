@@ -38,7 +38,6 @@ import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.zip.CRC32;
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.Client;
 import net.runelite.api.IndexDataBase;
 import net.runelite.api.SpritePixels;
 import net.runelite.api.coords.WorldPoint;
@@ -825,7 +824,7 @@ class ClientMapSource implements MapSource
 	}
 
 	/** The frames of a sprite group, placed on their full canvas, or null while the client has not loaded it. */
-	private static MapSprite[] sprites(Client client, int group)
+	private static MapSprite[] sprites(GameCache client, int group)
 	{
 		SpritePixels[] frames = client.getSprites(client.getIndexSprites(), group, 0);
 		if (frames == null)

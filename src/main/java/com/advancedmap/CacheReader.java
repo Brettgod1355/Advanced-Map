@@ -10,7 +10,6 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutionException;
-import net.runelite.api.Client;
 
 /**
  * Reads the game cache the running client already has. The client's cache is only touched on the client thread,
@@ -24,7 +23,7 @@ class CacheReader
 
 	interface Read<T>
 	{
-		T read(Client client);
+		T read(GameCache client);
 	}
 
 	static final class Pending<T>
@@ -41,7 +40,7 @@ class CacheReader
 		 * Runs the read for the thread waiting on it. Whatever it throws, the waiter is told, so it never waits for
 		 * good; only an error of the virtual machine itself (out of memory) goes on to the client's frame.
 		 */
-		void run(Client client)
+		void run(GameCache client)
 		{
 			try
 			{
@@ -58,11 +57,11 @@ class CacheReader
 		}
 	}
 
-	private final Client client;
+	private final GameCache client;
 	private final Queue<Pending<?>> queue = new ConcurrentLinkedQueue<>();
 	private volatile boolean open = true;
 
-	CacheReader(Client client)
+	CacheReader(GameCache client)
 	{
 		this.client = client;
 	}

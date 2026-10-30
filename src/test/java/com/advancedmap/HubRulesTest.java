@@ -107,15 +107,14 @@ public class HubRulesTest
 	@Test
 	public void testSourcesUseNoReflectionEither() throws IOException
 	{
-		// a reviewer reads the whole repository: reflection has been flagged in test code (plugin-hub#17424). A
-		// java.lang.reflect.Proxy standing in for the client's interfaces is the one thing left (RegionHashTest), since
-		// there is no other way to fake Client without a mocking library.
+		// a reviewer reads the whole repository: reflection has been flagged in test code (plugin-hub#17424). The
+		// client's cache is reached through GameCache, so a test stands in a cache of plain classes.
 		List<String> findings = new ArrayList<>();
 		for (Path file : javaFiles(Paths.get("src", "test", "java")))
 		{
 			String code = stripCommentsAndStrings(new String(Files.readAllBytes(file), StandardCharsets.UTF_8));
-			if (Pattern.compile("java\\.lang\\.reflect\\.(Method|Field|Modifier|Constructor|Array|AccessibleObject)|Class\\.forName\\("
-				+ "|\\.getDeclared(Method|Field|Constructor)s?\\(|\\.getMethods?\\(|setAccessible\\(").matcher(code).find())
+			if (Pattern.compile("java\\.lang\\.reflect|Class\\.forName\\(|\\.getDeclared(Method|Field|Constructor)s?\\(|\\.getMethods?\\("
+				+ "|setAccessible\\(|newProxyInstance\\(").matcher(code).find())
 			{
 				findings.add(file.toString());
 			}

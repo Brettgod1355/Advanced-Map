@@ -6,12 +6,12 @@
 package com.advancedmap;
 
 import com.advancedmap.cache.Region;
+import java.awt.Color;
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
-import java.lang.reflect.Proxy;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
-import net.runelite.api.Client;
 import net.runelite.api.IndexDataBase;
 import net.runelite.api.SpritePixels;
 import org.junit.Test;
@@ -22,7 +22,7 @@ import static org.junit.Assert.assertNotEquals;
 /**
  * The saved map's fingerprint of a region: it must change with anything the region's picture is drawn from (its
  * neighbors, the objects placed in them, the map scenery sprites) and stay the same otherwise. The game cache is
- * faked with proxies: test code only, the plugin itself uses no reflection.
+ * a {@link GameCache} of plain maps.
  */
 public class RegionHashTest
 {
@@ -34,7 +34,7 @@ public class RegionHashTest
 	private static final int FAR_TREE = 7;
 
 	/** A fake game cache: index, then group, then file. */
-	private static final class Cache
+	private static final class Cache implements GameCache
 	{
 		final Map<Integer, Map<Integer, Map<Integer, byte[]>>> indexes = new HashMap<>();
 		int[] scenery = {0xFF00FF00};
@@ -45,76 +45,176 @@ public class RegionHashTest
 				.put(file, bytes);
 		}
 
-		IndexDataBase index(int index)
-		{
-			Map<Integer, Map<Integer, byte[]>> groups = indexes.getOrDefault(index, new HashMap<>());
-			return (IndexDataBase) Proxy.newProxyInstance(getClass().getClassLoader(),
-				new Class<?>[]{IndexDataBase.class}, (proxy, method, args) ->
-				{
-					switch (method.getName())
-					{
-						case "getFileIds":
-						{
-							Map<Integer, byte[]> files = groups.get((Integer) args[0]);
-							return files == null ? null : files.keySet().stream().mapToInt(Integer::intValue).toArray();
-						}
-						case "loadData":
-						{
-							Map<Integer, byte[]> files = groups.get((Integer) args[0]);
-							return files == null ? null : files.get((Integer) args[1]);
-						}
-						default:
-							return false;
-					}
-				});
-		}
-
-		SpritePixels sprite()
-		{
-			int[] pixels = scenery.clone();
-			return (SpritePixels) Proxy.newProxyInstance(getClass().getClassLoader(),
-				new Class<?>[]{SpritePixels.class}, (proxy, method, args) ->
-				{
-					switch (method.getName())
-					{
-						case "getWidth":
-						case "getHeight":
-						case "getMaxWidth":
-						case "getMaxHeight":
-							return 1;
-						case "getOffsetX":
-						case "getOffsetY":
-							return 0;
-						case "getPixels":
-							return pixels;
-						default:
-							return null;
-					}
-				});
-		}
-
 		ClientMapSource source()
 		{
-			Client client = (Client) Proxy.newProxyInstance(getClass().getClassLoader(), new Class<?>[]{Client.class},
-				(proxy, method, args) ->
-				{
-					switch (method.getName())
-					{
-						case "isClientThread":
-							return true;
-						case "getIndex":
-							return index((Integer) args[0]);
-						case "getIndexConfig":
-							return index(2);
-						case "getIndexSprites":
-							return index(8);
-						case "getSprites":
-							return new SpritePixels[]{sprite()};
-						default:
-							return null;
-					}
-				});
-			return new ClientMapSource(new CacheReader(client));
+			return new ClientMapSource(new CacheReader(this));
+		}
+
+		@Override
+		public boolean isClientThread()
+		{
+			return true;
+		}
+
+		@Override
+		public IndexDataBase getIndex(int id)
+		{
+			return new Index(indexes.getOrDefault(id, new HashMap<>()));
+		}
+
+		@Override
+		public IndexDataBase getIndexConfig()
+		{
+			return getIndex(2);
+		}
+
+		@Override
+		public IndexDataBase getIndexScripts()
+		{
+			return getIndex(12);
+		}
+
+		@Override
+		public IndexDataBase getIndexSprites()
+		{
+			return getIndex(8);
+		}
+
+		@Override
+		public SpritePixels[] getSprites(IndexDataBase index, int group, int file)
+		{
+			return new SpritePixels[]{new Sprite(scenery.clone())};
+		}
+	}
+
+	/** One index of the fake cache: group, then file. */
+	private static final class Index implements IndexDataBase
+	{
+		final Map<Integer, Map<Integer, byte[]>> groups;
+
+		Index(Map<Integer, Map<Integer, byte[]>> groups)
+		{
+			this.groups = groups;
+		}
+
+		@Override
+		public boolean isOverlayOutdated()
+		{
+			return false;
+		}
+
+		@Override
+		public int[] getFileIds(int group)
+		{
+			Map<Integer, byte[]> files = groups.get(group);
+			return files == null ? null : files.keySet().stream().mapToInt(Integer::intValue).toArray();
+		}
+
+		@Override
+		public byte[] loadData(int group, int file)
+		{
+			Map<Integer, byte[]> files = groups.get(group);
+			return files == null ? null : files.get(file);
+		}
+	}
+
+	/** A one-pixel sprite; the drawing methods are not used by the map. */
+	private static final class Sprite implements SpritePixels
+	{
+		final int[] pixels;
+
+		Sprite(int[] pixels)
+		{
+			this.pixels = pixels;
+		}
+
+		@Override
+		public int getWidth()
+		{
+			return 1;
+		}
+
+		@Override
+		public int getHeight()
+		{
+			return 1;
+		}
+
+		@Override
+		public int getMaxWidth()
+		{
+			return 1;
+		}
+
+		@Override
+		public int getMaxHeight()
+		{
+			return 1;
+		}
+
+		@Override
+		public int getOffsetX()
+		{
+			return 0;
+		}
+
+		@Override
+		public int getOffsetY()
+		{
+			return 0;
+		}
+
+		@Override
+		public int[] getPixels()
+		{
+			return pixels;
+		}
+
+		@Override
+		public void drawAt(int x, int y)
+		{
+		}
+
+		@Override
+		public void setMaxWidth(int maxWidth)
+		{
+		}
+
+		@Override
+		public void setMaxHeight(int maxHeight)
+		{
+		}
+
+		@Override
+		public void setOffsetX(int offsetX)
+		{
+		}
+
+		@Override
+		public void setOffsetY(int offsetY)
+		{
+		}
+
+		@Override
+		public BufferedImage toBufferedImage()
+		{
+			return null;
+		}
+
+		@Override
+		public void toBufferedImage(BufferedImage img)
+		{
+		}
+
+		@Override
+		public BufferedImage toBufferedOutline(Color color)
+		{
+			return null;
+		}
+
+		@Override
+		public void toBufferedOutline(BufferedImage img, int color)
+		{
 		}
 	}
 
