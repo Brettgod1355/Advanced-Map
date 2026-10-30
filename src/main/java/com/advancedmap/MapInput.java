@@ -346,21 +346,75 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 	}
 
 	/**
-	 * The letter or digit a key was pressed as when RuneLite's Key Remapping plugin, whose listener runs before this
-	 * one, had turned it into a camera, F or other key: it changes the key code, drops the character and eats the
-	 * typed event that follows, since the game's chat is not typed into; the extended key code still names the key.
-	 * {@link KeyEvent#CHAR_UNDEFINED} for a key pressed as itself.
+	 * The character a key was pressed as when RuneLite's Key Remapping plugin, whose listener runs before this one,
+	 * had turned it into a camera, F or other key: it changes the key code, drops the character and eats the typed
+	 * event that follows, since the game's chat is not typed into; the extended key code still names the key, as its
+	 * unshifted character (a letter follows Shift; what Shift makes of any other key depends on the layout, so that
+	 * is left). {@link KeyEvent#CHAR_UNDEFINED} for a key pressed as itself, or one with no character.
 	 */
 	static char remappedChar(KeyEvent e)
 	{
 		int key = e.getExtendedKeyCode();
-		boolean letter = key >= KeyEvent.VK_A && key <= KeyEvent.VK_Z;
-		boolean digit = key >= KeyEvent.VK_0 && key <= KeyEvent.VK_9;
-		if (key == e.getKeyCode() || !(letter || digit) || e.getKeyChar() != KeyEvent.CHAR_UNDEFINED)
+		if (key == e.getKeyCode() || e.getKeyChar() != KeyEvent.CHAR_UNDEFINED)
 		{
 			return KeyEvent.CHAR_UNDEFINED;
 		}
-		return letter && !e.isShiftDown() ? Character.toLowerCase((char) key) : (char) key;
+		if (key >= KeyEvent.VK_A && key <= KeyEvent.VK_Z)
+		{
+			return e.isShiftDown() ? (char) key : Character.toLowerCase((char) key);
+		}
+		if (e.isShiftDown())
+		{
+			return KeyEvent.CHAR_UNDEFINED;
+		}
+		switch (key)
+		{
+			case KeyEvent.VK_0: case KeyEvent.VK_1: case KeyEvent.VK_2: case KeyEvent.VK_3: case KeyEvent.VK_4:
+			case KeyEvent.VK_5: case KeyEvent.VK_6: case KeyEvent.VK_7: case KeyEvent.VK_8: case KeyEvent.VK_9:
+			case KeyEvent.VK_SPACE: case KeyEvent.VK_COMMA: case KeyEvent.VK_MINUS: case KeyEvent.VK_PERIOD:
+			case KeyEvent.VK_SLASH: case KeyEvent.VK_SEMICOLON: case KeyEvent.VK_EQUALS: case KeyEvent.VK_OPEN_BRACKET:
+			case KeyEvent.VK_BACK_SLASH: case KeyEvent.VK_CLOSE_BRACKET:
+				// these codes are their own character
+				return (char) key;
+			case KeyEvent.VK_BACK_QUOTE:
+				return '`';
+			case KeyEvent.VK_QUOTE:
+				return '\'';
+			// the unshifted characters of other layouts' keys
+			case KeyEvent.VK_AMPERSAND:
+				return '&';
+			case KeyEvent.VK_ASTERISK:
+				return '*';
+			case KeyEvent.VK_QUOTEDBL:
+				return '"';
+			case KeyEvent.VK_LESS:
+				return '<';
+			case KeyEvent.VK_GREATER:
+				return '>';
+			case KeyEvent.VK_AT:
+				return '@';
+			case KeyEvent.VK_COLON:
+				return ':';
+			case KeyEvent.VK_CIRCUMFLEX:
+				return '^';
+			case KeyEvent.VK_DOLLAR:
+				return '$';
+			case KeyEvent.VK_EXCLAMATION_MARK:
+				return '!';
+			case KeyEvent.VK_LEFT_PARENTHESIS:
+				return '(';
+			case KeyEvent.VK_NUMBER_SIGN:
+				return '#';
+			case KeyEvent.VK_PLUS:
+				return '+';
+			case KeyEvent.VK_RIGHT_PARENTHESIS:
+				return ')';
+			case KeyEvent.VK_UNDERSCORE:
+				return '_';
+			default:
+				// a character with no key code of its own (an accented letter) is its code's low bits
+				return (key & 0xFF000000) == 0x01000000 ? (char) (key & 0xFFFF) : KeyEvent.CHAR_UNDEFINED;
+		}
 	}
 
 	/**

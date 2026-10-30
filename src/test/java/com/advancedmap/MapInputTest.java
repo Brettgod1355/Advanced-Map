@@ -343,4 +343,26 @@ public class MapInputTest
 		input.mouseReleased(stray);
 		assertFalse(stray.isConsumed());
 	}
+
+	@Test
+	public void punctuationTheKeyRemappingPluginTurnedIntoOtherKeysIsTypedToo()
+	{
+		Stub plugin = new Stub();
+		plugin.typing = true;
+		MapInput input = new MapInput(plugin, () -> 1280, () -> 800);
+		// camera on ";" and "'" (IJKL layouts), Key Remapping's own default F11 and F12 on "-" and "=", Control on "`",
+		// Space on Space: all typed; an accented letter of another layout by its character; Shift and a key with
+		// no character (a numpad key, an F key) are not guessed at
+		input.keyPressed(remapped(KeyEvent.VK_SEMICOLON, 0, KeyEvent.VK_DOWN));
+		input.keyPressed(remapped(KeyEvent.VK_QUOTE, 0, KeyEvent.VK_RIGHT));
+		input.keyPressed(remapped(KeyEvent.VK_MINUS, 0, KeyEvent.VK_F11));
+		input.keyPressed(remapped(KeyEvent.VK_EQUALS, 0, KeyEvent.VK_F12));
+		input.keyPressed(remapped(KeyEvent.VK_BACK_QUOTE, 0, KeyEvent.VK_CONTROL));
+		input.keyPressed(remapped(KeyEvent.VK_SPACE, 0, KeyEvent.VK_CONTROL));
+		input.keyPressed(remapped(0x01000000 | '\u00e4', 0, KeyEvent.VK_UP));
+		input.keyPressed(remapped(KeyEvent.VK_SEMICOLON, KeyEvent.SHIFT_DOWN_MASK, KeyEvent.VK_DOWN));
+		input.keyPressed(remapped(KeyEvent.VK_NUMPAD4, 0, KeyEvent.VK_LEFT));
+		input.keyPressed(remapped(KeyEvent.VK_F5, 0, KeyEvent.VK_LEFT));
+		assertEquals(";'-=` \u00e4", plugin.typed.toString());
+	}
 }
