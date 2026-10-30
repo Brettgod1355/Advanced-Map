@@ -22,10 +22,13 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.coords.WorldPoint;
@@ -108,27 +111,73 @@ final class MapSearch
 	private static final Color LIT = new Color(255, 255, 255, 34);
 	private static final Color HEADING = new Color(0xA08C64);
 
-	enum Kind
+	/** What the search looks in: each turned off and on in the "Search in" list behind the lines in the box. */
+	enum Scope
 	{
-		PLACE("Place"),
-		MARKER("Your marker"),
-		DUNGEON("Dungeon"),
-		MINIGAME("Minigame"),
-		FAIRY_RING("Fairy ring"),
-		ICON("Map icon"),
-		SHOP("Shop"),
-		ITEM("Item"),
-		GROUND_ITEM("On the ground"),
-		MONSTER("Monster"),
-		NPC("NPC"),
-		FISHING("Fishing"),
-		HUNTER("Hunter");
+		PLACES("Places"),
+		DUNGEONS("Dungeons and minigames"),
+		ICONS("Map icons"),
+		FAIRY_RINGS("Fairy rings"),
+		SHOPS("Shops and what they sell"),
+		GROUND_ITEMS("Items on the ground"),
+		MONSTERS("Monsters"),
+		NPCS("NPCs"),
+		SKILLING("Fishing and hunter spots"),
+		MARKERS("Your markers");
 
 		final String label;
 
-		Kind(String label)
+		Scope(String label)
 		{
 			this.label = label;
+		}
+
+		/** The scopes turned off, as saved ("MONSTERS;NPCS"); names no longer known are left out. */
+		static Set<Scope> parse(String saved)
+		{
+			Set<Scope> out = EnumSet.noneOf(Scope.class);
+			for (String name : MapSettings.parseHidden(saved))
+			{
+				for (Scope scope : values())
+				{
+					if (scope.name().equals(name))
+					{
+						out.add(scope);
+					}
+				}
+			}
+			return Collections.unmodifiableSet(out);
+		}
+
+		static String save(Set<Scope> off)
+		{
+			return off.stream().map(Scope::name).collect(Collectors.joining(MapSettings.SEPARATOR));
+		}
+	}
+
+	enum Kind
+	{
+		PLACE("Place", Scope.PLACES),
+		MARKER("Your marker", Scope.MARKERS),
+		DUNGEON("Dungeon", Scope.DUNGEONS),
+		MINIGAME("Minigame", Scope.DUNGEONS),
+		FAIRY_RING("Fairy ring", Scope.FAIRY_RINGS),
+		ICON("Map icon", Scope.ICONS),
+		SHOP("Shop", Scope.SHOPS),
+		ITEM("Item", Scope.SHOPS),
+		GROUND_ITEM("On the ground", Scope.GROUND_ITEMS),
+		MONSTER("Monster", Scope.MONSTERS),
+		NPC("NPC", Scope.NPCS),
+		FISHING("Fishing", Scope.SKILLING),
+		HUNTER("Hunter", Scope.SKILLING);
+
+		final String label;
+		final Scope scope;
+
+		Kind(String label, Scope scope)
+		{
+			this.label = label;
+			this.scope = scope;
 		}
 	}
 
@@ -183,8 +232,10 @@ final class MapSearch
 	{
 		Rectangle box;
 		Rectangle clear;
-		/** The results under the box; empty when none show. */
+		/** The results under the box, or the "Search in" list when it is open; empty when neither shows. */
 		Rectangle results;
+		/** The lines that open the "Search in" list, beside the magnifying glass. */
+		Rectangle scopes;
 	}
 
 	enum Part
@@ -192,7 +243,11 @@ final class MapSearch
 		OUTSIDE,
 		BOX,
 		CLEAR,
-		RESULT
+		RESULT,
+		/** The lines that open and close the "Search in" list. */
+		SCOPES,
+		/** A row of the "Search in" list: index 0 "Search everything", then each {@link Scope}. */
+		SCOPE
 	}
 
 	@Value
@@ -210,6 +265,10 @@ final class MapSearch
 	private volatile int loads;
 	private volatile int indexedLoads = -1;
 	private volatile boolean focused;
+	/** The "Search in" list is open, in place of the results. */
+	private volatile boolean scopesOpen;
+	/** What the search does not look in. */
+	private volatile Set<Scope> skipped = Collections.emptySet();
 	private volatile String query = "";
 	private volatile List<Entry> results = Collections.emptyList();
 	private volatile int highlighted;
@@ -811,6 +870,45 @@ final class MapSearch
 	void setFocused(boolean focused)
 	{
 		this.focused = focused;
+		if (!focused)
+		{
+			scopesOpen = false;
+		}
+	}
+
+	boolean isScopesOpen()
+	{
+		return scopesOpen;
+	}
+
+	void setScopesOpen(boolean open)
+	{
+		scopesOpen = open;
+	}
+
+	Set<Scope> skipped()
+	{
+		return skipped;
+	}
+
+	void setSkipped(Set<Scope> off)
+	{
+		skipped = Collections.unmodifiableSet(off.isEmpty() ? EnumSet.noneOf(Scope.class) : EnumSet.copyOf(off));
+	}
+
+	/** True for an entry of a kind the search looks in. */
+	boolean looksIn(Entry entry)
+	{
+		return !skipped.contains(entry.getKind().scope);
+	}
+
+	/** The query searched again in {@code entries}, after what the search looks in changed. */
+	void searchAgain(List<Entry> entries, WorldPoint from)
+	{
+		String now = query;
+		results = search(entries, now, from);
+		highlighted = 0;
+		scroll = 0;
 	}
 
 	String query()
@@ -820,7 +918,7 @@ final class MapSearch
 
 	List<Entry> results()
 	{
-		return focused ? results : Collections.<Entry>emptyList();
+		return focused && !scopesOpen ? results : Collections.<Entry>emptyList();
 	}
 
 	int highlighted()
@@ -841,6 +939,7 @@ final class MapSearch
 
 	void clear()
 	{
+		scopesOpen = false;
 		query = "";
 		results = Collections.emptyList();
 		highlighted = 0;
@@ -849,6 +948,8 @@ final class MapSearch
 
 	private void setQuery(String text, List<Entry> entries, WorldPoint from)
 	{
+		// typing shows what it finds
+		scopesOpen = false;
 		query = text;
 		results = search(entries, text, from);
 		highlighted = 0;
@@ -913,6 +1014,7 @@ final class MapSearch
 		int x = box.x;
 		int boxWidth = box.width;
 		Rectangle clear = new Rectangle(box.x + box.width - PAD - CLEAR, box.y + (box.height - CLEAR) / 2, CLEAR, CLEAR);
+		Rectangle scopes = new Rectangle(box.x + PAD + 16, box.y + (box.height - CLEAR) / 2, CLEAR, CLEAR);
 		// as tall as the results, but no lower than the map's bottom (above its bar): a small map scrolls them
 		Rectangle locate = buttons.get(MapPainter.Button.LOCATE);
 		int bottom = locate.y + locate.height - BOTTOM_ROOM;
@@ -920,13 +1022,14 @@ final class MapSearch
 		int content = rows * ROW + headings * HEADING_ROW + (rows > 0 ? 4 : 0);
 		Rectangle results = new Rectangle(x, top, boxWidth, Math.min(content, Math.max(rows > 0 ? ROW + 4 : 0,
 			bottom - top)));
-		return new Layout(box, clear, results);
+		return new Layout(box, clear, results, scopes);
 	}
 
 	Layout layout(Map<MapPainter.Button, Rectangle> buttons, int width)
 	{
 		List<Entry> shown = results();
-		Layout layout = layout(buttons, width, shown.size(), headings(shown));
+		Layout layout = scopesOpen ? layout(buttons, width, Scope.values().length + 1, 0)
+			: layout(buttons, width, shown.size(), headings(shown));
 		listHeight = layout.getResults().height;
 		return layout;
 	}
@@ -976,9 +1079,19 @@ final class MapSearch
 
 	Hit hitAt(int x, int y, Layout layout)
 	{
+		if (layout.getScopes().contains(x, y))
+		{
+			return new Hit(Part.SCOPES, -1);
+		}
 		if (!query.isEmpty() && layout.getClear().contains(x, y))
 		{
 			return new Hit(Part.CLEAR, -1);
+		}
+		Rectangle rows = layout.getResults();
+		if (scopesOpen && rows.contains(x, y))
+		{
+			int row = (y - rows.y - 2) / ROW;
+			return row >= 0 && row <= Scope.values().length ? new Hit(Part.SCOPE, row) : new Hit(Part.BOX, -1);
 		}
 		if (layout.getBox().contains(x, y))
 		{
@@ -1012,6 +1125,44 @@ final class MapSearch
 		g.fillRect(lineX, baseline - metrics.getAscent() / 2 + 1, list.x + list.width - PAD - lineX, 1);
 	}
 
+	/** The "Search in" list: "Search everything", then a box to tick for each kind of result. */
+	private void drawScopes(Graphics2D g, Rectangle list, Point mouse, FontMetrics metrics)
+	{
+		g.setColor(PANEL);
+		g.fillRoundRect(list.x, list.y, list.width, list.height, 8, 8);
+		g.setColor(EDGE);
+		g.drawRoundRect(list.x, list.y, list.width - 1, list.height - 1, 8, 8);
+		Scope[] scopes = Scope.values();
+		for (int row = 0; row <= scopes.length; row++)
+		{
+			int y = list.y + 2 + row * ROW;
+			if (mouse != null && list.contains(mouse) && mouse.y >= y && mouse.y < y + ROW)
+			{
+				g.setColor(LIT);
+				g.fillRect(list.x + 2, y, list.width - 4, ROW);
+			}
+			int baseline = y + (ROW + metrics.getAscent() - metrics.getDescent()) / 2;
+			if (row == 0)
+			{
+				// quiet while it would change nothing
+				g.setColor(skipped.isEmpty() ? QUIET : TEXT);
+				g.drawString("Search everything", list.x + PAD, baseline);
+				continue;
+			}
+			Scope scope = scopes[row - 1];
+			int box = y + (ROW - 10) / 2;
+			g.setColor(EDGE);
+			g.drawRect(list.x + PAD, box, 10, 10);
+			if (!skipped.contains(scope))
+			{
+				g.setColor(FOCUS);
+				g.fillRect(list.x + PAD + 3, box + 3, 5, 5);
+			}
+			g.setColor(skipped.contains(scope) ? QUIET : TEXT);
+			g.drawString(SideList.fit(scope.label, metrics, list.width - PAD * 2 - 16), list.x + PAD + 16, baseline);
+		}
+	}
+
 	void draw(Graphics2D g, Layout layout, Point mouse)
 	{
 		Rectangle box = layout.getBox();
@@ -1030,9 +1181,16 @@ final class MapSearch
 		g.drawOval(cx - 5, cy - 5, 9, 9);
 		g.drawLine(cx + 3, cy + 3, cx + 7, cy + 7);
 		g.setStroke(stroke);
+		// three lines, each shorter: the "Search in" list; lit while it is open or something is left out
+		Rectangle lines = layout.getScopes();
+		g.setColor(scopesOpen || !skipped.isEmpty() ? FOCUS : QUIET);
+		for (int i = 0; i < 3; i++)
+		{
+			g.fillRect(lines.x + 1 + i * 2, lines.y + 3 + i * 4, lines.width - 2 - i * 4, 2);
+		}
 		g.setFont(FontManager.getRunescapeSmallFont());
 		FontMetrics metrics = g.getFontMetrics();
-		int textX = box.x + PAD + 18;
+		int textX = layout.getScopes().x + layout.getScopes().width + 6;
 		int baseline = box.y + (box.height + metrics.getAscent() - metrics.getDescent()) / 2;
 		String text = query;
 		int room = layout.getClear().x - textX - 4;
@@ -1062,7 +1220,11 @@ final class MapSearch
 
 		List<Entry> shown = results();
 		Rectangle list = layout.getResults();
-		if (!shown.isEmpty())
+		if (scopesOpen)
+		{
+			drawScopes(g, list, mouse, metrics);
+		}
+		else if (!shown.isEmpty())
 		{
 			g.setColor(PANEL);
 			g.fillRoundRect(list.x, list.y, list.width, list.height, 8, 8);
@@ -1115,8 +1277,12 @@ final class MapSearch
 			g.setColor(PANEL);
 			g.fillRoundRect(list.x, list.y, list.width, ROW + 4, 8, 8);
 			g.setColor(QUIET);
-			g.drawString("Nothing found", list.x + PAD, list.y + 2 + (ROW + metrics.getAscent()
-				- metrics.getDescent()) / 2);
+			// say so when something is left out, or a search finding nothing looks like it is broken
+			int off = skipped.size();
+			String nothing = off == 0 ? "Nothing found" : "Nothing found; " + off + (off == 1 ? " kind" : " kinds")
+				+ " of result off";
+			g.drawString(SideList.fit(nothing, metrics, list.width - PAD * 2), list.x + PAD, list.y + 2
+				+ (ROW + metrics.getAscent() - metrics.getDescent()) / 2);
 		}
 		if (antialiasing != null)
 		{

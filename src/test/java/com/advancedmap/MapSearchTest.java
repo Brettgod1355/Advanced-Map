@@ -441,4 +441,64 @@ public class MapSearchTest
 		// an item on the ground is no creature: it names no place away ("Bucket" is not a monster's name)
 		assertTrue(!new MapSearch.CreatureNames(Spawns.all()).named("Buckets"));
 	}
+
+	@Test
+	public void theSearchInListLeavesKindsOfResultOut()
+	{
+		MapSearch search = new MapSearch();
+		search.setFocused(true);
+		for (char c : "knife".toCharArray())
+		{
+			search.type(c, index, null);
+		}
+		assertTrue(search.results().stream().anyMatch(entry -> entry.getKind() == MapSearch.Kind.GROUND_ITEM));
+
+		// the lines beside the glass open the list, in place of the results
+		Map<MapPainter.Button, Rectangle> buttons = MapPainter.buttons(1200, 800, false);
+		MapSearch.Layout closed = search.layout(buttons, 1200);
+		Rectangle lines = closed.getScopes();
+		assertTrue(closed.getBox().contains(lines));
+		assertEquals(MapSearch.Part.SCOPES, search.hitAt(lines.x + 4, lines.y + 4, closed).getPart());
+		search.setScopesOpen(true);
+		assertTrue("no results while the list is open", search.results().isEmpty());
+		MapSearch.Layout open = search.layout(buttons, 1200);
+		Rectangle list = open.getResults();
+		assertEquals((MapSearch.Scope.values().length + 1) * MapSearch.ROW + 4, list.height);
+		MapSearch.Hit first = search.hitAt(list.x + 10, list.y + 2 + 5, open);
+		assertEquals(MapSearch.Part.SCOPE, first.getPart());
+		assertEquals("Search everything", 0, first.getIndex());
+		int ground = MapSearch.Scope.GROUND_ITEMS.ordinal() + 1;
+		assertEquals(ground, search.hitAt(list.x + 10, list.y + 2 + ground * MapSearch.ROW + 5, open).getIndex());
+
+		// items on the ground left out: the plugin searches what the search still looks in
+		search.setSkipped(java.util.EnumSet.of(MapSearch.Scope.GROUND_ITEMS));
+		List<MapSearch.Entry> looked = index.stream().filter(search::looksIn).collect(Collectors.toList());
+		search.searchAgain(looked, null);
+		search.setScopesOpen(false);
+		assertFalse(search.results().isEmpty());
+		assertTrue(search.results().stream().noneMatch(entry -> entry.getKind() == MapSearch.Kind.GROUND_ITEM));
+
+		// typing closes the list and shows what it finds; leaving the bar closes it too
+		search.setScopesOpen(true);
+		search.type('s', looked, null);
+		assertFalse(search.isScopesOpen());
+		search.setScopesOpen(true);
+		search.setFocused(false);
+		assertFalse(search.isScopesOpen());
+	}
+
+	@Test
+	public void everyKindOfResultCanBeLeftOutAndTheChoiceIsSaved()
+	{
+		for (MapSearch.Kind kind : MapSearch.Kind.values())
+		{
+			assertTrue(kind.name(), kind.scope != null);
+		}
+		java.util.Set<MapSearch.Scope> off = java.util.EnumSet.of(MapSearch.Scope.MONSTERS, MapSearch.Scope.NPCS);
+		assertEquals("MONSTERS;NPCS", MapSearch.Scope.save(off));
+		assertEquals(off, MapSearch.Scope.parse("MONSTERS;NPCS"));
+		assertEquals("a name no longer known is left out", java.util.EnumSet.of(MapSearch.Scope.NPCS),
+			MapSearch.Scope.parse("GONE;NPCS"));
+		assertTrue(MapSearch.Scope.parse("").isEmpty());
+	}
 }

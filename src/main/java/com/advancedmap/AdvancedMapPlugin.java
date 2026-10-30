@@ -221,6 +221,7 @@ public class AdvancedMapPlugin extends Plugin
 		labelsLoading = false;
 		moveHiddenIcons();
 		settings = readSettings();
+		search.setSkipped(MapSearch.Scope.parse(config.searchSkipped()));
 		progress = Progress.NONE;
 		selection = null;
 		plane = 0;
@@ -731,6 +732,7 @@ public class AdvancedMapPlugin extends Plugin
 			return;
 		}
 		settings = readSettings();
+		search.setSkipped(MapSearch.Scope.parse(config.searchSkipped()));
 		MapPainter drawing = painter;
 		if (drawing != null)
 		{
@@ -1479,6 +1481,10 @@ public class AdvancedMapPlugin extends Plugin
 		{
 			editor.close();
 		}
+		else if (search.isScopesOpen())
+		{
+			search.setScopesOpen(false);
+		}
 		else if (search.isFocused())
 		{
 			search.setFocused(false);
@@ -1628,8 +1634,19 @@ public class AdvancedMapPlugin extends Plugin
 		{
 			case BOX:
 				search.setFocused(true);
+				search.setScopesOpen(false);
 				filters.setOpen(false);
 				selection = null;
+				return true;
+			case SCOPES:
+				// the "Search in" list; the bar keeps the keys, so typing shows the results again
+				search.setScopesOpen(!search.isScopesOpen());
+				search.setFocused(true);
+				filters.setOpen(false);
+				selection = null;
+				return true;
+			case SCOPE:
+				setSearchScope(hit.getIndex());
 				return true;
 			case CLEAR:
 				search.clear();
@@ -1644,19 +1661,43 @@ public class AdvancedMapPlugin extends Plugin
 		}
 	}
 
+	/**
+	 * A row of the "Search in" list: 0 "Search everything", else a kind of result turned off or on; saved, and the
+	 * query searched again.
+	 */
+	private void setSearchScope(int row)
+	{
+		java.util.Set<MapSearch.Scope> off = java.util.EnumSet.noneOf(MapSearch.Scope.class);
+		if (row > 0)
+		{
+			off.addAll(search.skipped());
+			MapSearch.Scope scope = MapSearch.Scope.values()[row - 1];
+			if (!off.remove(scope))
+			{
+				off.add(scope);
+			}
+		}
+		search.setSkipped(off);
+		search.searchAgain(searchIndex(), here());
+		configManager.setConfiguration(AdvancedMapConfig.GROUP, AdvancedMapConfig.SEARCH_SKIPPED,
+			MapSearch.Scope.save(off));
+	}
+
 	/** Everything the search bar finds, built again once the place names are read. */
 	private List<MapSearch.Entry> searchIndex()
 	{
 		List<MapSearch.Entry> all = search.index(labelsNow(), extraEntries());
-		if (config.searchShops())
+		boolean shops = config.searchShops();
+		if (shops && search.skipped().isEmpty())
 		{
 			return all;
 		}
-		// shops only through what they sell (an item's sellers) and their icons, unless the setting says otherwise
+		// shops only through what they sell (an item's sellers) and their icons, unless the setting says otherwise;
+		// nothing of what the "Search in" list leaves out
 		List<MapSearch.Entry> out = new ArrayList<>(all.size());
 		for (MapSearch.Entry entry : all)
 		{
-			if (entry.getKind() != MapSearch.Kind.SHOP)
+			if ((shops || entry.getKind() != MapSearch.Kind.SHOP) && search.looksIn(entry))
 			{
 				out.add(entry);
 			}

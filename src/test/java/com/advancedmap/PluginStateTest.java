@@ -93,4 +93,23 @@ public class PluginStateTest
 		assertEquals("", plugin.search().query());
 		assertTrue(plugin.pins().selected() == null);
 	}
+
+	@Test
+	public void theLinesInTheSearchBoxOpenTheSearchInListAndEscapeClosesItFirst()
+	{
+		AdvancedMapPlugin plugin = new AdvancedMapPlugin();
+		java.awt.Rectangle lines = plugin.search().layout(MapPainter.buttons(1200, 800, false), 1200).getScopes();
+		assertTrue(plugin.pressPanels(lines.x + 4, lines.y + 4, 1200, 800, false));
+		assertTrue(plugin.search().isScopesOpen());
+		assertTrue("the bar keeps the keys while the list is open", plugin.typing());
+		plugin.escape();
+		assertFalse("Escape closes the list first", plugin.search().isScopesOpen());
+		assertTrue(plugin.search().isFocused());
+		plugin.escape();
+		assertFalse(plugin.search().isFocused());
+		// a click on the lines again closes it
+		plugin.pressPanels(lines.x + 4, lines.y + 4, 1200, 800, false);
+		plugin.pressPanels(lines.x + 4, lines.y + 4, 1200, 800, false);
+		assertFalse(plugin.search().isScopesOpen());
+	}
 }

@@ -34,6 +34,8 @@ public interface AdvancedMapConfig extends Config
 	String SLAYER_SHOWN = "slayerShown";
 	String SHARE_MARKERS = "shareMarkers";
 	String SEARCH_SHOPS = "searchShops";
+	/** What the search does not look in, as the "Search in" list by its box left it: "MONSTERS;NPCS". */
+	String SEARCH_SKIPPED = "searchSkipped";
 	String INFO_ON_HOVER = "infoOnHover";
 	/** Before each hidden icon's own setting: "hidden.a1234@3222,3218" = true. */
 	String HIDDEN_PREFIX = "hidden.";
@@ -614,6 +616,17 @@ public interface AdvancedMapConfig extends Config
 		hidden = true
 	)
 	default String markers()
+	{
+		return "";
+	}
+
+	@ConfigItem(
+		keyName = SEARCH_SKIPPED,
+		name = "",
+		description = "",
+		hidden = true
+	)
+	default String searchSkipped()
 	{
 		return "";
 	}

@@ -37,6 +37,7 @@ The map opens on your character, on the surface or the underground map, whicheve
 | Add a marker, route somewhere, hide an icon | Right-click the spot or the icon |
 | Choose which icons show | The Filters button at the top left |
 | Search | Click the search box at the top and type; Enter or a click on a result goes there |
+| Choose what the search looks in | The three lines beside the magnifying glass |
 | Move or size the box over the game | Drag its top or bottom bar, or a corner |
 | Fill the game view with the map | The square button next to the close button |
 | Pop the map out into its own window | The button with an arrow leaving a window, at the top right |
@@ -64,6 +65,12 @@ Black Dragon). Places come first, the bigger first, and nicknames work ("ardy", 
   ("chinchompa") and **kinds of icon** ("bank", "anvil", "altar": every one, nearest first) are found too.
 
 Shops are found through what they sell; turn on "Search finds shops by name" to list them by name as well.
+
+**Search in**: the three lines beside the magnifying glass open a list of every kind of result (places, dungeons and
+minigames, map icons, fairy rings, shops and what they sell, items on the ground, monsters, NPCs, fishing and hunter
+spots, your markers). Untick a kind to leave it out of the results; "Search everything" ticks them all again. The
+lines light up while something is left out, and a search that finds nothing says how many kinds are off. The choice
+is kept between sessions.
 
 ### Icons
 
