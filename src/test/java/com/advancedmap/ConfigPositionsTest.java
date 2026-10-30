@@ -64,24 +64,34 @@ public class ConfigPositionsTest
 		String config = new String(Files.readAllBytes(main.resolve("AdvancedMapConfig.java")), StandardCharsets.UTF_8);
 		String check = new String(Files.readAllBytes(Paths.get("src", "test", "java", "com", "advancedmap", "check",
 			"ConfigTypesTest.java")), StandardCharsets.UTF_8);
-		Matcher setting = Pattern.compile("\\n\\tdefault (\\w+) \\w+\\(\\)").matcher(config);
+		// every method of the interface, with or without "default", whatever shape its type has (nested, generic)
+		Matcher setting = Pattern.compile("\\n\\t(?:default )?([\\w.<>\\[\\], ]+?) (\\w+)\\(\\)").matcher(config);
+		java.util.Set<String> foreign = new java.util.HashSet<>(java.util.Arrays.asList("boolean", "int", "String", "Keybind"));
 		int pluginTypes = 0;
+		int settings = 0;
 		while (setting.find())
 		{
-			String type = setting.group(1);
-			Path declared = main.resolve(type + ".java");
-			if (!Files.exists(declared))
+			settings++;
+			String type = setting.group(1).replaceAll("<.*", "").trim();
+			if (foreign.contains(type))
 			{
-				// boolean, int, String, Keybind: RuneLite's and Java's own
 				continue;
 			}
+			// a plugin type: its outermost name is a file here, declared public, and the compile-time test names it;
+			// anything else is a setting this test does not understand, which fails rather than passes unseen
+			String outer = type.contains(".") ? type.substring(0, type.indexOf('.')) : type;
+			Path declared = main.resolve(outer + ".java");
+			assertTrue(setting.group(2) + "() returns " + type + ", neither a known RuneLite or Java type nor a file here",
+				Files.exists(declared));
 			pluginTypes++;
 			String source = new String(Files.readAllBytes(declared), StandardCharsets.UTF_8);
-			assertTrue(type + " is returned by a setting, so it must be public", source.contains("\npublic enum " + type)
-				|| source.contains("\npublic class " + type) || source.contains("\npublic interface " + type));
-			assertTrue(type + " is returned by a setting, so check/ConfigTypesTest must name it", check.contains(type + ".values()")
-				|| check.contains(type + ".class"));
+			String simple = type.contains(".") ? type.substring(type.lastIndexOf('.') + 1) : type;
+			assertTrue(type + " is returned by a setting, so it must be public",
+				Pattern.compile("\\bpublic (static )?(enum|class|interface) " + simple + "\\b").matcher(source).find());
+			assertTrue(type + " is returned by a setting, so check/ConfigTypesTest must name it",
+				Pattern.compile("\\b" + Pattern.quote(type) + "\\.(values\\(\\)|class)").matcher(check).find());
 		}
+		assertTrue("the config has settings", settings >= 40);
 		assertTrue("the three enums today", pluginTypes >= 3);
 	}
 }
