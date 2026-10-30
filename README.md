@@ -1,84 +1,176 @@
 # Advanced Map
 
-A full-screen world map for RuneLite, drawn from the game's own map data with smooth pan and zoom.
+A full-screen world map for [RuneLite](https://runelite.net/), drawn on your computer from the game's own map data,
+with smooth pan and zoom, a fuzzy search over places, shops, items and monsters, and icons you can point at for
+their details.
 
-- **Open it** from its sidebar tab or with **Ctrl+M** (change the key in the settings). **Escape**, Ctrl+M or the
-  close button close it. "How the map works" in the sidebar tab explains each part of the map.
-- **Drag** to move, **scroll** to zoom around the pointer. It opens on your character, on the surface or the
-  underground map, whichever you are on; the button at the top switches between them.
-- **A box over the game**: the map opens in a box you move by its top or bottom bar and size by its corners, while
-  the game goes on around it (a click outside the box is the game's). The square button next to the close button
-  fills the game view with it, and back.
-- **Pop it out** into a window of its own with the pop out button at the top right (a window with an arrow leaving it),
-  or the setting, to keep it beside the game's own world map or on another screen. The same button in the window
-  (an arrow going in) brings it back over the game.
-- **Wilderness teleport limits**: zoomed in, red dashed lines show where the Wilderness passes level 20 and level 30,
-  above which most teleports stop working. Turn them off with the "Wilderness teleport limits" setting.
-- **Search** with the box at the top: places, dungeon and minigame entrances, everything shops sell and monsters,
-  matched loosely as the Grand Exchange does ("d scim" and "dragon sim" find the dragon scimitar, "kbd" the King
-  Black Dragon). Places come first, the bigger first: "var" lists Varlamore and Varrock before Varrock armour, and
-  nicknames work ("ardy", "fally", "zeah"). A place moves the map there; an item lists the shops that sell it and
-  the price, nearest first; a monster or NPC marks every spawn and lists them by area, a monster under its
-  hitpoints, max hit, weakness, Slayer level and masters, sure and rare drops, and a button to its wiki page. Fairy
-  ring codes ("cks"),
-  fishing spots by catch ("lobster"), hunter areas by creature ("chinchompa") and kinds of icon ("bank", "anvil",
-  "altar": every one, nearest first) are found too, and among equally good matches the nearest to you comes first.
-  Shops are found through what they sell; the setting "Search finds shops by name" lists them by name too. With
-  RuneLite's Key Remapping plugin on, the letters it remaps are still typed into the search, but Enter on a result
-  also unlocks the game's chat, as that plugin does for any Enter: press Escape or click the chat to lock it again.
-- **Your own markers**: right-click anywhere, "Add marker here", give it a name and pick one of 12 pictures and 9
-  colors. Right-click a marker to edit or remove it; markers are found by search too. Markers are shared by every
-  account you play on this computer, two at once included (each is its own small file in RuneLite's plugin data
-  folder, read again whenever the map opens); turn "Share markers between accounts" off to keep each account's own.
+- **Always current.** The map is drawn from the game data your client already has, so a game update that changes the
+  world shows on the map at once. Nothing is downloaded and nothing is sent anywhere.
+- **Over the game, or beside it.** Open it in a box over the game that you can move and size, fill the game view
+  with it, or pop it out into a window of its own for a second screen.
+- **Find anything.** "d scim", "kbd", "ardy", "lobster", "cks", "bank": places, dungeon entrances, what shops
+  sell, monsters, fishing and hunter spots, fairy ring codes and kinds of icon, nearest to you first.
+- **Know before you go.** Point at a dungeon's entrance for a small map of where you come out and every monster
+  inside; point at a quest, a shortcut or a teleport for what it needs.
+
+## Getting started
+
+Install **Advanced Map** from RuneLite's Plugin Hub, then open the map in any of these ways:
+
+- **Ctrl+M** (change the key in the settings). Ctrl+M again, Escape or the close button close it.
+- The **Advanced Map** tab in RuneLite's sidebar. Its "How the map works" section explains each part of the map.
+- Right-click the **world map orb** by the minimap and choose "Open Advanced Map".
+
+The map opens on your character, on the surface or the underground map, whichever you are on.
+
+## Controls
+
+| To | Do |
+|---|---|
+| Move the map | Drag it |
+| Zoom | Scroll, around the pointer |
+| Go back to your character | The round button at the bottom right (it keeps following you until you drag) |
+| Change floor | The arrows above that button |
+| Switch surface / underground | The button at the top |
+| See what an icon is | Rest the pointer on it; click it to keep its box open |
+| Add a marker, route somewhere, hide an icon | Right-click the spot or the icon |
+| Choose which icons show | The Filters button at the top left |
+| Search | Click the search box at the top and type; Enter or a click on a result goes there |
+| Move or size the box over the game | Drag its top or bottom bar, or a corner |
+| Fill the game view with the map | The square button next to the close button |
+| Pop the map out into its own window | The button with an arrow leaving a window, at the top right |
+| Close a search, a list or an info box | Escape (then Escape again closes the map) |
+
+While the box is open the game goes on around it: a click beside the box is the game's. While you type in the
+search box, the F-keys still open the game's tabs.
+
+## What's on the map
+
+### Search
+
+The box at the top finds places, dungeon and minigame entrances, everything shops sell, monsters and NPCs, matched
+loosely the way the Grand Exchange does ("d scim" and "dragon sim" both find the dragon scimitar, "kbd" the King
+Black Dragon). Places come first, the bigger first, and nicknames work ("ardy", "fally", "zeah").
+
+- **A place** moves the map there.
+- **An item** lists the shops that sell it and the price, nearest first.
+- **A monster or NPC** marks every spawn and lists them by area. A monster comes with its hitpoints, max hit,
+  weakness, Slayer level and masters, sure and rare drops, and a button to its wiki page.
+- **Fairy ring codes** ("cks"), **fishing spots by catch** ("lobster"), **hunter areas by creature**
+  ("chinchompa") and **kinds of icon** ("bank", "anvil", "altar": every one, nearest first) are found too.
+
+Shops are found through what they sell; turn on "Search finds shops by name" to list them by name as well.
+
+### Icons
+
+Banks, quests, shops, shortcuts, teleports and every other icon of the game's map, each with details on hover or
+click: a quest's difficulty and the levels it needs, a shortcut's Agility level, a spell's Magic level and quest.
+
+- Agility shortcuts and teleport spells you can't use yet are grayed out with a red mark, and finished quests are
+  left out (both can be turned off).
+- Banks the game's map leaves out get an icon too (the Culinaromancer's Chest in Lumbridge Castle's cellar, the
+  Lovakengj blast mine's other chests ...). Bank chests you build yourself and banks a quest opens stay grayed out
+  until you have built or opened them; click one for what it needs.
+- **Shops**: click one, general stores included, for what it sells and for how much.
+- **Transports**: click a charter ship, a cart or another transport for where it goes, the fare and what the trip
+  needs. Fairy ring codes and spirit tree destinations show beside them when zoomed in.
+- **Filters** at the top left lists every kind of icon, grouped (Banks, Quests, Shops ...) and searchable: tick or
+  untick a whole group or a single kind. Right-click any one icon to hide just that one; "Show hidden icons" brings
+  them back faded so they can be unhidden.
+
+### Dungeons and floors
+
+- **Dungeon preview**: point at a dungeon's entrance for its name, a small map of where you come out, and every
+  monster inside, down its ladders and ropes to the lower floors too. Click the entrance to go in.
+- **Floors**: the floors below the one shown are drawn darkened underneath, so you can see where you are. Zoomed
+  out, the ground floor shows every floor's icons, as the game's map does; zoomed in, each icon is on its own floor.
+- **Prifddinas** is drawn inside its walls in Tirannwn, with its icons, teleports and transports, although the game
+  keeps the city on a map of its own.
+
+### Your own markers
+
+Right-click anywhere and choose "Add marker here", give it a name and pick one of 12 pictures and 9 colors.
+Right-click a marker to edit or remove it; the search finds markers too. Markers are shared by every account you play
+on this computer, two clients at once included; turn off "Share markers between accounts" to keep each account's own.
+
+### Extra layers
+
+- **Wilderness teleport limits**: zoomed in, red dashed lines show where the Wilderness passes level 20 and level
+  30, above which most teleports stop working.
+- **Multi-combat areas** (off by default): tinted red with a solid edge when zoomed in, in the Wilderness and
+  everywhere else.
+- **Farming patches**: a dot on each patch icon, green ready, yellow growing, red diseased or dead, gray empty;
+  click one for its crop and when it is ready. Read from what RuneLite's Time Tracking plugin saved.
+- **Slayer task** (off by default): every spawn of your task's monsters, with how many are left, from the task
+  RuneLite's Slayer plugin keeps.
 - **Other plugins' markers**: a clue scroll's spot, Quest Helper's next step and other plugins' world map markers
-  show on this map as well (RuneLite's own World Map plugin's are left out: Advanced Map has those icons itself).
-- **Multi-combat areas** (off by default), in the Wilderness and everywhere else, tinted red with a solid edge when
-  zoomed in.
-- **Farming patches**: a dot on each patch icon, green ready, yellow growing, red diseased or dead, gray empty; click
-  one for each patch's crop and when it is ready. Read from what RuneLite's Time Tracking plugin saved.
-- **Slayer task** (off by default): every spawn of your task's monsters marked, with how many are left, from the
-  task RuneLite's Slayer plugin keeps.
-- **Shops**: click a shop, general stores included, for what it sells and for how much.
-- **Fares**: click a charter ship, the Shilo Village cart or another transport for where it goes, the fare and what
-  the trip needs (a quest, a level, the Karamja elite diary that makes the cart free).
-- **Place names** from the game's own map: kingdoms when zoomed far out, then towns, then smaller places.
-- **Prifddinas in Tirannwn**: the game keeps the elven city on a map of its own; Advanced Map draws it inside its
-  walls on the main map, with its icons, and puts you, its teleports and the transports that go there (the spirit
-  tree, the teleport crystal) there too.
-- **Find and follow you**: the round button at the bottom right brings the map back to you and keeps it on you as you
-  walk, in the pop-out window too, until you drag the map. When you are out of view, an arrow at the edge points to
-  you with how many tiles away; click it to go back ("Arrow to you" turns it off).
-- **Dungeon preview**: point at a dungeon's entrance for a look inside before going in: the dungeon's name, a small
-  map of where you come out, and every monster inside, down its ladders and ropes to the lower floors too, the
-  highest level first ("Dungeon monsters" turns it round). Click the entrance to go in.
-- **Icons you can point at**: banks, quests, shops, shortcuts and every other icon of the game's map, plus teleport
-  destinations. Rest the mouse on one for its details, or click it to keep them open (a quest's difficulty and the
-  levels it needs, a shortcut's Agility level, a spell's Magic level and quest); the setting "Info on hover" makes
-  it click only. Agility shortcuts and teleport spells you can't use yet are grayed out with a
-  red mark, and finished quests are left out (a setting turns them back on).
-- **Banks**: banks the game's map leaves out get an icon too (the Culinaromancer's Chest in Lumbridge Castle's
-  cellar, the Lovakengj blast mine's other chests ...). The bank chests you build yourself (Fossil Island, the
-  Sailing islands, Vampyrium) and the banks a quest opens (Corsair Cove, Ape Atoll, Burgh de Rott) stay grayed out
-  with a red mark until you have built or opened them; click one for what it needs. The hole from Lumbridge Castle's
-  cellar to the Lumbridge Swamp Caves shows the same way until The Lost Tribe opens it.
-- **Filters**: the Filters button at the top left drops down a list of every kind of icon, with its picture and name,
-  grouped (Banks, Quests, Shops ...) and searchable: tick or untick a whole group or a single kind, or all at once.
-- **Hide just one icon** by right-clicking it. "Show hidden icons" at the top of the Filters list shows the hidden
-  ones again, faded, so they can be unhidden the same way; "Icons" turns every icon off or on at once and keeps the
-  place names.
-- **Back to you**: the round button at the bottom right moves the map to your character.
-- **Floors**: the arrows above it go up and down a floor. The floors below are shown darkened underneath, so you can
-  see where you are. Zoomed out, the ground floor shows every floor's icons, as the game's map does; zoomed in, each
-  icon is on its own floor. Floors are numbered Ground, 2, 3, 4, or Ground, 1, 2, 3 ("Floor numbers" setting).
-  Basements and dungeons are on the underground map ("Show underground" at the top).
-- **Route here**: right-click anywhere on the map, or on an icon, and choose "Route here" to have
-  [Shortest Path](https://github.com/Skretzo/shortest-path) or GPS show the way ("Route with" in the settings).
-- **Saved on your computer**: once drawn, the map is kept in RuneLite's plugin data folder, shared by every character
-  and profile, so it opens at once. From the moment the client starts (or the plugin is installed) it draws the rest in
-  the background, nearest you first, using spare processor time, and draws a region again only when a game update
-  changes it. The sidebar tab shows how far along it is.
-- **No downloads.** The map is drawn on your computer from the game data your client already has, so it is
-  always up to date with the game, and nothing is sent anywhere.
+  show on this map as well.
+- **Arrow to you**: when you are out of view, an arrow at the map's edge points to you with how many tiles away.
+
+### Routes
+
+Right-click anywhere on the map, or on an icon, and choose "Route here" to have
+[Shortest Path](https://github.com/Skretzo/shortest-path) or GPS show the way ("Route with" in the settings). The
+plugin you pick must be installed and on.
+
+## Settings
+
+Every setting is in Advanced Map's entry in RuneLite's configuration panel. Which kinds of icon show is easiest to
+choose with Filters on the map itself.
+
+| Setting | Default | What it does |
+|---|---|---|
+| Open or close the map | Ctrl+M | The key that opens and closes the map |
+| World map orb menu entry | On | "Open Advanced Map" in the world map orb's right-click menu |
+| World map orb opens Advanced Map | Off | A left click on the orb opens this map; the game's own map stays in the orb's menu |
+| Sidebar button | On | The sidebar tab with the open button and the saving progress |
+| Open in its own window | Off | Opens the map popped out instead of over the game |
+| Info on hover | On | Shows an icon's details when the pointer rests on it; off, a click shows them |
+| Dungeon monsters | Highest level first | The order a dungeon preview lists its monsters in |
+| Arrow to you | On | The arrow at the edge pointing to you when you are out of view |
+| Wilderness teleport limits | On | The level 20 and 30 lines |
+| Multi-combat areas | Off | The multi-combat tint |
+| Farming patch status | On | The dots on farming patch icons |
+| Other plugins' markers | On | Other plugins' world map markers |
+| Search finds shops by name | Off | Shops in the search results by their own names |
+| Share markers between accounts | On | Your markers on every account, or only on the one they were made on |
+| Slayer task | Off | Your Slayer task's spawns |
+| Place names | On | Kingdom, town and place names |
+| Floor numbers | Ground, 2, 3, 4 | How floors above the ground are numbered (or Ground, 1, 2, 3) |
+| Route with | Shortest Path | The plugin "Route here" asks |
+| Save the map on this computer | On | Keeps the drawn map so it opens at once next time |
+| Prepare the whole map | On | Draws the rest of the map in the background, nearest you first |
+
+The **Icons** section holds a switch per kind of icon (the same as Filters), "Hide completed quests", "Mark what
+you can't use yet", "Icon size" and "Transport names".
+
+## Privacy and what it uses
+
+- **The map is drawn from your own client's game data.** Nothing is downloaded, at startup or ever, and the plugin
+  makes no network connections.
+- **Shops, prices, monster spawns, stats and drops** come from the Old School RuneScape Wiki, bundled with the
+  plugin when it is built (see Credits). They are updated with each release of the plugin.
+- **What it reads in the client**: your position, levels, quest states and what you have unlocked (for the locked
+  marks and the finished quests), and, read only, what RuneLite's Time Tracking and Slayer plugins have saved. It
+  changes nothing of theirs.
+- **What it keeps on your computer**, in RuneLite's plugin data folder: the drawn map, so it opens at once, and one
+  small file per marker. Turn off "Save the map on this computer" to save nothing but the markers.
+- **The two buttons beside the sidebar tab's title** open this project's GitHub issues and Discord in your browser,
+  only when you click them.
+
+## Good to know
+
+- **Saving the map.** From the moment the client starts, the map draws the regions it has not saved yet in the
+  background, nearest you first, using spare processor time, and draws a region again only when a game update
+  changes it. The sidebar tab shows how far along it is. "Prepare the whole map" off draws only what you look at.
+- **Memory.** While the map is open it keeps the pictures it has drawn at hand, so moving back over them is
+  instant; closing it lets go of the most detailed ones.
+- **After a game update**, new and changed areas, buildings and the game's own map icons show at once, since they
+  are drawn from your client. New shops, monsters and their drops show in the search once the plugin is updated, and
+  a brand-new quest's started or finished state once RuneLite knows the quest.
+- **Key Remapping**: with RuneLite's Key Remapping plugin on, the letters it remaps are still typed into the search,
+  but Enter on a result also unlocks the game's chat, as that plugin does for any Enter. Press Escape or click the
+  chat to lock it again.
 
 ## For plugin authors
 
@@ -104,18 +196,23 @@ layer.put("lines", List.of(line));
 eventBus.post(new PluginMessage("advancedmap", "layer", layer));
 ```
 
+Plugins that put markers on RuneLite's world map through `WorldMapPointManager` show on this map without any change.
+
 ## Feedback
 
 Questions, ideas and bug reports: [GitHub issues](https://github.com/Brettgod1355/Advanced-Map/issues), or ask on
-[Discord](https://discord.gg/c85DK83jWx). The two buttons beside the title of the sidebar tab open them in your
-browser; the plugin itself sends nothing.
+[Discord](https://discord.gg/c85DK83jWx).
 
-## Credits
+## Credits and license
 
-The map drawing is RuneLite's own map renderer from its cache library (BSD 2-Clause), adapted to read the
-running client. Shops, their stock and prices, monster spawns, stats and drops come from the
-[Old School RuneScape Wiki](https://oldschool.runescape.wiki/) (CC BY-NC-SA 3.0); transport routes and fares from
-[Shortest Path](https://github.com/Skretzo/shortest-path) (BSD 2-Clause). See
-[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+- The map drawing is RuneLite's own map renderer from its cache library (BSD 2-Clause), adapted to read the running
+  client.
+- Shops, their stock and prices, monster spawns, stats and drops come from the
+  [Old School RuneScape Wiki](https://oldschool.runescape.wiki/) (CC BY-NC-SA 3.0).
+- Transport routes and fares come from [Shortest Path](https://github.com/Skretzo/shortest-path) (BSD 2-Clause).
 
-Advanced Map is not affiliated with Jagex or RuneLite.
+Every bundled source, its license and what was changed are listed in
+[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). Advanced Map itself is under the BSD 2-Clause license
+([LICENSE](LICENSE)).
+
+Advanced Map is not affiliated with Jagex or RuneLite. Old School RuneScape is a trademark of Jagex Ltd.
