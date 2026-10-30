@@ -1,6 +1,6 @@
 # Shops and what they sell, from the OSRS Wiki's infobox_shop and storeline buckets (2026-10-27); each
 # placed by its page's {{Map}} (map bucket), else its owner's. CC BY-NC-SA 3.0, see THIRD_PARTY_NOTICES.md. Records:
-#   S name x y plane owner      a shop
+#   S name x y plane owner [floor really on, when the map has no ground on it there]   a shop
 #   I item price currency stock  an item the shop above sells
 S	Aaron's Archery Appendages	2670	3435	0	Armour salesman
 I	Leather body	21	Coins	10
@@ -666,7 +666,7 @@ I	Green cape	41	Coins	5
 S	Barmaid	2916	10194	0	Barmaid
 I	Beer	2	Coins	∞
 I	Stew	20	Coins	∞
-S	Barman (Blurberry Bar)	2482	3487	1	Barman (Blurberry Bar)
+S	Barman (Blurberry Bar)	2482	3487	0	Barman (Blurberry Bar)	1
 I	Lemon	20	Coins	∞
 I	Orange	20	Coins	∞
 I	Cocktail shaker	20	Coins	∞
@@ -750,7 +750,7 @@ S	Blandebir	2916	10194	1	Blandebir
 I	Ale yeast	25	Coins	∞
 S	Blue Moon Inn	3224	3398	0	Bartender (Blue Moon Inn)
 I	Beer	2	Coins	∞
-S	Blurberry Bar	2482	3488	1	Barman (Blurberry Bar)
+S	Blurberry Bar	2482	3488	0	Barman (Blurberry Bar)	1
 I	Premade blurb' sp.	30	Coins	10
 I	Premade choc s'dy	30	Coins	10
 I	Premade dr' dragon	30	Coins	10
@@ -860,7 +860,7 @@ I	Iron scimitar	112	Coins	4
 I	Steel scimitar	400	Coins	4
 I	Black scimitar	768	Coins	3
 I	Mithril scimitar	1040	Coins	3
-S	Brother Jered	3052	3491	1	Brother Jered
+S	Brother Jered	3052	3491	0	Brother Jered	1
 I	Prayer cape	99000	Coins	∞
 I	Prayer cape(t)	99000	Coins	∞
 S	Burthorpe Supplies	2927	3547	0	Wistan
@@ -2047,7 +2047,7 @@ I	Staff of air	1500	Coins	2
 I	Staff of water	1500	Coins	2
 I	Staff of earth	1500	Coins	2
 I	Staff of fire	1500	Coins	2
-S	Fine Fashions	2482	3510	1	Rometti
+S	Fine Fashions	2482	3510	0	Rometti	1
 I	Pink hat	160	Coins	5
 I	Green hat	160	Coins	5
 I	Blue hat	160	Coins	5
@@ -2351,7 +2351,7 @@ I	Empty plant pot	1	Coins	∞
 I	Watering can	8	Coins	∞
 I	Gardening trowel	12	Coins	∞
 I	Seed dibber	6	Coins	∞
-S	Funch's Fine Groceries	2492	3488	1	Heckel Funch
+S	Funch's Fine Groceries	2492	3488	0	Heckel Funch	1
 I	Brandy	5	Coins	10
 I	Gin	5	Coins	10
 I	Vodka	5	Coins	10
@@ -2498,7 +2498,7 @@ I	Raw salmon	30	Coins	0
 I	Raw tuna	40	Coins	0
 I	Raw lobster	70	Coins	0
 I	Raw swordfish	80	Coins	0
-S	Gianne's Restaurant	2450	3502	1	Gnome Waiter
+S	Gianne's Restaurant	2450	3502	0	Gnome Waiter	1
 I	Premade veg batta	120	Coins	3
 I	Premade w'm batta	120	Coins	3
 I	Premade t'd batta	120	Coins	3
@@ -2530,7 +2530,7 @@ I	Empty plant pot	1	Coins	∞
 I	Watering can	8	Coins	∞
 I	Gardening trowel	12	Coins	∞
 I	Seed dibber	6	Coins	∞
-S	Gnome Waiter	2448	3504	1	Gnome Waiter
+S	Gnome Waiter	2448	3504	0	Gnome Waiter	1
 I	Premade veg batta	120	Coins	3
 I	Premade w'm batta	120	Coins	3
 I	Premade t'd batta	120	Coins	3
@@ -2552,7 +2552,7 @@ I	Graceful gloves	30	Mark of Grace	100
 I	Graceful boots	40	Mark of Grace	100
 I	Graceful cape	40	Mark of Grace	100
 I	Amylase pack	10	Mark of Grace	1000
-S	Grand Tree Groceries	2449	3510	1	Hudo
+S	Grand Tree Groceries	2449	3510	0	Hudo	1
 I	Gianne dough	2	Coins	50
 I	Equa leaves	2	Coins	20
 I	Pot of flour	10	Coins	10
@@ -2623,7 +2623,7 @@ I	Blue dye	6	Coins	10
 I	Orange dye	6	Coins	10
 I	Green dye	6	Coins	10
 I	Purple dye	6	Coins	10
-S	Gulluck and Sons	2470	3488	2	Gulluck
+S	Gulluck and Sons	2470	3488	0	Gulluck	2
 I	Bronze arrow	1	Coins	200
 I	Bronze bolts	1	Coins	150
 I	Pearl bolts	13	Coins	1
@@ -2858,7 +2858,7 @@ I	Mithril platebody	5200	Coins	1
 I	Iron platelegs	280	Coins	1
 I	Studded body	850	Coins	1
 I	Studded chaps	750	Coins	1
-S	Hudo	2449	3510	1	Hudo
+S	Hudo	2449	3510	0	Hudo	1
 I	Giant frog legs	10000000000	Coins	N/A
 S	Huito's Herbal Supplies	1437	9553	1	Huito
 I	Pestle and mortar	4	Coins	5

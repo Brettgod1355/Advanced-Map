@@ -64,4 +64,18 @@ public class ShopsTest
 		Spawns.load();
 		assertTrue(Spawns.all().size() > 800);
 	}
+
+	@Test
+	public void aShopUpstairsWhereTheMapDrawsNoGroundIsShownBelow() throws IOException
+	{
+		// Brother Jered, upstairs in the Edgeville Monastery: the game's map draws no ground on that floor there
+		String tsv = "S\tBrother Jered\t3052\t3491\t0\tBrother Jered\t1\nS\tBob's Brilliant Axes\t3230\t3203\t0\tBob\n";
+		List<Shops.Shop> shops = Shops.parse(new ByteArrayInputStream(tsv.getBytes(StandardCharsets.UTF_8)));
+		assertEquals(new WorldPoint(3052, 3491, 0), shops.get(0).getPoint());
+		assertEquals(1, shops.get(0).getFloor());
+		assertEquals("a shop on its own floor", 0, shops.get(1).getFloor());
+		Shops.load();
+		assertTrue(Shops.all().stream().anyMatch(shop -> shop.getName().equals("Brother Jered") && shop.getFloor() == 1
+			&& shop.getPoint().getPlane() == 0));
+	}
 }

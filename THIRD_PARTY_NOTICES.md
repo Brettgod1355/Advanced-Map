@@ -244,7 +244,9 @@ shared under the same license, credited to the Old School RuneScape Wiki's contr
 tiles, prices and levels kept; each shop placed by its page's map, else its owner's spawn; tiles the wiki gives on
 one of the game's other world maps (a dungeon that map draws somewhere else, such as the Kalphite Queen's chamber)
 moved back to where they are in the world, using that map's squares as the game's cache lists them; pages in the
-wiki's "Discontinued content" category (removed from the game, such as the Realm of Memories) left out; prices and stock
+wiki's "Discontinued content" category (removed from the game, such as the Realm of Memories) left out; a tile on a
+floor where the game's own map draws no ground (a platform up a tree, an upstairs room it leaves out) put on the
+nearest floor below that has ground, with the floor the wiki gives kept beside it; prices and stock
 as the wiki gave them that day (they can be out of date). The Shilo Village cart's fare, and that the Karamja elite
 diary makes it free, are from the wiki's "Shilo Village cart system", "Hajedy" and "Vigroy" pages, checked the same day.
 Nothing is fetched from the wiki while the plugin runs.

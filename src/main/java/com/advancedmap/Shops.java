@@ -62,6 +62,11 @@ final class Shops
 		WorldPoint point;
 		String owner;
 		List<Item> items;
+		/**
+		 * The floor the shop is really on: another than its point's when the game's map draws no ground on its own
+		 * floor there, so it is shown on the floor below.
+		 */
+		int floor;
 	}
 
 	private static volatile List<Shop> shops = Collections.emptyList();
@@ -109,7 +114,8 @@ final class Shops
 				items = new ArrayList<>();
 				WorldPoint at = Prifddinas.toSurface(new WorldPoint(Integer.parseInt(f[2]), Integer.parseInt(f[3]),
 					Integer.parseInt(f[4])));
-				out.add(new Shop(f[1], at, f[5], items));
+				// a seventh field: the floor it is really on, when the map has no ground on it there
+				out.add(new Shop(f[1], at, f[5], items, f.length > 6 ? Integer.parseInt(f[6]) : at.getPlane()));
 			}
 			else if ("I".equals(f[0]) && items != null)
 			{

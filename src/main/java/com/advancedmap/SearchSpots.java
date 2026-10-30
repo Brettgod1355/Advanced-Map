@@ -29,7 +29,10 @@ final class SearchSpots
 	static final int NAME_REACH = 200;
 	static final Color MARK = new Color(0xFF6A3D);
 
-	/** One area of spawns: its name, the spawn nearest its middle, how many spawns, how far from the player. */
+	/**
+	 * One area of spawns: its name, the spawn nearest its middle, how many spawns, how far from the player, and the
+	 * floor that spawn is really on (another than its point's when the game's map has no ground on its own there).
+	 */
 	@Value
 	static class Area
 	{
@@ -37,6 +40,21 @@ final class SearchSpots
 		WorldPoint point;
 		int count;
 		int distance;
+		int floor;
+
+		Area(String name, WorldPoint point, int count, int distance)
+		{
+			this(name, point, count, distance, point.getPlane());
+		}
+
+		Area(String name, WorldPoint point, int count, int distance, int floor)
+		{
+			this.name = name;
+			this.point = point;
+			this.count = count;
+			this.distance = distance;
+			this.floor = floor;
+		}
 	}
 
 	private SearchSpots()
@@ -56,6 +74,13 @@ final class SearchSpots
 
 	/** The spawns grouped into areas, nearest to {@code from} first. Never empty for spawns. */
 	static List<Area> areas(List<WorldPoint> spawns, WorldPoint from, List<MapLabels.Label> labels)
+	{
+		return areas(spawns, from, labels, Collections.emptyMap());
+	}
+
+	/** As above, with the floors some spawns are really on ({@link Spawns.Creature#getFloors}). */
+	static List<Area> areas(List<WorldPoint> spawns, WorldPoint from, List<MapLabels.Label> labels,
+		Map<WorldPoint, Integer> floors)
 	{
 		int n = spawns.size();
 		int[] group = new int[n];
@@ -101,7 +126,8 @@ final class SearchSpots
 		named.forEach((key, tiles) ->
 		{
 			WorldPoint middle = middle(tiles);
-			out.add(new Area(names.get(key), middle, tiles.size(), distance(middle, from)));
+			out.add(new Area(names.get(key), middle, tiles.size(), distance(middle, from),
+				floors.getOrDefault(middle, middle.getPlane())));
 		});
 		out.sort(Comparator.comparingInt(Area::getDistance));
 		return out;
@@ -185,7 +211,9 @@ final class SearchSpots
 		for (Area area : areas)
 		{
 			String count = area.getCount() + " " + what + (area.getCount() == 1 ? "" : "s");
-			String floor = area.getPoint().getPlane() > 0 ? "Floor up " + area.getPoint().getPlane() : null;
+			// a spawn upstairs where the map draws no ground is shown on the floor below, and said to be upstairs
+			String floor = area.getFloor() > area.getPoint().getPlane() ? "Upstairs, floor up " + area.getFloor()
+				: area.getFloor() > 0 ? "Floor up " + area.getFloor() : null;
 			rows.add(new SideList.Row(area.getName(), count, floor, null, area.getPoint(), null));
 		}
 		return rows;

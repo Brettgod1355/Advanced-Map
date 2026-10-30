@@ -1301,6 +1301,11 @@ public class AdvancedMapPlugin extends Plugin
 	private void showShop(Shops.Shop shop)
 	{
 		List<SideList.Row> rows = new ArrayList<>();
+		if (shop.getFloor() > shop.getPoint().getPlane())
+		{
+			// shown on the floor below, where the map has ground
+			rows.add(SideList.Row.heading("Upstairs, floor up " + shop.getFloor()));
+		}
 		for (Shops.Item item : shop.getItems())
 		{
 			rows.add(new SideList.Row(item.getName(), item.priceText(), null, null, null, null));
@@ -1767,7 +1772,8 @@ public class AdvancedMapPlugin extends Plugin
 			case NPC:
 			case FISHING:
 			case HUNTER:
-				List<SearchSpots.Area> areas = SearchSpots.areas(entry.getPoints(), from, labelsNow());
+				List<SearchSpots.Area> areas = SearchSpots.areas(entry.getPoints(), from, labelsNow(),
+					entry.getCreature() != null ? entry.getCreature().getFloors() : Collections.emptyMap());
 				nearest = areas.get(0).getPoint();
 				messages.put(SearchSpots.layer(SEARCH_LAYER, entry.getPoints()));
 				List<SideList.Row> rows = new ArrayList<>();
