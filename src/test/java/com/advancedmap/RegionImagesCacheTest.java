@@ -35,8 +35,16 @@ public class RegionImagesCacheTest
 	}
 
 	/** Game data where every region is flat grass, so each draws a picture. */
-	private static final class Flat implements MapSource
+	/** Flat grass everywhere, with switches for what the game's cache can do at a given moment. */
+	static final class Flat implements MapSource
 	{
+		/** The client has not downloaded the regions yet: every read throws {@link CacheNotReadyException}. */
+		volatile boolean notReady;
+		/** A failure reading a region (thrown by the hash read), or null. */
+		volatile RuntimeException failWith;
+		/** What the game data hashes to, as if a game update changed it. */
+		volatile long hash = 1;
+
 		private static final byte[] TERRAIN = flatTerrain();
 		private final UnderlayDefinition grass = new UnderlayLoader().load(0, new byte[]{1, 0x4C, 0x7A, 0x2B, 0});
 
@@ -65,6 +73,10 @@ public class RegionImagesCacheTest
 		@Override
 		public Region region(int regionX, int regionY)
 		{
+			if (notReady)
+			{
+				throw new CacheNotReadyException();
+			}
 			return regions.computeIfAbsent(regionX << 8 | regionY, id ->
 			{
 				Region region = new Region(regionX, regionY);
@@ -79,8 +91,16 @@ public class RegionImagesCacheTest
 		@Override
 		public long regionHash(int regionX, int regionY)
 		{
+			if (notReady)
+			{
+				throw new CacheNotReadyException();
+			}
+			if (failWith != null)
+			{
+				throw failWith;
+			}
 			draws.incrementAndGet();
-			return 1;
+			return hash;
 		}
 
 		@Override

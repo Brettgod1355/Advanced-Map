@@ -338,6 +338,11 @@ class RegionImages
 		{
 			// the plugin is stopping
 		}
+		catch (CacheNotReadyException e)
+		{
+			// the client has not downloaded this part of the cache yet: the preparer puts it back in its queue
+			throw e;
+		}
 		catch (RuntimeException e)
 		{
 			log.debug("could not prepare region {} floor {}", region(key), plane(key), e);
