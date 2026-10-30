@@ -226,11 +226,16 @@ class RegionImages
 		wantedBesides = Collections.emptySet();
 	}
 
-	private static Set<Integer> keys(int plane, Collection<Integer> regionIds)
+	private Set<Integer> keys(int plane, Collection<Integer> regionIds)
 	{
 		Set<Integer> keys = new HashSet<>();
 		for (int id : regionIds)
 		{
+			if (absent.contains(key(0, id)))
+			{
+				// nothing of the region exists: nothing of it is wanted
+				continue;
+			}
 			for (int p = plane; p >= 0; p--)
 			{
 				keys.add(key(p, id));

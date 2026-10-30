@@ -544,6 +544,11 @@ final class MapPainter
 			}
 			for (int id : visible)
 			{
+				if (images.isAbsent(p, id))
+				{
+					// open sea, a floor never built: most of a far zoom is this, and it has no picture to look up
+					continue;
+				}
 				int baseX = (id >> 8) << 6;
 				int baseY = (id & 0xFF) << 6;
 				int x0 = (int) Math.floor(view.screenX(baseX));
@@ -555,7 +560,7 @@ final class MapPainter
 				{
 					g.drawImage(image, x0, y0, x1 - x0, y1 - y0, null);
 				}
-				else if (!images.isAbsent(p, id) && p == plane)
+				else if (p == plane)
 				{
 					loading = true;
 					if (p == 0)
