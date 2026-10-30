@@ -45,4 +45,10 @@ final class Caret
 	{
 		return on() || !shown.endsWith("|") ? shown : shown.substring(0, shown.length() - 1);
 	}
+
+	/** As {@link #draw(String)} while the box is typed into; a box not typed into has no cursor to take away. */
+	static String draw(String shown, boolean focused)
+	{
+		return focused ? draw(shown) : shown;
+	}
 }

@@ -31,4 +31,15 @@ public class CaretTest
 		assertEquals("varr|", Caret.draw("varr|"));
 		assertEquals("Name", Caret.draw("Name"));
 	}
+
+	@Test
+	public void aQueryEndingInABarKeepsItWhileTheBoxIsNotTypedInto() throws InterruptedException
+	{
+		// a typed "|" looks like the cursor: unfocused, the box has no cursor, so nothing is taken away as it blinks
+		Caret.typed();
+		Thread.sleep(Caret.BLINK_NANOS / 1_000_000 + 20);
+		assertFalse("the cursor is in its off phase", Caret.on());
+		assertEquals("a|", Caret.draw("a|", false));
+		assertEquals("a", Caret.draw("a|", true));
+	}
 }

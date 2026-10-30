@@ -1039,7 +1039,7 @@ final class MapSearch
 				shown = shown.substring(1);
 			}
 			g.setColor(TEXT);
-			g.drawString(Caret.draw(shown), textX, baseline);
+			g.drawString(Caret.draw(shown, focused), textX, baseline);
 		}
 		if (!text.isEmpty())
 		{
