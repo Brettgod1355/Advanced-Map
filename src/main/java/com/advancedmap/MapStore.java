@@ -224,8 +224,10 @@ final class MapStore
 			g.dispose();
 			return packed;
 		}
-		catch (IOException e)
+		catch (IOException | RuntimeException e)
 		{
+			// a damaged file (most damage is an IOException from the PNG reader, a malformed header can be a
+			// RuntimeException): drawn and saved again, which replaces it
 			log.debug("could not read {}", file, e);
 			return null;
 		}

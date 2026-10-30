@@ -201,4 +201,28 @@ public class MapStoreTest
 		assertEquals(0x00000000, back.getRGB(1, 2));
 		assertEquals(0xFFFFFFFF, back.getRGB(3, 4));
 	}
+
+	@Test
+	public void aDamagedSavedPictureIsReadAsNothingAndSavedOverAgain() throws Exception
+	{
+		MapStore store = MapStore.open(root());
+		int key = RegionImages.key(0, 12850);
+		BufferedImage full = new BufferedImage(256, 256, BufferedImage.TYPE_INT_ARGB);
+		full.setRGB(1, 1, 0xFF00FF00);
+		store.save(key, 0xABCDL, full, RegionImages.shrink(full, 4));
+		// the file cut short on disk (a crash while writing, a bad sector): nothing is read, and a new save replaces it
+		Filepath file = root().joinSegment("map-v" + MapStore.VERSION).joinSegment(MapStore.name(0, 12850, 0xABCDL,
+			MapStore.Kind.FULL));
+		assertTrue(file.exists());
+		byte[] bytes;
+		try (java.io.InputStream in = file.openInputStream())
+		{
+			bytes = in.readAllBytes();
+		}
+		file.write(java.util.Arrays.copyOf(bytes, 40));
+		MapStore again = MapStore.open(root());
+		assertNull(again.load(key, 0xABCDL, MapStore.Kind.FULL));
+		again.save(key, 0xABCDL, full, RegionImages.shrink(full, 4));
+		assertEquals(0xFF00FF00, again.load(key, 0xABCDL, MapStore.Kind.FULL).getRGB(1, 1));
+	}
 }
