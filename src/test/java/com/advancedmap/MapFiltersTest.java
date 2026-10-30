@@ -151,4 +151,20 @@ public class MapFiltersTest
 		}
 		return -1;
 	}
+
+	@Test
+	public void theTypedFilterGoesWithTheListWhenItCloses()
+	{
+		MapFilters filters = new MapFilters();
+		filters.setOpen(true);
+		filters.type('f');
+		filters.type('i');
+		assertEquals("fi", filters.search());
+		// closed by Escape, a click elsewhere, or the plugin stopping: the text would otherwise filter the next opening
+		// (and the next session, since RuneLite keeps the plugin object)
+		filters.setOpen(false);
+		assertEquals("", filters.search());
+		filters.setOpen(true);
+		assertEquals("", filters.search());
+	}
 }

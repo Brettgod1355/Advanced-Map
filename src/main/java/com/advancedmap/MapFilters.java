@@ -153,6 +153,11 @@ final class MapFilters
 		{
 			scroll = 0;
 		}
+		else
+		{
+			// typed to find a kind this time: the next opening starts with the whole list, not last week's filter
+			search = "";
+		}
 	}
 
 	String search()
