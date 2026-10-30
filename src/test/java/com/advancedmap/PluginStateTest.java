@@ -5,9 +5,16 @@
  */
 package com.advancedmap;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import net.runelite.api.coords.WorldPoint;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -42,5 +49,21 @@ public class PluginStateTest
 		assertTrue(AdvancedMapPlugin.opensInWindow(false, true, true));
 		assertTrue("no overlay is drawn on the login screen", AdvancedMapPlugin.opensInWindow(false, false, false));
 		assertFalse(AdvancedMapPlugin.opensInWindow(false, false, true));
+	}
+
+	@Test
+	public void followingIsOnlyEverSetThroughSetFollowingSoThePainterAgrees() throws IOException
+	{
+		// the painter draws the locate button lit from its own copy of the flag: a bare write to the plugin's left the
+		// button lit after another plugin opened the map on a point
+		String source = new String(Files.readAllBytes(Paths.get("src", "main", "java", "com", "advancedmap",
+			"AdvancedMapPlugin.java")), StandardCharsets.UTF_8);
+		Matcher writes = Pattern.compile("\\bfollowing = ").matcher(source);
+		int count = 0;
+		while (writes.find())
+		{
+			count++;
+		}
+		assertEquals("one in startUp, before the painter exists, and the one in setFollowing", 2, count);
 	}
 }

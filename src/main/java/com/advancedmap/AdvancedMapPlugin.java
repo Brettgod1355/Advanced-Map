@@ -2205,7 +2205,7 @@ public class AdvancedMapPlugin extends Plugin
 			if (at != null)
 			{
 				// a place to show (another plugin's, a search's): following the player would move straight off it
-				following = false;
+				setFollowing(false);
 			}
 			area = MapArea.of(center.getY());
 			plane = center.getPlane();
