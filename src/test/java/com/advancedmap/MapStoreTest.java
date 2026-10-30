@@ -202,6 +202,11 @@ public class MapStoreTest
 		assertEquals(0xFFFFFFFF, back.getRGB(3, 4));
 	}
 
+	/**
+	 * A file cut short on disk (a bad sector; a crash cannot leave one, the save renames a whole temporary file).
+	 * Every damage the PNG reader was tried with throws an IOException; the RuntimeException the reader catches as
+	 * well is kept as a guard no file has been found to reach.
+	 */
 	@Test
 	public void aDamagedSavedPictureIsReadAsNothingAndSavedOverAgain() throws Exception
 	{
@@ -210,7 +215,7 @@ public class MapStoreTest
 		BufferedImage full = new BufferedImage(256, 256, BufferedImage.TYPE_INT_ARGB);
 		full.setRGB(1, 1, 0xFF00FF00);
 		store.save(key, 0xABCDL, full, RegionImages.shrink(full, 4));
-		// the file cut short on disk (a crash while writing, a bad sector): nothing is read, and a new save replaces it
+		// nothing is read, and a new save replaces it
 		Filepath file = root().joinSegment("map-v" + MapStore.VERSION).joinSegment(MapStore.name(0, 12850, 0xABCDL,
 			MapStore.Kind.FULL));
 		assertTrue(file.exists());
