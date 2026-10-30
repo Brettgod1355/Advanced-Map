@@ -38,7 +38,9 @@ NotFoxtrot <https://github.com/NotFoxtrot>" and "Copyright (c) 2018 Abex" (`Farm
 <https://github.com/tylerthardy>" and "Copyright (c) 2018, Shaun Dreclin <shaundreclin@gmail.com>" (`Task.java`).
 
 Advanced Map reads, and never changes, what the Time Tracking and Slayer plugins saved for the player, under their
-own setting names, and the markers other plugins put on the world map (through `WorldMapPointManager`).
+own setting names, and the markers other plugins put on the world map (through `WorldMapPointManager`). RuneLite's
+Key Remapping plugin was read (release 1.13.4) to learn how it rewrites a key event it remaps, so that a letter typed
+into the map's search while it is on can be recovered (`MapInput.java`); nothing of it is copied.
 
 The map is drawn with code from RuneLite's cache library (`net.runelite:cache`), taken from the
 `runelite-parent-1.13.4` release of [runelite/runelite](https://github.com/runelite/runelite) (commit
@@ -278,7 +280,8 @@ repository, and imply no endorsement by either company.
 
 - Where each map link leads (a dungeon's entrance to the dungeon and back) is read at runtime from the game's own
   client script for it, `worldmap_intermap_op` (script 1705), found in RuneLite's published decompiled scripts
-  ([runelite/cs2-scripts](https://github.com/runelite/cs2-scripts), commit `1d418ff`). How a compiled script is laid
+  ([runelite/cs2-scripts](https://github.com/runelite/cs2-scripts), commit `1d418ff`); the Wilderness level rules
+  `Wilderness.java` re-derives were read from the same scripts' `wilderness_level`. How a compiled script is laid
   out was learned from RuneLite's cache library (`ScriptLoader`, BSD 2-Clause, release 1.13.4); `MapLinks.java` is
   this project's own decoder, and no code or data from either is included.
 - [Shortest Path](https://github.com/Skretzo/shortest-path) (BSD 2-Clause) was also read, at its Plugin Hub version
