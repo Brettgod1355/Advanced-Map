@@ -526,6 +526,8 @@ class RegionImages
 			Long savedHash = saved == null ? null : saved.savedHash(key);
 			long hash = region == null ? 0 : source.regionHash(id >> 8, id & 0xFF);
 			checked.add(key);
+			// the cache answers now: the other floors waiting for it are checked without the one-a-second pace
+			recheckedAt = 0;
 			if (savedHash == null || savedHash != hash)
 			{
 				// drawn again from the game's data while the old picture stays on screen, then swapped in

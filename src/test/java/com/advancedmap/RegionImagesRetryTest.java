@@ -155,4 +155,40 @@ public class RegionImagesRetryTest
 		images.scanIcons(REGION);
 		assertTrue(images.iconsFound(REGION));
 	}
+
+	@Test
+	public void onceTheCacheAnswersTheWaitingFloorsAreCheckedWithoutThePace() throws Exception
+	{
+		// a game update: many saved floors are stale and the client is still downloading them. The one-a-second pace
+		// spares a cache that cannot answer yet; once it does, the rest must not trail on for minutes
+		MapStore store = store();
+		java.awt.image.BufferedImage full = new java.awt.image.BufferedImage(256, 256,
+			java.awt.image.BufferedImage.TYPE_INT_ARGB);
+		java.util.List<Integer> regions = new java.util.ArrayList<>();
+		for (int i = 0; i < 6; i++)
+		{
+			int region = (50 + i) << 8 | 50;
+			regions.add(region);
+			store.save(RegionImages.key(0, region), 1L, full, RegionImages.shrink(full, 4));
+		}
+		RegionImagesCacheTest.Flat source = new RegionImagesCacheTest.Flat();
+		source.hash = 2;
+		source.notReady = true;
+		RegionImages images = new RegionImages(source, executor, new MapIcons());
+		images.setStore(store);
+		for (int i = 0; i < 300; i++)
+		{
+			images.request(0, regions, RegionImages.Level.SMALL);
+			TimeUnit.MILLISECONDS.sleep(10);
+		}
+		source.notReady = false;
+		long start = System.nanoTime();
+		while (source.draws.get() < regions.size() && System.nanoTime() - start < 4_000_000_000L)
+		{
+			images.request(0, regions, RegionImages.Level.SMALL);
+			TimeUnit.MILLISECONDS.sleep(10);
+		}
+		assertTrue("all six checked within a few seconds of the cache answering: " + source.draws.get(),
+			source.draws.get() >= regions.size());
+	}
 }
