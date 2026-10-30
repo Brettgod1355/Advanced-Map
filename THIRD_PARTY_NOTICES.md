@@ -27,6 +27,16 @@ More data from the same RuneLite release (BSD 2-Clause), kept as tables in `src/
   monsters the way that plugin does (`targetNamePattern`: whole words, the task's name without its last "s"),
   written anew.
 
+The files those four tables are transcribed from carry the license above under their own holders, whose notices
+are reproduced here: `places.tsv` from "Copyright (c) 2020, Arman S <https://github.com/Rman887>"
+(`DungeonLocation.java`) and "Copyright (c) 2018, Magic fTail" (`MinigameLocation.java`); `fishing-hunter.tsv` from
+"Copyright (c) 2020, melky <https://github.com/melkypie>" (`FishingSpotLocation.java`, `HunterAreaLocation.java`)
+and "Copyright (c) 2017, Seth <Sethtroll3@gmail.com>" (`FishingSpot.java`); `farming.tsv` from "Copyright (c) 2018,
+NotFoxtrot <https://github.com/NotFoxtrot>" and "Copyright (c) 2018 Abex" (`FarmingWorld.java`, `Produce.java`),
+"Copyright (c) 2019 Abex" (`PatchImplementation.java`) and "Copyright (c) 2018, Torkel Velure
+<https://github.com/TorkelV>" (`FarmingPatchLocation.java`); `slayer-tasks.tsv` from "Copyright (c) 2017, Tyler
+<https://github.com/tylerthardy>" and "Copyright (c) 2018, Shaun Dreclin <shaundreclin@gmail.com>" (`Task.java`).
+
 Advanced Map reads, and never changes, what the Time Tracking and Slayer plugins saved for the player, under their
 own setting names, and the markers other plugins put on the world map (through `WorldMapPointManager`).
 

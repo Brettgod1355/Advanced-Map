@@ -14,6 +14,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * The Plugin Hub builds its own jar from the resources output, so a `jar {}` block in this
@@ -42,6 +43,30 @@ public class DistributionNoticesTest
 						+ name, expected, scanner.hasNext() ? scanner.next() : "");
 				}
 			}
+		}
+	}
+
+	/**
+	 * BSD 2-Clause asks a binary redistribution to reproduce each holder's copyright notice, and Hub reviewers stall a
+	 * submission that leaves the authors of transcribed data out: every file a bundled table was transcribed from has
+	 * its holder named here (the holders as the 1.13.4 headers write them).
+	 */
+	@Test
+	public void everyHolderOfATranscribedTableIsNamed() throws Exception
+	{
+		// a holder's line may wrap
+		String notices = new String(Files.readAllBytes(new File("THIRD_PARTY_NOTICES.md").toPath()), StandardCharsets.UTF_8)
+			.replaceAll("\\s+", " ");
+		for (String holder : new String[]{
+			"Morgan Lewis <https://github.com/MESLewis>", "dekvall <https://github.com/dekvall>",
+			"Spedwards <https://github.com/Spedwards>", "Kyle Sergio <https://github.com/ksergio39>",
+			"Bryce Altomare <https://github.com/Twinkiel0ver>", "Kyle Stead <http://github.com/kyle1elyk>",
+			"Arman S <https://github.com/Rman887>", "Magic fTail", "melky <https://github.com/melkypie>",
+			"Seth <Sethtroll3@gmail.com>", "NotFoxtrot <https://github.com/NotFoxtrot>", "2018 Abex", "2019 Abex",
+			"Torkel Velure <https://github.com/TorkelV>", "Tyler <https://github.com/tylerthardy>",
+			"Shaun Dreclin <shaundreclin@gmail.com>"})
+		{
+			assertTrue(holder + " is not named in THIRD_PARTY_NOTICES.md", notices.contains(holder));
 		}
 	}
 }
