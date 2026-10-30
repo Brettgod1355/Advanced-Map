@@ -329,6 +329,17 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 	}
 
 	/**
+	 * The client lost focus: the releases of the keys held now go to another window, and the game forgets its held
+	 * keys too, so nothing is owed either way.
+	 */
+	@Override
+	public void focusLost()
+	{
+		pressedHere.clear();
+		pressedInGame.clear();
+	}
+
+	/**
 	 * The letter or digit a key was pressed as when RuneLite's Key Remapping plugin, whose listener runs before this
 	 * one, had turned it into a camera, F or other key: it changes the key code, drops the character and eats the
 	 * typed event that follows, since the game's chat is not typed into; the extended key code still names the key.

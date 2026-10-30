@@ -306,4 +306,23 @@ public class MapInputTest
 		input.keyPressed(shiftLater);
 		assertFalse(shiftLater.isConsumed());
 	}
+
+	@Test
+	public void aReleaseThatWentToAnotherWindowIsNotWaitedFor()
+	{
+		Stub plugin = new Stub();
+		plugin.typing = true;
+		MapInput input = new MapInput(plugin, () -> 1280, () -> 800);
+		// Shift held for a capital, another window takes the focus, Shift released there: the map would otherwise eat
+		// the release of the next Shift the game is given
+		input.keyPressed(key(KeyEvent.KEY_PRESSED, KeyEvent.VK_SHIFT, KeyEvent.SHIFT_DOWN_MASK));
+		input.focusLost();
+		plugin.typing = false;
+		KeyEvent pressed = key(KeyEvent.KEY_PRESSED, KeyEvent.VK_SHIFT, KeyEvent.SHIFT_DOWN_MASK);
+		input.keyPressed(pressed);
+		assertFalse(pressed.isConsumed());
+		KeyEvent released = key(KeyEvent.KEY_RELEASED, KeyEvent.VK_SHIFT, 0);
+		input.keyReleased(released);
+		assertFalse("the game had the press, it gets the release", released.isConsumed());
+	}
 }
