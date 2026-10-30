@@ -88,6 +88,11 @@ class RegionImages
 	private final Set<Integer> absent = ConcurrentHashMap.newKeySet();
 	/** Floors a draw failed on while a smaller picture of them exists: that picture stays, and they are not asked again. */
 	private final Set<Integer> failed = ConcurrentHashMap.newKeySet();
+	/** Floors shown from disk whose check could not read the game's data yet: checked again, one a second, while shown. */
+	private final Set<Integer> recheck = ConcurrentHashMap.newKeySet();
+	private volatile long recheckedAt;
+	/** How often a floor whose check found the cache not ready is checked again. */
+	static final long RECHECK_NANOS = 1_000_000_000L;
 	private final Set<Long> queued = ConcurrentHashMap.newKeySet();
 	private volatile Set<Integer> wanted = Collections.emptySet();
 	/** Asked for besides what is on screen: the regions a dungeon preview shows or looks through. */
@@ -201,8 +206,37 @@ class RegionImages
 	 */
 	void request(int plane, Collection<Integer> regionIds, Level level)
 	{
-		wanted = keys(plane, regionIds);
+		Set<Integer> keys = keys(plane, regionIds);
+		wanted = keys;
 		queue(plane, regionIds, level);
+		retryCheck(keys);
+	}
+
+	/**
+	 * Checks again one floor on screen whose check found the client's cache not ready: a floor shown from disk (or
+	 * saved as empty) is otherwise never compared with the game's data again this session, since its picture stays
+	 * in memory and nothing draws it anew. One a second, so a cache still downloading is not asked every paint.
+	 */
+	private void retryCheck(Set<Integer> onScreen)
+	{
+		if (recheck.isEmpty())
+		{
+			return;
+		}
+		long now = System.nanoTime();
+		if (now - recheckedAt < RECHECK_NANOS)
+		{
+			return;
+		}
+		for (int key : onScreen)
+		{
+			if (recheck.remove(key))
+			{
+				recheckedAt = now;
+				checkLater(key);
+				return;
+			}
+		}
 	}
 
 	/**
@@ -488,7 +522,8 @@ class RegionImages
 		}
 		catch (CacheNotReadyException e)
 		{
-			// asked again next time the floor is shown from disk
+			// checked again while the floor is on screen (retryCheck)
+			recheck.add(key);
 		}
 		catch (RuntimeException e)
 		{

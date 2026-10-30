@@ -98,4 +98,33 @@ public class RegionImagesRetryTest
 		assertTrue(settle(images, RegionImages.Level.FULL, 500));
 		assertTrue("not asked again every paint", source.draws.get() == draws);
 	}
+
+	@Test
+	public void aSavedFloorWhoseCheckFoundTheCacheNotReadyIsCheckedAgainWhileShown() throws Exception
+	{
+		// a picture saved from older game data (hash 1); the game's data has changed since (hash 2)
+		MapStore store = store();
+		java.awt.image.BufferedImage full = new java.awt.image.BufferedImage(256, 256,
+			java.awt.image.BufferedImage.TYPE_INT_ARGB);
+		store.save(KEY, 1L, full, RegionImages.shrink(full, 4));
+		RegionImagesCacheTest.Flat source = new RegionImagesCacheTest.Flat();
+		source.hash = 2;
+		source.notReady = true;
+		RegionImages images = new RegionImages(source, executor, new MapIcons());
+		images.setStore(store);
+		// shown from disk at once; the check behind it finds the client has not got the region yet
+		assertTrue(settle(images, RegionImages.Level.SMALL, 10_000));
+		assertNotNull(images.get(0, REGION, RegionImages.Level.SMALL));
+		assertTrue(source.draws.get() == 0);
+		// the client downloads it: while the floor is on screen, the check runs again and the stale picture is redrawn
+		source.notReady = false;
+		boolean redrawn = false;
+		for (int i = 0; i < 600 && !redrawn; i++)
+		{
+			images.request(0, Collections.singletonList(REGION), RegionImages.Level.SMALL);
+			redrawn = source.draws.get() > 0;
+			TimeUnit.MILLISECONDS.sleep(10);
+		}
+		assertTrue("the saved picture must be compared with the game's data once it can be", redrawn);
+	}
 }
