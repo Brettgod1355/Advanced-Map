@@ -80,4 +80,22 @@ public class RegionImagesRetryTest
 			// put back in the queue
 		}
 	}
+
+	@Test
+	public void aFloorWithAPictureKeepsItWhenABiggerDrawFails() throws Exception
+	{
+		RegionImagesCacheTest.Flat source = new RegionImagesCacheTest.Flat();
+		RegionImages images = new RegionImages(source, executor, new MapIcons());
+		assertTrue(settle(images, RegionImages.Level.SMALL, 10_000));
+		assertNotNull(images.get(0, REGION, RegionImages.Level.SMALL));
+		// zoomed in: the bigger picture's read fails (an error inside the client's read, a damaged file): the small
+		// picture must stay on screen, not give way to sea for the session, and the failure is not retried each paint
+		source.failWith = new IllegalStateException("the client's read failed");
+		assertTrue(settle(images, RegionImages.Level.FULL, 10_000));
+		assertFalse("a floor that was drawn is not one the game has nothing for", images.isAbsent(0, REGION));
+		assertNotNull(images.get(0, REGION, RegionImages.Level.FULL));
+		int draws = source.draws.get();
+		assertTrue(settle(images, RegionImages.Level.FULL, 500));
+		assertTrue("not asked again every paint", source.draws.get() == draws);
+	}
 }

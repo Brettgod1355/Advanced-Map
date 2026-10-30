@@ -86,6 +86,8 @@ class RegionImages
 	private static final Drawn NOTHING = new Drawn(null, null);
 	private final Map<Level, Map<Integer, BufferedImage>> images = new ConcurrentHashMap<>();
 	private final Set<Integer> absent = ConcurrentHashMap.newKeySet();
+	/** Floors a draw failed on while a smaller picture of them exists: that picture stays, and they are not asked again. */
+	private final Set<Integer> failed = ConcurrentHashMap.newKeySet();
 	private final Set<Long> queued = ConcurrentHashMap.newKeySet();
 	private volatile Set<Integer> wanted = Collections.emptySet();
 	/** Asked for besides what is on screen: the regions a dungeon preview shows or looks through. */
@@ -261,7 +263,7 @@ class RegionImages
 	/** Asks for one floor's picture unless it is there or asked for. False when the plugin is stopping. */
 	private boolean queue(int key, Level level)
 	{
-		if (isAbsent(plane(key), region(key)) || images.get(level).containsKey(key))
+		if (isAbsent(plane(key), region(key)) || failed.contains(key) || images.get(level).containsKey(key))
 		{
 			return true;
 		}
@@ -310,7 +312,15 @@ class RegionImages
 		catch (RuntimeException e)
 		{
 			log.debug("could not draw region {} floor {}", region(key), plane(key), e);
-			absent.add(key);
+			// "the game has nothing here" only when nothing of it was ever drawn: a picture there is stays on screen
+			if (get(plane(key), region(key), Level.SMALL) == null)
+			{
+				absent.add(key);
+			}
+			else
+			{
+				failed.add(key);
+			}
 		}
 		finally
 		{
