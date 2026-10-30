@@ -32,4 +32,15 @@ public class PluginStateTest
 		assertFalse(plugin.editor().isOpen());
 		assertFalse(plugin.search().isFocused());
 	}
+
+	@Test
+	public void aMapAlreadyInItsWindowIsShownThereAgainNeverOverTheGameAsWell()
+	{
+		// opened on the login screen (so in the window), then asked for again after logging in by the orb or another
+		// plugin: the window stays the one map; two maps painted by one painter from two threads is what AM-26 rules out
+		assertTrue(AdvancedMapPlugin.opensInWindow(true, false, true));
+		assertTrue(AdvancedMapPlugin.opensInWindow(false, true, true));
+		assertTrue("no overlay is drawn on the login screen", AdvancedMapPlugin.opensInWindow(false, false, false));
+		assertFalse(AdvancedMapPlugin.opensInWindow(false, false, true));
+	}
 }

@@ -2216,8 +2216,7 @@ public class AdvancedMapPlugin extends Plugin
 				viewport.setZoom(zoom);
 			}
 			boolean wasOpen = mapOpen || windowOpen;
-			// RuneLite draws overlays only while logged in, so on the login screen the map opens in its window
-			if (config.popOut() || client.getGameState() != GameState.LOGGED_IN)
+			if (opensInWindow(windowOpen, config.popOut(), client.getGameState() == GameState.LOGGED_IN))
 			{
 				windowOpen = true;
 				SwingUtilities.invokeLater(this::showWindow);
@@ -2231,6 +2230,17 @@ public class AdvancedMapPlugin extends Plugin
 				postState(true);
 			}
 		});
+	}
+
+	/**
+	 * Whether the map opens (or is shown again) in its window rather than over the game: when it is already in its
+	 * window (opened on the login screen, say, and asked for again after logging in: never both at once, since the
+	 * two paint with one painter and would both take the keys), when the setting says so, and on the login screen,
+	 * where RuneLite draws no overlay.
+	 */
+	static boolean opensInWindow(boolean windowOpen, boolean popOut, boolean loggedIn)
+	{
+		return windowOpen || popOut || !loggedIn;
 	}
 
 	/** Reads the place names in the background, once; again next time if the client had no world map data yet. */
