@@ -193,7 +193,10 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 			return e;
 		}
 		plugin.touched();
-		if (dragging)
+		// the drag (and a click made of it) is the left button's: another button let go meanwhile (a right click on
+		// the map during a drag) ends neither
+		boolean endsDrag = dragging && (e.getButton() == MouseEvent.BUTTON1 || e.getButton() == MouseEvent.NOBUTTON);
+		if (endsDrag)
 		{
 			plugin.setDragging(false);
 		}
@@ -210,11 +213,14 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 			dragging = false;
 			return e;
 		}
+		if (!endsDrag)
+		{
+			return e;
+		}
 		java.awt.Rectangle map = map();
 		int x = e.getX() - map.x;
 		int y = e.getY() - map.y;
-		if (dragging && Math.abs(x - pressX) <= AdvancedMapPlugin.CLICK_SLOP
-			&& Math.abs(y - pressY) <= AdvancedMapPlugin.CLICK_SLOP)
+		if (Math.abs(x - pressX) <= AdvancedMapPlugin.CLICK_SLOP && Math.abs(y - pressY) <= AdvancedMapPlugin.CLICK_SLOP)
 		{
 			plugin.leftClick(x, y, map.width, map.height);
 		}

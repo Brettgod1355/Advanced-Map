@@ -108,8 +108,23 @@ public class MapInputTest
 			typingKeys.add(keyCode);
 		}
 
+		boolean drag;
+		int leftClicks;
+
 		@Override
 		void setDragging(boolean on)
+		{
+			drag = on;
+		}
+
+		@Override
+		void leftClick(int x, int y, int width, int height)
+		{
+			leftClicks++;
+		}
+
+		@Override
+		void rightClick(int x, int y, int width, int height)
 		{
 		}
 
@@ -490,5 +505,23 @@ public class MapInputTest
 		MouseEvent release = releaseWith(10, 10, MouseEvent.BUTTON1);
 		input.mouseReleased(release);
 		assertFalse("a release the map has no press for is the game's", release.isConsumed());
+	}
+
+	@Test
+	public void aRightClickOnTheMapDuringADragNeitherEndsTheDragNorClicks()
+	{
+		Stub plugin = new Stub();
+		MapInput input = new MapInput(plugin, () -> 1280, () -> 800);
+		input.mousePressed(pressWith(400, 300, MouseEvent.BUTTON1, MouseEvent.BUTTON1_DOWN_MASK));
+		assertTrue(plugin.drag);
+		input.mousePressed(pressWith(402, 301, MouseEvent.BUTTON3, MouseEvent.BUTTON1_DOWN_MASK | MouseEvent.BUTTON3_DOWN_MASK));
+		MouseEvent right = releaseWith(402, 301, MouseEvent.BUTTON3);
+		input.mouseReleased(right);
+		assertTrue("the right release is the map's", right.isConsumed());
+		assertTrue("the left button still drags", plugin.drag);
+		assertEquals("and no left click is made of the right release", 0, plugin.leftClicks);
+		input.mouseReleased(releaseWith(401, 300, MouseEvent.BUTTON1));
+		assertFalse(plugin.drag);
+		assertEquals("the left release, close to its press, is the click", 1, plugin.leftClicks);
 	}
 }
