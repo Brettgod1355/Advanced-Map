@@ -92,7 +92,10 @@ final class SearchSpots
 		{
 			for (int j = i + 1; j < n; j++)
 			{
-				if (distance(spawns.get(i), spawns.get(j)) <= NEAR)
+				// on the floor each is really on: one moved down from upstairs is not in the area of those below it
+				WorldPoint a = spawns.get(i);
+				WorldPoint b = spawns.get(j);
+				if (distance(a, b) <= NEAR && floors.getOrDefault(a, a.getPlane()).equals(floors.getOrDefault(b, b.getPlane())))
 				{
 					group[root(group, i)] = root(group, j);
 				}
@@ -118,7 +121,8 @@ final class SearchSpots
 		{
 			WorldPoint middle = middle(tiles);
 			MapLabels.Label label = nearestLabel(middle, labels);
-			String key = label == null ? middle.toString() : label.getX() + "," + label.getY() + "," + middle.getPlane();
+			String key = label == null ? middle.toString() : label.getX() + "," + label.getY() + ","
+				+ floors.getOrDefault(middle, middle.getPlane());
 			named.computeIfAbsent(key, k -> new ArrayList<>()).addAll(tiles);
 			names.put(key, label == null ? middle.getX() + ", " + middle.getY() : String.join(" ", label.getLines()));
 		}

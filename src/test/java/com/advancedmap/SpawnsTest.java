@@ -74,7 +74,7 @@ public class SpawnsTest
 	{
 		// the moved tiles keep a floor above the one they are shown on (the generator moves them down only): 228 of the
 		// 388 monster and NPC tiles the 2026-10-29 check found over no ground (the others have ground only above, or none),
-		// and 12 of the items on the ground
+		// and 12 of the items on the ground; two that landed on a tile of their own on the floor below are that tile
 		Spawns.load();
 		int moved = 0;
 		for (Spawns.Creature creature : Spawns.all())
@@ -85,6 +85,23 @@ public class SpawnsTest
 				moved++;
 			}
 		}
-		assertEquals(240, moved);
+		assertEquals(238, moved);
+	}
+
+	@Test
+	public void spawnsMovedDownAreAnAreaOfTheirOwnBesideThoseOnTheGround()
+	{
+		// gnomes in the Stronghold: two on the ground, one on a platform above them shown on the ground
+		WorldPoint below = new WorldPoint(2450, 3490, 0);
+		WorldPoint beside = new WorldPoint(2452, 3490, 0);
+		WorldPoint platform = new WorldPoint(2451, 3492, 0);
+		List<SearchSpots.Area> areas = SearchSpots.areas(java.util.Arrays.asList(below, beside, platform), below,
+			Collections.emptyList(), Collections.singletonMap(platform, 1));
+		assertEquals(2, areas.size());
+		SearchSpots.Area ground = areas.stream().filter(area -> area.getFloor() == 0).findFirst().orElse(null);
+		SearchSpots.Area up = areas.stream().filter(area -> area.getFloor() == 1).findFirst().orElse(null);
+		assertEquals(2, ground.getCount());
+		assertEquals(1, up.getCount());
+		assertEquals(platform, up.getPoint());
 	}
 }
