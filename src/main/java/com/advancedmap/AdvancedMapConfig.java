@@ -161,7 +161,7 @@ public interface AdvancedMapConfig extends Config
 	)
 	default boolean multiCombat()
 	{
-		return true;
+		return false;
 	}
 
 	@ConfigItem(

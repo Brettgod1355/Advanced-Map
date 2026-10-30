@@ -30,7 +30,8 @@ A full-screen world map for RuneLite, drawn from the game's own map data with sm
   folder, read again whenever the map opens); turn "Share markers between accounts" off to keep each account's own.
 - **Other plugins' markers**: a clue scroll's spot, Quest Helper's next step and other plugins' world map markers
   show on this map as well (RuneLite's own World Map plugin's are left out: Advanced Map has those icons itself).
-- **Multi-combat areas**, in the Wilderness and everywhere else, tinted red with a solid edge when zoomed in.
+- **Multi-combat areas** (off by default), in the Wilderness and everywhere else, tinted red with a solid edge when
+  zoomed in.
 - **Farming patches**: a dot on each patch icon, green ready, yellow growing, red diseased or dead, gray empty; click
   one for each patch's crop and when it is ready. Read from what RuneLite's Time Tracking plugin saved.
 - **Slayer task** (off by default): every spawn of your task's monsters marked, with how many are left, from the
