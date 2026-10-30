@@ -38,10 +38,13 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 	/** A press began on the box (the map or its frame): its drags and release are the map's too. */
 	private boolean held;
 	/**
-	 * The keys whose press the map took: their release is the map's too, whatever is typed into by then, so the game
-	 * never gets a release without its press (it would keep the key as held: a camera key, Shift) or the reverse.
+	 * The keys whose press the map took: their repeats (a held key is pressed again and again, with no release
+	 * between) and their release are the map's too, whatever is typed into by then, so the game never gets a release
+	 * without its press (it would keep the key as held: a camera key, Shift) or the reverse.
 	 */
 	private final Set<Integer> pressedHere = new HashSet<>();
+	/** The keys whose press went to the game: their repeats and release are the game's, even once a box is typed into. */
+	private final Set<Integer> pressedInGame = new HashSet<>();
 
 	MapInput(AdvancedMapPlugin plugin, IntSupplier width, IntSupplier height)
 	{
@@ -275,6 +278,12 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 	@Override
 	public void keyPressed(KeyEvent e)
 	{
+		int code = e.getKeyCode();
+		if (pressedInGame.contains(code))
+		{
+			// held in the game since before a box was typed into (an arrow turning the camera): the game's still
+			return;
+		}
 		boolean typing = plugin.mapTakesInput() && plugin.typing() && !hasShortcutKey(e);
 		char remapped = typing ? remappedChar(e) : KeyEvent.CHAR_UNDEFINED;
 		if (remapped != KeyEvent.CHAR_UNDEFINED)
@@ -283,7 +292,7 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 		}
 		// Escape is the map's while the mouse is on its box or something of it is open or typed into; else it is the
 		// game's (closing the bank beside a small map)
-		else if (plugin.mapTakesInput() && e.getKeyCode() == KeyEvent.VK_ESCAPE
+		else if (plugin.mapTakesInput() && code == KeyEvent.VK_ESCAPE
 			&& (mouseOnBox() || plugin.typing() || plugin.sideListOpen() || plugin.selection() != null))
 		{
 			plugin.escape();
@@ -291,14 +300,17 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 		else if (typing)
 		{
 			// typing in a search box: keep the keys from the game's chat
-			plugin.typingKey(e.getKeyCode());
+			plugin.typingKey(code);
 		}
-		else
+		else if (!pressedHere.contains(code))
 		{
+			pressedInGame.add(code);
 			return;
 		}
+		// else a repeat of a key the map took, now that it no longer takes keys (Escape held past the close, Shift
+		// held past a click beside the box): still the map's, as its release will be
 		plugin.touched();
-		pressedHere.add(e.getKeyCode());
+		pressedHere.add(code);
 		e.consume();
 	}
 
@@ -309,6 +321,10 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 		{
 			plugin.touched();
 			e.consume();
+		}
+		else
+		{
+			pressedInGame.remove(e.getKeyCode());
 		}
 	}
 

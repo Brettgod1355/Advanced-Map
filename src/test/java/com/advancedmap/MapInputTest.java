@@ -270,4 +270,40 @@ public class MapInputTest
 		KeyEvent umlaut = new KeyEvent(SOURCE, KeyEvent.KEY_PRESSED, 0, 0, KeyEvent.VK_UNDEFINED, '\u00e4');
 		assertEquals(KeyEvent.CHAR_UNDEFINED, MapInput.remappedChar(umlaut));
 	}
+
+	@Test
+	public void aHeldKeyStaysWhereItsFirstPressWentThroughItsRepeats()
+	{
+		Stub plugin = new Stub();
+		MapInput input = new MapInput(plugin, () -> 1280, () -> 800);
+		// Left held to turn the camera, the search bar clicked meanwhile: the repeats the OS sends while it is held are
+		// the game's too, and so is the release, else the camera keeps turning
+		input.keyPressed(key(KeyEvent.KEY_PRESSED, KeyEvent.VK_LEFT, 0));
+		plugin.typing = true;
+		KeyEvent repeat = key(KeyEvent.KEY_PRESSED, KeyEvent.VK_LEFT, 0);
+		input.keyPressed(repeat);
+		assertFalse("a repeat of the game's key is the game's", repeat.isConsumed());
+		assertTrue("and does not move the search highlight", plugin.typingKeys.isEmpty());
+		KeyEvent released = key(KeyEvent.KEY_RELEASED, KeyEvent.VK_LEFT, 0);
+		input.keyReleased(released);
+		assertFalse(released.isConsumed());
+
+		// Shift held for a capital in the search bar, then a click beside the box (the keys go back to the game) while
+		// it is still held: its repeats and release are the map's, else the game is left with Shift down (plain clicks
+		// on items drop them)
+		KeyEvent shift = key(KeyEvent.KEY_PRESSED, KeyEvent.VK_SHIFT, KeyEvent.SHIFT_DOWN_MASK);
+		input.keyPressed(shift);
+		assertTrue(shift.isConsumed());
+		plugin.typing = false;
+		KeyEvent shiftAgain = key(KeyEvent.KEY_PRESSED, KeyEvent.VK_SHIFT, KeyEvent.SHIFT_DOWN_MASK);
+		input.keyPressed(shiftAgain);
+		assertTrue("a repeat of the map's key is the map's", shiftAgain.isConsumed());
+		KeyEvent shiftUp = key(KeyEvent.KEY_RELEASED, KeyEvent.VK_SHIFT, 0);
+		input.keyReleased(shiftUp);
+		assertTrue(shiftUp.isConsumed());
+		// pressed anew: the game's
+		KeyEvent shiftLater = key(KeyEvent.KEY_PRESSED, KeyEvent.VK_SHIFT, KeyEvent.SHIFT_DOWN_MASK);
+		input.keyPressed(shiftLater);
+		assertFalse(shiftLater.isConsumed());
+	}
 }
