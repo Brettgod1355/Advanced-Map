@@ -68,7 +68,11 @@ final class MapStore
 		return store;
 	}
 
-	/** Deletes what an older format of the saved map left (a whole map, 100 MB or more), which nothing reads again. */
+	/**
+	 * Deletes what an older format of the saved map left (a whole map, 100 MB or more), which nothing reads again. A
+	 * folder that cannot be deleted (a file in it open in another client, or read-only, on Windows) is left for next
+	 * time: it must not keep the current one from opening.
+	 */
 	private static void forgetOlderVersions(Filepath pluginFolder) throws IOException
 	{
 		if (!pluginFolder.exists())
@@ -83,7 +87,14 @@ final class MapStore
 		}
 		for (Filepath old : older)
 		{
-			old.deleteRecursively();
+			try
+			{
+				old.deleteRecursively();
+			}
+			catch (IOException e)
+			{
+				log.warn("could not delete the older saved map {}", old, e);
+			}
 		}
 	}
 
