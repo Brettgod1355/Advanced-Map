@@ -66,4 +66,23 @@ public class PluginStateTest
 		}
 		assertEquals("one in startUp, before the painter exists, and the one in setFollowing", 2, count);
 	}
+
+	@Test
+	public void aStartForgetsTheListSelectionAndSearchOfBeforeTheStop()
+	{
+		// RuneLite keeps the plugin object: a fairy ring's list, a selected marker and a typed search survived a stop,
+		// while the lines and marks they went with did not
+		AdvancedMapPlugin plugin = new AdvancedMapPlugin();
+		plugin.sideList().open("Fairy ring", java.util.Collections.singletonList(
+			new SideList.Row("AIQ", null, null, null, new WorldPoint(2996, 3114, 0), null)), "ring");
+		plugin.pins().select(new MapPins.Pin(new WorldPoint(3222, 3218, 0), null, null, "Home", "Your marker", null,
+			false));
+		plugin.search().type('v', java.util.Collections.emptyList(), null);
+		assertTrue(plugin.sideListOpen());
+		assertEquals("v", plugin.search().query());
+		plugin.forgetWhatWasShown();
+		assertFalse(plugin.sideListOpen());
+		assertEquals("", plugin.search().query());
+		assertTrue(plugin.pins().selected() == null);
+	}
 }

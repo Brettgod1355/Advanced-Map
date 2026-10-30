@@ -209,6 +209,7 @@ public class AdvancedMapPlugin extends Plugin
 		slayerShown = null;
 		extrasRead = 0;
 		farmingRead = 0;
+		forgetWhatWasShown();
 		// RuneLite starts a plugin on the Swing thread: the bundled tables (845 KB, a quarter second) are read off it;
 		// everything reads them through fields that are empty until then, so a map opened at once shows them a moment late
 		executor.execute(this::loadTables);
@@ -280,6 +281,17 @@ public class AdvancedMapPlugin extends Plugin
 		{
 			clientToolbar.addNavigation(button);
 		}
+	}
+
+	/**
+	 * Closes the side list, drops the selected marker and empties the search: RuneLite keeps the plugin object between
+	 * a stop and a start, and these live in it, while the lines and marks they belonged to went with the stop.
+	 */
+	void forgetWhatWasShown()
+	{
+		sideList.close();
+		pins.select(null);
+		search.clear();
 	}
 
 	/** Reads every bundled table; the search's last, so that its index is built again with what the others read. */
@@ -794,6 +806,16 @@ public class AdvancedMapPlugin extends Plugin
 	MapSearch search()
 	{
 		return search;
+	}
+
+	SideList sideList()
+	{
+		return sideList;
+	}
+
+	MapPins pins()
+	{
+		return pins;
 	}
 
 	MarkerEditor editor()
