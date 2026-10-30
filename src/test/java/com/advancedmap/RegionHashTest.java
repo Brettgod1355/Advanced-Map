@@ -38,6 +38,8 @@ public class RegionHashTest
 	{
 		final Map<Integer, Map<Integer, Map<Integer, byte[]>>> indexes = new HashMap<>();
 		int[] scenery = {0xFF00FF00};
+		/** Thrown by the next read of the config index, once, as the client's own cache code might. */
+		RuntimeException failNextConfigRead;
 
 		void put(int index, int group, int file, byte[] bytes)
 		{
@@ -65,6 +67,12 @@ public class RegionHashTest
 		@Override
 		public IndexDataBase getIndexConfig()
 		{
+			RuntimeException fail = failNextConfigRead;
+			if (fail != null)
+			{
+				failNextConfigRead = null;
+				throw fail;
+			}
 			return getIndex(2);
 		}
 
@@ -300,5 +308,45 @@ public class RegionHashTest
 	{
 		assertEquals(hash(cache -> { }), hash(cache -> cache.put(2, OBJECTS, FAR_TREE, new byte[]{14, 2, 0})));
 		assertEquals(hash(cache -> { }), hash(cache -> cache.put(MAPS, 52 << 8 | 50, 0, terrain(2))));
+	}
+
+	@Test
+	public void aFailedReadOfTheTablesIsTriedAgainButOneTheyCannotBeDecodedFromIsNot()
+	{
+		// the client's cache throwing once while it reads (still updating, say) is not a format this plugin cannot read
+		Cache cache = world();
+		cache.failNextConfigRead = new IllegalStateException("the client's read failed");
+		ClientMapSource source = cache.source();
+		try
+		{
+			source.regionHash(50, 50);
+			org.junit.Assert.fail("the read's own failure is passed on");
+		}
+		catch (MapDataException e)
+		{
+			org.junit.Assert.fail("a failed read is not a changed format: " + e);
+		}
+		catch (IllegalStateException e)
+		{
+			// as thrown
+		}
+		assertEquals("read again, and it works", hash(c -> { }), source.regionHash(50, 50));
+
+		// a ground type whose bytes stop half way: that is a format the decoder does not know, for the session
+		Cache changed = world();
+		changed.put(2, UNDERLAYS, 1, new byte[]{1, 0x30});
+		ClientMapSource broken = changed.source();
+		for (int i = 0; i < 2; i++)
+		{
+			try
+			{
+				broken.regionHash(50, 50);
+				org.junit.Assert.fail("a table that cannot be decoded draws nothing");
+			}
+			catch (MapDataException e)
+			{
+				// every read after the first throws it at once
+			}
+		}
 	}
 }

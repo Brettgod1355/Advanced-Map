@@ -255,20 +255,9 @@ class ClientMapSource implements MapSource
 			{
 				throw dataFailure;
 			}
-			try
-			{
-				decodeTables();
-			}
-			catch (CacheNotReadyException | java.util.concurrent.CancellationException e)
-			{
-				throw e;
-			}
-			catch (RuntimeException e)
-			{
-				// read again next session, with a plugin that knows the new format
-				dataFailure = new MapDataException(e);
-				throw dataFailure;
-			}
+			// a failure of the read itself (the client's cache, its thread) is tried again on the next read; only what
+			// the decoders cannot make sense of is a format this plugin does not know
+			decodeTables();
 		}
 	}
 
@@ -287,27 +276,36 @@ class ClientMapSource implements MapSource
 			return out;
 		});
 		tablesCrc = crc(tables.get(UNDERLAYS), tables.get(OVERLAYS), tables.get(-TEXTURES));
-		tables.get(UNDERLAYS).forEach((id, bytes) -> underlays.put(id, new UnderlayLoader().load(id, bytes)));
-		tables.get(OVERLAYS).forEach((id, bytes) -> overlays.put(id, new OverlayLoader().load(id, bytes)));
-		tables.get(-TEXTURES).forEach((id, bytes) -> textures.put(id, textureColor(bytes)));
 		Map<Integer, Integer> areaSprites = new HashMap<>();
-		tables.get(AREAS).forEach((id, bytes) ->
+		try
 		{
-			AreaDefinition area = new AreaLoader().load(bytes, id);
-			areaCategories.put(id, area.category);
-			if (area.spriteId < 0)
+			tables.get(UNDERLAYS).forEach((id, bytes) -> underlays.put(id, new UnderlayLoader().load(id, bytes)));
+			tables.get(OVERLAYS).forEach((id, bytes) -> overlays.put(id, new OverlayLoader().load(id, bytes)));
+			tables.get(-TEXTURES).forEach((id, bytes) -> textures.put(id, textureColor(bytes)));
+			tables.get(AREAS).forEach((id, bytes) ->
 			{
-				areaIcons.put(id, Optional.empty());
-				if (area.name != null && !area.name.isEmpty())
+				AreaDefinition area = new AreaLoader().load(bytes, id);
+				areaCategories.put(id, area.category);
+				if (area.spriteId < 0)
 				{
-					labelAreas.put(id, area);
+					areaIcons.put(id, Optional.empty());
+					if (area.name != null && !area.name.isEmpty())
+					{
+						labelAreas.put(id, area);
+					}
 				}
-			}
-			else
-			{
-				areaSprites.put(id, area.spriteId);
-			}
-		});
+				else
+				{
+					areaSprites.put(id, area.spriteId);
+				}
+			});
+		}
+		catch (RuntimeException e)
+		{
+			// read again next session, with a plugin that knows the new format
+			dataFailure = new MapDataException(e);
+			throw dataFailure;
+		}
 		Map<Integer, MapSprite[]> sprites = reader.read(client ->
 		{
 			Map<Integer, MapSprite[]> out = new HashMap<>();
