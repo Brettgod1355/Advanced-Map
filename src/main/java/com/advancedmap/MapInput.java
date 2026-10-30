@@ -35,8 +35,11 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 	private int pressX;
 	private int pressY;
 	private boolean dragging;
-	/** A press began on the box (the map or its frame): its drags and release are the map's too. */
-	private boolean held;
+	/**
+	 * The buttons (bit {@code 1 << button}) whose press began on the box (the map or its frame): their drags and
+	 * release are the map's too; another button pressed on the game beside it meanwhile is the game's, release and all.
+	 */
+	private int heldButtons;
 	/**
 	 * The keys whose press the map took: their repeats (a held key is pressed again and again, with no release
 	 * between) and their release are the map's too, whatever is typed into by then, so the game never gets a release
@@ -102,7 +105,7 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 		// whatever the mouse or keys do on the map, it is drawn again at once; what happens on the game beside it
 		// is the game's and draws nothing
 		plugin.touched();
-		held = true;
+		heldButtons |= 1 << e.getButton();
 		e.consume();
 		if (part != GameBox.Part.MAP)
 		{
@@ -148,7 +151,7 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 	public MouseEvent mouseDragged(MouseEvent e)
 	{
 		mouse = e.getPoint();
-		if (!plugin.mapTakesInput() || !held)
+		if (!plugin.mapTakesInput() || heldButtons == 0)
 		{
 			return e;
 		}
@@ -179,10 +182,17 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 	@Override
 	public MouseEvent mouseReleased(MouseEvent e)
 	{
-		if (held)
+		// a release names its button; one that names none (never seen from AWT) lets go of all the map holds
+		int bit = e.getButton() == MouseEvent.NOBUTTON ? heldButtons : 1 << e.getButton();
+		boolean wasHeld = (heldButtons & bit) != 0;
+		heldButtons &= ~bit;
+		if (!wasHeld)
 		{
-			plugin.touched();
+			// the game had the press (beside the box, or before the map opened): its release is the game's, and
+			// nothing of the map's (a frame drag with the other button) ends with it
+			return e;
 		}
+		plugin.touched();
 		if (dragging)
 		{
 			plugin.setDragging(false);
@@ -192,15 +202,10 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 		{
 			plugin.saveGameBox(moved);
 		}
-		boolean wasHeld = held;
-		held = false;
-		if (wasHeld)
-		{
-			// the press was the map's, so its release is too, even when the map closed between them (Escape with the
-			// button down, a logout): the game never gets a release without its press
-			e.consume();
-		}
-		if (!plugin.mapTakesInput() || !wasHeld)
+		// the press was the map's, so its release is too, even when the map closed between them (Escape with the
+		// button down, a logout): the game never gets a release without its press
+		e.consume();
+		if (!plugin.mapTakesInput())
 		{
 			dragging = false;
 			return e;
@@ -214,7 +219,6 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 			plugin.leftClick(x, y, map.width, map.height);
 		}
 		dragging = false;
-		e.consume();
 		return e;
 	}
 
@@ -443,7 +447,7 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 	/** Keeps an event on the box (or of a press that began there) from the game. */
 	private MouseEvent swallow(MouseEvent e)
 	{
-		if (plugin.mapTakesInput() && (held || partAt(e) != GameBox.Part.OUTSIDE))
+		if (plugin.mapTakesInput() && (heldButtons != 0 || partAt(e) != GameBox.Part.OUTSIDE))
 		{
 			e.consume();
 		}

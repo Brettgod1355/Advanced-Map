@@ -114,6 +114,11 @@ public class MapInputTest
 		}
 
 		@Override
+		void saveGameBox(String bounds)
+		{
+		}
+
+		@Override
 		MapViewport viewport()
 		{
 			return MapArea.SURFACE.newViewport();
@@ -400,5 +405,46 @@ public class MapInputTest
 		input.keyTyped(aTyped);
 		assertTrue("the typed event of a press the map took is the map's", aTyped.isConsumed());
 		assertEquals("a", plugin.typed.toString());
+	}
+
+	static MouseEvent pressWith(int x, int y, int button, int modifiers)
+	{
+		return new MouseEvent(SOURCE, MouseEvent.MOUSE_PRESSED, 0, modifiers, x, y, 1, false, button);
+	}
+
+	static MouseEvent releaseWith(int x, int y, int button)
+	{
+		return new MouseEvent(SOURCE, MouseEvent.MOUSE_RELEASED, 0, 0, x, y, 1, false, button);
+	}
+
+	@Test
+	public void aButtonPressedOnTheGameWhileAnotherHoldsTheMapKeepsItsOwnRelease()
+	{
+		Stub plugin = new Stub();
+		MapInput input = new MapInput(plugin, () -> 1280, () -> 800);
+		// the left button drags the map; the right button clicks an inventory item beside the box meanwhile: the
+		// right release is the game's, the left one the map's, whichever comes first
+		assertTrue(input.mousePressed(pressWith(400, 300, MouseEvent.BUTTON1, MouseEvent.BUTTON1_DOWN_MASK)).isConsumed());
+		MouseEvent rightPress = pressWith(10, 10, MouseEvent.BUTTON3, MouseEvent.BUTTON1_DOWN_MASK | MouseEvent.BUTTON3_DOWN_MASK);
+		input.mousePressed(rightPress);
+		assertFalse(rightPress.isConsumed());
+		MouseEvent rightRelease = releaseWith(10, 10, MouseEvent.BUTTON3);
+		input.mouseReleased(rightRelease);
+		assertFalse("the game had the press, it gets the release", rightRelease.isConsumed());
+		// let go after a drag (farther than a click's wobble), so no click is made of it
+		MouseEvent leftRelease = releaseWith(440, 340, MouseEvent.BUTTON1);
+		input.mouseReleased(leftRelease);
+		assertTrue(leftRelease.isConsumed());
+
+		// the frame dragged with the left button is not let go of by the right button's release on the game
+		assertTrue(input.mousePressed(pressWith(400, 102, MouseEvent.BUTTON1, MouseEvent.BUTTON1_DOWN_MASK)).isConsumed());
+		assertTrue(plugin.box.isGrabbed());
+		input.mousePressed(pressWith(10, 10, MouseEvent.BUTTON3, MouseEvent.BUTTON1_DOWN_MASK | MouseEvent.BUTTON3_DOWN_MASK));
+		input.mouseReleased(releaseWith(10, 10, MouseEvent.BUTTON3));
+		assertTrue("the frame stays grabbed", plugin.box.isGrabbed());
+		MouseEvent frameRelease = releaseWith(400, 102, MouseEvent.BUTTON1);
+		input.mouseReleased(frameRelease);
+		assertTrue(frameRelease.isConsumed());
+		assertFalse(plugin.box.isGrabbed());
 	}
 }
