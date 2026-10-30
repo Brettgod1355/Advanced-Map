@@ -365,7 +365,12 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 			plugin.setDragging(false);
 		}
 		dragging = false;
-		plugin.gameBox().release();
+		// a frame drag cut short: the box stays where it was dragged to, and is saved there
+		String moved = plugin.gameBox().release();
+		if (moved != null)
+		{
+			plugin.saveGameBox(moved);
+		}
 	}
 
 	/**

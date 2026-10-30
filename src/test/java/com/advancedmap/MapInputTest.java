@@ -113,9 +113,12 @@ public class MapInputTest
 		{
 		}
 
+		String savedBox;
+
 		@Override
 		void saveGameBox(String bounds)
 		{
+			savedBox = bounds;
 		}
 
 		@Override
@@ -480,6 +483,7 @@ public class MapInputTest
 		assertTrue(plugin.box.isGrabbed());
 		input.focusLost();
 		assertFalse("the frame is let go of", plugin.box.isGrabbed());
+		assertTrue("and where it is, saved", plugin.savedBox != null);
 		MouseEvent moved = move(10, 10);
 		input.mouseMoved(moved);
 		assertFalse("moves on the game are the game's again", moved.isConsumed());
