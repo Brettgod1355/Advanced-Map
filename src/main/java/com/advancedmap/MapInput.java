@@ -352,11 +352,27 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 	}
 
 	/**
-	 * The client lost focus: the releases of the keys held now go to another window, and the game forgets its held
-	 * keys too, so nothing is owed either way.
+	 * The client lost focus: the releases of the keys and buttons held now go to another window, and the game forgets
+	 * its held keys too, so nothing is owed either way. Swing thread.
 	 */
 	@Override
 	public void focusLost()
+	{
+		forgetKeys();
+		heldButtons = 0;
+		if (dragging)
+		{
+			plugin.setDragging(false);
+		}
+		dragging = false;
+		plugin.gameBox().release();
+	}
+
+	/**
+	 * The login screen took the keys (RuneLite hands this listener nothing there, releases included): a key held into
+	 * it is not waited for. Swing thread.
+	 */
+	void forgetKeys()
 	{
 		pressedHere.clear();
 		pressedInGame.clear();

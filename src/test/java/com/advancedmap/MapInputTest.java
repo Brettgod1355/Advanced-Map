@@ -447,4 +447,44 @@ public class MapInputTest
 		assertTrue(frameRelease.isConsumed());
 		assertFalse(plugin.box.isGrabbed());
 	}
+
+	@Test
+	public void aKeyHeldIntoTheLoginScreenIsForgotten()
+	{
+		Stub plugin = new Stub();
+		plugin.typing = true;
+		MapInput input = new MapInput(plugin, () -> 1280, () -> 800);
+		// Shift held in the search bar when the connection drops: its release lands on the login screen, which this
+		// listener is not told of, so it would have eaten the first Shift of the next session
+		KeyEvent held = key(KeyEvent.KEY_PRESSED, KeyEvent.VK_SHIFT, KeyEvent.SHIFT_DOWN_MASK);
+		input.keyPressed(held);
+		assertTrue(held.isConsumed());
+		input.forgetKeys();
+		plugin.typing = false;
+		plugin.open = false;
+		KeyEvent pressed = key(KeyEvent.KEY_PRESSED, KeyEvent.VK_SHIFT, KeyEvent.SHIFT_DOWN_MASK);
+		input.keyPressed(pressed);
+		assertFalse(pressed.isConsumed());
+		KeyEvent released = key(KeyEvent.KEY_RELEASED, KeyEvent.VK_SHIFT, 0);
+		input.keyReleased(released);
+		assertFalse(released.isConsumed());
+	}
+
+	@Test
+	public void aPressWhoseReleaseWentToAnotherWindowIsForgotten()
+	{
+		Stub plugin = new Stub();
+		MapInput input = new MapInput(plugin, () -> 1280, () -> 800);
+		// the frame grabbed, then another window takes the focus with the button down: the release goes there
+		assertTrue(input.mousePressed(press(400, 102)).isConsumed());
+		assertTrue(plugin.box.isGrabbed());
+		input.focusLost();
+		assertFalse("the frame is let go of", plugin.box.isGrabbed());
+		MouseEvent moved = move(10, 10);
+		input.mouseMoved(moved);
+		assertFalse("moves on the game are the game's again", moved.isConsumed());
+		MouseEvent release = releaseWith(10, 10, MouseEvent.BUTTON1);
+		input.mouseReleased(release);
+		assertFalse("a release the map has no press for is the game's", release.isConsumed());
+	}
 }

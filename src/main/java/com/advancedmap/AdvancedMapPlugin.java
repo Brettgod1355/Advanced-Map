@@ -636,6 +636,13 @@ public class AdvancedMapPlugin extends Plugin
 				drawn.forget();
 			}
 		}
+		MapInput keys = input;
+		if (keys != null && state == GameState.LOGIN_SCREEN)
+		{
+			// the login screen gets no key events through this listener, the releases of keys held into it included;
+			// the keys' owner is the Swing thread's
+			SwingUtilities.invokeLater(keys::forgetKeys);
+		}
 	}
 
 	@Subscribe
