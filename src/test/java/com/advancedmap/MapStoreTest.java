@@ -230,4 +230,23 @@ public class MapStoreTest
 		again.save(key, 0xABCDL, full, RegionImages.shrink(full, 4));
 		assertEquals(0xFF00FF00, again.load(key, 0xABCDL, MapStore.Kind.FULL).getRGB(1, 1));
 	}
+
+	@Test
+	public void aDamagedSmallPictureTakesTheFloorsFilesWithItSoTheFloorIsDrawnAgain() throws Exception
+	{
+		MapStore store = MapStore.open(root());
+		int key = RegionImages.key(0, 12850);
+		BufferedImage full = new BufferedImage(256, 256, BufferedImage.TYPE_INT_ARGB);
+		store.save(key, 0xABCDL, full, RegionImages.shrink(full, 4));
+		// only the small file is damaged: before, the big one served it (shrunk twice, every time) and the damaged
+		// file stayed on disk for good
+		Filepath small = root().joinSegment("map-v" + MapStore.VERSION).joinSegment(MapStore.name(0, 12850, 0xABCDL,
+			MapStore.Kind.SMALL));
+		small.write(new byte[40]);
+		MapStore again = MapStore.open(root());
+		assertNull(again.load(key, 0xABCDL, MapStore.Kind.SMALL));
+		assertFalse("nothing of the floor is kept, so it is drawn and saved anew", again.has(key));
+		assertNull(again.load(key, 0xABCDL, MapStore.Kind.FULL));
+		assertFalse(small.exists());
+	}
 }

@@ -222,7 +222,13 @@ final class MapStore
 		try (java.io.InputStream in = file.openInputStream())
 		{
 			BufferedImage read = ImageIO.read(in);
-			if (read == null || read.getType() == BufferedImage.TYPE_INT_ARGB)
+			if (read == null)
+			{
+				// not a picture at all (a file zeroed on disk): the reader gives null, not an exception
+				forget(key);
+				return null;
+			}
+			if (read.getType() == BufferedImage.TYPE_INT_ARGB)
 			{
 				return read;
 			}
@@ -237,9 +243,11 @@ final class MapStore
 		}
 		catch (IOException | RuntimeException e)
 		{
-			// a damaged file (most damage is an IOException from the PNG reader, a malformed header can be a
-			// RuntimeException): drawn and saved again, which replaces it
+			// a damaged file (most damage is an IOException from the PNG reader): both of the floor's files go, so it
+			// is drawn and saved again, even when only the small one was damaged (the big one would have served it
+			// through a double shrink every time, and the damaged file would have stayed)
 			log.debug("could not read {}", file, e);
+			forget(key);
 			return null;
 		}
 	}
