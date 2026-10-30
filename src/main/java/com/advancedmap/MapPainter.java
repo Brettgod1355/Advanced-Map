@@ -420,15 +420,16 @@ final class MapPainter
 		{
 			MultiCombat.draw(g, view);
 		}
+		List<MapIcons.Shown> shown = icons.visible(view, area, plane, settings, progress);
+		String bar = barText(view, mouse, loading, window, !shown.isEmpty(), infoOnHover);
 		if (settings.isPlaceNames())
 		{
-			// no name under the buttons, the search box or the bar of text along the bottom
+			// no name under the buttons, the search box or the bar of text along the bottom (as wide as its text)
 			List<Rectangle> taken = new ArrayList<>(buttons(view.width, view.height, window).values());
 			taken.add(search.layout(buttons(view.width, view.height, window), view.width).getBox());
-			taken.add(barBounds(g, view));
+			taken.add(barBounds(g, view, bar));
 			drawLabels(g, view, area, labels.all(), taken);
 		}
-		List<MapIcons.Shown> shown = icons.visible(view, area, plane, settings, progress);
 		drawIcons(g, shown, selection);
 		Map<Farming.Site, List<Farming.Reading>> farms = farming;
 		if (farms != null)
@@ -474,7 +475,7 @@ final class MapPainter
 				drawInfo(g, view, selected, settings, progress, farmingLines(selected.getSpot(), farms));
 			}
 		}
-		drawBar(g, view, mouse, loading, window, !shown.isEmpty(), infoOnHover);
+		drawBar(g, view, bar);
 		Integer slayerArea = settings.isSlayerButton() ? filters.areaOf(IconGroup.SLAYER_MASTER) : null;
 		drawButtons(g, view, area, plane, window, settings, player != null, following, gameMaximized, filters.isOpen(),
 			slayerArea == null ? null : icons.image(slayerArea, false));
@@ -1621,11 +1622,10 @@ final class MapPainter
 		g.setStroke(stroke);
 	}
 
-	private static void drawBar(Graphics2D g, MapViewport.View view, Point mouse, boolean loading, boolean window,
-		boolean icons, boolean hover)
+	/** What the bar along the bottom says: the tile under the mouse, how to use the map, and whether it is drawing. */
+	private static String barText(MapViewport.View view, Point mouse, boolean loading, boolean window, boolean icons,
+		boolean hover)
 	{
-		g.setFont(FontManager.getRunescapeSmallFont());
-		FontMetrics metrics = g.getFontMetrics();
 		StringBuilder text = new StringBuilder();
 		if (mouse != null && mouse.x >= 0 && mouse.y >= 0)
 		{
@@ -1642,18 +1642,26 @@ final class MapPainter
 		{
 			text.append("    Drawing the map...");
 		}
-		Rectangle bar = barBounds(g, view);
-		g.setColor(BAR);
-		g.fillRect(bar.x, bar.y, metrics.stringWidth(text.toString()) + 16, bar.height);
-		g.setColor(TEXT);
-		g.drawString(text.toString(), 8, view.height - 4 - metrics.getDescent());
+		return text.toString();
 	}
 
-	/** The strip along the bottom where the bar's text goes (as wide as the view: its text changes with the mouse). */
-	static Rectangle barBounds(Graphics2D g, MapViewport.View view)
+	private static void drawBar(Graphics2D g, MapViewport.View view, String text)
 	{
-		int barHeight = g.getFontMetrics(FontManager.getRunescapeSmallFont()).getHeight() + 8;
-		return new Rectangle(0, view.height - barHeight, view.width, barHeight);
+		g.setFont(FontManager.getRunescapeSmallFont());
+		FontMetrics metrics = g.getFontMetrics();
+		Rectangle bar = barBounds(g, view, text);
+		g.setColor(BAR);
+		g.fillRect(bar.x, bar.y, bar.width, bar.height);
+		g.setColor(TEXT);
+		g.drawString(text, 8, view.height - 4 - metrics.getDescent());
+	}
+
+	/** Where the bar of {@code text} is drawn along the bottom: its text's width and a little more. */
+	static Rectangle barBounds(Graphics2D g, MapViewport.View view, String text)
+	{
+		FontMetrics metrics = g.getFontMetrics(FontManager.getRunescapeSmallFont());
+		int barHeight = metrics.getHeight() + 8;
+		return new Rectangle(0, view.height - barHeight, metrics.stringWidth(text) + 16, barHeight);
 	}
 
 	private static void drawButtons(Graphics2D g, MapViewport.View view, MapArea area, int plane, boolean window,

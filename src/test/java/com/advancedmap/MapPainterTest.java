@@ -482,15 +482,15 @@ public class MapPainterTest
 		BufferedImage image = new BufferedImage(500, 400, BufferedImage.TYPE_INT_RGB);
 		Graphics2D g = image.createGraphics();
 		g.setFont(FontManager.getRunescapeSmallFont());
-		Rectangle bar = MapPainter.barBounds(g, view);
+		Rectangle bar = MapPainter.barBounds(g, view, "Drag to move, scroll to zoom, Esc to close");
 		assertEquals(0, bar.x);
-		assertEquals(500, bar.width);
+		assertTrue("as wide as its text, not the view", bar.width > 100 && bar.width < 400);
 		assertEquals(400, bar.y + bar.height);
-		// one name in the middle of the view, one on the bar's strip along the bottom
+		// one name in the middle of the view, one on the bar's text along the bottom
 		java.util.List<MapLabels.Label> labels = java.util.Arrays.asList(
 			new MapLabels.Label(java.util.Collections.singletonList("Lumbridge"), 3222, 3218, MapLabels.TOWN, Color.WHITE),
-			new MapLabels.Label(java.util.Collections.singletonList("Swamp"), 3222, (int) view.worldY(bar.y + bar.height / 2),
-				MapLabels.TOWN, Color.WHITE));
+			new MapLabels.Label(java.util.Collections.singletonList("Swamp"), (int) view.worldX(bar.width / 2),
+				(int) view.worldY(bar.y + bar.height / 2), MapLabels.TOWN, Color.WHITE));
 		MapPainter.drawLabels(g, view, MapArea.SURFACE, labels, java.util.Collections.singletonList(bar));
 		g.dispose();
 		boolean middle = false;
