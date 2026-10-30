@@ -325,4 +325,22 @@ public class MapInputTest
 		input.keyReleased(released);
 		assertFalse("the game had the press, it gets the release", released.isConsumed());
 	}
+
+	@Test
+	public void theReleaseOfAPressTheMapTookIsTheMapsEvenAfterTheMapClosed()
+	{
+		Stub plugin = new Stub();
+		MapInput input = new MapInput(plugin, () -> 1280, () -> 800);
+		input.mousePressed(press(400, 300));
+		plugin.open = false;
+		MouseEvent released = new MouseEvent(SOURCE, MouseEvent.MOUSE_RELEASED, 0, 0, 400, 300, 1, false,
+			MouseEvent.BUTTON1);
+		input.mouseReleased(released);
+		assertTrue("the game had no press to release", released.isConsumed());
+		// a release with no press on the map behind it is the game's
+		MouseEvent stray = new MouseEvent(SOURCE, MouseEvent.MOUSE_RELEASED, 0, 0, 400, 300, 1, false,
+			MouseEvent.BUTTON1);
+		input.mouseReleased(stray);
+		assertFalse(stray.isConsumed());
+	}
 }

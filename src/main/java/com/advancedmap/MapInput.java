@@ -192,6 +192,12 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 		}
 		boolean wasHeld = held;
 		held = false;
+		if (wasHeld)
+		{
+			// the press was the map's, so its release is too, even when the map closed between them (Escape with the
+			// button down, a logout): the game never gets a release without its press
+			e.consume();
+		}
 		if (!plugin.mapTakesInput() || !wasHeld)
 		{
 			dragging = false;
