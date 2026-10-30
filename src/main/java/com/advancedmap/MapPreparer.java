@@ -79,9 +79,15 @@ final class MapPreparer
 		iconTodo = null;
 	}
 
+	/** When a floor of a region the client had not downloaded was put back: the next steps rest a while after it. */
+	private volatile long restUntil;
+	/** How long the preparer rests after a region the client has not got, so the client thread is not asked 40 times a second. */
+	static final long REST_NANOS = 1_000_000_000L;
+
 	private synchronized void requeue(int key)
 	{
 		todo.add(key);
+		restUntil = System.nanoTime() + REST_NANOS;
 	}
 
 	/** How many regions' floors are still to prepare; -1 before the list is made. */
@@ -95,7 +101,7 @@ final class MapPreparer
 		try
 		{
 			MapStore store = images.store();
-			if (images.isBusy())
+			if (images.isBusy() || System.nanoTime() - restUntil < 0)
 			{
 				return;
 			}
