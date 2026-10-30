@@ -302,7 +302,7 @@ class RegionImages
 	/** Asks for one floor's picture unless it is there or asked for. False when the plugin is stopping. */
 	private boolean queue(int key, Level level)
 	{
-		if (dataFailed || isAbsent(plane(key), region(key)) || failed.contains(key) || images.get(level).containsKey(key))
+		if (dataFailed.get() || isAbsent(plane(key), region(key)) || failed.contains(key) || images.get(level).containsKey(key))
 		{
 			return true;
 		}
@@ -479,14 +479,14 @@ class RegionImages
 	}
 
 	/** True once the game's data could not be read: nothing is asked for again (every read would fail the same way). */
-	private volatile boolean dataFailed;
+	private final java.util.concurrent.atomic.AtomicBoolean dataFailed = new java.util.concurrent.atomic.AtomicBoolean();
 
 	/** Says once, where the player can find it, that the game's data cannot be read; every region would say it else. */
 	private void warnOnce(MapDataException e)
 	{
-		if (!dataFailed)
+		// both render threads can fail at once: one of them says it
+		if (dataFailed.compareAndSet(false, true))
 		{
-			dataFailed = true;
 			log.warn("Advanced Map cannot read the game's map data (a game update may have changed it): the map stays"
 				+ " blank until the plugin is updated", e);
 		}
