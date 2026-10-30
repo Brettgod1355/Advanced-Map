@@ -23,7 +23,7 @@ public class ConfigDefaultsTest
 	@Test
 	public void overlaysThatPaintOverTheMapStartOff()
 	{
-		assertFalse("multi-combat tint is opt-in (owner, 2026-10-30)", defaults.multiCombat());
+		assertFalse("the multi-combat tint paints over the map, so it is opt-in", defaults.multiCombat());
 		assertFalse(defaults.slayerTask());
 	}
 
