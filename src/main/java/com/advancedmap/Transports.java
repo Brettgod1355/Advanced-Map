@@ -135,6 +135,8 @@ final class Transports
 	}
 
 	private static volatile Data data = new Data();
+	/** True once the tables were read: a region's icons scanned before then lack the boarding spots. */
+	private static volatile boolean loaded;
 
 	private Transports()
 	{
@@ -157,6 +159,7 @@ final class Transports
 				parseTransports(transports, out);
 				parsePoints(points, out);
 				data = out;
+				loaded = true;
 			}
 		}
 		catch (IOException | RuntimeException e)
@@ -313,6 +316,11 @@ final class Transports
 
 	/** Every stop of a network ("Fairy ring", "Spirit tree"), or none. */
 	/** Every place to board a transport: a network's spots, a boat's or ship's, a named transport icon that leads somewhere. */
+	static boolean isLoaded()
+	{
+		return loaded;
+	}
+
 	static List<WorldPoint> boardingSpots()
 	{
 		List<WorldPoint> out = new ArrayList<>();

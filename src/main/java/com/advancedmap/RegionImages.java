@@ -71,6 +71,11 @@ class RegionImages
 	private final ExecutorService executor;
 	private final MapIcons icons;
 	private final Set<Integer> iconsFound = ConcurrentHashMap.newKeySet();
+	/**
+	 * Whether the bundled tables a region's icons come from have been read: they load in the background as the plugin
+	 * starts, and a region scanned before then is scanned again (a test stands in its own answer).
+	 */
+	private volatile java.util.function.BooleanSupplier tablesRead = Transports::isLoaded;
 	/** How far a link spot may be from an icon of the game's that stands for it. */
 	static final int LINK_REACH = 2;
 	/**
@@ -511,9 +516,8 @@ class RegionImages
 		{
 			int id = region(key);
 			Region region = source.region(id >> 8, id & 0xFF);
-			if (region != null && !iconsFound.contains(id))
+			if (region != null && !iconsFound.contains(id) && findIcons(region))
 			{
-				findIcons(region);
 				iconsFound.add(id);
 			}
 			MapStore saved = store;
@@ -573,9 +577,8 @@ class RegionImages
 			absent.add(key(0, id));
 			return null;
 		}
-		if (!iconsFound.contains(id))
+		if (!iconsFound.contains(id) && findIcons(region))
 		{
-			findIcons(region);
 			iconsFound.add(id);
 		}
 		long hash = source.regionHash(id >> 8, id & 0xFF);
@@ -650,11 +653,21 @@ class RegionImages
 			return;
 		}
 		Region region = source.region(regionId >> 8, regionId & 0xFF);
-		if (region != null)
+		if (region == null || findIcons(region))
 		{
-			findIcons(region);
+			iconsFound.add(regionId);
 		}
-		iconsFound.add(regionId);
+	}
+
+	/** True once a region's icons were found with every table read, so they need not be found again. */
+	boolean iconsFound(int regionId)
+	{
+		return iconsFound.contains(regionId);
+	}
+
+	void setTablesRead(java.util.function.BooleanSupplier read)
+	{
+		tablesRead = read;
 	}
 
 	/**
@@ -662,8 +675,10 @@ class RegionImages
 	 * Map's own ({@link FoundIcons}). An icon is on the floor it is drawn on: an object over a bridge tile is stored a
 	 * floor up but drawn a floor lower, as the map is.
 	 */
-	private void findIcons(Region region)
+	/** Finds a region's icons; false when the tables were not all read yet, so that it is done again later. */
+	private boolean findIcons(Region region)
 	{
+		boolean complete = tablesRead.getAsBoolean();
 		List<MapSpot> spots = new ArrayList<>();
 		for (Location location : region.getLocations())
 		{
@@ -690,6 +705,7 @@ class RegionImages
 		addLinkIcons(region, all);
 		addTransportIcons(region, all);
 		icons.addRegion(region.getRegionID(), all);
+		return complete;
 	}
 
 	/**

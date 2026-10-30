@@ -139,4 +139,20 @@ public class RegionImagesRetryTest
 		assertFalse(images.isAbsent(0, REGION));
 		assertTrue(images.get(0, REGION, RegionImages.Level.SMALL) == null);
 	}
+
+	@Test
+	public void aRegionScannedBeforeTheTablesWereReadIsScannedAgain()
+	{
+		// the tables load in the background as the plugin starts: a region's icons found before the transports were
+		// read lack the boarding spots, and were kept so for the session
+		RegionImagesCacheTest.Flat source = new RegionImagesCacheTest.Flat();
+		RegionImages images = new RegionImages(source, executor, new MapIcons());
+		java.util.concurrent.atomic.AtomicBoolean read = new java.util.concurrent.atomic.AtomicBoolean(false);
+		images.setTablesRead(read::get);
+		images.scanIcons(REGION);
+		assertFalse("not done while a table is missing", images.iconsFound(REGION));
+		read.set(true);
+		images.scanIcons(REGION);
+		assertTrue(images.iconsFound(REGION));
+	}
 }
