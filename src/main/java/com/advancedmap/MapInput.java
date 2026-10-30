@@ -45,6 +45,8 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 	private final Set<Integer> pressedHere = new HashSet<>();
 	/** The keys whose press went to the game: their repeats and release are the game's, even once a box is typed into. */
 	private final Set<Integer> pressedInGame = new HashSet<>();
+	/** The code of the last press seen: the typed event that follows a press has no code of its own. */
+	private int lastPressed = KeyEvent.VK_UNDEFINED;
 
 	MapInput(AdvancedMapPlugin plugin, IntSupplier width, IntSupplier height)
 	{
@@ -273,10 +275,20 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 	@Override
 	public void keyTyped(KeyEvent e)
 	{
+		if (pressedInGame.contains(lastPressed))
+		{
+			// typed by a key the game holds (Space held through a dialogue, then a box opened): the game's
+			return;
+		}
 		if (plugin.mapTakesInput() && plugin.typing() && !hasShortcutKey(e))
 		{
 			plugin.touched();
 			plugin.type(e.getKeyChar());
+			e.consume();
+		}
+		else if (pressedHere.contains(lastPressed))
+		{
+			// typed by a key the map holds, now that nothing is typed into: the game had no press for it
 			e.consume();
 		}
 	}
@@ -285,6 +297,7 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 	public void keyPressed(KeyEvent e)
 	{
 		int code = e.getKeyCode();
+		lastPressed = code;
 		if (pressedInGame.contains(code))
 		{
 			// held in the game since before a box was typed into (an arrow turning the camera): the game's still

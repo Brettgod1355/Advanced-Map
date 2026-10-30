@@ -365,4 +365,40 @@ public class MapInputTest
 		input.keyPressed(remapped(KeyEvent.VK_F5, 0, KeyEvent.VK_LEFT));
 		assertEquals(";'-=` \u00e4", plugin.typed.toString());
 	}
+
+	@Test
+	public void aHeldKeysTypedRepeatsFollowItsPress()
+	{
+		Stub plugin = new Stub();
+		MapInput input = new MapInput(plugin, () -> 1280, () -> 800);
+		// Space held in the game (a dialogue), then the Filters list opened while it is held
+		KeyEvent space = new KeyEvent(SOURCE, KeyEvent.KEY_PRESSED, 0, 0, KeyEvent.VK_SPACE, ' ');
+		input.keyPressed(space);
+		assertFalse(space.isConsumed());
+		input.keyTyped(new KeyEvent(SOURCE, KeyEvent.KEY_TYPED, 0, 0, KeyEvent.VK_UNDEFINED, ' '));
+		plugin.typing = true;
+		KeyEvent repeat = new KeyEvent(SOURCE, KeyEvent.KEY_PRESSED, 0, 0, KeyEvent.VK_SPACE, ' ');
+		input.keyPressed(repeat);
+		assertFalse(repeat.isConsumed());
+		KeyEvent typed = new KeyEvent(SOURCE, KeyEvent.KEY_TYPED, 0, 0, KeyEvent.VK_UNDEFINED, ' ');
+		input.keyTyped(typed);
+		assertEquals("the game's held key types nothing into the map", "", plugin.typed.toString());
+		assertFalse(typed.isConsumed());
+		input.keyReleased(key(KeyEvent.KEY_RELEASED, KeyEvent.VK_SPACE, 0));
+
+		// a letter held while typing in the search bar, then a click beside the box while it is held
+		KeyEvent a = new KeyEvent(SOURCE, KeyEvent.KEY_PRESSED, 0, 0, KeyEvent.VK_A, 'a');
+		input.keyPressed(a);
+		assertTrue(a.isConsumed());
+		input.keyTyped(new KeyEvent(SOURCE, KeyEvent.KEY_TYPED, 0, 0, KeyEvent.VK_UNDEFINED, 'a'));
+		assertEquals("a", plugin.typed.toString());
+		plugin.typing = false;
+		KeyEvent aRepeat = new KeyEvent(SOURCE, KeyEvent.KEY_PRESSED, 0, 0, KeyEvent.VK_A, 'a');
+		input.keyPressed(aRepeat);
+		assertTrue(aRepeat.isConsumed());
+		KeyEvent aTyped = new KeyEvent(SOURCE, KeyEvent.KEY_TYPED, 0, 0, KeyEvent.VK_UNDEFINED, 'a');
+		input.keyTyped(aTyped);
+		assertTrue("the typed event of a press the map took is the map's", aTyped.isConsumed());
+		assertEquals("a", plugin.typed.toString());
+	}
 }
