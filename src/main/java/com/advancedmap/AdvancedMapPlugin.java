@@ -1827,7 +1827,8 @@ public class AdvancedMapPlugin extends Plugin
 					rows.addAll(MonsterInfo.rows(monster));
 					rows.add(SideList.Row.heading("Locations (nearest first)"));
 				}
-				rows.addAll(SearchSpots.rows(areas, entry.getKind() == MapSearch.Kind.FISHING ? "spot"
+				rows.addAll(SearchSpots.rows(areas, entry.getKind() == MapSearch.Kind.FISHING
+					|| entry.getKind() == MapSearch.Kind.GROUND_ITEM ? "spot"
 					: entry.getKind() == MapSearch.Kind.HUNTER ? "area" : "spawn"));
 				sideList.open(entry.getName() + (entry.getKind() == MapSearch.Kind.MONSTER
 					? " (" + entry.getNote().toLowerCase(java.util.Locale.ROOT) + ")" : ""), rows, entry);
@@ -2102,6 +2103,12 @@ public class AdvancedMapPlugin extends Plugin
 	/** The mouse wheel over the Filters list or a transport's places scrolls it. True when it did. */
 	boolean wheelPanels(int x, int y, double notches, int width, int height, boolean window)
 	{
+		if (search.isScopesOpen()
+			&& search.layout(MapPainter.buttons(width, height, window), width).getResults().contains(x, y))
+		{
+			// the "Search in" list does not scroll, and the map under it does not zoom
+			return true;
+		}
 		if (!search.results().isEmpty())
 		{
 			// the search's results scroll under the mouse

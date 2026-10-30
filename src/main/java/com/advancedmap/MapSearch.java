@@ -45,8 +45,8 @@ final class MapSearch
 	static final int WIDTH = 340;
 	/** With less room than this between the top buttons at their full width, they get shorter to make room. */
 	static final int MIN_WIDTH = 160;
-	/** The narrowest the box gets on the top row: the glass and a few letters. */
-	private static final int SMALLEST = 60;
+	/** The narrowest the box gets on the top row: the glass, the "Search in" lines and a few letters. */
+	private static final int SMALLEST = 100;
 	static final int ROW = 22;
 	/** The most results of one group listed; the list scrolls when they do not all fit. */
 	static final int MAX_RESULTS = 50;
@@ -54,6 +54,8 @@ final class MapSearch
 	private static final int BOTTOM_ROOM = 30;
 	/** The height of a group's heading in the results ("Places", "Monsters"). */
 	static final int HEADING_ROW = 16;
+	/** The shortest a row of the "Search in" list gets on a short map: the small font and a little room. */
+	private static final int SCOPE_ROW_MIN = 14;
 
 	/** The groups the results are listed in, in this order, each under its heading. */
 	enum Group
@@ -1090,7 +1092,7 @@ final class MapSearch
 		Rectangle rows = layout.getResults();
 		if (scopesOpen && rows.contains(x, y))
 		{
-			int row = (y - rows.y - 2) / ROW;
+			int row = (y - rows.y - 2) / scopeRow(rows);
 			return row >= 0 && row <= Scope.values().length ? new Hit(Part.SCOPE, row) : new Hit(Part.BOX, -1);
 		}
 		if (layout.getBox().contains(x, y))
@@ -1125,6 +1127,12 @@ final class MapSearch
 		g.fillRect(lineX, baseline - metrics.getAscent() / 2 + 1, list.x + list.width - PAD - lineX, 1);
 	}
 
+	/** How tall a row of the "Search in" list is: shorter on a map too short for all of them at full height. */
+	static int scopeRow(Rectangle list)
+	{
+		return Math.max(SCOPE_ROW_MIN, Math.min(ROW, (list.height - 4) / (Scope.values().length + 1)));
+	}
+
 	/** The "Search in" list: "Search everything", then a box to tick for each kind of result. */
 	private void drawScopes(Graphics2D g, Rectangle list, Point mouse, FontMetrics metrics)
 	{
@@ -1133,15 +1141,18 @@ final class MapSearch
 		g.setColor(EDGE);
 		g.drawRoundRect(list.x, list.y, list.width - 1, list.height - 1, 8, 8);
 		Scope[] scopes = Scope.values();
+		int height = scopeRow(list);
+		Shape clip = g.getClip();
+		g.clip(list);
 		for (int row = 0; row <= scopes.length; row++)
 		{
-			int y = list.y + 2 + row * ROW;
-			if (mouse != null && list.contains(mouse) && mouse.y >= y && mouse.y < y + ROW)
+			int y = list.y + 2 + row * height;
+			if (mouse != null && list.contains(mouse) && mouse.y >= y && mouse.y < y + height)
 			{
 				g.setColor(LIT);
-				g.fillRect(list.x + 2, y, list.width - 4, ROW);
+				g.fillRect(list.x + 2, y, list.width - 4, height);
 			}
-			int baseline = y + (ROW + metrics.getAscent() - metrics.getDescent()) / 2;
+			int baseline = y + (height + metrics.getAscent() - metrics.getDescent()) / 2;
 			if (row == 0)
 			{
 				// quiet while it would change nothing
@@ -1150,7 +1161,7 @@ final class MapSearch
 				continue;
 			}
 			Scope scope = scopes[row - 1];
-			int box = y + (ROW - 10) / 2;
+			int box = y + (height - 10) / 2;
 			g.setColor(EDGE);
 			g.drawRect(list.x + PAD, box, 10, 10);
 			if (!skipped.contains(scope))
@@ -1161,6 +1172,7 @@ final class MapSearch
 			g.setColor(skipped.contains(scope) ? QUIET : TEXT);
 			g.drawString(SideList.fit(scope.label, metrics, list.width - PAD * 2 - 16), list.x + PAD + 16, baseline);
 		}
+		g.setClip(clip);
 	}
 
 	void draw(Graphics2D g, Layout layout, Point mouse)

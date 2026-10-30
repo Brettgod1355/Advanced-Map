@@ -107,6 +107,11 @@ public class PluginStateTest
 		assertTrue(plugin.search().isFocused());
 		plugin.escape();
 		assertFalse(plugin.search().isFocused());
+		// the wheel over the open list neither scrolls it nor zooms the map under it
+		plugin.pressPanels(lines.x + 4, lines.y + 4, 1200, 800, false);
+		java.awt.Rectangle list = plugin.search().layout(MapPainter.buttons(1200, 800, false), 1200).getResults();
+		assertTrue(plugin.wheelPanels(list.x + 10, list.y + 10, 1, 1200, 800, false));
+		plugin.escape();
 		// a click on the lines again closes it
 		plugin.pressPanels(lines.x + 4, lines.y + 4, 1200, 800, false);
 		plugin.pressPanels(lines.x + 4, lines.y + 4, 1200, 800, false);

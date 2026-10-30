@@ -501,4 +501,29 @@ public class MapSearchTest
 			MapSearch.Scope.parse("GONE;NPCS"));
 		assertTrue(MapSearch.Scope.parse("").isEmpty());
 	}
+
+	@Test
+	public void theSearchInListFitsTheSmallestBox()
+	{
+		// the smallest box over the game: the list is shorter than its rows at full height, so they are shorter
+		MapSearch search = new MapSearch();
+		search.setFocused(true);
+		search.setScopesOpen(true);
+		Map<MapPainter.Button, Rectangle> buttons = MapPainter.buttons(GameBox.MIN_WIDTH, GameBox.MIN_HEIGHT, false);
+		MapSearch.Layout layout = search.layout(buttons, GameBox.MIN_WIDTH);
+		Rectangle list = layout.getResults();
+		int rows = MapSearch.Scope.values().length + 1;
+		assertTrue("shorter than the list at full height: " + list.height, list.height < rows * MapSearch.ROW + 4);
+		int row = MapSearch.scopeRow(list);
+		assertTrue(row < MapSearch.ROW);
+		assertTrue("every row inside the list", list.y + 2 + rows * row <= list.y + list.height);
+		// the last row ("Your markers") can be clicked
+		MapSearch.Hit last = search.hitAt(list.x + 10, list.y + 2 + (rows - 1) * row + row / 2, layout);
+		assertEquals(MapSearch.Part.SCOPE, last.getPart());
+		assertEquals(rows - 1, last.getIndex());
+		// and there is room for a few letters beside the glass and the lines
+		Rectangle box = layout.getBox();
+		assertTrue(layout.getClear().x - (layout.getScopes().x + layout.getScopes().width) >= 30);
+		assertTrue(box.contains(layout.getScopes()));
+	}
 }
