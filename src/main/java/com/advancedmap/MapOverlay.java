@@ -66,6 +66,16 @@ class MapOverlay extends Overlay
 		return new Dimension(w, h);
 	}
 
+	/**
+	 * Lets the picture go now. Client thread. {@link #render} does the same when the map is closed, but RuneLite draws
+	 * no overlay while the client is not logged in, so a map closed by logging out would otherwise hold its last
+	 * picture (up to a few megabytes) until the next login.
+	 */
+	void forget()
+	{
+		frame = null;
+	}
+
 	@Override
 	public Dimension render(Graphics2D g)
 	{

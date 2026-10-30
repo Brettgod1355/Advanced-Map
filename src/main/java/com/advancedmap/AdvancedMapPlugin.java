@@ -607,6 +607,12 @@ public class AdvancedMapPlugin extends Plugin
 			|| state == GameState.CONNECTION_LOST))
 		{
 			closeMap();
+			// nothing is drawn until the next login, so the overlay cannot let its picture go itself
+			MapOverlay drawn = overlay;
+			if (drawn != null)
+			{
+				drawn.forget();
+			}
 		}
 	}
 
