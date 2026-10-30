@@ -2369,10 +2369,12 @@ public class AdvancedMapPlugin extends Plugin
 	void popOut()
 	{
 		configManager.setConfiguration(AdvancedMapConfig.GROUP, "popOut", true);
-		// closed over the game first: the overlay and the window paint with one painter, never both at once
+		// closed over the game first: the overlay and the window paint with one painter, never both at once. A
+		// paint of the overlay already under way on the client thread ends before the client thread runs this, and
+		// the window's first paint comes after that
 		mapOpen = false;
 		windowOpen = true;
-		SwingUtilities.invokeLater(this::showWindow);
+		clientThread.invokeLater(() -> SwingUtilities.invokeLater(this::showWindow));
 	}
 
 	/** Moves the map from its window back over the game, and keeps it there next time. Swing thread. */
