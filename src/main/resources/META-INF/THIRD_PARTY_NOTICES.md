@@ -254,6 +254,10 @@ on 2026-10-27), and the crab trapping levels from its "Red crab (Hunter)", "Blue
 (Hunter)" pages (read on 2026-10-30). Changes: each area's tiles reduced to their middle; areas within 25 tiles of
 one RuneLite's list has left out.
 
+`src/main/resources/com/advancedmap/sailing-docks.tsv` (where a boat can dock, the Sailing level and quest it needs) is
+adapted from the same wiki under the same license: the "Dock at" lines of its "Sailing/Level up table" page (read on
+2026-10-31). Changes: each place's name, level and quest only, one row per place.
+
 `src/main/resources/com/advancedmap/monsters.tsv` (each searchable monster's hitpoints, max hit, attack styles, whether
 it is aggressive or poisonous, Slayer level, the Slayer masters who assign it, what it is weak to, the drops it always
 gives and up to three rare ones) is adapted from the same wiki's Bucket tables `infobox_monster` and `dropsline`, read

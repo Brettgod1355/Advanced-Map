@@ -2483,6 +2483,7 @@ public class AdvancedMapPlugin extends Plugin
 				pictures.setMinigameArea(categories.getOrDefault(IconGroup.MINIGAME, -1));
 				list.setCategoryIcons(categories);
 				into.set(from.labels());
+				SailingDocks.place(into.all());
 				gameMaps = from.gameMaps();
 				MapPainter drawing = painter;
 				if (drawing != null)

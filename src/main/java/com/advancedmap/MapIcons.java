@@ -515,6 +515,10 @@ final class MapIcons
 
 	/** The lines of an icon's info box, after its name. */
 
+	/** The game's names for its Sailing icons where a boat docks. */
+	static final String DOCKING_POINT = "Docking point";
+	static final String PORT = "Port";
+
 	static List<Line> info(MapSpot spot, Progress progress, boolean hidden, FloorNumbers floors)
 	{
 		List<Line> lines = new ArrayList<>();
@@ -575,6 +579,22 @@ final class MapIcons
 				if (!fishing)
 				{
 					levelLine(lines, Skill.HUNTER, near.getLevel(), progress);
+				}
+			}
+		}
+		if (DOCKING_POINT.equalsIgnoreCase(category) || PORT.equalsIgnoreCase(category))
+		{
+			// where a boat docks here and what that needs, which the game's map leaves out
+			SailingDocks.Dock dock = SailingDocks.near(spot.getX(), spot.getY());
+			if (dock != null)
+			{
+				lines.add(new Line(dock.getName(), PLAIN));
+				levelLine(lines, Skill.SAILING, dock.getLevel(), progress);
+				if (dock.getQuest() != null)
+				{
+					QuestState state = progress.state(dock.getQuest());
+					lines.add(new Line("Needs " + dock.getQuest().getName(),
+						!progress.isLoggedIn() ? PLAIN : state == QuestState.FINISHED ? GOOD : BAD));
 				}
 			}
 		}
