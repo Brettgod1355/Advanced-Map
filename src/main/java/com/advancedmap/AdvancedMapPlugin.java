@@ -573,9 +573,11 @@ public class AdvancedMapPlugin extends Plugin
 	 * Adds "Open Advanced Map" to the world map orb's menu, once the game has sorted it: second, right under the
 	 * game's left-click option (the menu's top entry is always the left click), or at the top when it is to be the
 	 * left click. The game's own entries stay as they are. It only opens
-	 * this plugin's map; nothing is sent to the game.
+	 * this plugin's map; nothing is sent to the game. After the other plugins: one that also puts its own entry on top
+	 * of the orb's menu would otherwise take the left click from it while this one's setting asks for it; theirs stays
+	 * in the menu, right under it.
 	 */
-	@Subscribe
+	@Subscribe(priority = -1)
 	public void onPostMenuSort(PostMenuSort event)
 	{
 		boolean left = config.orbLeftClick();
@@ -584,14 +586,19 @@ public class AdvancedMapPlugin extends Plugin
 			return;
 		}
 		Menu menu = client.getMenu();
+		MenuEntry[] entries = menu.getMenuEntries();
 		boolean orb = false;
-		for (MenuEntry entry : menu.getMenuEntries())
+		for (int i = 0; i < entries.length; i++)
 		{
-			if (ORB_TARGET.equals(entry.getTarget()))
+			if (ORB_TARGET.equals(entries[i].getTarget()))
 			{
+				if (left && i != entries.length - 1)
+				{
+					menu.setMenuEntries(toTop(entries, i));
+				}
 				return;
 			}
-			orb |= ORB.contains(entry.getParam1());
+			orb |= ORB.contains(entries[i].getParam1());
 		}
 		if (!orb)
 		{
@@ -602,6 +609,15 @@ public class AdvancedMapPlugin extends Plugin
 			.setTarget(ORB_TARGET)
 			.setType(MenuAction.RUNELITE)
 			.onClick(entry -> openMap(null, null));
+	}
+
+	/** A menu with one entry moved to the top (the last one, which a left click takes); the others keep their order. */
+	static <T> T[] toTop(T[] entries, int index)
+	{
+		T[] moved = Arrays.copyOf(entries, entries.length);
+		System.arraycopy(entries, index + 1, moved, index, entries.length - index - 1);
+		moved[entries.length - 1] = entries[index];
+		return moved;
 	}
 
 	/** A plugin was turned on or off: "Route here" follows whether the chosen routing plugin is running. */
