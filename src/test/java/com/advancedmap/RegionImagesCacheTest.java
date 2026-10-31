@@ -171,4 +171,30 @@ public class RegionImagesCacheTest
 		// each floor drawn once; before, the pictures pushed out of the cache were drawn again and again
 		assertEquals(onScreen.size(), source.draws.get());
 	}
+
+	@Test
+	public void aRegionTheGameDoesNotHaveIsEmptySpaceWithoutAskingTheGame() throws Exception
+	{
+		Flat source = new Flat();
+		RegionImages images = new RegionImages(source, executor, new MapIcons());
+		int dungeon = 50 << 8 | 150;
+		int between = 51 << 8 | 150;
+		// not known before the list: asked for, as before
+		assertEquals(false, images.isAbsent(0, between));
+		images.setRegionsInGame(java.util.Collections.singletonList(dungeon));
+		assertEquals(true, images.isAbsent(0, between));
+		assertEquals(true, images.isAbsent(2, between));
+		assertEquals(false, images.isAbsent(0, dungeon));
+		// the empty space on screen is never read from the game: only the dungeon is drawn
+		images.request(0, java.util.Arrays.asList(dungeon, between), RegionImages.Level.FULL);
+		for (int i = 0; i < 300 && (images.isBusy() || source.draws.get() == 0); i++)
+		{
+			TimeUnit.MILLISECONDS.sleep(10);
+		}
+		assertEquals(1, source.draws.get());
+		// an empty list (the client's map index not loaded yet) changes nothing
+		RegionImages early = new RegionImages(source, executor, new MapIcons());
+		early.setRegionsInGame(java.util.Collections.emptyList());
+		assertEquals(false, early.isAbsent(0, between));
+	}
 }

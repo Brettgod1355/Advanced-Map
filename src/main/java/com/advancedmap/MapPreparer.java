@@ -171,6 +171,10 @@ final class MapPreparer
 	{
 		// the listing waits for the client thread: outside the monitor, which the sidebar's refresh takes each second
 		List<Integer> regions = iconTodo == null ? source.regionIds() : null;
+		if (regions != null)
+		{
+			images.setRegionsInGame(regions);
+		}
 		synchronized (this)
 		{
 			if (iconTodo == null)
@@ -201,6 +205,10 @@ final class MapPreparer
 	{
 		// the listing waits for the client thread: outside the monitor, which the sidebar's refresh takes each second
 		List<Integer> regions = listed ? null : source.regionIds();
+		if (regions != null)
+		{
+			images.setRegionsInGame(regions);
+		}
 		synchronized (this)
 		{
 			return next(store, regions);

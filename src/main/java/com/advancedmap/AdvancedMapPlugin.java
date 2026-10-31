@@ -163,6 +163,7 @@ public class AdvancedMapPlugin extends Plugin
 	/** The pin a right-click menu is open on, or null. */
 	private volatile MapPins.Pin menuPin;
 	private volatile boolean labelsLoading;
+	private volatile boolean regionsListing;
 	private RegionImages images;
 	private MapPreparer preparer;
 	private AdvancedMapPanel panel;
@@ -232,6 +233,7 @@ public class AdvancedMapPlugin extends Plugin
 		icons = new MapIcons();
 		labels = new MapLabels();
 		labelsLoading = false;
+		regionsListing = false;
 		moveHiddenIcons();
 		settings = readSettings();
 		search.setSkipped(MapSearch.Scope.parse(config.searchSkipped()));
@@ -2330,6 +2332,7 @@ public class AdvancedMapPlugin extends Plugin
 			}
 			player = Prifddinas.toSurface(currentPlayerLocation());
 			readProgress();
+			listRegions();
 			loadLabels();
 			WorldPoint center = at != null ? at : player != null ? player : LUMBRIDGE;
 			if (at != null)
@@ -2384,6 +2387,36 @@ public class AdvancedMapPlugin extends Plugin
 	boolean isWindowOpen()
 	{
 		return windowOpen;
+	}
+
+	/**
+	 * Lists the regions the game has, once, so the map knows empty space at once; the preparer lists them too, but only
+	 * from ten seconds after launch.
+	 */
+	private void listRegions()
+	{
+		RegionImages current = images;
+		ClientMapSource from = source;
+		if (regionsListing || current == null || current.knowsRegionsInGame())
+		{
+			return;
+		}
+		regionsListing = true;
+		executor.execute(() ->
+		{
+			try
+			{
+				current.setRegionsInGame(from.regionIds());
+			}
+			catch (RuntimeException e)
+			{
+				log.debug("could not list the game's regions", e);
+			}
+			finally
+			{
+				regionsListing = false;
+			}
+		});
 	}
 
 	/** Reads the place names in the background, once; again next time if the client had no world map data yet. */

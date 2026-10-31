@@ -87,10 +87,14 @@ class RegionImages
 	private final Set<Integer> checked = ConcurrentHashMap.newKeySet();
 	/** Floors waiting to be checked. */
 	private final Set<Integer> checking = ConcurrentHashMap.newKeySet();
+	/** True while a check is in the render threads' queue or running: one at a time ({@link #queueCheck}). */
+	private final java.util.concurrent.atomic.AtomicBoolean checkQueued = new java.util.concurrent.atomic.AtomicBoolean();
 	/** A saved floor with nothing on it, shown from disk. */
 	private static final Drawn NOTHING = new Drawn(null, null);
 	private final Map<Level, Map<Integer, BufferedImage>> images = new ConcurrentHashMap<>();
 	private final Set<Integer> absent = ConcurrentHashMap.newKeySet();
+	/** The regions the game has, on either map; null until listed. */
+	private volatile Set<Integer> inGame;
 	/** Floors a draw failed on while a smaller picture of them exists: that picture stays, and they are not asked again. */
 	private final Set<Integer> failed = ConcurrentHashMap.newKeySet();
 	/** Floors shown from disk whose check could not read the game's data yet: checked again, one a second, while shown. */
@@ -176,7 +180,28 @@ class RegionImages
 	/** True when the game has nothing for a region's floor (open sea beyond the map's edge, a floor never built). */
 	boolean isAbsent(int plane, int regionId)
 	{
-		return absent.contains(key(plane, regionId)) || absent.contains(key(0, regionId));
+		Set<Integer> known = inGame;
+		return known != null && !known.contains(regionId) || absent.contains(key(plane, regionId))
+			|| absent.contains(key(0, regionId));
+	}
+
+	/** True once the game's list of regions is known ({@link #setRegionsInGame}). */
+	boolean knowsRegionsInGame()
+	{
+		return inGame != null;
+	}
+
+	/**
+	 * The regions the game has, on either map. Any other is empty space (most of the underground map's area, between
+	 * its dungeons): known so at once, where it took a wait for the client thread each to find the game had nothing
+	 * there, seconds of them on a far view. An empty list (the client's map index not loaded yet) is not kept.
+	 */
+	void setRegionsInGame(Collection<Integer> regionIds)
+	{
+		if (!regionIds.isEmpty())
+		{
+			inGame = new HashSet<>(regionIds);
+		}
 	}
 
 	/**
@@ -272,7 +297,7 @@ class RegionImages
 		Set<Integer> keys = new HashSet<>();
 		for (int id : regionIds)
 		{
-			if (absent.contains(key(0, id)))
+			if (isAbsent(0, id))
 			{
 				// nothing of the region exists: nothing of it is wanted
 				continue;
@@ -497,14 +522,61 @@ class RegionImages
 	{
 		if (checking.add(key))
 		{
-			try
+			queueCheck();
+		}
+	}
+
+	/**
+	 * Puts the next check in the render threads' queue, unless one is there already. One at a time: a check waits for
+	 * the client thread (tens of milliseconds), and a far view loads hundreds of floors from disk at once, so their
+	 * checks queued together held both threads for many seconds while the pictures asked for next waited behind them.
+	 */
+	private void queueCheck()
+	{
+		if (checking.isEmpty() || !checkQueued.compareAndSet(false, true))
+		{
+			return;
+		}
+		try
+		{
+			executor.execute(this::checkNext);
+		}
+		catch (RejectedExecutionException e)
+		{
+			// the plugin is stopping
+			checkQueued.set(false);
+		}
+	}
+
+	/** Checks one waiting floor, those on screen first, then queues the next behind the pictures asked for meanwhile. */
+	private void checkNext()
+	{
+		try
+		{
+			Integer next = null;
+			Set<Integer> screen = wanted;
+			Set<Integer> besides = wantedBesides;
+			for (int key : checking)
 			{
-				executor.execute(() -> check(key));
+				if (screen.contains(key) || besides.contains(key))
+				{
+					next = key;
+					break;
+				}
+				if (next == null)
+				{
+					next = key;
+				}
 			}
-			catch (RejectedExecutionException e)
+			if (next != null)
 			{
-				checking.remove(key);
+				check(next);
 			}
+		}
+		finally
+		{
+			checkQueued.set(false);
+			queueCheck();
 		}
 	}
 
