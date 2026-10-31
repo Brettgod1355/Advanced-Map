@@ -4,6 +4,8 @@ A full-screen world map for [RuneLite](https://runelite.net/), drawn on your com
 with smooth pan and zoom, a fuzzy search over places, shops, items and monsters, and icons you can point at for
 their details.
 
+![The whole world on Advanced Map, maximized over the game](docs/images/hero.webp)
+
 - **Always current.** The map is drawn from the game data your client already has, so a game update that changes the
   world shows on the map at once. Nothing is downloaded and nothing is sent anywhere.
 - **Over the game, or beside it.** Open it in a box over the game that you can move and size, fill the game view
@@ -12,6 +14,8 @@ their details.
   sell, monsters, fishing and hunter spots, fairy ring codes and kinds of icon, nearest to you first.
 - **Know before you go.** Point at a dungeon's entrance for a small map of where you come out and every monster
   inside; point at a quest, a shortcut or a teleport for what it needs.
+
+![Zooming from the whole world down to the Grand Exchange](docs/images/zoom.webp)
 
 ## Getting started
 
@@ -55,6 +59,8 @@ The box at the top finds places, dungeon and minigame entrances, everything shop
 loosely the way the Grand Exchange does ("d scim" and "dragon sim" both find the dragon scimitar, "kbd" the King
 Black Dragon). Places come first, the bigger first, and nicknames work ("ardy", "fally", "zeah").
 
+<img src="docs/images/search.webp" alt="Typing lobster: the results grouped into monsters, items and fishing spots" width="640">
+
 - **A place** moves the map there.
 - **An item** lists the shops that sell it and the price, nearest first. Items that lie on the ground (a knife on a
   table, a bucket by a well, flax in a field) are a result of their own: every spot marked, listed by area, nearest
@@ -76,6 +82,10 @@ is kept between sessions.
 
 Banks, quests, shops, shortcuts, teleports and every other icon of the game's map, each with details on hover or
 click: a quest's difficulty and the levels it needs, a shortcut's Agility level, a spell's Magic level and quest.
+Where the game's map only says what kind of place it is, this one says what is there: a mining site's rocks, a
+fishing spot's catch, a hunter area's creature and Hunter level, a rare tree's kind, and each minigame's name.
+
+<img src="docs/images/icon-details.webp" alt="A mining site's details: its copper, tin and iron rocks" width="420">
 
 - Agility shortcuts and teleport spells you can't use yet are grayed out with a red mark, and finished quests are
   left out (both can be turned off).
@@ -83,8 +93,12 @@ click: a quest's difficulty and the levels it needs, a shortcut's Agility level,
   Lovakengj blast mine's other chests ...). Bank chests you build yourself and banks a quest opens stay grayed out
   until you have built or opened them; click one for what it needs.
 - **Shops**: click one, general stores included, for what it sells and for how much.
-- **Transports**: click a charter ship, a cart or another transport for where it goes, the fare and what the trip
-  needs. Fairy ring codes and spirit tree destinations show beside them when zoomed in.
+- **Transports**: point at a charter ship, a canoe, a spirit tree or another transport for lines to where it goes;
+  click it to keep them and list each place with the fare and what the trip needs. Fairy ring codes and spirit tree
+  destinations show beside them when zoomed in.
+- **Minigames the game's map leaves out** get an icon of their own, such as Tempoross at the Sea Spirit Dock.
+
+<img src="docs/images/transport-lines.webp" alt="Lumbridge's canoe station with lines to where its canoes go" width="480">
 - **Filters** at the top left lists every kind of icon, grouped (Banks, Quests, Shops ...) and searchable: tick or
   untick a whole group or a single kind. Right-click any one icon to hide just that one; "Show hidden icons" brings
   them back faded so they can be unhidden.
@@ -93,6 +107,9 @@ click: a quest's difficulty and the levels it needs, a shortcut's Agility level,
 
 - **Dungeon preview**: point at a dungeon's entrance for its name, a small map of where you come out, and every
   monster inside, down its ladders and ropes to the lower floors too. Click the entrance to go in.
+
+  <img src="docs/images/dungeon-preview.webp" alt="Edgeville Dungeon's preview: its map and every monster inside" width="520">
+
 - **Floors**: the floors below the one shown are drawn darkened underneath, so you can see where you are. Zoomed
   out, the ground floor shows every floor's icons, as the game's map does; zoomed in, each icon is on its own floor.
 - **Prifddinas** is drawn inside its walls in Tirannwn, with its icons, teleports and transports, although the game
@@ -103,6 +120,8 @@ click: a quest's difficulty and the levels it needs, a shortcut's Agility level,
 Right-click anywhere and choose "Add marker here", give it a name and pick one of 12 pictures and 9 colors.
 Right-click a marker to edit or remove it; the search finds markers too. Markers are shared by every account you play
 on this computer, two clients at once included; turn off "Share markers between accounts" to keep each account's own.
+
+<img src="docs/images/markers.webp" alt="Markers around Varrock and the box for a new one" width="560">
 
 ### Extra layers
 
@@ -117,6 +136,8 @@ on this computer, two clients at once included; turn off "Share markers between 
 - **Other plugins' markers**: a clue scroll's spot, Quest Helper's next step and other plugins' world map markers
   show on this map as well.
 - **Arrow to you**: when you are out of view, an arrow at the map's edge points to you with how many tiles away.
+
+<img src="docs/images/multi-combat.webp" alt="The Wilderness with multi-combat areas tinted and the level 20 and 30 teleport limits" width="640">
 
 ### Routes
 
@@ -148,8 +169,7 @@ choose with Filters on the map itself.
 | Place names | On | Kingdom, town and place names |
 | Floor numbers | Ground, 2, 3, 4 | How floors above the ground are numbered (or Ground, 1, 2, 3) |
 | Route with | Shortest Path | The plugin "Route here" asks |
-| Save the map on this computer | On | Keeps the drawn map so it opens at once next time |
-| Prepare the whole map | On | Draws the rest of the map in the background, nearest you first |
+| Prepare the whole map | On | Draws the rest of the map in the background, nearest you first (about 15 minutes, once) |
 
 The **Icons** section holds a switch per kind of icon (the same as Filters), "Hide completed quests", "Mark what
 you can't use yet", "Icon size" and "Transport names".
@@ -163,16 +183,19 @@ you can't use yet", "Icon size" and "Transport names".
 - **What it reads in the client**: your position, levels, quest states and what you have unlocked (for the locked
   marks and the finished quests), and, read only, what RuneLite's Time Tracking and Slayer plugins have saved. It
   changes nothing of theirs.
-- **What it keeps on your computer**, in RuneLite's plugin data folder: the drawn map, so it opens at once, and one
-  small file per marker. Turn off "Save the map on this computer" to save nothing but the markers.
+- **What it keeps on your computer**, in RuneLite's plugin data folder: the drawn map (about 60 MB for the whole
+  world), so it opens at once, and one small file per marker.
 - **The two buttons beside the sidebar tab's title** open this project's GitHub issues and Discord in your browser,
   only when you click them.
 
 ## Good to know
 
-- **Saving the map.** From the moment the client starts, the map draws the regions it has not saved yet in the
-  background, nearest you first, using spare processor time, and draws a region again only when a game update
-  changes it. The sidebar tab shows how far along it is. "Prepare the whole map" off draws only what you look at.
+- **The first time.** From the moment the client starts, the map draws the regions it has not saved yet in the
+  background, nearest you first, using spare processor time: about 15 minutes for the whole world, once per
+  computer, shared by every account and profile. Until then places not drawn yet are blank or blurry, and the map
+  says "Drawing the map... N to go" at the top left; the sidebar tab shows the same count. Afterwards the map opens
+  at once, and a region is drawn again only when a game update changes it. "Prepare the whole map" off draws only
+  what you look at.
 - **Memory.** While the map is open it keeps the pictures it has drawn at hand, so moving back over them is
   instant; closing it lets go of the most detailed ones.
 - **After a game update**, new and changed areas, buildings and the game's own map icons show at once, since they
@@ -217,8 +240,10 @@ Questions, ideas and bug reports: [GitHub issues](https://github.com/Brettgod135
 
 - The map drawing is RuneLite's own map renderer from its cache library (BSD 2-Clause), adapted to read the running
   client.
-- Shops, their stock and prices, monster spawns, stats and drops come from the
-  [Old School RuneScape Wiki](https://oldschool.runescape.wiki/) (CC BY-NC-SA 3.0).
+- Shops, their stock and prices, monster spawns, stats and drops, and the hunter areas RuneLite's list leaves out
+  come from the [Old School RuneScape Wiki](https://oldschool.runescape.wiki/) (CC BY-NC-SA 3.0).
+- Mining sites, rare trees, fishing spots, hunter areas, dungeon and minigame entrances come from RuneLite's own
+  world map plugin (BSD 2-Clause).
 - Transport routes and fares come from [Shortest Path](https://github.com/Skretzo/shortest-path) (BSD 2-Clause).
 
 Every bundled source, its license and what was changed are listed in
