@@ -256,7 +256,9 @@ one RuneLite's list has left out.
 
 `src/main/resources/com/advancedmap/sailing-docks.tsv` (where a boat can dock, the Sailing level and quest it needs) is
 adapted from the same wiki under the same license: the "Dock at" lines of its "Sailing/Level up table" page (read on
-2026-10-31). Changes: each place's name, level and quest only, one row per place.
+2026-10-31). Changes: each place's name, level and quest only, one row per place. The last row of
+`src/main/resources/com/advancedmap/transport-points.tsv`, the group ironmen's portal from Lumbridge to the Node, takes
+the Node's place from the same wiki's "The Node" page (read on 2026-10-31).
 
 `src/main/resources/com/advancedmap/monsters.tsv` (each searchable monster's hitpoints, max hit, attack styles, whether
 it is aggressive or poisonous, Slayer level, the Slayer masters who assign it, what it is weak to, the drops it always

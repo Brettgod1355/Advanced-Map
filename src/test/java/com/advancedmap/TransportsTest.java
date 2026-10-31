@@ -210,6 +210,17 @@ public class TransportsTest
 	}
 
 	@Test
+	public void lumbridgesGroupIronmanPortalLeadsToTheNode()
+	{
+		MapSpot portal = MapSpot.icon(3217, 3235, 0, 0, 1104);
+		assertEquals("Portal to The Node (group ironmen)", Transports.iconName(portal));
+		List<Transports.Destination> to = Transports.from(portal);
+		assertEquals(1, to.size());
+		assertEquals("The Node (group ironmen)", to.get(0).getName());
+		assertEquals(new WorldPoint(3106, 3028, 0), to.get(0).getPoint());
+	}
+
+	@Test
 	public void theKingBlackDragonsLeverLeadsToItsLair()
 	{
 		List<Transports.Destination> to = Transports.from(3067, 10253, 0);
