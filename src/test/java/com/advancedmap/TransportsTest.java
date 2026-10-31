@@ -208,4 +208,20 @@ public class TransportsTest
 		assertTrue(to.get(0).getNeeds().contains("Karamja elite diary"));
 		assertEquals("200 gp", Transports.from(2833, 2958, 0).get(0).fareText());
 	}
+
+	@Test
+	public void aWildernessObeliskLeadsToTheOtherFive()
+	{
+		MapSpot level13 = MapSpot.teleport(Teleport.named("OBELISK_13"));
+		assertTrue(Transports.mayBeTransport(level13));
+		List<Transports.Destination> to = Transports.from(level13);
+		assertEquals(Arrays.asList("Level 19", "Level 27", "Level 35", "Level 44", "Level 50"),
+			to.stream().map(Transports.Destination::getName).collect(Collectors.toList()));
+		assertEquals(new WorldPoint(3307, 3916, 0), to.get(4).getPoint());
+		// its own name stays the teleport's, no stop label beside it
+		assertNull(Transports.stopName(level13));
+		// any other teleport is no transport
+		assertFalse(Transports.mayBeTransport(MapSpot.teleport(Teleport.named("VARROCK"))));
+		assertTrue(Transports.from(MapSpot.teleport(Teleport.named("VARROCK"))).isEmpty());
+	}
 }

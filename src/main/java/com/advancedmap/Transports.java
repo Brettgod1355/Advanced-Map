@@ -40,6 +40,12 @@ final class Transports
 	static final Color LINE = new Color(0xFFD23F);
 	/** A spirit tree a player plants shows the game's farming patch icon, not a transport one. */
 	static final String SPIRIT_TREE = "Spirit tree";
+	/**
+	 * The Wilderness obelisks: each sends whoever stands in it to one of the others (at random, or the one set once the
+	 * Hard Wilderness Diary is done). Their icons are teleports of RuneLite's list, whose item is {@link #OBELISK_ITEM}.
+	 */
+	static final String OBELISK = "Wilderness obelisk";
+	private static final String OBELISK_ITEM = "Obelisk";
 
 	/** RuneLite's list names the Keldagrim carts but not where they go: the minecart station in Keldagrim. */
 	private static final String TO_KELDAGRIM = "Minecart to Keldagrim";
@@ -424,15 +430,28 @@ final class Transports
 		return best == null ? null : best.name;
 	}
 
-	/** The kind of transport an icon may be: any for a transport icon, a spirit tree for a farming patch, else none. */
+	/**
+	 * The kind of transport an icon may be: any for a transport icon, a spirit tree for a farming patch, the other
+	 * obelisks for a Wilderness obelisk's, else none.
+	 */
 	static boolean mayBeTransport(MapSpot spot)
 	{
-		return spot.getGroup() == IconGroup.TRANSPORTATION || spot.getGroup() == IconGroup.FARMING;
+		return spot.getGroup() == IconGroup.TRANSPORTATION || spot.getGroup() == IconGroup.FARMING || isObelisk(spot);
+	}
+
+	private static boolean isObelisk(MapSpot spot)
+	{
+		Teleport teleport = spot.getTeleport();
+		return teleport != null && OBELISK_ITEM.equals(teleport.getItem());
 	}
 
 	/** Where a transport icon leads; a farming patch only as a spirit tree's, never a nearby boat's. */
 	static List<Destination> from(MapSpot spot)
 	{
+		if (isObelisk(spot))
+		{
+			return obelisksFrom(spot);
+		}
 		if (!mayBeTransport(spot))
 		{
 			return Collections.emptyList();
@@ -441,9 +460,24 @@ final class Transports
 			spot.getGroup() == IconGroup.FARMING ? SPIRIT_TREE : null);
 	}
 
+	/** The other Wilderness obelisks, by their Wilderness level ("Level 13"). */
+	private static List<Destination> obelisksFrom(MapSpot spot)
+	{
+		List<Destination> out = new ArrayList<>();
+		for (Teleport teleport : Teleport.values())
+		{
+			if (OBELISK_ITEM.equals(teleport.getItem())
+				&& distance(teleport.getLocation(), spot.getX(), spot.getY(), spot.getPlane()) > NAME_REACH)
+			{
+				out.add(new Destination(teleport.getLocation(), OBELISK, "Level " + teleport.getDestination()));
+			}
+		}
+		return out;
+	}
+
 	private static Destination stopAt(MapSpot spot)
 	{
-		if (!mayBeTransport(spot))
+		if (!mayBeTransport(spot) || isObelisk(spot))
 		{
 			return null;
 		}
