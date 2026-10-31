@@ -210,6 +210,20 @@ public class TransportsTest
 	}
 
 	@Test
+	public void theKingBlackDragonsLeverLeadsToItsLair()
+	{
+		List<Transports.Destination> to = Transports.from(3067, 10253, 0);
+		assertEquals(1, to.size());
+		assertEquals("King Black Dragon's lair", to.get(0).getName());
+		assertEquals(new WorldPoint(2271, 4680, 0), to.get(0).getPoint());
+		// and back, and the Deserted Keep's lever to either town
+		assertEquals("Lava Maze Dungeon", Transports.from(2271, 4680, 0).get(0).getName());
+		assertEquals(Arrays.asList("Ardougne", "Edgeville"), Transports.from(3153, 3923, 0).stream()
+			.map(Transports.Destination::getName).collect(Collectors.toList()));
+		assertTrue(Transports.boardingSpots().contains(new WorldPoint(3067, 10253, 0)));
+	}
+
+	@Test
 	public void aWildernessObeliskLeadsToTheOtherFive()
 	{
 		MapSpot level13 = MapSpot.teleport(Teleport.named("OBELISK_13"));
