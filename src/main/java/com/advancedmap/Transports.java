@@ -508,17 +508,23 @@ final class Transports
 
 	/**
 	 * Where a transport icon leads when that is one place on the other map (the Grand Exchange's cart to Keldagrim,
-	 * underground): the map opens there instead of drawing a line. Null otherwise.
+	 * underground), or one place far off on the same one (the King Black Dragon's lever, whose lair lies thousands of
+	 * tiles away on the underground map): the map opens there instead of drawing a line. Null otherwise.
 	 */
 	static WorldPoint elsewhere(MapSpot spot)
 	{
 		List<Destination> to = from(spot);
-		if (to.size() != 1 || MapArea.of(to.get(0).point.getY()) == MapArea.of(spot.getY()))
+		if (to.size() != 1)
 		{
 			return null;
 		}
-		return to.get(0).point;
+		WorldPoint there = to.get(0).point;
+		boolean farOff = Math.abs(there.getX() - spot.getX()) + Math.abs(there.getY() - spot.getY()) > FAR_OFF;
+		return MapArea.of(there.getY()) != MapArea.of(spot.getY()) || farOff ? there : null;
 	}
+
+	/** Tiles apart (across and up) past which a transport's one place is gone to, not drawn: a line would leave the map. */
+	static final int FAR_OFF = 2000;
 
 	/**
 	 * Lines from a transport to each place it goes on the same map, each place marked with its name. A place on the

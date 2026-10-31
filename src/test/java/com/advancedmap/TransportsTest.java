@@ -221,6 +221,11 @@ public class TransportsTest
 		assertEquals(Arrays.asList("Ardougne", "Edgeville"), Transports.from(3153, 3923, 0).stream()
 			.map(Transports.Destination::getName).collect(Collectors.toList()));
 		assertTrue(Transports.boardingSpots().contains(new WorldPoint(3067, 10253, 0)));
+		// a click goes to the lair, thousands of tiles off on the same map, and back; the Deserted Keep's levers, some
+		// 1,200 tiles (across and up) from the towns, keep their lines
+		assertEquals(new WorldPoint(2271, 4680, 0), Transports.elsewhere(MapSpot.icon(3067, 10253, 0, 0, 1104)));
+		assertEquals(new WorldPoint(3067, 10254, 0), Transports.elsewhere(MapSpot.icon(2271, 4680, 0, 0, 1104)));
+		assertNull(Transports.elsewhere(MapSpot.icon(2561, 3311, 0, 0, 1104)));
 	}
 
 	@Test
