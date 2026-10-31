@@ -101,7 +101,7 @@ O	Fairy ring	2744	3719	0
 O	Fairy ring	3423	3016	0
 O	Fairy ring	2213	3099	0
 O	Fairy ring	3447	9824	0
-O	Fairy ring	2923	10454	0
+O	Fairy ring	2926	10455	0
 D	Fairy ring	2412	4434	0	ZANARIS
 D	Fairy ring	2996	3114	0	A I Q
 D	Fairy ring	2700	3247	0	A I R
@@ -158,7 +158,7 @@ D	Fairy ring	2744	3719	0	D K S
 D	Fairy ring	3423	3016	0	D L Q
 D	Fairy ring	2213	3099	0	D L R
 D	Fairy ring	3447	9824	0	D L S
-D	Fairy ring	2923	10454	0	D L P
+D	Fairy ring	2926	10455	0	D L P
 O	Hot air balloon	2806	3356	0
 O	Hot air balloon	2940	3422	0
 O	Hot air balloon	2924	3302	0
@@ -817,7 +817,8 @@ P	Charter ship	3189	2369	0	2157	3330	0	Prifddinas
 P	Charter ship	3189	2369	0	2805	2502	0	Red Rock
 P	Charter ship	3189	2369	0	1514	2971	0	Sunset Coast
 P	Charter ship	3189	2369	0	3064	2999	0	The Pandemonium
-# The fairy ring rows for DLP at Grimstone (2923, 10454) are newer than that pin: from the OSRS Wiki's "Fairy ring" page.
+# The fairy ring rows for DLP at Grimstone are newer than that pin: the ring from the OSRS Wiki's "Fairy ring" page, its tile
+# (2926, 10455) where the owner stood on it in game.
 # Levers, from Shortest Path's teleportation_levers.tsv at the same pin (place names added; the Deserted Keep's lever
 # also offers Edgeville, which that list leaves out)
 P	Lever	2561	3311	0	3154	3924	0	Deserted Keep
