@@ -1068,6 +1068,8 @@ public class AdvancedMapPlugin extends Plugin
 		// the store seen here, not the one there when the task runs: the plugin may be restarted meanwhile
 		executor.execute(() ->
 		{
+			// said in the log: a whole map gone is otherwise a mystery when its owner did not see it go
+			log.debug("deleting the saved map ({} regions and floors) on \"Draw the map again\"", store.count());
 			store.clear();
 			currentPreparer.restart();
 		});
