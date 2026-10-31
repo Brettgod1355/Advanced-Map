@@ -210,6 +210,16 @@ public class TransportsTest
 	}
 
 	@Test
+	public void grimstonesFairyRingIsDlp()
+	{
+		// the game's icon a tile off the ring
+		MapSpot ring = MapSpot.icon(2924, 10455, 0, 0, 1104);
+		assertEquals("DLP", Transports.stopName(ring));
+		assertTrue(Transports.from(ring).size() > 50);
+		assertTrue(Transports.network("Fairy ring").stream().anyMatch(d -> d.getName().equals("DLP")));
+	}
+
+	@Test
 	public void lumbridgesGroupIronmanPortalLeadsToTheNode()
 	{
 		MapSpot portal = MapSpot.icon(3217, 3235, 0, 0, 1104);
