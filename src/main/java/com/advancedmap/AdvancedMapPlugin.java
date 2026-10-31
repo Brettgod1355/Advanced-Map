@@ -30,6 +30,9 @@ import net.runelite.api.Menu;
 import net.runelite.api.MenuAction;
 import net.runelite.api.MenuEntry;
 import net.runelite.api.Player;
+import net.runelite.api.WorldEntity;
+import net.runelite.api.WorldView;
+import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.BeforeRender;
 import net.runelite.api.events.GameStateChanged;
@@ -2519,10 +2522,30 @@ public class AdvancedMapPlugin extends Plugin
 		clientThread.invokeLater(() -> postState(false));
 	}
 
+	/**
+	 * Where the player is in the world. Aboard a boat the player stands in the boat's own small world (its deck, which
+	 * the map would show as a few planks in open sea): the spot is moved through the boat to where it sails.
+	 */
 	private WorldPoint currentPlayerLocation()
 	{
 		Player local = client.getLocalPlayer();
-		return local == null ? null : WorldPoint.fromLocalInstance(client, local.getLocalLocation());
+		LocalPoint at = local == null ? null : local.getLocalLocation();
+		if (at == null)
+		{
+			return null;
+		}
+		WorldView view = local.getWorldView();
+		if (view != null && !view.isTopLevel())
+		{
+			WorldView top = client.getTopLevelWorldView();
+			WorldEntity boat = top == null ? null : top.worldEntities().byIndex(view.getId());
+			at = boat == null ? null : boat.transformToMainWorld(at);
+			if (at == null)
+			{
+				return null;
+			}
+		}
+		return WorldPoint.fromLocalInstance(client, at);
 	}
 
 	private void postState(boolean open)
