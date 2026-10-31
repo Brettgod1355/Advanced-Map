@@ -87,8 +87,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 The teleport destinations in `src/main/resources/com/advancedmap/teleports.tsv` (read by `Teleport.java`) are
 transcribed from RuneLite's world map plugin,
-`runelite-client/src/main/java/net/runelite/client/plugins/worldmap/TeleportLocationData.java` at the same release (the published `client-1.13.4-sources.jar`): every destination, its kind, item, Magic level and tile, without
-the icon file names (Advanced Map draws its own teleport marks). The agility shortcuts' levels come from RuneLite's
+`runelite-client/src/main/java/net/runelite/client/plugins/worldmap/TeleportLocationData.java` at the same release (the published `client-1.13.4-sources.jar`): every destination, its kind, item, Magic level, tile and icon
+file name. The 92 icons themselves, in `src/main/resources/com/advancedmap/teleports/`, are copied unchanged from
+the same plugin's resources in the published `client-1.13.4.jar` (`net/runelite/client/plugins/worldmap/`). The agility shortcuts' levels come from RuneLite's
 `net.runelite.client.game.AgilityShortcut`, used through the client at runtime and not copied.
 
 The rocks at each mining site in `src/main/resources/com/advancedmap/mining-sites.tsv` (167 sites, as "2 Iron", "3

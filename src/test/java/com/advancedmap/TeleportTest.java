@@ -32,6 +32,23 @@ public class TeleportTest
 	}
 
 	@Test
+	public void everyTeleportHasRuneLitesPictureForIt()
+	{
+		for (Teleport teleport : Teleport.values())
+		{
+			java.awt.image.BufferedImage picture = teleport.picture();
+			assertTrue("no picture for " + teleport.getName(), picture != null);
+			// the map's size for a teleport: RuneLite's are 14 or 15 pixels
+			assertTrue(teleport.getName(), picture.getWidth() >= 13 && picture.getWidth() <= 16);
+		}
+		// each spell its own spellbook icon, each item its own
+		assertEquals("lumbridge_teleport_icon.png", Teleport.named("LUMBRIDGE").getIcon());
+		assertEquals("games_necklace_teleport_icon.png", Teleport.named("WINTERTODT_CAMP").getIcon());
+		// one file read once, shared by the teleports that use it
+		assertTrue(Teleport.named("VARROCK").picture() == Teleport.named("VARROCK_GE").picture());
+	}
+
+	@Test
 	public void rowsReadAsTheEnumDid()
 	{
 		Teleport varrock = Teleport.named("VARROCK");

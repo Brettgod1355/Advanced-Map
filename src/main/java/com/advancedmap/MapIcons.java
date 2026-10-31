@@ -89,6 +89,8 @@ final class MapIcons
 	private final Map<Integer, List<MapSpot>> byRegion = new ConcurrentHashMap<>();
 	private final Map<Integer, BufferedImage> images = new ConcurrentHashMap<>();
 	private final Map<Integer, BufferedImage> grayImages = new ConcurrentHashMap<>();
+	/** The teleports' pictures grayed, by file. */
+	private final Map<String, BufferedImage> grayTeleports = new ConcurrentHashMap<>();
 	/** The variables of the unlocks found so far, for {@link Progress} to read. */
 	private final Set<Integer> watchedVars = ConcurrentHashMap.newKeySet();
 
@@ -140,6 +142,17 @@ final class MapIcons
 			return image;
 		}
 		return grayImages.computeIfAbsent(areaId, k -> grayed(image));
+	}
+
+	/** A teleport's picture, gray when {@code gray} (a locked spell or item); null when it has none. */
+	BufferedImage teleportPicture(Teleport teleport, boolean gray)
+	{
+		BufferedImage picture = teleport.picture();
+		if (picture == null || !gray)
+		{
+			return picture;
+		}
+		return grayTeleports.computeIfAbsent(teleport.getIcon(), k -> grayed(picture));
 	}
 
 	/**
@@ -203,7 +216,13 @@ final class MapIcons
 		}
 		int width = TELEPORT_SIZE;
 		int height = TELEPORT_SIZE;
-		if (spot.getTeleport() == null)
+		BufferedImage picture = spot.getTeleport() == null ? null : spot.getTeleport().picture();
+		if (picture != null)
+		{
+			width = picture.getWidth();
+			height = picture.getHeight();
+		}
+		else if (spot.getTeleport() == null)
 		{
 			BufferedImage image = images.get(spot.getAreaId());
 			if (image == null)

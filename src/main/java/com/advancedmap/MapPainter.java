@@ -777,33 +777,17 @@ final class MapPainter
 				g.setComposite(java.awt.AlphaComposite.getInstance(java.awt.AlphaComposite.SRC_OVER, 0.4f));
 			}
 			Teleport teleport = icon.getSpot().getTeleport();
-			if (teleport != null)
+			boolean locked = look == MapIcons.Look.LOCKED;
+			BufferedImage image = teleport != null ? icons.teleportPicture(teleport, locked)
+				: icons.image(icon.getSpot().getAreaId(), locked);
+			if (image != null)
 			{
-				drawTeleportMark(g, at, teleport.getType(), look == MapIcons.Look.LOCKED);
+				drawPicture(g, image, at);
 			}
-			else
+			else if (teleport != null)
 			{
-				BufferedImage image = icons.image(icon.getSpot().getAreaId(), look == MapIcons.Look.LOCKED);
-				if (image != null)
-				{
-					if (at.width == image.getWidth() && at.height == image.getHeight())
-					{
-						g.drawImage(image, at.x, at.y, null);
-					}
-					else
-					{
-						// whole multiples keep the game's pixel look; other sizes are smoothed
-						Object interpolation = g.getRenderingHint(RenderingHints.KEY_INTERPOLATION);
-						g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, at.width % image.getWidth() == 0
-							? RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR
-							: RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-						g.drawImage(image, at.x, at.y, at.width, at.height, null);
-						if (interpolation != null)
-						{
-							g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, interpolation);
-						}
-					}
-				}
+				// a teleport without a picture of its own: Advanced Map's mark in the colors of its kind
+				drawTeleportMark(g, at, teleport.getType(), locked);
 			}
 			g.setComposite(composite);
 			drawBadge(g, at, look);
@@ -844,6 +828,26 @@ final class MapPainter
 			}
 			taken.add(box);
 			drawShadowed(g, name, box.x + 1, box.y + metrics.getAscent(), STOP_NAME);
+		}
+	}
+
+	/** An icon's picture in its box: as it is at its own size, else scaled. */
+	private static void drawPicture(Graphics2D g, BufferedImage image, Rectangle at)
+	{
+		if (at.width == image.getWidth() && at.height == image.getHeight())
+		{
+			g.drawImage(image, at.x, at.y, null);
+			return;
+		}
+		// whole multiples keep the game's pixel look; other sizes are smoothed
+		Object interpolation = g.getRenderingHint(RenderingHints.KEY_INTERPOLATION);
+		g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, at.width % image.getWidth() == 0
+			? RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR
+			: RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+		g.drawImage(image, at.x, at.y, at.width, at.height, null);
+		if (interpolation != null)
+		{
+			g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, interpolation);
 		}
 	}
 

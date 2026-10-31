@@ -1,222 +1,223 @@
 # Teleport destinations, transcribed from RuneLite's world map plugin (TeleportLocationData at runelite-parent-1.13.4;
 # Copyright (c) 2018, Morgan Lewis <https://github.com/MESLewis>, BSD 2-Clause, see THIRD_PARTY_NOTICES.md)
-# without its icon file names. The key is kept as it was (a player's hidden icons are saved by it).
-# key, type, item (empty for a spell), destination, Magic level (spells), x, y, plane
-VARROCK	NORMAL_MAGIC		Varrock	25	3213	3424	0
-VARROCK_GE	NORMAL_MAGIC		Varrock GE	25	3164	3478	0
-LUMBRIDGE	NORMAL_MAGIC		Lumbridge	31	3222	3218	0
-FALADOR	NORMAL_MAGIC		Falador	37	2965	3381	0
-CAMELOT	NORMAL_MAGIC		Camelot	45	2757	3477	0
-CAMELOT_BANK	NORMAL_MAGIC		Camelot Bank	45	2726	3485	0
-KOUREND	NORMAL_MAGIC		Kourend	48	1643	3672	0
-ARDOUGNE	NORMAL_MAGIC		Ardougne	51	2664	3306	0
-CIVITAS_ILLA_FORTIS	NORMAL_MAGIC		Civitas illa Fortis	54	1681	3133	0
-WATCHTOWER	NORMAL_MAGIC		Watchtower	58	2547	3114	0
-WATCHTOWER_YANILLE	NORMAL_MAGIC		Watchtower Yanille	58	2584	3097	0
-TROLLHEIM	NORMAL_MAGIC		Trollheim	61	2891	3678	0
-APE_ATOLL	NORMAL_MAGIC		Ape Atoll	64	2796	2791	0
-PADDEWWA	ANCIENT_MAGICKS		Paddewwa	54	3097	9880	0
-SENNTISTEN	ANCIENT_MAGICKS		Senntisten	60	3319	3336	0
-KHARYRLL	ANCIENT_MAGICKS		Kharyrll	66	3494	3473	0
-LASSAR	ANCIENT_MAGICKS		Lassar	72	3002	3472	0
-DAREEYAK	ANCIENT_MAGICKS		Dareeyak	78	2969	3695	0
-CARRALLANGER	ANCIENT_MAGICKS		Carrallanger	84	3157	3667	0
-ANNAKARL	ANCIENT_MAGICKS		Annakarl	90	3288	3888	0
-GHORROCK	ANCIENT_MAGICKS		Ghorrock	96	2977	3872	0
-MOONCLAN	LUNAR_MAGIC		Moonclan	69	2113	3915	0
-OURANIA	LUNAR_MAGIC		Ourania	71	2468	3246	0
-WATERBIRTH	LUNAR_MAGIC		Waterbirth	72	2546	3755	0
-BARBARIAN	LUNAR_MAGIC		Barbarian	75	2543	3568	0
-KHAZARD	LUNAR_MAGIC		Khazard	78	2636	3167	0
-FISHING_GUILD	LUNAR_MAGIC		Fishing Guild	85	2612	3391	0
-CATHERBY	LUNAR_MAGIC		Catherby	87	2802	3449	0
-ICE_PLATEAU	LUNAR_MAGIC		Ice Plateau	89	2973	3939	0
-ARCEUUS_LIBRARY	ARCEUUS_MAGIC		Arceuus Library	6	1632	3838	0
-DRAYNOR_MANOR	ARCEUUS_MAGIC		Draynor Manor	17	3108	3352	0
-BATTLEFRONT	ARCEUUS_MAGIC		Battlefront	23	1349	3739	0
-MIND_ALTAR	ARCEUUS_MAGIC		Mind Altar	28	2979	3509	0
-SALVE_GRAVEYARD	ARCEUUS_MAGIC		Salve Graveyard	40	3433	3461	0
-FENKENSTRAINS_CASTLE	ARCEUUS_MAGIC		Fenkenstrain's Castle	48	3548	3528	0
-WEST_ARDOUGNE	ARCEUUS_MAGIC		West Ardougne	61	2500	3291	0
-HARMONY_ISLAND	ARCEUUS_MAGIC		Harmony Island	65	3797	2866	0
-CEMETERY	ARCEUUS_MAGIC		Cemetery	71	2978	3763	0
-BARROWS	ARCEUUS_MAGIC		Barrows	83	3565	3315	0
-APE_ATOLL_ARCEUUS	ARCEUUS_MAGIC		Ape Atoll	90	2770	2703	0
-BARBARIAN_ASSAULT	JEWELLERY	Games Necklace	Barbarian Assault	0	2520	3571	0
-BURTHORPE_GAMES_ROOM	JEWELLERY	Games Necklace	Burthorpe Games Room	0	2898	3554	0
-TEARS_OF_GUTHIX	JEWELLERY	Games Necklace	Tears of Guthix	0	3245	9500	0
-CORPOREAL_BEAST	JEWELLERY	Games Necklace	Corporeal Beast	0	2967	4384	0
-WINTERTODT_CAMP	JEWELLERY	Games Necklace	Wintertodt Camp	0	1624	3938	0
-EMIRS_ARENA	JEWELLERY	Ring of Dueling	Emir's Arena	0	3315	3235	0
-FEROX_ENCLAVE	JEWELLERY	Ring of Dueling	Ferox Enclave	0	3151	3636	0
-CASTLE_WARS	JEWELLERY	Ring of Dueling	Castle Wars	0	2441	3091	0
-FORTIS_COLOSSEUM	JEWELLERY	Ring of Dueling	Fortis Colosseum	0	1793	3107	0
-WARRIORS_GUILD	JEWELLERY	Combat Bracelet	Warriors' Guild	0	2883	3549	0
-CHAMPIONS_GUILD	JEWELLERY	Combat Bracelet	Champions' Guild	0	3189	3368	0
-EDGEVILLE_MONASTERY	JEWELLERY	Combat Bracelet	Edgeville Monastery	0	3053	3487	0
-RANGING_GUILD	JEWELLERY	Combat Bracelet	Ranging Guild	0	2654	3441	0
-FISHING_GUILD_NECK	JEWELLERY	Skills Necklace	Fishing Guild	0	2613	3390	0
-MINING_GUILD	JEWELLERY	Skills Necklace	Mining Guild	0	3049	9762	0
-CRAFTING_GUILD	JEWELLERY	Skills Necklace	Crafting Guild	0	2934	3294	0
-COOKING_GUILD	JEWELLERY	Skills Necklace	Cooking Guild	0	3145	3438	0
-WOODCUTTING_GUILD	JEWELLERY	Skills Necklace	Woodcutting Guild	0	1662	3505	0
-FARMING_GUILD	JEWELLERY	Skills Necklace	Farming Guild	0	1249	3717	0
-EDGEVILLE	JEWELLERY	Amulet of Glory	Edgeville	0	3087	3496	0
-KARAMJA	JEWELLERY	Amulet of Glory	Karamja	0	2918	3176	0
-DRAYNOR_VILLAGE	JEWELLERY	Amulet of Glory	Draynor Village	0	3105	3251	0
-AL_KHARID	JEWELLERY	Amulet of Glory	Al-Kharid	0	3293	3163	0
-MISCELLANIA	JEWELLERY	Ring of Wealth	Miscellania	0	2535	3862	0
-GRAND_EXCHANGE	JEWELLERY	Ring of Wealth	Grand Exchange	0	3162	3480	0
-FALADOR_PARK	JEWELLERY	Ring of Wealth	Falador Park	0	2995	3375	0
-DONDAKAN	JEWELLERY	Ring of Wealth	Dondakan	0	2831	10165	0
-SLAYER_TOWER	JEWELLERY	Slayer Ring	Slayer Tower	0	3423	3536	0
-FREMENNIK_SLAYER_DUNGEON	JEWELLERY	Slayer Ring	Fremennik Slayer Dungeon	0	2800	9998	0
-FREMENNIK_SLAYER_DUNGEON_OUTSIDE	JEWELLERY	Slayer Ring	Fremennik Slayer Dungeon (inside)	0	2800	3615	0
-TARNS_LAIR	JEWELLERY	Slayer Ring	Tarn's Lair	0	3187	4601	0
-STRONGHOLD_SLAYER_CAVE	JEWELLERY	Slayer Ring	Stronghold Slayer Cave	0	2433	3421	0
-DARK_BEASTS	JEWELLERY	Slayer Ring	Dark Beasts	0	2028	4638	0
-WYRMSCRAIG_CAVERN	JEWELLERY	Slayer Ring	Wyrmscraig Cavern	0	2773	8633	0
-WYRMSCRAIG_CAVERN_OUTSIDE	JEWELLERY	Slayer Ring	Wyrmscraig Cavern (inside)	0	2533	2206	0
-DIGSITE	JEWELLERY	Digsite Pendant	Digsite	0	3339	3445	0
-HOUSE_ON_THE_HILL	JEWELLERY	Digsite Pendant	House on the Hill	0	3763	3869	0
-LITHKREN	JEWELLERY	Digsite Pendant	Lithkren	0	3547	10456	0
-WIZARDS_TOWER	JEWELLERY	Necklace of Passage	Wizards' Tower	0	3114	3181	0
-JORRALS_OUTPOST	JEWELLERY	Necklace of Passage	Jorral's Outpost	0	2431	3348	0
-DESERT_EAGLE_STATION	JEWELLERY	Necklace of Passage	Desert eagle station of the eagle transport system	0	3406	3157	0
-WYRMSCRAIG	JEWELLERY	Necklace of Passage	Wyrmscraig	0	2591	2221	0
-CHAOS_TEMPLE	JEWELLERY	Burning Amulet	Chaos Temple (lvl 15)	0	3234	3637	0
-BANDIT_CAMP	JEWELLERY	Burning Amulet	Bandit Camp (lvl 17)	0	3038	3651	0
-LAVA_MAZE	JEWELLERY	Burning Amulet	Lava Maze (lvl 41)	0	3028	3840	0
-NORTH_ALDARIN	JEWELLERY	Pendant of Ates	North Aldarin	0	1425	2995	0
-DARKFROST	JEWELLERY	Pendant of Ates	The Darkfrost	0	1490	3284	0
-RALOS_RISE	JEWELLERY	Pendant of Ates	Ralos' Rise	0	1459	3137	0
-TWILIGHT_TEMPLE	JEWELLERY	Pendant of Ates	Twilight Temple	0	1666	3223	0
-KASTORI	JEWELLERY	Pendant of Ates	Kastori	0	1366	3086	0
-NEMUS_RETREAT	JEWELLERY	Pendant of Ates	Nemus Retreat	0	1364	3277	0
-BRYOPHYTA_LAIR	JEWELLERY	Giantsoul Amulet	Bryophyta's Lair	0	3174	9898	0
-OBOR_LAIR	JEWELLERY	Giantsoul Amulet	Obor's Lair	0	3096	9833	0
-BRANDA_AND_ELDRIC_LAIR	JEWELLERY	Giantsoul Amulet	Branda and Eldric's Lair	0	2952	9574	0
-COWBELL_AMULET	JEWELLERY	Cowbell Amulet	Cow field	0	3259	3276	0
-PANDEMONIUM	JEWELLERY	Sailors' Amulet	The Pandemonium	0	3060	2974	0
-PORT_ROBERTS	JEWELLERY	Sailors' Amulet	Port Roberts	0	1889	3292	0
-RED_ROCK	JEWELLERY	Sailors' Amulet	Red Rock	0	2797	2521	0
-DEEPFIN_POINT	JEWELLERY	Sailors' Amulet	Deepfin Point	0	1943	2758	0
-XERICS_LOOKOUT	OTHER	Xeric's Talisman	Xeric's Lookout	0	1576	3528	0
-XERICS_GLADE	OTHER	Xeric's Talisman	Xeric's Glade	0	1754	3564	0
-XERICS_INFERNO	OTHER	Xeric's Talisman	Xeric's Inferno	0	1504	3819	0
-XERICS_HEART	OTHER	Xeric's Talisman	Xeric's Heart	0	1641	3670	0
-XERICS_HONOUR	OTHER	Xeric's Talisman	Xeric's Honour	0	1254	3559	0
-STRONGHOLD_OF_SECURITY	OTHER	Skull Sceptre	Stronghold of Security	0	3081	3421	0
-MYTHS_GUILD	OTHER	Mythical Cape	Myth's Guild	0	2458	2851	0
-ECTOFUNTUS	OTHER	Ectophial	Ectofuntus	0	3660	3522	0
-CHAMPIONS_GUILD_CHRONICLE	OTHER	Chronicle	Champions' Guild	0	3202	3357	0
-GRAND_TREE	OTHER	Royal Seed Pod	Grand Tree	0	2465	3495	0
-RELLEKKKA_LYRE	OTHER	Enchanted Lyre	Rellekka	0	2664	3643	0
-WATERBIRTH_ISLAND_LYRE	OTHER	Enchanted Lyre	Waterbirth Island	0	2550	3756	0
-NEITIZNOT_LYRE	OTHER	Enchanted Lyre	Neitiznot	0	2336	3801	0
-JATIZSO_LYRE	OTHER	Enchanted Lyre	Jatizso	0	2409	3809	0
-WEISS_ICY_BASALT	OTHER	Icy Basalt	Weiss	0	2846	3940	0
-TROLL_STRONGHOLD_STONY_BASALT	OTHER	Stony Basalt	Troll Stronghold (with 73 Agility)	0	2838	3693	0
-TROLL_STRONGHOLD_STONY_BASALT_OUTSIDE	OTHER	Stony Basalt	Troll Stronghold	0	2844	3693	0
-KHAREDSTS_MEMOIRS_HOSIDIUS	OTHER	Kharedst's Memoirs	Lunch by the Lancalliums (Hosidius)	0	1713	3612	0
-KHAREDSTS_MEMOIRS_PISCARILIUS	OTHER	Kharedst's Memoirs	The Fisher's Flute (Piscarilius)	0	1802	3748	0
-KHAREDSTS_MEMOIRS_SHAYZIEN	OTHER	Kharedst's Memoirs	History and Hearsay (Shayzien)	0	1478	3576	0
-KHAREDSTS_MEMOIRS_LOVAKENGJ	OTHER	Kharedst's Memoirs	Jewellery of Jubilation (Lovakengj)	0	1544	3762	0
-KHAREDSTS_MEMOIRS_ARCEUUS	OTHER	Kharedst's Memoirs	A Dark Disposition (Arceuus)	0	1680	3746	0
-PHARAOHS_SCEPTRE_JALSAVRAH	OTHER	Pharaoh's Sceptre	Jalsavrah (Pyramid Plunder)	0	3288	2795	0
-PHARAOHS_SCEPTRE_JALEUSTROPHOS	OTHER	Pharaoh's Sceptre	Jaleustrophos (Agility Pyramid)	0	3341	2827	0
-PHARAOHS_SCEPTRE_JALDRAOCHT	OTHER	Pharaoh's Sceptre	Jaldraocht (Desert Treasure Pyramid)	0	3232	2897	0
-PHARAOHS_SCEPTRE_JALTEVAS	OTHER	Pharaoh's Sceptre	Jaltevas (Necropolis Obelisk)	0	3313	2720	0
-CAMULET_TEMPLE	OTHER	Camulet	Enakhra's Temple	0	3190	2923	0
-TELEPORT_CRYSTAL_LLETYA	OTHER	Teleport crystal	Lletya	0	2330	3172	0
-TELEPORT_CRYSTAL_PRIFDDINAS	OTHER	Teleport crystal	Prifddinas	0	3264	6065	0
-DRAKANS_MEDALLION_VER_SINHAZA	OTHER	Drakan's medallion	Ver Sinhaza	0	3649	3230	0
-DRAKANS_MEDALLION_DARKMEYER	OTHER	Drakan's medallion	Darkmeyer	0	3592	3337	0
-DRAKANS_MEDALLION_SLEPE	OTHER	Drakan's medallion	Slepe	0	3808	9700	0
-DRAKANS_MEDALLION_CASTLE_DRAKAN	OTHER	Drakan's medallion	Castle Drakan	0	3557	3358	0
-RING_OF_THE_ELEMENTS_AIR	OTHER	Ring of the elements	Air Altar	0	2981	3276	0
-RING_OF_THE_ELEMENTS_WATER	OTHER	Ring of the elements	Water Altar	0	3166	3158	0
-RING_OF_THE_ELEMENTS_EARTH	OTHER	Ring of the elements	Earth Altar	0	3288	3468	0
-RING_OF_THE_ELEMENTS_FIRE	OTHER	Ring of the elements	Fire Altar	0	3315	3278	0
-RING_OF_SHADOWS_LASSAR_UNDERCITY	OTHER	Ring of shadows	Lassar Undercity	0	2588	6435	0
-RING_OF_SHADOWS_THE_STRANGLEWOOD	OTHER	Ring of shadows	The Stranglewood	0	1175	3422	0
-OBELISK_13	OTHER	Obelisk	13	0	3156	3620	0
-OBELISK_19	OTHER	Obelisk	19	0	3227	3667	0
-OBELISK_27	OTHER	Obelisk	27	0	3035	3732	0
-OBELISK_35	OTHER	Obelisk	35	0	3106	3794	0
-OBELISK_44	OTHER	Obelisk	44	0	2980	3866	0
-OBELISK_50	OTHER	Obelisk	50	0	3307	3916	0
-WILDERNESS_CRABS_TELEPORT	OTHER	Wilderness crabs teleport		0	3348	3783	0
-CANOE_WILDERNESS	OTHER	Canoe (No departure)	35	0	3141	3796	0
-ARDOUGNE_CLOAK_MONASTERY	OTHER	Ardougne Cloak	Monastery	0	2606	3222	0
-ARDOUGNE_CLOAK_FARM	OTHER	Ardougne Cloak	Farm	0	2673	3375	0
-EXPLORERS_RING	OTHER	Explorer's Ring		0	3052	3292	0
-KARAMJA_GLOVES_GEM_MINE	OTHER	Karamja Gloves	Gem Mine (Underground)	0	2827	2997	0
-KARAMJA_GLOVES_DURADEL	OTHER	Karamja Gloves	Duradel	0	2870	2981	0
-DESERT_AMULET_NARDAH	OTHER	Desert Amulet	Nardah	0	3425	2928	0
-DESERT_AMULKT_KALPHITE_CAVE	OTHER	Desert Amulet	Kalphite Cave	0	3322	3122	0
-MORYTANIA_LEGS_SLIME_PIT	OTHER	Morytania Legs	Slime Pit (Underground)	0	3654	3516	0
-MORYTANIA_LEGS_BURGH_DE_ROTT	OTHER	Morytania Legs	Burgh de Rott	0	3482	3231	0
-FREMENNIK_SEA_BOOTS	OTHER	Fremennik Sea Boots		0	2640	3675	0
-KANDARIN_HEADGEAR	OTHER	Kandarin Headgear		0	2729	3411	0
-WILDERNESS_SWORD	OTHER	Wilderness Sword		0	3377	3891	0
-WESTERN_BANNER	OTHER	Western Banner		0	2329	3685	0
-RADAS_BLESSING_MOUNT_KARUULM	OTHER	Rada's Blessing		0	1311	3795	0
-RADAS_BLESSING_WOODLANG	OTHER	Rada's Blessing		0	1553	3454	0
-GHOMMALS_HILT_GWD	OTHER	Ghommal's Hilt	God Wars Dungeon	0	2898	3709	0
-GHOMMALS_HILT_MORULREK	OTHER	Ghommal's Hilt	Mor Ul Rek	0	2554	5130	0
-DIGSITE_SCROLL	SCROLL	Digsite Teleport		0	3324	3412	0
-IORWERTH_CAMP_SCROLL	SCROLL	Iorwerth Camp Teleport		0	2193	3257	0
-FELDIP_HILLS_SCROLL	SCROLL	Feldip Hills Teleport		0	2542	2925	0
-LUMBERYARD_SCROLL	SCROLL	Lumberyard Teleport		0	3303	3487	0
-LUNAR_ISLE_SCROLL	SCROLL	Lunar Isle Teleport		0	2093	3912	0
-MORTTON_SCROLL	SCROLL	Mort'ton		0	3489	3288	0
-MOS_LEHARMLESS_SCROLL	SCROLL	Mos Le'Harmless Teleport		0	3701	2996	0
-NARDAH_SCROLL	SCROLL	Nardah Teleport		0	3421	2917	0
-PEST_CONTROL_SCROLL	SCROLL	Pest Control Teleport		0	2657	2660	0
-PISCATORIS_SCROLL	SCROLL	Piscatoris Teleport		0	2339	3648	0
-TAI_BWO_WANNAI_SCROLL	SCROLL	Tai Bwo Wannai Teleport		0	2788	3066	0
-ZULANDRA_SCROLL	SCROLL	Zul-Andra Teleport		0	2197	3056	0
-KEY_MASTER_SCROLL	SCROLL	Key Master Teleport		0	2686	9882	0
-REVENANT_CAVE_SCROLL	SCROLL	Revenant Cave Teleport		0	3127	3833	0
-WATSON_SCROLL	SCROLL	Watson Teleport		0	1645	3579	0
-SPIDER_CAVE_SCROLL	SCROLL	Spider cave teleport		0	3658	3403	0
-COLOSSAL_WYRM_SCROLL	SCROLL	Colossal Wyrm Teleport		0	1641	2921	0
-CHASM_TELEPORT_SCROLL	SCROLL	Chasm of Fire teleport		0	1311	9882	0
-ARDEAGLAIS_SCROLL	SCROLL	Ardeaglais teleport		0	2543	2216	0
-ACHIEVEMENT_CAPE_TWO_PINTS	OTHER	Achievement Cape	Two-pints	0	2574	3324	0
-ACHIEVEMENT_CAPE_JARR	OTHER	Achievement Cape	Jarr	0	3300	3121	0
-ACHIEVEMENT_CAPE_SIR_REBRAL	OTHER	Achievement Cape	Sir Rebral	0	2977	3345	0
-ACHIEVEMENT_CAPE_THORODIN	OTHER	Achievement Cape	Thorodin	0	2659	3627	0
-ACHIEVEMENT_CAPE_FLAX_KEEPER	OTHER	Achievement Cape	Flax Keeper	0	2744	3444	0
-ACHIEVEMENT_CAPE_JACKIE_THE_FRUIT	OTHER	Achievement Cape	Pirate Jackie the Fruit	0	2810	3191	0
-ACHIEVEMENT_CAPE_KALEB_PARAMAYA	OTHER	Achievement Cape	Kaleb Paramaya	0	2861	2995	1
-ACHIEVEMENT_CAPE_JUNGLE_FORESTER	OTHER	Achievement Cape	Jungle forester	0	2795	2945	0
-ACHIEVEMENT_CAPE_TZHAAR_MEJ	OTHER	Achievement Cape	TzHaar-Mej	0	2455	5133	0
-ACHIEVEMENT_CAPE_ELISE	OTHER	Achievement Cape	Elise	0	1647	3666	0
-ACHIEVEMENT_CAPE_HATIUS_COSAINTUS	OTHER	Achievement Cape	Hatius Cosaintus	0	3239	3220	0
-ACHIEVEMENT_CAPE_LE_SABRE	OTHER	Achievement Cape	Le-sabrè	0	3465	3477	0
-ACHIEVEMENT_CAPE_TOBY	OTHER	Achievement Cape	Toby	0	3224	3414	0
-ACHIEVEMENT_CAPE_LESSER_FANATIC	OTHER	Achievement Cape	Lesser Fanatic	0	3122	3516	0
-ACHIEVEMENT_CAPE_ELDER_GNOME_CHILD	OTHER	Achievement Cape	Elder Gnome child	0	2467	3459	0
-ACHIEVEMENT_CAPE_TWIGGY_OKORN	OTHER	Achievement Cape	Twiggy O'Korn	0	3097	3226	0
-CONSTRUCTION_CAPE_RIMMINGTON	OTHER	Construction Cape	Rimmington	0	2954	3224	0
-CONSTRUCTION_CAPE_TAVERLEY	OTHER	Construction Cape	Taverley	0	2894	3465	0
-CONSTRUCTION_CAPE_POLLNIVNEACH	OTHER	Construction Cape	Pollnivneach	0	3340	3004	0
-CONSTRUCTION_CAPE_HOSIDIUS	OTHER	Construction Cape	Hosidius	0	1744	3517	0
-CONSTRUCTION_CAPE_RELLEKKA	OTHER	Construction Cape	Rellekka	0	2670	3632	0
-CONSTRUCTION_CAPE_ALDARIN	OTHER	Construction Cape	Aldarin	0	1422	2966	0
-CONSTRUCTION_CAPE_BRIMHAVEN	OTHER	Construction Cape	Brimhaven	0	2758	3178	0
-CONSTRUCTION_CAPE_YANILLE	OTHER	Construction Cape	Yanille	0	2544	3095	0
-CONSTRUCTION_CAPE_PRIFDDINAS	OTHER	Construction Cape	Prifddinas	0	3239	6076	0
-CRAFTING_CAPE	OTHER	Crafting Cape		0	2931	3286	0
-FARMING_CAPE	OTHER	Farming Cape		0	1248	3725	0
-FISHING_CAPE_FISHING_GUILD	OTHER	Fishing Cape	Fishing Guild	0	2604	3401	0
-FISHING_CAPE_OTTOS_GROTTO	OTHER	Fishing Cape	Otto's Grotto	0	2504	3484	0
-HUNTER_CAPE_CARNIVOROUS	OTHER	Hunter Cape	Carnivorous Chinchompa Area	0	2556	2916	0
-HUNTER_CAPE_BLACK	OTHER	Hunter Cape	Black Chinchompa Area	0	3144	3772	0
-HUNTER_CAPE_HUNTER_GUILD	OTHER	Hunter Cape	Hunter Guild	0	1558	3046	0
-SAILING_CAPE	OTHER	Sailing Cape	The Pandemonium	0	3048	2972	0
-STRENGTH_CAPE	OTHER	Strength Cape		0	2865	3546	0
-QUEST_CAPE	OTHER	Quest Cape		0	2729	3348	0
-MUSIC_CAPE	OTHER	Music Cape	Falo the Bard	0	2689	3547	0
+# with its icon file names (the pictures, from the same release, are in teleports/). The key is kept as it was (a
+# player's hidden icons are saved by it).
+# key, type, item (empty for a spell), destination, Magic level (spells), x, y, plane, icon
+VARROCK	NORMAL_MAGIC		Varrock	25	3213	3424	0	varrock_teleport_icon.png
+VARROCK_GE	NORMAL_MAGIC		Varrock GE	25	3164	3478	0	varrock_teleport_icon.png
+LUMBRIDGE	NORMAL_MAGIC		Lumbridge	31	3222	3218	0	lumbridge_teleport_icon.png
+FALADOR	NORMAL_MAGIC		Falador	37	2965	3381	0	falador_teleport_icon.png
+CAMELOT	NORMAL_MAGIC		Camelot	45	2757	3477	0	camelot_teleport_icon.png
+CAMELOT_BANK	NORMAL_MAGIC		Camelot Bank	45	2726	3485	0	camelot_teleport_icon.png
+KOUREND	NORMAL_MAGIC		Kourend	48	1643	3672	0	kourend_teleport_icon.png
+ARDOUGNE	NORMAL_MAGIC		Ardougne	51	2664	3306	0	ardougne_teleport_icon.png
+CIVITAS_ILLA_FORTIS	NORMAL_MAGIC		Civitas illa Fortis	54	1681	3133	0	civitas_illa_fortis_teleport_icon.png
+WATCHTOWER	NORMAL_MAGIC		Watchtower	58	2547	3114	0	watchtower_teleport_icon.png
+WATCHTOWER_YANILLE	NORMAL_MAGIC		Watchtower Yanille	58	2584	3097	0	watchtower_teleport_icon.png
+TROLLHEIM	NORMAL_MAGIC		Trollheim	61	2891	3678	0	trollheim_teleport_icon.png
+APE_ATOLL	NORMAL_MAGIC		Ape Atoll	64	2796	2791	0	ape_atoll_teleport_icon.png
+PADDEWWA	ANCIENT_MAGICKS		Paddewwa	54	3097	9880	0	paddewwa_teleport_icon.png
+SENNTISTEN	ANCIENT_MAGICKS		Senntisten	60	3319	3336	0	senntisten_teleport_icon.png
+KHARYRLL	ANCIENT_MAGICKS		Kharyrll	66	3494	3473	0	kharyrll_teleport_icon.png
+LASSAR	ANCIENT_MAGICKS		Lassar	72	3002	3472	0	lassar_teleport_icon.png
+DAREEYAK	ANCIENT_MAGICKS		Dareeyak	78	2969	3695	0	dareeyak_teleport_icon.png
+CARRALLANGER	ANCIENT_MAGICKS		Carrallanger	84	3157	3667	0	carrallanger_teleport_icon.png
+ANNAKARL	ANCIENT_MAGICKS		Annakarl	90	3288	3888	0	annakarl_teleport_icon.png
+GHORROCK	ANCIENT_MAGICKS		Ghorrock	96	2977	3872	0	ghorrock_teleport_icon.png
+MOONCLAN	LUNAR_MAGIC		Moonclan	69	2113	3915	0	moonclan_teleport_icon.png
+OURANIA	LUNAR_MAGIC		Ourania	71	2468	3246	0	ourania_teleport_icon.png
+WATERBIRTH	LUNAR_MAGIC		Waterbirth	72	2546	3755	0	waterbirth_teleport_icon.png
+BARBARIAN	LUNAR_MAGIC		Barbarian	75	2543	3568	0	barbarian_teleport_icon.png
+KHAZARD	LUNAR_MAGIC		Khazard	78	2636	3167	0	khazard_teleport_icon.png
+FISHING_GUILD	LUNAR_MAGIC		Fishing Guild	85	2612	3391	0	fishing_guild_teleport_icon.png
+CATHERBY	LUNAR_MAGIC		Catherby	87	2802	3449	0	catherby_teleport_icon.png
+ICE_PLATEAU	LUNAR_MAGIC		Ice Plateau	89	2973	3939	0	ice_plateau_teleport_icon.png
+ARCEUUS_LIBRARY	ARCEUUS_MAGIC		Arceuus Library	6	1632	3838	0	arceuus_library_teleport_icon_arceuus.png
+DRAYNOR_MANOR	ARCEUUS_MAGIC		Draynor Manor	17	3108	3352	0	draynor_manor_teleport_icon.png
+BATTLEFRONT	ARCEUUS_MAGIC		Battlefront	23	1349	3739	0	battlefront_teleport_icon.png
+MIND_ALTAR	ARCEUUS_MAGIC		Mind Altar	28	2979	3509	0	mind_altar_teleport_icon.png
+SALVE_GRAVEYARD	ARCEUUS_MAGIC		Salve Graveyard	40	3433	3461	0	salve_graveyard_teleport_icon.png
+FENKENSTRAINS_CASTLE	ARCEUUS_MAGIC		Fenkenstrain's Castle	48	3548	3528	0	fenkenstrains_castle_teleport_icon.png
+WEST_ARDOUGNE	ARCEUUS_MAGIC		West Ardougne	61	2500	3291	0	west_ardougne_teleport_icon.png
+HARMONY_ISLAND	ARCEUUS_MAGIC		Harmony Island	65	3797	2866	0	harmony_island_teleport_icon.png
+CEMETERY	ARCEUUS_MAGIC		Cemetery	71	2978	3763	0	cemetery_teleport_icon.png
+BARROWS	ARCEUUS_MAGIC		Barrows	83	3565	3315	0	barrows_teleport_icon.png
+APE_ATOLL_ARCEUUS	ARCEUUS_MAGIC		Ape Atoll	90	2770	2703	0	ape_atoll_teleport_icon_arceuus.png
+BARBARIAN_ASSAULT	JEWELLERY	Games Necklace	Barbarian Assault	0	2520	3571	0	games_necklace_teleport_icon.png
+BURTHORPE_GAMES_ROOM	JEWELLERY	Games Necklace	Burthorpe Games Room	0	2898	3554	0	games_necklace_teleport_icon.png
+TEARS_OF_GUTHIX	JEWELLERY	Games Necklace	Tears of Guthix	0	3245	9500	0	games_necklace_teleport_icon.png
+CORPOREAL_BEAST	JEWELLERY	Games Necklace	Corporeal Beast	0	2967	4384	0	games_necklace_teleport_icon.png
+WINTERTODT_CAMP	JEWELLERY	Games Necklace	Wintertodt Camp	0	1624	3938	0	games_necklace_teleport_icon.png
+EMIRS_ARENA	JEWELLERY	Ring of Dueling	Emir's Arena	0	3315	3235	0	ring_of_dueling_teleport_icon.png
+FEROX_ENCLAVE	JEWELLERY	Ring of Dueling	Ferox Enclave	0	3151	3636	0	ring_of_dueling_teleport_icon.png
+CASTLE_WARS	JEWELLERY	Ring of Dueling	Castle Wars	0	2441	3091	0	ring_of_dueling_teleport_icon.png
+FORTIS_COLOSSEUM	JEWELLERY	Ring of Dueling	Fortis Colosseum	0	1793	3107	0	ring_of_dueling_teleport_icon.png
+WARRIORS_GUILD	JEWELLERY	Combat Bracelet	Warriors' Guild	0	2883	3549	0	combat_bracelet_teleport_icon.png
+CHAMPIONS_GUILD	JEWELLERY	Combat Bracelet	Champions' Guild	0	3189	3368	0	combat_bracelet_teleport_icon.png
+EDGEVILLE_MONASTERY	JEWELLERY	Combat Bracelet	Edgeville Monastery	0	3053	3487	0	combat_bracelet_teleport_icon.png
+RANGING_GUILD	JEWELLERY	Combat Bracelet	Ranging Guild	0	2654	3441	0	combat_bracelet_teleport_icon.png
+FISHING_GUILD_NECK	JEWELLERY	Skills Necklace	Fishing Guild	0	2613	3390	0	skills_necklace_teleport_icon.png
+MINING_GUILD	JEWELLERY	Skills Necklace	Mining Guild	0	3049	9762	0	skills_necklace_teleport_icon.png
+CRAFTING_GUILD	JEWELLERY	Skills Necklace	Crafting Guild	0	2934	3294	0	skills_necklace_teleport_icon.png
+COOKING_GUILD	JEWELLERY	Skills Necklace	Cooking Guild	0	3145	3438	0	skills_necklace_teleport_icon.png
+WOODCUTTING_GUILD	JEWELLERY	Skills Necklace	Woodcutting Guild	0	1662	3505	0	skills_necklace_teleport_icon.png
+FARMING_GUILD	JEWELLERY	Skills Necklace	Farming Guild	0	1249	3717	0	skills_necklace_teleport_icon.png
+EDGEVILLE	JEWELLERY	Amulet of Glory	Edgeville	0	3087	3496	0	amulet_of_glory_teleport_icon.png
+KARAMJA	JEWELLERY	Amulet of Glory	Karamja	0	2918	3176	0	amulet_of_glory_teleport_icon.png
+DRAYNOR_VILLAGE	JEWELLERY	Amulet of Glory	Draynor Village	0	3105	3251	0	amulet_of_glory_teleport_icon.png
+AL_KHARID	JEWELLERY	Amulet of Glory	Al-Kharid	0	3293	3163	0	amulet_of_glory_teleport_icon.png
+MISCELLANIA	JEWELLERY	Ring of Wealth	Miscellania	0	2535	3862	0	ring_of_wealth_teleport_icon.png
+GRAND_EXCHANGE	JEWELLERY	Ring of Wealth	Grand Exchange	0	3162	3480	0	ring_of_wealth_teleport_icon.png
+FALADOR_PARK	JEWELLERY	Ring of Wealth	Falador Park	0	2995	3375	0	ring_of_wealth_teleport_icon.png
+DONDAKAN	JEWELLERY	Ring of Wealth	Dondakan	0	2831	10165	0	ring_of_wealth_teleport_icon.png
+SLAYER_TOWER	JEWELLERY	Slayer Ring	Slayer Tower	0	3423	3536	0	slayer_ring_teleport_icon.png
+FREMENNIK_SLAYER_DUNGEON	JEWELLERY	Slayer Ring	Fremennik Slayer Dungeon	0	2800	9998	0	slayer_ring_teleport_icon.png
+FREMENNIK_SLAYER_DUNGEON_OUTSIDE	JEWELLERY	Slayer Ring	Fremennik Slayer Dungeon (inside)	0	2800	3615	0	slayer_ring_teleport_icon.png
+TARNS_LAIR	JEWELLERY	Slayer Ring	Tarn's Lair	0	3187	4601	0	slayer_ring_teleport_icon.png
+STRONGHOLD_SLAYER_CAVE	JEWELLERY	Slayer Ring	Stronghold Slayer Cave	0	2433	3421	0	slayer_ring_teleport_icon.png
+DARK_BEASTS	JEWELLERY	Slayer Ring	Dark Beasts	0	2028	4638	0	slayer_ring_teleport_icon.png
+WYRMSCRAIG_CAVERN	JEWELLERY	Slayer Ring	Wyrmscraig Cavern	0	2773	8633	0	slayer_ring_teleport_icon.png
+WYRMSCRAIG_CAVERN_OUTSIDE	JEWELLERY	Slayer Ring	Wyrmscraig Cavern (inside)	0	2533	2206	0	slayer_ring_teleport_icon.png
+DIGSITE	JEWELLERY	Digsite Pendant	Digsite	0	3339	3445	0	digsite_pendant_teleport_icon.png
+HOUSE_ON_THE_HILL	JEWELLERY	Digsite Pendant	House on the Hill	0	3763	3869	0	digsite_pendant_teleport_icon.png
+LITHKREN	JEWELLERY	Digsite Pendant	Lithkren	0	3547	10456	0	digsite_pendant_teleport_icon.png
+WIZARDS_TOWER	JEWELLERY	Necklace of Passage	Wizards' Tower	0	3114	3181	0	necklace_of_passage_teleport_icon.png
+JORRALS_OUTPOST	JEWELLERY	Necklace of Passage	Jorral's Outpost	0	2431	3348	0	necklace_of_passage_teleport_icon.png
+DESERT_EAGLE_STATION	JEWELLERY	Necklace of Passage	Desert eagle station of the eagle transport system	0	3406	3157	0	necklace_of_passage_teleport_icon.png
+WYRMSCRAIG	JEWELLERY	Necklace of Passage	Wyrmscraig	0	2591	2221	0	necklace_of_passage_teleport_icon.png
+CHAOS_TEMPLE	JEWELLERY	Burning Amulet	Chaos Temple (lvl 15)	0	3234	3637	0	burning_amulet_teleport_icon.png
+BANDIT_CAMP	JEWELLERY	Burning Amulet	Bandit Camp (lvl 17)	0	3038	3651	0	burning_amulet_teleport_icon.png
+LAVA_MAZE	JEWELLERY	Burning Amulet	Lava Maze (lvl 41)	0	3028	3840	0	burning_amulet_teleport_icon.png
+NORTH_ALDARIN	JEWELLERY	Pendant of Ates	North Aldarin	0	1425	2995	0	pendant_of_ates_icon.png
+DARKFROST	JEWELLERY	Pendant of Ates	The Darkfrost	0	1490	3284	0	pendant_of_ates_icon.png
+RALOS_RISE	JEWELLERY	Pendant of Ates	Ralos' Rise	0	1459	3137	0	pendant_of_ates_icon.png
+TWILIGHT_TEMPLE	JEWELLERY	Pendant of Ates	Twilight Temple	0	1666	3223	0	pendant_of_ates_icon.png
+KASTORI	JEWELLERY	Pendant of Ates	Kastori	0	1366	3086	0	pendant_of_ates_icon.png
+NEMUS_RETREAT	JEWELLERY	Pendant of Ates	Nemus Retreat	0	1364	3277	0	pendant_of_ates_icon.png
+BRYOPHYTA_LAIR	JEWELLERY	Giantsoul Amulet	Bryophyta's Lair	0	3174	9898	0	giantsoul_amulet_teleport_icon.png
+OBOR_LAIR	JEWELLERY	Giantsoul Amulet	Obor's Lair	0	3096	9833	0	giantsoul_amulet_teleport_icon.png
+BRANDA_AND_ELDRIC_LAIR	JEWELLERY	Giantsoul Amulet	Branda and Eldric's Lair	0	2952	9574	0	giantsoul_amulet_teleport_icon.png
+COWBELL_AMULET	JEWELLERY	Cowbell Amulet	Cow field	0	3259	3276	0	cowbell_amulet_teleport_icon.png
+PANDEMONIUM	JEWELLERY	Sailors' Amulet	The Pandemonium	0	3060	2974	0	sailors_amulet_teleport_icon.png
+PORT_ROBERTS	JEWELLERY	Sailors' Amulet	Port Roberts	0	1889	3292	0	sailors_amulet_teleport_icon.png
+RED_ROCK	JEWELLERY	Sailors' Amulet	Red Rock	0	2797	2521	0	sailors_amulet_teleport_icon.png
+DEEPFIN_POINT	JEWELLERY	Sailors' Amulet	Deepfin Point	0	1943	2758	0	sailors_amulet_teleport_icon.png
+XERICS_LOOKOUT	OTHER	Xeric's Talisman	Xeric's Lookout	0	1576	3528	0	xerics_talisman_teleport_icon.png
+XERICS_GLADE	OTHER	Xeric's Talisman	Xeric's Glade	0	1754	3564	0	xerics_talisman_teleport_icon.png
+XERICS_INFERNO	OTHER	Xeric's Talisman	Xeric's Inferno	0	1504	3819	0	xerics_talisman_teleport_icon.png
+XERICS_HEART	OTHER	Xeric's Talisman	Xeric's Heart	0	1641	3670	0	xerics_talisman_teleport_icon.png
+XERICS_HONOUR	OTHER	Xeric's Talisman	Xeric's Honour	0	1254	3559	0	xerics_talisman_teleport_icon.png
+STRONGHOLD_OF_SECURITY	OTHER	Skull Sceptre	Stronghold of Security	0	3081	3421	0	skull_sceptre_teleport_icon.png
+MYTHS_GUILD	OTHER	Mythical Cape	Myth's Guild	0	2458	2851	0	mythical_cape_teleport_icon.png
+ECTOFUNTUS	OTHER	Ectophial	Ectofuntus	0	3660	3522	0	ectophial_teleport_icon.png
+CHAMPIONS_GUILD_CHRONICLE	OTHER	Chronicle	Champions' Guild	0	3202	3357	0	chronicle_teleport_icon.png
+GRAND_TREE	OTHER	Royal Seed Pod	Grand Tree	0	2465	3495	0	royal_seed_pod_teleport_icon.png
+RELLEKKKA_LYRE	OTHER	Enchanted Lyre	Rellekka	0	2664	3643	0	enchanted_lyre_teleport_icon.png
+WATERBIRTH_ISLAND_LYRE	OTHER	Enchanted Lyre	Waterbirth Island	0	2550	3756	0	enchanted_lyre_teleport_icon.png
+NEITIZNOT_LYRE	OTHER	Enchanted Lyre	Neitiznot	0	2336	3801	0	enchanted_lyre_teleport_icon.png
+JATIZSO_LYRE	OTHER	Enchanted Lyre	Jatizso	0	2409	3809	0	enchanted_lyre_teleport_icon.png
+WEISS_ICY_BASALT	OTHER	Icy Basalt	Weiss	0	2846	3940	0	icy_basalt_teleport_icon.png
+TROLL_STRONGHOLD_STONY_BASALT	OTHER	Stony Basalt	Troll Stronghold (with 73 Agility)	0	2838	3693	0	stony_basalt_teleport_icon.png
+TROLL_STRONGHOLD_STONY_BASALT_OUTSIDE	OTHER	Stony Basalt	Troll Stronghold	0	2844	3693	0	stony_basalt_teleport_icon.png
+KHAREDSTS_MEMOIRS_HOSIDIUS	OTHER	Kharedst's Memoirs	Lunch by the Lancalliums (Hosidius)	0	1713	3612	0	kharedsts_memoirs_teleport_icon.png
+KHAREDSTS_MEMOIRS_PISCARILIUS	OTHER	Kharedst's Memoirs	The Fisher's Flute (Piscarilius)	0	1802	3748	0	kharedsts_memoirs_teleport_icon.png
+KHAREDSTS_MEMOIRS_SHAYZIEN	OTHER	Kharedst's Memoirs	History and Hearsay (Shayzien)	0	1478	3576	0	kharedsts_memoirs_teleport_icon.png
+KHAREDSTS_MEMOIRS_LOVAKENGJ	OTHER	Kharedst's Memoirs	Jewellery of Jubilation (Lovakengj)	0	1544	3762	0	kharedsts_memoirs_teleport_icon.png
+KHAREDSTS_MEMOIRS_ARCEUUS	OTHER	Kharedst's Memoirs	A Dark Disposition (Arceuus)	0	1680	3746	0	kharedsts_memoirs_teleport_icon.png
+PHARAOHS_SCEPTRE_JALSAVRAH	OTHER	Pharaoh's Sceptre	Jalsavrah (Pyramid Plunder)	0	3288	2795	0	pharaohs_sceptre_teleport_icon.png
+PHARAOHS_SCEPTRE_JALEUSTROPHOS	OTHER	Pharaoh's Sceptre	Jaleustrophos (Agility Pyramid)	0	3341	2827	0	pharaohs_sceptre_teleport_icon.png
+PHARAOHS_SCEPTRE_JALDRAOCHT	OTHER	Pharaoh's Sceptre	Jaldraocht (Desert Treasure Pyramid)	0	3232	2897	0	pharaohs_sceptre_teleport_icon.png
+PHARAOHS_SCEPTRE_JALTEVAS	OTHER	Pharaoh's Sceptre	Jaltevas (Necropolis Obelisk)	0	3313	2720	0	pharaohs_sceptre_teleport_icon.png
+CAMULET_TEMPLE	OTHER	Camulet	Enakhra's Temple	0	3190	2923	0	camulet_teleport_icon.png
+TELEPORT_CRYSTAL_LLETYA	OTHER	Teleport crystal	Lletya	0	2330	3172	0	teleport_crystal_icon.png
+TELEPORT_CRYSTAL_PRIFDDINAS	OTHER	Teleport crystal	Prifddinas	0	3264	6065	0	teleport_crystal_icon.png
+DRAKANS_MEDALLION_VER_SINHAZA	OTHER	Drakan's medallion	Ver Sinhaza	0	3649	3230	0	drakans_medallion_teleport_icon.png
+DRAKANS_MEDALLION_DARKMEYER	OTHER	Drakan's medallion	Darkmeyer	0	3592	3337	0	drakans_medallion_teleport_icon.png
+DRAKANS_MEDALLION_SLEPE	OTHER	Drakan's medallion	Slepe	0	3808	9700	0	drakans_medallion_teleport_icon.png
+DRAKANS_MEDALLION_CASTLE_DRAKAN	OTHER	Drakan's medallion	Castle Drakan	0	3557	3358	0	drakans_medallion_teleport_icon.png
+RING_OF_THE_ELEMENTS_AIR	OTHER	Ring of the elements	Air Altar	0	2981	3276	0	ring_of_the_elements_teleport_icon.png
+RING_OF_THE_ELEMENTS_WATER	OTHER	Ring of the elements	Water Altar	0	3166	3158	0	ring_of_the_elements_teleport_icon.png
+RING_OF_THE_ELEMENTS_EARTH	OTHER	Ring of the elements	Earth Altar	0	3288	3468	0	ring_of_the_elements_teleport_icon.png
+RING_OF_THE_ELEMENTS_FIRE	OTHER	Ring of the elements	Fire Altar	0	3315	3278	0	ring_of_the_elements_teleport_icon.png
+RING_OF_SHADOWS_LASSAR_UNDERCITY	OTHER	Ring of shadows	Lassar Undercity	0	2588	6435	0	ring_of_shadows_teleport_icon.png
+RING_OF_SHADOWS_THE_STRANGLEWOOD	OTHER	Ring of shadows	The Stranglewood	0	1175	3422	0	ring_of_shadows_teleport_icon.png
+OBELISK_13	OTHER	Obelisk	13	0	3156	3620	0	obelisk_icon.png
+OBELISK_19	OTHER	Obelisk	19	0	3227	3667	0	obelisk_icon.png
+OBELISK_27	OTHER	Obelisk	27	0	3035	3732	0	obelisk_icon.png
+OBELISK_35	OTHER	Obelisk	35	0	3106	3794	0	obelisk_icon.png
+OBELISK_44	OTHER	Obelisk	44	0	2980	3866	0	obelisk_icon.png
+OBELISK_50	OTHER	Obelisk	50	0	3307	3916	0	obelisk_icon.png
+WILDERNESS_CRABS_TELEPORT	OTHER	Wilderness crabs teleport		0	3348	3783	0	wilderness_crabs_teleport_icon.png
+CANOE_WILDERNESS	OTHER	Canoe (No departure)	35	0	3141	3796	0	transportation_icon.png
+ARDOUGNE_CLOAK_MONASTERY	OTHER	Ardougne Cloak	Monastery	0	2606	3222	0	ardougne_cloak_icon.png
+ARDOUGNE_CLOAK_FARM	OTHER	Ardougne Cloak	Farm	0	2673	3375	0	ardougne_cloak_icon.png
+EXPLORERS_RING	OTHER	Explorer's Ring		0	3052	3292	0	explorers_ring_icon.png
+KARAMJA_GLOVES_GEM_MINE	OTHER	Karamja Gloves	Gem Mine (Underground)	0	2827	2997	0	karamja_gloves_icon.png
+KARAMJA_GLOVES_DURADEL	OTHER	Karamja Gloves	Duradel	0	2870	2981	0	karamja_gloves_icon.png
+DESERT_AMULET_NARDAH	OTHER	Desert Amulet	Nardah	0	3425	2928	0	desert_amulet_icon.png
+DESERT_AMULKT_KALPHITE_CAVE	OTHER	Desert Amulet	Kalphite Cave	0	3322	3122	0	desert_amulet_icon.png
+MORYTANIA_LEGS_SLIME_PIT	OTHER	Morytania Legs	Slime Pit (Underground)	0	3654	3516	0	morytania_legs_icon.png
+MORYTANIA_LEGS_BURGH_DE_ROTT	OTHER	Morytania Legs	Burgh de Rott	0	3482	3231	0	morytania_legs_icon.png
+FREMENNIK_SEA_BOOTS	OTHER	Fremennik Sea Boots		0	2640	3675	0	fremennik_boots_icon.png
+KANDARIN_HEADGEAR	OTHER	Kandarin Headgear		0	2729	3411	0	kandarin_headgear_icon.png
+WILDERNESS_SWORD	OTHER	Wilderness Sword		0	3377	3891	0	wilderness_sword_icon.png
+WESTERN_BANNER	OTHER	Western Banner		0	2329	3685	0	western_banner_icon.png
+RADAS_BLESSING_MOUNT_KARUULM	OTHER	Rada's Blessing		0	1311	3795	0	radas_blessing_icon.png
+RADAS_BLESSING_WOODLANG	OTHER	Rada's Blessing		0	1553	3454	0	radas_blessing_icon.png
+GHOMMALS_HILT_GWD	OTHER	Ghommal's Hilt	God Wars Dungeon	0	2898	3709	0	ghommals_hilt_teleport_icon.png
+GHOMMALS_HILT_MORULREK	OTHER	Ghommal's Hilt	Mor Ul Rek	0	2554	5130	0	ghommals_hilt_teleport_icon.png
+DIGSITE_SCROLL	SCROLL	Digsite Teleport		0	3324	3412	0	scroll_teleport_icon.png
+IORWERTH_CAMP_SCROLL	SCROLL	Iorwerth Camp Teleport		0	2193	3257	0	scroll_teleport_icon.png
+FELDIP_HILLS_SCROLL	SCROLL	Feldip Hills Teleport		0	2542	2925	0	scroll_teleport_icon.png
+LUMBERYARD_SCROLL	SCROLL	Lumberyard Teleport		0	3303	3487	0	scroll_teleport_icon.png
+LUNAR_ISLE_SCROLL	SCROLL	Lunar Isle Teleport		0	2093	3912	0	scroll_teleport_icon.png
+MORTTON_SCROLL	SCROLL	Mort'ton		0	3489	3288	0	scroll_teleport_icon.png
+MOS_LEHARMLESS_SCROLL	SCROLL	Mos Le'Harmless Teleport		0	3701	2996	0	scroll_teleport_icon.png
+NARDAH_SCROLL	SCROLL	Nardah Teleport		0	3421	2917	0	scroll_teleport_icon.png
+PEST_CONTROL_SCROLL	SCROLL	Pest Control Teleport		0	2657	2660	0	scroll_teleport_icon.png
+PISCATORIS_SCROLL	SCROLL	Piscatoris Teleport		0	2339	3648	0	scroll_teleport_icon.png
+TAI_BWO_WANNAI_SCROLL	SCROLL	Tai Bwo Wannai Teleport		0	2788	3066	0	scroll_teleport_icon.png
+ZULANDRA_SCROLL	SCROLL	Zul-Andra Teleport		0	2197	3056	0	scroll_teleport_icon.png
+KEY_MASTER_SCROLL	SCROLL	Key Master Teleport		0	2686	9882	0	scroll_teleport_icon.png
+REVENANT_CAVE_SCROLL	SCROLL	Revenant Cave Teleport		0	3127	3833	0	scroll_teleport_icon.png
+WATSON_SCROLL	SCROLL	Watson Teleport		0	1645	3579	0	scroll_teleport_icon.png
+SPIDER_CAVE_SCROLL	SCROLL	Spider cave teleport		0	3658	3403	0	scroll_teleport_icon.png
+COLOSSAL_WYRM_SCROLL	SCROLL	Colossal Wyrm Teleport		0	1641	2921	0	scroll_teleport_icon.png
+CHASM_TELEPORT_SCROLL	SCROLL	Chasm of Fire teleport		0	1311	9882	0	scroll_teleport_icon.png
+ARDEAGLAIS_SCROLL	SCROLL	Ardeaglais teleport		0	2543	2216	0	scroll_teleport_icon.png
+ACHIEVEMENT_CAPE_TWO_PINTS	OTHER	Achievement Cape	Two-pints	0	2574	3324	0	achievement_cape_icon.png
+ACHIEVEMENT_CAPE_JARR	OTHER	Achievement Cape	Jarr	0	3300	3121	0	achievement_cape_icon.png
+ACHIEVEMENT_CAPE_SIR_REBRAL	OTHER	Achievement Cape	Sir Rebral	0	2977	3345	0	achievement_cape_icon.png
+ACHIEVEMENT_CAPE_THORODIN	OTHER	Achievement Cape	Thorodin	0	2659	3627	0	achievement_cape_icon.png
+ACHIEVEMENT_CAPE_FLAX_KEEPER	OTHER	Achievement Cape	Flax Keeper	0	2744	3444	0	achievement_cape_icon.png
+ACHIEVEMENT_CAPE_JACKIE_THE_FRUIT	OTHER	Achievement Cape	Pirate Jackie the Fruit	0	2810	3191	0	achievement_cape_icon.png
+ACHIEVEMENT_CAPE_KALEB_PARAMAYA	OTHER	Achievement Cape	Kaleb Paramaya	0	2861	2995	1	achievement_cape_icon.png
+ACHIEVEMENT_CAPE_JUNGLE_FORESTER	OTHER	Achievement Cape	Jungle forester	0	2795	2945	0	achievement_cape_icon.png
+ACHIEVEMENT_CAPE_TZHAAR_MEJ	OTHER	Achievement Cape	TzHaar-Mej	0	2455	5133	0	achievement_cape_icon.png
+ACHIEVEMENT_CAPE_ELISE	OTHER	Achievement Cape	Elise	0	1647	3666	0	achievement_cape_icon.png
+ACHIEVEMENT_CAPE_HATIUS_COSAINTUS	OTHER	Achievement Cape	Hatius Cosaintus	0	3239	3220	0	achievement_cape_icon.png
+ACHIEVEMENT_CAPE_LE_SABRE	OTHER	Achievement Cape	Le-sabrè	0	3465	3477	0	achievement_cape_icon.png
+ACHIEVEMENT_CAPE_TOBY	OTHER	Achievement Cape	Toby	0	3224	3414	0	achievement_cape_icon.png
+ACHIEVEMENT_CAPE_LESSER_FANATIC	OTHER	Achievement Cape	Lesser Fanatic	0	3122	3516	0	achievement_cape_icon.png
+ACHIEVEMENT_CAPE_ELDER_GNOME_CHILD	OTHER	Achievement Cape	Elder Gnome child	0	2467	3459	0	achievement_cape_icon.png
+ACHIEVEMENT_CAPE_TWIGGY_OKORN	OTHER	Achievement Cape	Twiggy O'Korn	0	3097	3226	0	achievement_cape_icon.png
+CONSTRUCTION_CAPE_RIMMINGTON	OTHER	Construction Cape	Rimmington	0	2954	3224	0	construction_cape_icon.png
+CONSTRUCTION_CAPE_TAVERLEY	OTHER	Construction Cape	Taverley	0	2894	3465	0	construction_cape_icon.png
+CONSTRUCTION_CAPE_POLLNIVNEACH	OTHER	Construction Cape	Pollnivneach	0	3340	3004	0	construction_cape_icon.png
+CONSTRUCTION_CAPE_HOSIDIUS	OTHER	Construction Cape	Hosidius	0	1744	3517	0	construction_cape_icon.png
+CONSTRUCTION_CAPE_RELLEKKA	OTHER	Construction Cape	Rellekka	0	2670	3632	0	construction_cape_icon.png
+CONSTRUCTION_CAPE_ALDARIN	OTHER	Construction Cape	Aldarin	0	1422	2966	0	construction_cape_icon.png
+CONSTRUCTION_CAPE_BRIMHAVEN	OTHER	Construction Cape	Brimhaven	0	2758	3178	0	construction_cape_icon.png
+CONSTRUCTION_CAPE_YANILLE	OTHER	Construction Cape	Yanille	0	2544	3095	0	construction_cape_icon.png
+CONSTRUCTION_CAPE_PRIFDDINAS	OTHER	Construction Cape	Prifddinas	0	3239	6076	0	construction_cape_icon.png
+CRAFTING_CAPE	OTHER	Crafting Cape		0	2931	3286	0	crafting_cape_icon.png
+FARMING_CAPE	OTHER	Farming Cape		0	1248	3725	0	farming_cape_icon.png
+FISHING_CAPE_FISHING_GUILD	OTHER	Fishing Cape	Fishing Guild	0	2604	3401	0	fishing_cape_icon.png
+FISHING_CAPE_OTTOS_GROTTO	OTHER	Fishing Cape	Otto's Grotto	0	2504	3484	0	fishing_cape_icon.png
+HUNTER_CAPE_CARNIVOROUS	OTHER	Hunter Cape	Carnivorous Chinchompa Area	0	2556	2916	0	hunter_cape_icon.png
+HUNTER_CAPE_BLACK	OTHER	Hunter Cape	Black Chinchompa Area	0	3144	3772	0	hunter_cape_icon.png
+HUNTER_CAPE_HUNTER_GUILD	OTHER	Hunter Cape	Hunter Guild	0	1558	3046	0	hunter_cape_icon.png
+SAILING_CAPE	OTHER	Sailing Cape	The Pandemonium	0	3048	2972	0	sailing_cape_icon.png
+STRENGTH_CAPE	OTHER	Strength Cape		0	2865	3546	0	strength_cape_icon.png
+QUEST_CAPE	OTHER	Quest Cape		0	2729	3348	0	quest_cape_icon.png
+MUSIC_CAPE	OTHER	Music Cape	Falo the Bard	0	2689	3547	0	music_cape_icon.png
