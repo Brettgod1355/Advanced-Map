@@ -120,7 +120,7 @@ The test-only `logback-test.xml` comes from the example plugin (same license, Ad
 ## Shortest Path's transport lists (BSD 2-Clause)
 
 `src/main/resources/com/advancedmap/transports.tsv`, where spirit trees, gnome gliders, fairy rings, hot air balloons,
-magic carpets, magic mushtrees, quetzals, minecarts, canoes, boats, ships and charter ships go, is derived from
+magic carpets, magic mushtrees, quetzals, minecarts, canoes, boats, ships, charter ships and levers go, is derived from
 [Shortest Path](https://github.com/Skretzo/shortest-path)'s `src/main/resources/transports/` files of those names, at
 its Plugin Hub pin `50f30435f37d1d5c5e2af790925fa7aa70b7840d` (authors on the Plugin Hub: Skretzo, FIrgolitsch,
 wvanderp, mpickering). Kept: each origin and destination tile and its name; boarding tiles within 4 tiles of each other
@@ -131,7 +131,9 @@ tile; durations and varbits are left out. 28 rows of
 `src/main/resources/com/advancedmap/dungeon-links.tsv`, where surface dungeon entrances the game's own map does not
 link lead, are taken from its `transports.tsv` at the same pin (origin and destination tiles only), and so are the
 ways between two underground places (ladders, ropes, stairs, tunnels) in `src/main/resources/com/advancedmap/inner-links.tsv`,
-which a dungeon's preview follows to its lower floors (origin and destination tiles only). Shortest Path's license,
+which a dungeon's preview follows to its lower floors (origin and destination tiles only). The 25 teleports at the end
+of `src/main/resources/com/advancedmap/teleports.tsv` that RuneLite's list lacks (10 items, 15 minigame teleports) take
+their tile and item id from its `teleportation_items.tsv` and `teleportation_minigames.tsv` at the same pin. Shortest Path's license,
 as published in that repository (its copyright line is the license template's, unfilled):
 
 ```

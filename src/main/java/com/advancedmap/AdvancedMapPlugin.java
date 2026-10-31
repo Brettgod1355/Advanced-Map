@@ -10,6 +10,7 @@ import com.google.inject.Provides;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
+import java.awt.image.BufferedImage;
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,6 +19,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import javax.inject.Inject;
@@ -50,6 +52,7 @@ import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.events.PluginChanged;
 import net.runelite.client.events.PluginMessage;
+import net.runelite.client.game.ItemManager;
 import net.runelite.client.input.KeyManager;
 import net.runelite.client.input.MouseManager;
 import net.runelite.client.plugins.Plugin;
@@ -127,6 +130,8 @@ public class AdvancedMapPlugin extends Plugin
 
 	@Inject
 	private ChatMessageManager chatMessageManager;
+	@Inject
+	private ItemManager itemManager;
 
 	/** What the update brought, to say on the first game tick; null when nothing is to be said. */
 	private volatile String updateLine;
@@ -231,6 +236,9 @@ public class AdvancedMapPlugin extends Plugin
 		shortestPathRoute = new ShortestPathRoute();
 		source = new ClientMapSource(reader);
 		icons = new MapIcons();
+		itemDiscs.clear();
+		itemDiscsAsked.clear();
+		icons.setItemPictures(this::itemDisc);
 		labels = new MapLabels();
 		labelsLoading = false;
 		regionsListing = false;
@@ -2437,6 +2445,22 @@ public class AdvancedMapPlugin extends Plugin
 		});
 	}
 
+	/** The game's item pictures on a disc, for the teleports whose icon is an item's: by item id, once loaded. */
+	private final Map<Integer, BufferedImage> itemDiscs = new ConcurrentHashMap<>();
+	private final Set<Integer> itemDiscsAsked = ConcurrentHashMap.newKeySet();
+
+	/** An item's picture on a disc, or null while the client loads it (asked once; drawn on a later paint). */
+	private BufferedImage itemDisc(int itemId)
+	{
+		BufferedImage disc = itemDiscs.get(itemId);
+		if (disc == null && itemDiscsAsked.add(itemId))
+		{
+			net.runelite.client.util.AsyncBufferedImage item = itemManager.getImage(itemId);
+			item.onLoaded(() -> itemDiscs.put(itemId, MapIcons.onDisc(item)));
+		}
+		return disc;
+	}
+
 	/** Reads the place names in the background, once; again next time if the client had no world map data yet. */
 	private void loadLabels()
 	{
@@ -2455,6 +2479,8 @@ public class AdvancedMapPlugin extends Plugin
 			{
 				Map<Integer, Integer> categories = from.categoryIcons();
 				categories.values().forEach(areaId -> pictures.addSprite(areaId, from.areaIcon(areaId)));
+				// the minigame teleports' icon
+				pictures.setMinigameArea(categories.getOrDefault(IconGroup.MINIGAME, -1));
 				list.setCategoryIcons(categories);
 				into.set(from.labels());
 				gameMaps = from.gameMaps();

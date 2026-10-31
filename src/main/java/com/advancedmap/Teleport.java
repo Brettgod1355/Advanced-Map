@@ -66,8 +66,14 @@ final class Teleport
 	/** The Magic level a spell needs, or 0. */
 	private final int magicLevel;
 	private final WorldPoint location;
-	/** Its picture's file in {@code teleports/}, as RuneLite's world map shows it; null when it has none. */
+	/**
+	 * Its icon: a picture's file in {@code teleports/}, as RuneLite's world map shows it; {@link #ITEM_ICON} and an item
+	 * id, for the game's picture of that item on a disc; {@link #MINIGAME_ICON}, the game's minigame icon; or null.
+	 */
 	private final String icon;
+
+	static final String ITEM_ICON = "item:";
+	static final String MINIGAME_ICON = "minigame";
 
 	/** The pictures read so far, by file; empty when one could not be read. Shared by the teleports that use it. */
 	private static final Map<String, Optional<BufferedImage>> PICTURES = new ConcurrentHashMap<>();
@@ -144,7 +150,8 @@ final class Teleport
 	 */
 	BufferedImage picture()
 	{
-		return icon == null ? null : PICTURES.computeIfAbsent(icon, Teleport::readPicture).orElse(null);
+		return icon == null || !icon.endsWith(".png") ? null
+			: PICTURES.computeIfAbsent(icon, Teleport::readPicture).orElse(null);
 	}
 
 	private static Optional<BufferedImage> readPicture(String file)
@@ -167,6 +174,23 @@ final class Teleport
 		{
 			log.debug("could not read the teleport picture {}", file, e);
 			return Optional.empty();
+		}
+	}
+
+	/** The item whose picture is its icon, or -1 when its icon is not an item's. */
+	int iconItem()
+	{
+		if (icon == null || !icon.startsWith(ITEM_ICON))
+		{
+			return -1;
+		}
+		try
+		{
+			return Integer.parseInt(icon.substring(ITEM_ICON.length()));
+		}
+		catch (NumberFormatException e)
+		{
+			return -1;
 		}
 	}
 

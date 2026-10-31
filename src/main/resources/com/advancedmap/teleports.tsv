@@ -3,6 +3,8 @@
 # with its icon file names (the pictures, from the same release, are in teleports/). The key is kept as it was (a
 # player's hidden icons are saved by it).
 # key, type, item (empty for a spell), destination, Magic level (spells), x, y, plane, icon
+# An icon is a picture's file in teleports/, item:<id> for the game's picture of that item on a disc, or minigame for
+# the game's minigame icon.
 VARROCK	NORMAL_MAGIC		Varrock	25	3213	3424	0	varrock_teleport_icon.png
 VARROCK_GE	NORMAL_MAGIC		Varrock GE	25	3164	3478	0	varrock_teleport_icon.png
 LUMBRIDGE	NORMAL_MAGIC		Lumbridge	31	3222	3218	0	lumbridge_teleport_icon.png
@@ -221,3 +223,32 @@ SAILING_CAPE	OTHER	Sailing Cape	The Pandemonium	0	3048	2972	0	sailing_cape_icon.
 STRENGTH_CAPE	OTHER	Strength Cape		0	2865	3546	0	strength_cape_icon.png
 QUEST_CAPE	OTHER	Quest Cape		0	2729	3348	0	quest_cape_icon.png
 MUSIC_CAPE	OTHER	Music Cape	Falo the Bard	0	2689	3547	0	music_cape_icon.png
+# Teleports RuneLite's list lacks, from Shortest Path's teleportation_items.tsv and teleportation_minigames.tsv
+# (github.com/Skretzo/shortest-path at the Plugin Hub pin 50f30435f37d1d5c5e2af790925fa7aa70b7840d, BSD 2-Clause; see
+# THIRD_PARTY_NOTICES.md): tile and item from there, names from the wiki's Transportation page. Those already above at
+# another tile (the surface entrance of a place underground) are left out.
+APE_ATOLL_TABLET	OTHER	Ape Atoll teleport tablet	Ape Atoll Dungeon	0	2771	9102	0	item:19631
+VOLCANIC_MINE_TABLET	OTHER	Volcanic mine teleport	Volcanic Mine	0	3811	3813	0	item:21541
+AMULET_OF_THE_EYE	JEWELLERY	Amulet of the eye	Temple of the Eye	0	3615	9461	0	item:26914
+HALLOWED_CRYSTAL_SHARD	OTHER	Hallowed crystal shard	Hallowed Sepulchre	0	2400	5982	0	item:24709
+RING_OF_SHADOWS_ANCIENT_VAULT	OTHER	Ring of shadows	Ancient Vault	0	3296	6436	0	item:28327
+RING_OF_SHADOWS_GHORROCK_DUNGEON	OTHER	Ring of shadows	Ghorrock Dungeon	0	2912	10336	0	item:28327
+RING_OF_SHADOWS_THE_SCAR	OTHER	Ring of shadows	The Scar	0	2019	6434	0	item:28327
+DORGESH_KAAN_SPHERE	OTHER	Dorgesh-kaan sphere	Dorgesh-Kaan	0	2703	5350	0	item:10972
+GOBLIN_VILLAGE_SPHERE	OTHER	Goblin village sphere	Goblin Village	0	2956	3505	0	item:11060
+PLAIN_OF_MUD_SPHERE	OTHER	Plain of Mud sphere	Goblin Cave	0	2588	9840	0	item:26577
+MINIGAME_BLAST_FURNACE	OTHER	Minigame teleport	Blast Furnace	0	2934	10184	0	minigame
+MINIGAME_FISHING_TRAWLER	OTHER	Minigame teleport	Fishing Trawler	0	2658	3157	0	minigame
+MINIGAME_GIANTS_FOUNDRY	OTHER	Minigame teleport	Giants' Foundry	0	3361	3149	0	minigame
+MINIGAME_GUARDIANS_OF_THE_RIFT	OTHER	Minigame teleport	Guardians of the Rift	0	3614	9477	0	minigame
+MINIGAME_MAGE_TRAINING_ARENA	OTHER	Minigame teleport	Mage Training Arena	0	3363	3295	0	minigame
+MINIGAME_NIGHTMARE_ZONE	OTHER	Minigame teleport	Nightmare Zone	0	2609	3114	0	minigame
+MINIGAME_RAT_PITS_ARDOUGNE	OTHER	Minigame teleport	Rat Pits (Ardougne)	0	2561	3319	0	minigame
+MINIGAME_RAT_PITS_VARROCK	OTHER	Minigame teleport	Rat Pits (Varrock)	0	3262	3405	0	minigame
+MINIGAME_RAT_PITS_KELDAGRIM	OTHER	Minigame teleport	Rat Pits (Keldagrim)	0	2914	10193	0	minigame
+MINIGAME_RAT_PITS_PORT_SARIM	OTHER	Minigame teleport	Rat Pits (Port Sarim)	0	3018	3231	0	minigame
+MINIGAME_SHADES_OF_MORTTON	OTHER	Minigame teleport	Shades of Mort'ton	0	3506	3304	0	minigame
+MINIGAME_SOUL_WARS	OTHER	Minigame teleport	Soul Wars	0	2018	5929	0	minigame
+MINIGAME_TITHE_FARM	OTHER	Minigame teleport	Tithe Farm	0	1792	3501	0	minigame
+MINIGAME_TROUBLE_BREWING	OTHER	Minigame teleport	Trouble Brewing	0	3801	3015	0	minigame
+MINIGAME_TZHAAR_FIGHT_PIT	OTHER	Minigame teleport	TzHaar Fight Pit	0	2399	5177	0	minigame
