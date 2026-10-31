@@ -48,6 +48,9 @@ public class SkillSpotsTest
 		// the game's icon on the ground floor; RuneLite's list had the way in a floor up
 		assertEquals("Hallowed Sepulchre", MapSearch.minigameNear(3654, 3386));
 		assertEquals(1, MapSearch.minigameIcons().stream().filter(entry -> entry.getName().equals("Tempoross")).count());
+		// and Wintertodt, at its doors
+		assertEquals("Wintertodt", MapSearch.minigameNear(1630, 3963));
+		assertEquals(1, MapSearch.minigameIcons().stream().filter(entry -> entry.getName().equals("Wintertodt")).count());
 	}
 
 	@Test
