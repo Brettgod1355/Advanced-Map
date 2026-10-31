@@ -14,7 +14,7 @@ package com.advancedmap;
 final class WhatsNew
 {
 	/** The version being run. Must match {@code version} in build.gradle and runelite-plugin.properties. */
-	static final String VERSION = "1.0.0";
+	static final String VERSION = "1.0.1";
 
 	/**
 	 * One line on what this version brings, no links; a full stop is added when it is said. Empty for a release not
