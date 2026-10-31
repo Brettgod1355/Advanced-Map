@@ -13,6 +13,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 import javax.imageio.ImageIO;
+import javax.imageio.stream.MemoryCacheImageInputStream;
+import javax.imageio.stream.MemoryCacheImageOutputStream;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.client.util.Filepath;
 
@@ -221,7 +223,9 @@ final class MapStore
 		Filepath file = folder.joinSegment(name(RegionImages.plane(key), RegionImages.region(key), hash, kind));
 		try (java.io.InputStream in = file.openInputStream())
 		{
-			BufferedImage read = ImageIO.read(in);
+			// read through memory: handed a plain stream, the reader copies each picture to a temporary file first,
+			// ten times slower, and a far view reads thousands of them
+			BufferedImage read = ImageIO.read(new MemoryCacheImageInputStream(in));
 			if (read == null)
 			{
 				// not a picture at all (a file zeroed on disk): the reader gives null, not an exception
@@ -323,9 +327,13 @@ final class MapStore
 	private static void write(Filepath file, BufferedImage image) throws IOException
 	{
 		java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream();
-		if (!ImageIO.write(image, "png", out))
+		// through memory, as pictures are read (load): a plain stream would go through a temporary file
+		try (MemoryCacheImageOutputStream png = new MemoryCacheImageOutputStream(out))
 		{
-			throw new IOException("no PNG writer");
+			if (!ImageIO.write(image, "png", png))
+			{
+				throw new IOException("no PNG writer");
+			}
 		}
 		SafeFiles.write(file, out.toByteArray());
 	}
