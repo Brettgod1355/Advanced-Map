@@ -202,13 +202,6 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ```
 
-## Gradle wrapper
-
-The wrapper scripts, JAR, and properties come from the RuneLite example plugin, commit
-`46e14f2c448fab6cbc599df1015b9631dcf1fc52`. Gradle is licensed under Apache 2.0; see
-`licenses/Apache-2.0.txt` and the notices retained in the scripts and wrapper. This development tooling is not
-included in the plugin JAR.
-
 ## The map itself
 
 Nothing of the map is bundled or downloaded. Advanced Map draws it, while you play, from the game data your own
