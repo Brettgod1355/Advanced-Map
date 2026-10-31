@@ -169,6 +169,7 @@ choose with Filters on the map itself.
 | Place names | On | Kingdom, town and place names |
 | Floor numbers | Ground, 2, 3, 4 | How floors above the ground are numbered (or Ground, 1, 2, 3) |
 | Route with | Shortest Path | The plugin "Route here" asks |
+| Say when updated | On | One line in chat, once, after the Plugin Hub updates the plugin, saying what is new |
 | Prepare the whole map | On | Draws the rest of the map in the background, nearest you first (about 15 minutes, once) |
 
 The **Icons** section holds a switch per kind of icon (the same as Filters), "Hide completed quests", "Mark what
