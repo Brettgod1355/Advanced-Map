@@ -737,7 +737,7 @@ class RegionImages
 			for (MapSpot spot : all)
 			{
 				marked |= spot.getPlane() == MapLinks.plane(from) && Math.abs(spot.getX() - x) <= LINK_REACH
-					&& Math.abs(spot.getY() - y) <= LINK_REACH;
+					&& Math.abs(spot.getY() - y) <= LINK_REACH && IconGroup.mayBeEntrance(spot.getCategory());
 			}
 			if (!marked)
 			{

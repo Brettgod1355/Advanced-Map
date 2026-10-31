@@ -29,6 +29,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.function.IntPredicate;
+import java.util.function.IntSupplier;
 import lombok.Value;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.client.ui.FontManager;
@@ -136,6 +137,7 @@ final class MapPainter
 
 	/** How long the mouse must rest on an icon before its info box shows, without a click. */
 	static final long HOVER_NANOS = 300_000_000L;
+	private static final int NOTICE_WIDTH = 280;
 
 	/** For measuring text outside a frame (where the menu's entry is, for a click). */
 	private static final Graphics2D MEASURE = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB).createGraphics();
@@ -161,6 +163,8 @@ final class MapPainter
 	private volatile boolean gameMaximized;
 	/** The map keeps itself on the player (the locate button lit). */
 	private volatile boolean following;
+	/** How many regions' floors the background preparing still has to draw; 0 when it is done or off. */
+	private volatile IntSupplier toPrepare = () -> 0;
 	/** A dungeon preview lists its monsters the highest level first; else the lowest. */
 	private volatile boolean highestFirst = true;
 	/** Set while a mouse button is held on the map (dragging it): nothing shows on hover meanwhile. */
@@ -202,6 +206,11 @@ final class MapPainter
 	void setPlayerArrow(boolean on)
 	{
 		playerArrow = on;
+	}
+
+	void setToPrepare(IntSupplier left)
+	{
+		toPrepare = left;
 	}
 
 	boolean isPlayerArrow()
@@ -415,7 +424,10 @@ final class MapPainter
 			// no name under the buttons, the search box or the bar of text along the bottom (as wide as its text)
 			List<Rectangle> taken = spaceTaken(buttons(view.width, view.height, window));
 			taken.add(search.layout(buttons(view.width, view.height, window), view.width).getBox());
-			taken.add(barBounds(g, view, bar));
+			if (!filters.isOpen())
+			{
+				taken.add(barBounds(g, view, bar));
+			}
 			drawLabels(g, view, area, labels.all(), taken);
 		}
 		drawIcons(g, shown, selection);
@@ -463,8 +475,19 @@ final class MapPainter
 				drawInfo(g, view, selected, settings, progress, farmingLines(selected.getSpot(), farms));
 			}
 		}
-		drawBar(g, view, bar);
+		if (!filters.isOpen())
+		{
+			// the Filters list takes the bar's room, so a small map shows more of the list
+			drawBar(g, view, bar);
+		}
 		drawButtons(g, view, area, plane, window, settings, player != null, following, gameMaximized, filters.isOpen());
+		int left = toPrepare.getAsInt();
+		if (left > 0)
+		{
+			// only while the whole map is first drawn (a saved one loading is not that); under the lists and the
+			// search, which cover it while open
+			drawNotice(g, view, buttons(view.width, view.height, window), noticeTitle(left));
+		}
 		if (filters.isOpen())
 		{
 			Rectangle button = buttons(view.width, view.height, window).get(Button.FILTERS);
@@ -984,6 +1007,12 @@ final class MapPainter
 		if (selection != null && spot.equals(selection.getSpot()))
 		{
 			return;
+		}
+		// a transport's lines to where it goes, as a click shows them (without the list), under its box
+		List<Transports.Destination> destinations = Transports.from(spot);
+		if (!destinations.isEmpty())
+		{
+			drawLayer(g, view, Transports.layer(new WorldPoint(spot.getX(), spot.getY(), spot.getPlane()), destinations));
 		}
 		WorldPoint to = links.apply(spot);
 		if (to != null)
@@ -1640,6 +1669,49 @@ final class MapPainter
 			text.append("    Drawing the map...");
 		}
 		return text.toString();
+	}
+
+	/** What the notice says while the view is drawing. */
+	static final List<String> NOTICE = java.util.Arrays.asList("The first time, the map is drawn from the game's data"
+		+ " and saved on this computer. Until it is done, places not drawn yet are blank or blurry, and their icons are"
+		+ " missing from the map and the search.", "Once it is done, the map opens at once every time. Advanced Map's"
+		+ " sidebar shows how far along it is.");
+
+	/** The notice's title, with how many regions' floors are still to draw. */
+	static String noticeTitle(int left)
+	{
+		return String.format(Locale.ROOT, "Drawing the map... %,d to go", left);
+	}
+
+	/** A box at the top left, under the buttons, saying the map is being drawn and why. */
+	private static void drawNotice(Graphics2D g, MapViewport.View view, Map<Button, Rectangle> buttons, String title)
+	{
+		java.awt.Font titleFont = FontManager.getRunescapeBoldFont();
+		java.awt.Font font = FontManager.getRunescapeSmallFont();
+		FontMetrics titleMetrics = g.getFontMetrics(titleFont);
+		FontMetrics metrics = g.getFontMetrics(font);
+		int width = Math.min(NOTICE_WIDTH, view.width - GAP * 2);
+		List<String> lines = new java.util.ArrayList<>();
+		for (String paragraph : NOTICE)
+		{
+			// a little short of the edge: the frame's text can come out a few pixels wider than measured
+			lines.addAll(SideList.wrap(paragraph, width - PAD * 3, font));
+		}
+		Rectangle icons = buttons.get(Button.ICONS);
+		int height = PAD * 2 + titleMetrics.getHeight() + metrics.getHeight() * lines.size() + PAD / 2;
+		Rectangle box = new Rectangle(icons.x, icons.y + icons.height + GAP, width, height);
+		drawPanel(g, box);
+		int baseline = box.y + PAD + titleMetrics.getAscent();
+		g.setFont(titleFont);
+		g.setColor(TEXT);
+		g.drawString(title, box.x + PAD, baseline);
+		baseline += titleMetrics.getDescent() + PAD / 2 + metrics.getAscent();
+		g.setFont(font);
+		for (String line : lines)
+		{
+			g.drawString(line, box.x + PAD, baseline);
+			baseline += metrics.getHeight();
+		}
 	}
 
 	private static void drawBar(Graphics2D g, MapViewport.View view, String text)

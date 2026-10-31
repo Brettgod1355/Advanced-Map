@@ -466,6 +466,11 @@ public class MapPainterTest
 	}
 
 	@Test
+	public void theDrawingNoticeCountsWhatIsLeftToDraw()
+	{
+		assertEquals("Drawing the map... 1,234 to go", MapPainter.noticeTitle(1234));	}
+
+	@Test
 	public void noPlaceNameIsDrawnUnderTheBottomBarOrASpaceAlreadyTaken()
 	{
 		MapViewport.View view = new MapViewport.View(3222, 3218, 2, 500, 400);

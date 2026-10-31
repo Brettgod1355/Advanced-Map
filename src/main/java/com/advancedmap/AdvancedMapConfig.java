@@ -524,23 +524,11 @@ public interface AdvancedMapConfig extends Config
 	}
 
 	@ConfigItem(
-		keyName = "saveMap",
-		name = "Save the map on this computer",
-		description = "Keep the drawn map in RuneLite's plugin data folder, shared by all your characters and profiles,"
-			+ " so it opens at once next time. A region is drawn again only when a game update changes it.",
-		position = 16
-	)
-	default boolean saveMap()
-	{
-		return true;
-	}
-
-	@ConfigItem(
 		keyName = "prepareMap",
 		name = "Prepare the whole map",
 		description = "From the moment the client starts, draw the regions not saved yet in the background, nearest you"
-			+ " first, so the map is ready when you open it. Uses spare processor time for a few minutes the first time"
-			+ " and after updates.",
+			+ " first, so the map is ready when you open it. Uses spare processor time for about 15 minutes the first"
+			+ " time, and briefly after game updates.",
 		position = 17
 	)
 	default boolean prepareMap()

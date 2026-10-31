@@ -20,6 +20,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.EnumSet;
@@ -293,18 +294,27 @@ final class MapSearch
 		{
 			if (in != null)
 			{
-				out.addAll(parsePlaces(in));
+				List<Entry> icons = new ArrayList<>();
+				List<Entry> read = parsePlaces(in, icons);
+				out.addAll(read);
+				minigames = read.stream().filter(entry -> entry.getKind() == Kind.MINIGAME).collect(Collectors.toList());
+				minigameIcons = Collections.unmodifiableList(icons);
 			}
 		}
 		catch (IOException | RuntimeException e)
 		{
 			log.debug("could not read the places", e);
 		}
-		try (InputStream in = MapSearch.class.getResourceAsStream("fishing-hunter.tsv"))
+		// RuneLite's list, then the hunter areas it lacks from the wiki: read as one, so each creature is one result
+		try (InputStream runelite = MapSearch.class.getResourceAsStream("fishing-hunter.tsv");
+			InputStream wiki = MapSearch.class.getResourceAsStream("hunter-wiki.tsv");
+			InputStream in = runelite == null || wiki == null ? runelite : new java.io.SequenceInputStream(runelite, wiki))
 		{
 			if (in != null)
 			{
-				out.addAll(parseSkilling(in));
+				List<SkillSpot> spots = new ArrayList<>();
+				out.addAll(parseSkilling(in, spots));
+				skillSpots = Collections.unmodifiableList(spots);
 			}
 		}
 		catch (IOException | RuntimeException e)
@@ -357,6 +367,46 @@ final class MapSearch
 	 */
 	static List<Entry> parseSkilling(InputStream in) throws IOException
 	{
+		return parseSkilling(in, new ArrayList<>());
+	}
+
+	/** A fishing spot and what it catches, or a hunter area, its creature and level: for the game's icon there. */
+	@Value
+	static class SkillSpot
+	{
+		boolean fishing;
+		List<String> what;
+		int level;
+		List<WorldPoint> tiles;
+	}
+
+	/** How far from the game's icon a fishing spot or hunter area of the list may be. */
+	static final int SKILL_REACH = 12;
+	private static volatile List<SkillSpot> skillSpots = Collections.emptyList();
+
+	/** The fishing spot (or hunter area) of the list nearest a game icon at a tile, or null when none is near. */
+	static SkillSpot skillNear(boolean fishing, int x, int y, int plane)
+	{
+		SkillSpot best = null;
+		int bestDistance = SKILL_REACH + 1;
+		for (SkillSpot spot : skillSpots)
+		{
+			for (WorldPoint tile : spot.tiles)
+			{
+				int distance = Math.max(Math.abs(tile.getX() - x), Math.abs(tile.getY() - y));
+				if (spot.fishing == fishing && tile.getPlane() == plane && distance < bestDistance)
+				{
+					best = spot;
+					bestDistance = distance;
+				}
+			}
+		}
+		return best;
+	}
+
+	/** As above, and each fishing spot and hunter area goes in {@code spots} too. */
+	static List<Entry> parseSkilling(InputStream in, List<SkillSpot> spots) throws IOException
+	{
 		Map<String, List<WorldPoint>> fishing = new java.util.TreeMap<>();
 		Map<String, List<WorldPoint>> hunting = new java.util.TreeMap<>();
 		Map<String, String> levels = new LinkedHashMap<>();
@@ -382,13 +432,17 @@ final class MapSearch
 				{
 					fishing.computeIfAbsent(fish, k -> new ArrayList<>()).addAll(tiles);
 				}
+				spots.add(new SkillSpot(true, Arrays.asList(f[2].split(", ")), 0, tiles));
 			}
 			else if ("H".equals(f[0]))
 			{
 				String[] xyz = f[4].split(",");
-				hunting.computeIfAbsent(f[2], k -> new ArrayList<>()).add(Prifddinas.toSurface(new WorldPoint(
-					Integer.parseInt(xyz[0]), Integer.parseInt(xyz[1]), Integer.parseInt(xyz[2]))));
+				WorldPoint tile = Prifddinas.toSurface(new WorldPoint(Integer.parseInt(xyz[0]), Integer.parseInt(xyz[1]),
+					Integer.parseInt(xyz[2])));
+				hunting.computeIfAbsent(f[2], k -> new ArrayList<>()).add(tile);
 				levels.put(f[2], f[3]);
+				spots.add(new SkillSpot(false, Collections.singletonList(f[2]), Integer.parseInt(f[3]),
+					Collections.singletonList(tile)));
 			}
 		}
 		List<Entry> out = new ArrayList<>();
@@ -400,6 +454,46 @@ final class MapSearch
 	}
 
 	static List<Entry> parsePlaces(InputStream in) throws IOException
+	{
+		return parsePlaces(in, new ArrayList<>());
+	}
+
+	/** How far from the game's minigame icon the minigame's listed spot may be, for the icon's name. */
+	static final int MINIGAME_REACH = 12;
+	private static volatile List<Entry> minigames = Collections.emptyList();
+	private static volatile List<Entry> minigameIcons = Collections.emptyList();
+
+	/**
+	 * The name of the minigame listed nearest a minigame icon of the game's, or null when none is near. On any floor:
+	 * a list may put the way in a floor up from the icon.
+	 */
+	static String minigameNear(int x, int y)
+	{
+		String best = null;
+		int bestDistance = MINIGAME_REACH + 1;
+		for (Entry minigame : minigames)
+		{
+			for (WorldPoint at : minigame.getPoints())
+			{
+				int distance = Math.max(Math.abs(at.getX() - x), Math.abs(at.getY() - y));
+				if (distance < bestDistance)
+				{
+					best = minigame.getName();
+					bestDistance = distance;
+				}
+			}
+		}
+		return best;
+	}
+
+	/** The minigames the game's map has no icon for, which get one of Advanced Map's ("icon" in places.tsv). */
+	static List<Entry> minigameIcons()
+	{
+		return minigameIcons;
+	}
+
+	/** As above; the minigames marked to get an icon go in {@code icons} too. */
+	static List<Entry> parsePlaces(InputStream in, List<Entry> icons) throws IOException
 	{
 		Map<String, Entry> out = new LinkedHashMap<>();
 		BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
@@ -418,6 +512,10 @@ final class MapSearch
 			List<WorldPoint> points = new ArrayList<>(known == null ? Collections.emptyList() : known.getPoints());
 			points.add(at);
 			out.put(kind + f[1], new Entry(kind, f[1], kind.label, points, Collections.emptyList(), null));
+			if (f.length > 5 && "icon".equals(f[5]))
+			{
+				icons.add(new Entry(kind, f[1], kind.label, Collections.singletonList(at), Collections.emptyList(), null));
+			}
 		}
 		return new ArrayList<>(out.values());
 	}

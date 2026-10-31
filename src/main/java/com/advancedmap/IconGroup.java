@@ -51,6 +51,8 @@ enum IconGroup
 	static final int SLAYER_MASTER = 1099;
 	static final int QUEST = 1056;
 	static final int DUNGEON = 1062;
+	/** The game's "Minigame" icon, for a minigame its map leaves out (Tempoross). */
+	static final int MINIGAME = 1061;
 	/** The bank tutor's icon, which the game puts on a bank with a tutor instead of (or beside) a bank icon. */
 	static final int BANK_TUTOR = 1251;
 	static final int AGILITY_SHORTCUT = 1117;
@@ -87,6 +89,30 @@ enum IconGroup
 	static IconGroup of(int category)
 	{
 		return BY_CATEGORY.getOrDefault(category, OTHER);
+	}
+
+	/**
+	 * True if an icon of this category may stand for a way into a dungeon (or out of one) a few tiles away. Places used
+	 * where they stand do not: a mining site by a trapdoor keeps its own details, and the trapdoor gets a link icon.
+	 */
+	static boolean mayBeEntrance(int category)
+	{
+		switch (of(category))
+		{
+			case BANKS:
+			case QUESTS:
+			case SHOPS:
+			case ALTARS:
+			case RESOURCES:
+			case FARMING:
+			case CRAFTING:
+			case SLAYER:
+			case SERVICES:
+			case TUTORS:
+				return false;
+			default:
+				return true;
+		}
 	}
 
 	boolean isShown(AdvancedMapConfig config)

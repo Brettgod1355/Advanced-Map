@@ -10,6 +10,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
@@ -30,8 +31,17 @@ final class MapPreparer
 {
 	/** Waits this long after the plugin starts, so the client's own start comes first. */
 	private static final long START_DELAY_MILLIS = 10_000;
-	/** A breath between regions. */
+	/** A breath between regions, or between runs of them when the preparing goes fast. */
 	private static final long STEP_MILLIS = 25;
+	/** How long a fast step keeps drawing before its breath. */
+	static final long FAST_NANOS = 250_000_000L;
+	/**
+	 * Four cores or more: the game keeps one or two busy, so the preparing need not breathe after each region. At the
+	 * lowest priority still, so on Windows the game comes first; on fewer cores it breathes after each one. Java's
+	 * common pool has one thread fewer than there are cores. (A higher priority was tried, and gained nothing: the
+	 * reads from the game's cache, a few milliseconds of each frame, set the pace.)
+	 */
+	private static final boolean MANY_CORES = ForkJoinPool.getCommonPoolParallelism() >= 3;
 
 	private final RegionImages images;
 	private final ClientMapSource source;
@@ -98,12 +108,22 @@ final class MapPreparer
 
 	private void step()
 	{
+		long until = System.nanoTime() + FAST_NANOS;
+		while (stepOnce() && MANY_CORES && System.nanoTime() - until < 0)
+		{
+			// the next region at once; the map's own drawing still stops it (stepOnce)
+		}
+	}
+
+	/** Draws and saves one region's floor, or finds one region's icons: true if it did. */
+	private boolean stepOnce()
+	{
 		try
 		{
 			MapStore store = images.store();
 			if (images.isBusy() || System.nanoTime() - restUntil < 0)
 			{
-				return;
+				return false;
 			}
 			Integer key = enabled.getAsBoolean() && store != null ? next(store) : null;
 			if (key != null)
@@ -111,13 +131,14 @@ final class MapPreparer
 				try
 				{
 					images.prepare(key);
+					return true;
 				}
 				catch (CacheNotReadyException e)
 				{
 					// the client has not downloaded this part of the cache yet: last in the queue, not forgotten
 					requeue(key);
+					return false;
 				}
-				return;
 			}
 			// with nothing (more) to draw, the icons of the regions not drawn in this session, for search
 			Integer region = nextIconRegion();
@@ -126,6 +147,7 @@ final class MapPreparer
 				try
 				{
 					images.scanIcons(region);
+					return true;
 				}
 				catch (CacheNotReadyException e)
 				{
@@ -141,6 +163,7 @@ final class MapPreparer
 		{
 			log.debug("could not prepare the map", e);
 		}
+		return false;
 	}
 
 	/** The next region whose icons to find, listing the regions first. */

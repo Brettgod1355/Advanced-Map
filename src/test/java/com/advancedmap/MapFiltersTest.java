@@ -87,6 +87,9 @@ public class MapFiltersTest
 		MapFilters.Layout layout = MapFilters.layout(button, 700);
 		assertTrue(layout.getPanel().y > button.y + button.height - 1);
 		assertTrue(layout.getPanel().y + layout.getPanel().height <= 700);
+		// on a small map the list reaches down over the bar's place, which is not drawn while the list is open
+		MapFilters.Layout small = MapFilters.layout(MapPainter.buttons(560, 330, false).get(MapPainter.Button.FILTERS), 330);
+		assertEquals(330 - MapFilters.BOTTOM_ROOM, small.getPanel().y + small.getPanel().height);
 		List<MapFilters.Entry> entries = filters.entries(NAMES);
 		Rectangle list = layout.getList();
 		MapFilters.Hit second = filters.hitAt(list.x + 50, list.y + MapFilters.ROW + 5, layout, entries);

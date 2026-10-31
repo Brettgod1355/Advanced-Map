@@ -252,6 +252,12 @@ as the wiki gave them that day (they can be out of date). The Shilo Village cart
 diary makes it free, are from the wiki's "Shilo Village cart system", "Hajedy" and "Vigroy" pages, checked the same day.
 Nothing is fetched from the wiki while the plugin runs.
 
+`src/main/resources/com/advancedmap/hunter-wiki.tsv` (hunter areas RuneLite's list leaves out, each with its creature
+and Hunter level) is adapted from the same wiki under the same license: tiles from its Bucket table `locline` (read
+on 2026-10-27), and the crab trapping levels from its "Red crab (Hunter)", "Blue crab (Hunter)" and "Rainbow crab
+(Hunter)" pages (read on 2026-10-30). Changes: each area's tiles reduced to their middle; areas within 25 tiles of
+one RuneLite's list has left out.
+
 `src/main/resources/com/advancedmap/monsters.tsv` (each searchable monster's hitpoints, max hit, attack styles, whether
 it is aggressive or poisonous, Slayer level, the Slayer masters who assign it, what it is weak to, the drops it always
 gives and up to three rare ones) is adapted from the same wiki's Bucket tables `infobox_monster` and `dropsline`, read

@@ -380,6 +380,13 @@ final class MapIcons
 		{
 			return transport;
 		}
+		// which minigame: the game's map calls them all "Minigame"
+		String minigame = spot.getGroup() == IconGroup.MINIGAMES
+			? MapSearch.minigameNear(spot.getX(), spot.getY()) : null;
+		if (minigame != null)
+		{
+			return minigame;
+		}
 		String name = progress.categoryName(spot.getCategory());
 		return name != null ? name : "Map icon";
 	}
@@ -388,6 +395,9 @@ final class MapIcons
 	static final String MINING_SITE = "Mining site";
 	/** The game's name for the rare trees icons' category. */
 	static final String RARE_TREES = "Rare trees";
+	/** The game's names for the fishing spot and hunter area icons' categories. */
+	static final String FISHING_SPOT = "Fishing spot";
+	static final String HUNTER = "Hunter training";
 
 	/** The lines of an icon's info box, after its name. */
 
@@ -434,6 +444,24 @@ final class MapIcons
 			{
 				lines.add(new Line(tree.getName(), PLAIN));
 				levelLine(lines, Skill.WOODCUTTING, tree.getLevel(), progress);
+			}
+		}
+		String category = progress.categoryName(spot.getCategory());
+		boolean fishing = FISHING_SPOT.equalsIgnoreCase(category);
+		if (fishing || HUNTER.equalsIgnoreCase(category))
+		{
+			// what is caught there, from the list the search uses (RuneLite's own map shows it; the game's does not)
+			MapSearch.SkillSpot near = MapSearch.skillNear(fishing, spot.getX(), spot.getY(), spot.getPlane());
+			if (near != null)
+			{
+				for (String what : near.getWhat())
+				{
+					lines.add(new Line(what, PLAIN));
+				}
+				if (!fishing)
+				{
+					levelLine(lines, Skill.HUNTER, near.getLevel(), progress);
+				}
 			}
 		}
 		// the game's own tile, in Prifddinas the city's

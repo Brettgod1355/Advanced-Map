@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.function.Predicate;
 import lombok.AllArgsConstructor;
+import net.runelite.api.coords.WorldPoint;
 
 /**
  * Advanced Map's own icons, found in a region's objects as it is drawn. A bank the game's map leaves out gets a bank
@@ -96,7 +97,32 @@ final class FoundIcons
 				}
 			}
 		}
+		int minigameArea = source.categoryArea(IconGroup.MINIGAME);
+		for (MapSearch.Entry minigame : MapSearch.minigameIcons())
+		{
+			WorldPoint at = minigame.getPoints().get(0);
+			if (minigameArea != -1 && (at.getX() >> 6) == region.getRegionX() && (at.getY() >> 6) == region.getRegionY()
+				&& !nearMinigame(out, at))
+			{
+				out.add(MapSpot.found(at.getX(), at.getY(), at.getPlane(), minigameArea, IconGroup.MINIGAME, null, null,
+					minigame.getName(), null));
+			}
+		}
 		return out;
+	}
+
+	/** True when a minigame icon of the game's is within {@link #ICON_REACH} of a tile. */
+	private static boolean nearMinigame(List<MapSpot> spots, WorldPoint at)
+	{
+		for (MapSpot spot : spots)
+		{
+			if (spot.getGroup() == IconGroup.MINIGAMES && spot.getPlane() == at.getPlane()
+				&& Math.max(Math.abs(spot.getX() - at.getX()), Math.abs(spot.getY() - at.getY())) <= ICON_REACH)
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**

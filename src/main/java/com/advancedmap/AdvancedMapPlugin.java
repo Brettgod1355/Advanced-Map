@@ -119,7 +119,6 @@ public class AdvancedMapPlugin extends Plugin
 
 	@Inject
 	private WorldMapPointManager worldMapPointManager;
-
 	/** One view per map, each remembering where it was left. */
 	private final Map<MapArea, MapViewport> viewports = new EnumMap<>(MapArea.class);
 	private volatile MapArea area = MapArea.SURFACE;
@@ -226,10 +225,7 @@ public class AdvancedMapPlugin extends Plugin
 		selection = null;
 		plane = 0;
 		images = new RegionImages(source, executor, icons);
-		if (config.saveMap())
-		{
-			executor.execute(this::openStore);
-		}
+		executor.execute(this::openStore);
 		markerFiles = Executors.newSingleThreadExecutor(task ->
 		{
 			Thread thread = new Thread(task, "Advanced Map markers");
@@ -238,7 +234,7 @@ public class AdvancedMapPlugin extends Plugin
 		});
 		markerFiles.execute(this::openMarkers);
 		lastSeen = null;
-		preparer = new MapPreparer(images, source, () -> config.saveMap() && config.prepareMap(),
+		preparer = new MapPreparer(images, source, config::prepareMap,
 			() -> lastSeen != null ? lastSeen : LUMBRIDGE);
 		preparer.start();
 		messages = new MapMessages(this::openMap);
@@ -251,6 +247,7 @@ public class AdvancedMapPlugin extends Plugin
 		painter.setInfoOnHover(config.infoOnHover());
 		painter.setHighestFirst(config.monsterOrder() == MonsterOrder.HIGHEST_FIRST);
 		painter.setPlayerArrow(config.playerArrow());
+		painter.setToPrepare(this::leftToPrepare);
 		painter.setLinks(this::leadsTo);
 		overlay = new MapOverlay(client, this, painter);
 		gameBox = new GameBox(config.gameBounds(), config.gameMaximized());
@@ -745,17 +742,6 @@ public class AdvancedMapPlugin extends Plugin
 			farmingRead = 0;
 			slayerShown = slayerShown == null ? null : "";
 		}
-		if ("saveMap".equals(event.getKey()) && images != null)
-		{
-			if (config.saveMap())
-			{
-				executor.execute(this::openStore);
-			}
-			else
-			{
-				images.setStore(null);
-			}
-		}
 		if (!"sidebarButton".equals(event.getKey()))
 		{
 			return;
@@ -1021,7 +1007,7 @@ public class AdvancedMapPlugin extends Plugin
 		{
 			return;
 		}
-		// the store seen here, not the one there when the task runs: "Save the map" may be turned off meanwhile
+		// the store seen here, not the one there when the task runs: the plugin may be restarted meanwhile
 		executor.execute(() ->
 		{
 			store.clear();
@@ -1029,15 +1015,23 @@ public class AdvancedMapPlugin extends Plugin
 		});
 	}
 
+	/** How many regions' floors the background preparing still has to draw: 0 when done, off, or unable to save. */
+	private int leftToPrepare()
+	{
+		RegionImages current = images;
+		MapPreparer currentPreparer = preparer;
+		if (!config.prepareMap() || current == null || current.store() == null || currentPreparer == null)
+		{
+			return 0;
+		}
+		return Math.max(0, currentPreparer.remaining());
+	}
+
 	/** For the sidebar: how much of the map is saved on this computer. */
 	String savedMapStatus()
 	{
 		RegionImages current = images;
 		MapStore store = current == null ? null : current.store();
-		if (!config.saveMap())
-		{
-			return "Off: the map is drawn again each time the client starts (Advanced Map's settings).";
-		}
 		if (store == null)
 		{
 			return "Not ready yet.";
@@ -1381,7 +1375,7 @@ public class AdvancedMapPlugin extends Plugin
 	WorldPoint linkDestination(MapSpot spot)
 	{
 		ClientMapSource links = source;
-		if (links == null)
+		if (links == null || !IconGroup.mayBeEntrance(spot.getCategory()))
 		{
 			return null;
 		}
@@ -1419,7 +1413,7 @@ public class AdvancedMapPlugin extends Plugin
 
 	/**
 	 * The highest floor known to have something in the region in the middle of a view: 0 when only the lowest does, or
-	 * nothing is known yet (the floors are known once drawn, or saved by "Save the map").
+	 * nothing is known yet (the floors are known once drawn, or saved).
 	 */
 	private int highestFloor(MapViewport.View view)
 	{

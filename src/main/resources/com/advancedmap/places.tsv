@@ -263,7 +263,7 @@ G	Fortis Colosseum	1798	3107	0
 G	Games Zone	3142	3473	0
 G	Gnome Ball	2381	3488	0
 G	Gnome Restaurant	2436	3502	0
-G	Hallowed Sepulchre	3653	3386	1
+G	Hallowed Sepulchre	3653	3386	0
 G	Impetuous Impulses	2425	4445	0
 G	Inferno	2495	5118	0
 G	Last Man Standing	3138	3635	0
@@ -304,3 +304,7 @@ G	TzHaar Fight Cave	2437	5168	0
 G	TzHaar Fight Pit	2398	5177	0
 G	TzHaar-Ket-Rak's Challenges	2544	5111	0
 G	Volcanic Mine	3812	3810	0
+# Not in RuneLite's list, added by Advanced Map: Tempoross's boat at the Sea Spirit Dock (its tile read on the game's
+# own map). A sixth field "icon" gives a minigame the game's map leaves out an icon of Advanced Map's.
+# Changed from RuneLite's list: the Hallowed Sepulchre on the ground floor, where the game's own icon is (it gives floor 1).
+G	Tempoross	3137	2840	0	icon

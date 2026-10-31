@@ -54,8 +54,7 @@ class AdvancedMapPanel extends PluginPanel
 	private final JButton open = new JButton();
 	private final JButton help = new JButton();
 	private final JLabel helpText = text(explanation());
-	private final JLabel saved = new JLabel();
-	private final Timer refresh;
+	private final JLabel saved = new JLabel();	private final Timer refresh;
 
 	AdvancedMapPanel(AdvancedMapPlugin plugin, String keyName)
 	{
@@ -109,12 +108,13 @@ class AdvancedMapPanel extends PluginPanel
 		content.add(left(saved));
 		content.add(Box.createVerticalStrut(8));
 		JButton redraw = new JButton("Draw the map again");
-		redraw.setToolTipText("Delete the saved map, so every region is drawn again from the game's data");
+		redraw.setToolTipText("Delete the map saved on this computer and save every region again from the game's data");
 		redraw.addActionListener(e ->
 		{
 			int answer = JOptionPane.showConfirmDialog(this,
-				"Delete the saved map and draw every region again from the game's data?\n"
-					+ "Until it is drawn again, the map fills in as you look around.",
+				"Delete the map saved on this computer and save every region again from the game's data?\n"
+					+ "What this client has already drawn stays on the map until it restarts;\n"
+					+ "everything else is drawn again as you look around.",
 				"Draw the map again", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
 			if (answer == JOptionPane.OK_OPTION)
 			{

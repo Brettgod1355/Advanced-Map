@@ -34,8 +34,8 @@ final class MapFilters
 	private static final int PAD = 8;
 	private static final int SEARCH_HEIGHT = 24;
 	private static final int MAX_HEIGHT = 470;
-	/** Room left under the list for the bar at the bottom of the map. */
-	private static final int BOTTOM_ROOM = 40;
+	/** Room left under the list; the bar along the bottom of the map is not drawn while the list is open. */
+	static final int BOTTOM_ROOM = 8;
 	private static final int INDENT = 18;
 	private static final int BOX = 12;
 	/** The line under "Show hidden icons" that says how to hide one. */
