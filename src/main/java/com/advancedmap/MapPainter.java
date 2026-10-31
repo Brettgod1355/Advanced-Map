@@ -1672,8 +1672,8 @@ final class MapPainter
 	}
 
 	/** What the notice says while the view is drawing. */
-	static final List<String> NOTICE = java.util.Arrays.asList("The first time, the map is drawn from the game's data"
-		+ " and saved on this computer. Until it is done, places not drawn yet are blank or blurry, and their icons are"
+	static final List<String> NOTICE = java.util.Arrays.asList("The first time, Advanced Map draws the map from the"
+		+ " game's data and saves it on this computer. Until it is done, places not drawn yet are blank or blurry, and their icons are"
 		+ " missing from the map and the search.", "Once it is done, the map opens at once every time. Advanced Map's"
 		+ " sidebar shows how far along it is.");
 
