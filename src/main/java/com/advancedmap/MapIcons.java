@@ -494,6 +494,13 @@ final class MapIcons
 		{
 			return transport;
 		}
+		// one Advanced Map names itself: the game's map gives only its kind ("Furnace" for the Ancient Furnace)
+		NamedIcons.Named named = spot.getTeleport() == null ? NamedIcons.at(spot.getX(), spot.getY(), spot.getPlane())
+			: null;
+		if (named != null)
+		{
+			return named.getName();
+		}
 		// which minigame: the game's map calls them all "Minigame"
 		String minigame = spot.getGroup() == IconGroup.MINIGAMES
 			? MapSearch.minigameNear(spot.getX(), spot.getY()) : null;
@@ -602,7 +609,9 @@ final class MapIcons
 		WorldPoint tile = Prifddinas.toCity(new WorldPoint(spot.getX(), spot.getY(), spot.getPlane()));
 		lines.add(new Line(tile.getPlane() > 0 ? tile.getX() + ", " + tile.getY() + ", " + floors.name(tile.getPlane())
 			: tile.getX() + ", " + tile.getY(), QUIET));
-		lines.add(new Line(hidden ? "Hidden: right-click to unhide" : "Right-click to hide this icon", QUIET));
+		boolean wiki = spot.getTeleport() == null && NamedIcons.at(spot.getX(), spot.getY(), spot.getPlane()) != null;
+		lines.add(new Line(hidden ? "Hidden: right-click to unhide" : wiki ? "Right-click to hide it or open its wiki page"
+			: "Right-click to hide this icon", QUIET));
 		return lines;
 	}
 

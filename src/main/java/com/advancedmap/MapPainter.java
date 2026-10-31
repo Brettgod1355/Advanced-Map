@@ -81,7 +81,8 @@ final class MapPainter
 		CLEAR_ROUTE,
 		ADD_MARKER,
 		EDIT_MARKER,
-		REMOVE_MARKER
+		REMOVE_MARKER,
+		WIKI
 	}
 
 	@Value
@@ -1363,6 +1364,10 @@ final class MapPainter
 		{
 			entries.add(settings.isHidden(spot) ? new MenuEntry(Action.UNHIDE, "Unhide this icon")
 				: new MenuEntry(Action.HIDE, "Hide this icon"));
+			if (spot.getTeleport() == null && NamedIcons.at(spot.getX(), spot.getY(), spot.getPlane()) != null)
+			{
+				entries.add(new MenuEntry(Action.WIKI, "Open its wiki page"));
+			}
 		}
 
 		RoutingPlugin routing = settings.getRouting();

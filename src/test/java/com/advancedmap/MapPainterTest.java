@@ -109,6 +109,25 @@ public class MapPainterTest
 	}
 
 	@Test
+	public void theAncientFurnaceIsNamedAndLinksItsWikiPage()
+	{
+		// the game's furnace icon at Grimstone, which its map calls only "Furnace"
+		NamedIcons.Named named = NamedIcons.at(2929, 10461, 0);
+		assertEquals("Ancient Furnace", named.getName());
+		assertEquals("Ancient_Furnace", named.getWikiPage());
+		MapSpot furnace = MapSpot.icon(2929, 10461, 0, 0, 1059);
+		MapPainter.Selection on = new MapPainter.Selection(furnace, true, 100, 100, new WorldPoint(2929, 10461, 0));
+		List<MapPainter.MenuEntry> entries = MapPainter.menuEntries(on, settings(RoutingPlugin.NONE));
+		assertEquals(MapPainter.Action.HIDE, entries.get(0).getAction());
+		assertEquals(MapPainter.Action.WIKI, entries.get(1).getAction());
+		assertEquals("Open its wiki page", entries.get(1).getText());
+		// any other icon has no such entry
+		MapSpot elsewhere = MapSpot.icon(3222, 3218, 0, 0, 1059);
+		assertTrue(MapPainter.menuEntries(new MapPainter.Selection(elsewhere, true, 100, 100, new WorldPoint(3222, 3218, 0)),
+			settings(RoutingPlugin.NONE)).stream().noneMatch(e -> e.getAction() == MapPainter.Action.WIKI));
+	}
+
+	@Test
 	public void aTileWithNoIconRoutesAndTakesAMarker()
 	{
 		MapPainter.Selection tile = new MapPainter.Selection(null, true, 10, 10, new WorldPoint(3222, 3218, 1));

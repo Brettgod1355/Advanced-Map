@@ -1276,6 +1276,14 @@ public class AdvancedMapPlugin extends Plugin
 			case ROUTE:
 				route(on.getPoint());
 				break;
+			case WIKI:
+				NamedIcons.Named named = on.getSpot() == null ? null
+					: NamedIcons.at(on.getSpot().getX(), on.getSpot().getY(), on.getSpot().getPlane());
+				if (named != null)
+				{
+					LinkBrowser.browse(MonsterInfo.WIKI + named.getWikiPage());
+				}
+				break;
 			default:
 				clearRoute();
 				break;
