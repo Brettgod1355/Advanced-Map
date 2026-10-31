@@ -23,6 +23,7 @@ import java.util.concurrent.Executors;
 import javax.inject.Inject;
 import javax.swing.SwingUtilities;
 import lombok.extern.slf4j.Slf4j;
+import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.Menu;
@@ -36,6 +37,10 @@ import net.runelite.api.events.GameTick;
 import net.runelite.api.events.PostMenuSort;
 import net.runelite.api.gameval.InterfaceID;
 import net.runelite.client.callback.ClientThread;
+import net.runelite.client.chat.ChatColorType;
+import net.runelite.client.chat.ChatMessageBuilder;
+import net.runelite.client.chat.ChatMessageManager;
+import net.runelite.client.chat.QueuedMessage;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.eventbus.Subscribe;
@@ -116,6 +121,12 @@ public class AdvancedMapPlugin extends Plugin
 
 	@Inject
 	private PluginManager pluginManager;
+
+	@Inject
+	private ChatMessageManager chatMessageManager;
+
+	/** What the update brought, to say on the first game tick; null when nothing is to be said. */
+	private volatile String updateLine;
 
 	@Inject
 	private WorldMapPointManager worldMapPointManager;
@@ -278,6 +289,12 @@ public class AdvancedMapPlugin extends Plugin
 		if (config.sidebarButton())
 		{
 			clientToolbar.addNavigation(button);
+		}
+		updateLine = WhatsNew.message(config.lastVersion());
+		if (updateLine == null && !WhatsNew.VERSION.equals(config.lastVersion()))
+		{
+			// nothing to say: the version is noted now; with a line, once it has been said (on the first game tick)
+			configManager.setConfiguration(AdvancedMapConfig.GROUP, AdvancedMapConfig.LAST_VERSION, WhatsNew.VERSION);
 		}
 	}
 
@@ -661,6 +678,26 @@ public class AdvancedMapPlugin extends Plugin
 		if ((mapOpen || windowOpen) && ticks % ROUTE_TICKS == 0 && layers != null)
 		{
 			askForRoute(layers);
+		}
+		sayWhatsNew();
+	}
+
+	/** The line on what an update brought, said once on the first game tick; "Say when updated" off keeps it quiet. */
+	private void sayWhatsNew()
+	{
+		String line = updateLine;
+		if (line == null)
+		{
+			return;
+		}
+		updateLine = null;
+		configManager.setConfiguration(AdvancedMapConfig.GROUP, AdvancedMapConfig.LAST_VERSION, WhatsNew.VERSION);
+		if (config.updateMessage())
+		{
+			chatMessageManager.queue(QueuedMessage.builder()
+				.type(ChatMessageType.GAMEMESSAGE)
+				.runeLiteFormattedMessage(new ChatMessageBuilder().append(ChatColorType.HIGHLIGHT).append(line).build())
+				.build());
 		}
 	}
 

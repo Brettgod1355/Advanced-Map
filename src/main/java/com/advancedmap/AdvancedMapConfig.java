@@ -37,6 +37,8 @@ public interface AdvancedMapConfig extends Config
 	/** What the search does not look in, as the "Search in" list by its box left it: "MONSTERS;NPCS". */
 	String SEARCH_SKIPPED = "searchSkipped";
 	String INFO_ON_HOVER = "infoOnHover";
+	String UPDATE_MESSAGE = "updateMessage";
+	String LAST_VERSION = "lastVersion";
 	/** Before each hidden icon's own setting: "hidden.a1234@3222,3218" = true. */
 	String HIDDEN_PREFIX = "hidden.";
 
@@ -521,6 +523,30 @@ public interface AdvancedMapConfig extends Config
 	default RoutingPlugin routing()
 	{
 		return RoutingPlugin.SHORTEST_PATH;
+	}
+
+	@ConfigItem(
+		keyName = UPDATE_MESSAGE,
+		name = "Say when updated",
+		description = "One line in chat, once, the first time you log in after the Plugin Hub has updated the plugin,"
+			+ " saying what the new version brings.",
+		position = 16
+	)
+	default boolean updateMessage()
+	{
+		return true;
+	}
+
+	/** The version the plugin last ran as, to tell an update from a restart; empty before the first. */
+	@ConfigItem(
+		keyName = LAST_VERSION,
+		name = "",
+		description = "",
+		hidden = true
+	)
+	default String lastVersion()
+	{
+		return "";
 	}
 
 	@ConfigItem(
