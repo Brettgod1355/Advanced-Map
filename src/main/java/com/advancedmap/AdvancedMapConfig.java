@@ -220,6 +220,17 @@ public interface AdvancedMapConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "yourPlaces",
+		name = "Your house and boats",
+		description = "Mark the portal of your player-owned house and the docks where your boats are moored.",
+		position = 12
+	)
+	default boolean yourPlaces()
+	{
+		return true;
+	}
+
+	@ConfigItem(
 		keyName = "showBanks",
 		name = "Banks",
 		description = "Banks, the Grand Exchange and its pricing experts.",

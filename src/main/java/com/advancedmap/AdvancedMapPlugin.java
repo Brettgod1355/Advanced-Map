@@ -541,6 +541,10 @@ public class AdvancedMapPlugin extends Plugin
 				return false;
 			});
 		}
+		if (config.yourPlaces())
+		{
+			others.addAll(YourPlaces.read(client, labels.all(), progress.getCategoryNames()));
+		}
 		pins.setOthers(others);
 		String account = account();
 		pins.setFilter(config.shareMarkers(), account);

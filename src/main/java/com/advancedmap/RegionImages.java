@@ -831,6 +831,7 @@ class RegionImages
 		}
 		addLinkIcons(region, all);
 		addTransportIcons(region, all);
+		YourPlaces.sawIcons(region.getRegionID(), all);
 		icons.addRegion(region.getRegionID(), all);
 		return complete;
 	}

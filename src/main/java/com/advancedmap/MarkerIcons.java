@@ -39,7 +39,8 @@ final class MarkerIcons
 		SWORDS("Swords"),
 		CHEST("Chest"),
 		QUESTION("Question"),
-		EXCLAMATION("Alert");
+		EXCLAMATION("Alert"),
+		BOAT("Boat");
 
 		final String label;
 
@@ -196,6 +197,25 @@ final class MarkerIcons
 			}
 			case CHEST:
 				return new RoundRectangle2D.Double(x + 1 * s, y + 3.5 * s, 14 * s, 11 * s, 3 * s, 3 * s);
+			case BOAT:
+			{
+				// a hull under a mast and its sail
+				Path2D hull = new Path2D.Double();
+				hull.moveTo(x + 0.5 * s, y + 10 * s);
+				hull.lineTo(x + 15.5 * s, y + 10 * s);
+				hull.lineTo(x + 12.5 * s, y + 15 * s);
+				hull.lineTo(x + 3.5 * s, y + 15 * s);
+				hull.closePath();
+				Area boat = new Area(hull);
+				boat.add(new Area(new Rectangle2D.Double(x + 6.6 * s, y + 1 * s, 1.4 * s, 9 * s)));
+				Path2D sail = new Path2D.Double();
+				sail.moveTo(x + 8 * s, y + 1.5 * s);
+				sail.lineTo(x + 14 * s, y + 8.5 * s);
+				sail.lineTo(x + 8 * s, y + 8.5 * s);
+				sail.closePath();
+				boat.add(new Area(sail));
+				return boat;
+			}
 			case QUESTION:
 			case EXCLAMATION:
 				return new Ellipse2D.Double(x + 0.5 * s, y + 0.5 * s, 15 * s, 15 * s);

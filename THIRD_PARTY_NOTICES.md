@@ -133,7 +133,9 @@ link lead, are taken from its `transports.tsv` at the same pin (origin and desti
 ways between two underground places (ladders, ropes, stairs, tunnels) in `src/main/resources/com/advancedmap/inner-links.tsv`,
 which a dungeon's preview follows to its lower floors (origin and destination tiles only). The 25 teleports at the end
 of `src/main/resources/com/advancedmap/teleports.tsv` that RuneLite's list lacks (10 items, 15 minigame teleports) take
-their tile and item id from its `teleportation_items.tsv` and `teleportation_minigames.tsv` at the same pin. Shortest Path's license,
+their tile and item id from its `teleportation_items.tsv` and `teleportation_minigames.tsv` at the same pin, and the
+house portal of each house location in `YourPlaces.java` takes its tile from that pin's "Teleport to House" rows in
+`teleportation_spells.tsv` (the outside tile of each varbit 2187 value). Shortest Path's license,
 as published in that repository (its copyright line is the license template's, unfilled):
 
 ```
@@ -235,7 +237,9 @@ stock) and `src/main/resources/com/advancedmap/spawns.tsv` (where monsters, NPCs
 and monsters' combat levels) are adapted from the [Old School RuneScape Wiki](https://oldschool.runescape.wiki/)'s
 structured data (its Bucket tables `infobox_shop`, `storeline`, `map`, `locline`, `infobox_monster` and
 `infobox_npc`, read on 2026-10-27, and the item names of `infobox_item`, read on 2026-10-30, to tell items' spawns
-in `locline` from scenery's). The wiki's content is licensed under
+in `locline` from scenery's; and, read on 2026-11-01, the Slayer masters, skill masters, tutors and quest-starting
+NPCs of its categories and `quest` table, placed at the map in each one's page infobox). The wiki's content is
+licensed under
 [CC BY-NC-SA 3.0](https://creativecommons.org/licenses/by-nc-sa/3.0/); these two files are adaptations and are
 shared under the same license, credited to the Old School RuneScape Wiki's contributors. Changes: only names,
 tiles, prices and levels kept; each shop placed by its page's map, else its owner's spawn; tiles the wiki gives on

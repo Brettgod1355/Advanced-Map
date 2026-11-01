@@ -74,7 +74,8 @@ public class SpawnsTest
 	{
 		// the moved tiles keep a floor above the one they are shown on (the generator moves them down only): 228 of the
 		// 388 monster and NPC tiles the 2026-10-29 check found over no ground (the others have ground only above, or none),
-		// and 12 of the items on the ground; two that landed on a tile of their own on the floor below are that tile
+		// and 12 of the items on the ground; two that landed on a tile of their own on the floor below are that tile. One
+		// of the NPCs placed from their pages' maps (Brother Jered, upstairs in the Monastery) is moved too
 		Spawns.load();
 		int moved = 0;
 		for (Spawns.Creature creature : Spawns.all())
@@ -85,7 +86,27 @@ public class SpawnsTest
 				moved++;
 			}
 		}
-		assertEquals(238, moved);
+		assertEquals(239, moved);
+	}
+
+	@Test
+	public void usefulNpcsAreSearchableButNotTutorialIslandsOrALeaguesOwn()
+	{
+		Spawns.load();
+		java.util.Set<String> names = new java.util.HashSet<>();
+		for (Spawns.Creature creature : Spawns.all())
+		{
+			names.add(creature.getName());
+		}
+		// a quest's start, a skill master, a Slayer master, a tutor
+		for (String name : new String[]{"Aris", "Aubury", "Vannaka", "Melee combat tutor"})
+		{
+			assertTrue(name, names.contains(name));
+		}
+		for (String name : names)
+		{
+			assertTrue(name, !name.contains("League") && !name.equals("Gielinor Guide"));
+		}
 	}
 
 	@Test
