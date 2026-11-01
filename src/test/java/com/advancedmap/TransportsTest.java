@@ -6,6 +6,7 @@
 package com.advancedmap;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import net.runelite.api.coords.WorldPoint;
@@ -233,6 +234,9 @@ public class TransportsTest
 		// two places: lines are drawn, the map is not moved
 		assertNull(Transports.elsewhere(north));
 		assertEquals("Gemstone Crab cave", MapIcons.name(north, Progress.NONE));
+		// the game's dungeon icon marks each cave: no transport icon of our own beside it
+		assertTrue(Collections.disjoint(Transports.boardingSpots(), Arrays.asList(new WorldPoint(1278, 3167, 0),
+			new WorldPoint(1350, 3123, 0), new WorldPoint(1245, 3035, 0))));
 		// any other dungeon icon is no transport
 		assertFalse(Transports.mayBeTransport(MapSpot.icon(3097, 9867, 0, 0, IconGroup.DUNGEON)));
 	}

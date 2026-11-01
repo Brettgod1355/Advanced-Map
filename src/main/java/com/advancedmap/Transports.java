@@ -322,23 +322,29 @@ final class Transports
 		return CODE_SPACE.matcher(out).replaceAll("").replace(" - ", ", ");
 	}
 
-	/** Every stop of a network ("Fairy ring", "Spirit tree"), or none. */
-	/** Every place to board a transport: a network's spots, a boat's or ship's, a named transport icon that leads somewhere. */
 	static boolean isLoaded()
 	{
 		return loaded;
 	}
 
+	/**
+	 * Every place to board a transport: a network's spots, a boat's or ship's, a named transport icon that leads
+	 * somewhere. Not the Gemstone Crab's caves: the game's map marks each with a dungeon icon already.
+	 */
 	static List<WorldPoint> boardingSpots()
 	{
 		List<WorldPoint> out = new ArrayList<>();
 		for (Station station : data.stations)
 		{
-			out.add(station.point);
+			if (!CRAB_CAVE.equals(station.kind))
+			{
+				out.add(station.point);
+			}
 		}
 		return out;
 	}
 
+	/** Every stop of a network ("Fairy ring", "Spirit tree"), or none. */
 	static List<Destination> network(String kind)
 	{
 		return data.networks.getOrDefault(kind, Collections.emptyList());
