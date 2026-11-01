@@ -260,7 +260,8 @@ adapted from the same wiki under the same license: the "Dock at" lines of its "S
 `src/main/resources/com/advancedmap/transport-points.tsv`, the group ironmen's portal from Lumbridge to the Node, takes
 the Node's place from the same wiki's "The Node" page (read on 2026-10-31). The two rows in
 `src/main/resources/com/advancedmap/transports.tsv` for fairy ring DLP at Grimstone take the ring from the same wiki's
-"Fairy ring" page (read on 2026-10-31).
+"Fairy ring" page (read on 2026-10-31). The rows for the Gemstone Crab's caves take the caves and the crab's three mines from the same
+wiki's "Cave (Gemstone Crab)" and "Gemstone Crab" pages (read on 2026-10-31).
 
 `src/main/resources/com/advancedmap/monsters.tsv` (each searchable monster's hitpoints, max hit, attack styles, whether
 it is aggressive or poisonous, Slayer level, the Slayer masters who assign it, what it is weak to, the drops it always

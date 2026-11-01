@@ -18,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * The game's map icons Advanced Map names itself ({@code named-icons.tsv}): the Ancient Furnace, which the game's map
- * calls only "Furnace". Each has the wiki page about it.
+ * calls only "Furnace", and the Gemstone Crab's caves, only "Dungeon". Each has the wiki page about it.
  */
 @Slf4j
 final class NamedIcons

@@ -46,6 +46,8 @@ final class Transports
 	 */
 	static final String OBELISK = "Wilderness obelisk";
 	private static final String OBELISK_ITEM = "Obelisk";
+	/** The Gemstone Crab's caves, dungeon icons on the game's map: each leads to the crab's mine of the moment. */
+	static final String CRAB_CAVE = "Gemstone Crab cave";
 
 	/** RuneLite's list names the Keldagrim carts but not where they go: the minecart station in Keldagrim. */
 	private static final String TO_KELDAGRIM = "Minecart to Keldagrim";
@@ -432,11 +434,20 @@ final class Transports
 
 	/**
 	 * The kind of transport an icon may be: any for a transport icon, a spirit tree for a farming patch, the other
-	 * obelisks for a Wilderness obelisk's, else none.
+	 * obelisks for a Wilderness obelisk's, the crab's other mines for a Gemstone Crab cave's, else none.
 	 */
 	static boolean mayBeTransport(MapSpot spot)
 	{
-		return spot.getGroup() == IconGroup.TRANSPORTATION || spot.getGroup() == IconGroup.FARMING || isObelisk(spot);
+		return spot.getGroup() == IconGroup.TRANSPORTATION || spot.getGroup() == IconGroup.FARMING || isObelisk(spot)
+			|| spot.getGroup() == IconGroup.DUNGEONS
+			&& !from(spot.getX(), spot.getY(), spot.getPlane(), CRAB_CAVE).isEmpty();
+	}
+
+	/** The only kind of transport an icon of its group may be: a farming patch a spirit tree, a dungeon a crab cave. */
+	private static String onlyKind(MapSpot spot)
+	{
+		return spot.getGroup() == IconGroup.FARMING ? SPIRIT_TREE
+			: spot.getGroup() == IconGroup.DUNGEONS ? CRAB_CAVE : null;
 	}
 
 	private static boolean isObelisk(MapSpot spot)
@@ -456,8 +467,7 @@ final class Transports
 		{
 			return Collections.emptyList();
 		}
-		return from(spot.getX(), spot.getY(), spot.getPlane(),
-			spot.getGroup() == IconGroup.FARMING ? SPIRIT_TREE : null);
+		return from(spot.getX(), spot.getY(), spot.getPlane(), onlyKind(spot));
 	}
 
 	/** The other Wilderness obelisks, by their Wilderness level ("Level 13"). */
@@ -481,7 +491,7 @@ final class Transports
 		{
 			return null;
 		}
-		String onlyKind = spot.getGroup() == IconGroup.FARMING ? SPIRIT_TREE : null;
+		String onlyKind = onlyKind(spot);
 		Destination best = null;
 		int bestDistance = NAME_REACH + 1;
 		for (List<Destination> network : data.networks.values())

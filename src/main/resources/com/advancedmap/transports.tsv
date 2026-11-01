@@ -829,3 +829,11 @@ P	Lever	3067	10253	0	2271	4680	0	King Black Dragon's lair
 P	Lever	2271	4680	0	3067	10254	0	Lava Maze Dungeon
 P	Lever	3090	3956	0	2539	4712	0	Mage Arena bank
 P	Lever	2539	4712	0	3090	3956	0	Mage Arena
+# The Gemstone Crab's caves, from the OSRS Wiki's "Cave (Gemstone Crab)" and "Gemstone Crab" pages: a cave at each of the
+# crab's three mines leads to wherever the crab is now, so each lists the other two mines.
+P	Gemstone Crab cave	1278	3167	0	1351	3110	0	East mine
+P	Gemstone Crab cave	1278	3167	0	1237	3042	0	South mine
+P	Gemstone Crab cave	1350	3123	0	1275	3160	0	North mine
+P	Gemstone Crab cave	1350	3123	0	1237	3042	0	South mine
+P	Gemstone Crab cave	1245	3035	0	1275	3160	0	North mine
+P	Gemstone Crab cave	1245	3035	0	1351	3110	0	East mine

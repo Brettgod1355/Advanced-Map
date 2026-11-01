@@ -220,6 +220,24 @@ public class TransportsTest
 	}
 
 	@Test
+	public void eachGemstoneCrabCaveLeadsToTheCrabsOtherMines()
+	{
+		// the game's dungeon icons by the three mines, a tile or two off the caves
+		MapSpot north = MapSpot.icon(1279, 3168, 0, 0, IconGroup.DUNGEON);
+		assertTrue(Transports.mayBeTransport(north));
+		assertEquals(Arrays.asList("East mine", "South mine"), labels(Transports.from(north)));
+		assertEquals(Arrays.asList("North mine", "South mine"),
+			labels(Transports.from(MapSpot.icon(1352, 3124, 0, 0, IconGroup.DUNGEON))));
+		assertEquals(Arrays.asList("North mine", "East mine"),
+			labels(Transports.from(MapSpot.icon(1247, 3036, 0, 0, IconGroup.DUNGEON))));
+		// two places: lines are drawn, the map is not moved
+		assertNull(Transports.elsewhere(north));
+		assertEquals("Gemstone Crab cave", MapIcons.name(north, Progress.NONE));
+		// any other dungeon icon is no transport
+		assertFalse(Transports.mayBeTransport(MapSpot.icon(3097, 9867, 0, 0, IconGroup.DUNGEON)));
+	}
+
+	@Test
 	public void lumbridgesGroupIronmanPortalLeadsToTheNode()
 	{
 		MapSpot portal = MapSpot.icon(3217, 3235, 0, 0, 1104);
