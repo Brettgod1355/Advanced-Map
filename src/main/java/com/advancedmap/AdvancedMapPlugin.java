@@ -888,9 +888,10 @@ public class AdvancedMapPlugin extends Plugin
 	{
 		if (!AdvancedMapConfig.GROUP.equals(event.getGroup())
 			|| AdvancedMapConfig.GAME_BOUNDS.equals(event.getKey())
-			|| AdvancedMapConfig.GAME_MAXIMIZED.equals(event.getKey()))
+			|| AdvancedMapConfig.GAME_MAXIMIZED.equals(event.getKey())
+			|| AdvancedMapConfig.WINDOW_BOUNDS.equals(event.getKey()))
 		{
-			// the box's own place and size, saved as it is moved: nothing else to read again
+			// the box's or the window's own place and size, saved as it is moved: nothing else to read again
 			return;
 		}
 		settings = readSettings();
@@ -2731,11 +2732,7 @@ public class AdvancedMapPlugin extends Plugin
 		{
 			configManager.unsetConfiguration(AdvancedMapConfig.GROUP, key);
 		}
-		settings = readSettings();
-		if (sideList.isOpen() && sideList.owner() == HIDDEN_LIST)
-		{
-			showHiddenIcons();
-		}
+		// the settings are read again, and the Hidden icons list made again, by onConfigChanged for the change
 	}
 
 	private void setSwitch(String key, boolean on)
