@@ -660,6 +660,10 @@ class RegionImages
 		}
 		long hash = source.regionHash(id >> 8, id & 0xFF);
 		MapStore saved = store;
+		if (plane == 0 && saved != null)
+		{
+			markEmptyFloors(saved, id, region, hash);
+		}
 		if (saved != null && saved.isEmpty(key, hash))
 		{
 			absent.add(key);
@@ -694,6 +698,26 @@ class RegionImages
 			saved.save(key, hash, full, small);
 		}
 		return new Drawn(full, small);
+	}
+
+	/**
+	 * Saves a region's floors above the ground that have nothing on them as empty, while the region's data is in hand
+	 * from drawing its ground: half of all floors are such, and the preparer's later passes, floor by floor, found each
+	 * by reading the region again after it had left memory, more than half of a first-time prepare's reads of the
+	 * game's cache. A floor already saved from this game data is left as it is.
+	 */
+	private void markEmptyFloors(MapStore saved, int id, Region region, long hash)
+	{
+		for (int up = 1; up < PLANES; up++)
+		{
+			int above = key(up, id);
+			Long known = saved.savedHash(above);
+			if ((known == null || known != hash) && !hasFloor(region, up))
+			{
+				saved.saveEmpty(above, hash);
+				absent.add(above);
+			}
+		}
 	}
 
 	/** True when a region has ground or anything placed on a floor above the ground. */
