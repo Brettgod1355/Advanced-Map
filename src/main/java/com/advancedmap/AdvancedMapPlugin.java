@@ -510,8 +510,16 @@ public class AdvancedMapPlugin extends Plugin
 		pins.setFilter(config.shareMarkers(), account);
 		if (sideList.owner() == MARKERS_LIST && sideList.isOpen() && !java.util.Objects.equals(account, markersFor))
 		{
-			// another account logged in with the window open: its markers, not the last one's
-			showMarkers();
+			if (account == null && !config.shareMarkers())
+			{
+				// logged out with the window open and markers kept apart: no account's markers are "yours" now
+				sideList.close();
+			}
+			else
+			{
+				// another account logged in with the window open: its markers, not the last one's
+				showMarkers();
+			}
 		}
 		MapPainter drawing = painter;
 		if (drawing != null && now - farmingRead >= FARMING_MILLIS)
@@ -888,6 +896,11 @@ public class AdvancedMapPlugin extends Plugin
 		{
 			// an icon hidden or shown again, here or by another client: only that changes the list
 			showHiddenIcons();
+		}
+		if (sideList.owner() == MARKERS_LIST && sideList.isOpen() && AdvancedMapConfig.SHARE_MARKERS.equals(event.getKey()))
+		{
+			// shared between accounts or kept apart: which markers are "yours" changed
+			showMarkers();
 		}
 		MapPainter drawing = painter;
 		if (drawing != null)
