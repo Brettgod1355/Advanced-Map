@@ -2246,6 +2246,8 @@ public class AdvancedMapPlugin extends Plugin
 	/** The side list of the menu's "Your markers", and of its "Hidden icons"; a hidden icon's rows too. */
 	static final Object MARKERS_LIST = new Object();
 	static final Object HIDDEN_LIST = new Object();
+	/** How far in a click on a hidden icon's row zooms, from further out: where icons are drawn, with room around. */
+	private static final double HIDDEN_ZOOM = 3;
 	/** The account "Your markers" was listed for. */
 	private volatile String markersFor;
 
@@ -2319,7 +2321,8 @@ public class AdvancedMapPlugin extends Plugin
 		spots.sort(java.util.Comparator.comparingInt(spot -> SearchSpots.distance(point(spot), from)));
 		List<SideList.Row> rows = new ArrayList<>();
 		rows.add(note(hidden.isEmpty() ? "None. Right-click an icon and choose Hide to hide it."
-			: "Click one to go there: it shows faded. Right-click it and choose Unhide."));
+			: "Click one to go there: it shows faded (unless Icons is off or its kind is unticked in Filters)."
+				+ " Right-click it and choose Unhide."));
 		for (MapSpot spot : spots)
 		{
 			rows.add(new SideList.Row(MapIcons.name(spot, progress), tilesAway(point(spot), from),
@@ -2460,10 +2463,18 @@ public class AdvancedMapPlugin extends Plugin
 			{
 				LinkBrowser.browse(((MonsterInfo.WikiPage) row.getTarget()).getUrl());
 			}
-			else if (row.getTarget() == HIDDEN_LIST && !settings.isShowHidden())
+			else if (row.getTarget() == HIDDEN_LIST)
 			{
-				// to unhide it, it must show
-				setSwitch(AdvancedMapConfig.SHOW_HIDDEN, true);
+				// to unhide it, it must show: hidden icons shown, and close enough in for icons to be drawn
+				if (!settings.isShowHidden())
+				{
+					setSwitch(AdvancedMapConfig.SHOW_HIDDEN, true);
+				}
+				MapViewport viewport = viewports.get(area);
+				if (viewport.view(1, 1).zoom < MapIcons.ICON_ZOOM)
+				{
+					viewport.setZoom(HIDDEN_ZOOM);
+				}
 			}
 		}
 		return true;
