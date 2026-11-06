@@ -142,6 +142,8 @@ final class MapPainter
 
 	/** How long the mouse must rest on an icon before its info box shows, without a click. */
 	static final long HOVER_NANOS = 300_000_000L;
+	/** Further than this off the screen, a place name cannot reach onto it: half the widest name, with room. */
+	private static final int LABEL_REACH = 400;
 	private static final int NOTICE_WIDTH = 280;
 
 	/** For measuring text outside a frame (where the menu's entry is, for a click). */
@@ -734,14 +736,19 @@ final class MapPainter
 				{
 					continue;
 				}
+				int cx = (int) Math.round(view.screenX(label.getX() + 0.5));
+				int cy = (int) Math.round(view.screenY(label.getY() + 0.5));
+				if (cx < -LABEL_REACH || cx > view.width + LABEL_REACH || cy < -LABEL_REACH || cy > view.height + LABEL_REACH)
+				{
+					// far off the screen: not worth measuring (the whole map's names are measured otherwise)
+					continue;
+				}
 				int width = 0;
 				for (String line : label.getLines())
 				{
 					width = Math.max(width, metrics.stringWidth(line));
 				}
 				int height = metrics.getHeight() * label.getLines().size();
-				int cx = (int) Math.round(view.screenX(label.getX() + 0.5));
-				int cy = (int) Math.round(view.screenY(label.getY() + 0.5));
 				Rectangle box = new Rectangle(cx - width / 2 - 2, cy - height / 2 - 2, width + 4, height + 4);
 				if (!box.intersects(0, 0, view.width, view.height) || overlaps(box, taken))
 				{
