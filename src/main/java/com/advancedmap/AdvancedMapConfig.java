@@ -606,7 +606,7 @@ public interface AdvancedMapConfig extends Config
 		keyName = "prepareMap",
 		name = "Build the whole map",
 		description = "From the moment the client starts, build the regions not saved yet in the background, nearest you"
-			+ " first, so the map is ready when you open it. Uses spare processor time for about 15 minutes the first"
+			+ " first, so the map is ready when you open it. Uses spare processor time for up to about 10 minutes the first"
 			+ " time, and briefly after game updates.",
 		position = 17
 	)

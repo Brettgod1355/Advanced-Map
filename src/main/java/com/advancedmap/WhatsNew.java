@@ -23,7 +23,7 @@ final class WhatsNew
 	static final String NOTE = "a left click on the world map orb now opens Advanced Map (the game's map is in the"
 		+ " orb's right-click menu, and a setting turns it back), a menu at the top left (a welcome page, help, your"
 		+ " markers and hidden icons, settings, what's new, where to write), \"Report a problem here\" on the map's"
-		+ " right-click menu, and the whole map built for the first time in about half the time";
+		+ " right-click menu, and the whole map built for the first time with half as many reads of the game's data";
 
 	private WhatsNew()
 	{
