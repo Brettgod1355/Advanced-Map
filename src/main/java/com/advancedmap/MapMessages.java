@@ -60,13 +60,23 @@ class MapMessages
 	}
 
 	/** Puts a layer of this plugin's own on the map, replacing one with the same id. */
+	/** Counts the layers put and removed, for the painters to know a paint is due. */
+	private final java.util.concurrent.atomic.AtomicInteger changes = new java.util.concurrent.atomic.AtomicInteger();
+
+	int changes()
+	{
+		return changes.get();
+	}
+
 	void put(MapLayer layer)
 	{
+		changes.incrementAndGet();
 		layers.put(layer.getId(), layer);
 	}
 
 	void remove(String id)
 	{
+		changes.incrementAndGet();
 		layers.remove(id);
 	}
 

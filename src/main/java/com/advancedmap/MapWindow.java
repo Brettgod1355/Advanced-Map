@@ -130,7 +130,15 @@ final class MapWindow extends JFrame
 			setSize(1100, 750);
 			setLocationByPlatform(true);
 		}
-		redraw = new Timer(REDRAW_MS, e -> panel.repaint());
+		// the timer asks; the clock answers (at once after input or an arrival, a steady rate while the pointer moves,
+		// else a slow heartbeat), so a map that sits still in its window is not repainted twenty times a second
+		redraw = new Timer(REDRAW_MS, e ->
+		{
+			if (panel.clock.due(plugin.touches(), plugin.changes(), panel.mouse, System.nanoTime()))
+			{
+				panel.repaint();
+			}
+		});
 		minimizing = new Minimizing(redraw);
 		addWindowListener(minimizing);
 		// saved a moment after the last move or resize too, in case RuneLite is quit with the window still open
@@ -240,6 +248,8 @@ final class MapWindow extends JFrame
 		private final AdvancedMapPlugin plugin;
 		private final MapPainter painter;
 		private Point mouse;
+		/** When the timer has the panel painted again. */
+		private final RedrawClock clock = new RedrawClock();
 		private Point dragFrom;
 		private Point pressedAt;
 
@@ -375,6 +385,7 @@ final class MapWindow extends JFrame
 		@Override
 		protected void paintComponent(Graphics g)
 		{
+			clock.painted(plugin.touches(), plugin.changes(), System.nanoTime());
 			// drawn bigger by Stretched Mode's factor, as the map over the game is
 			paintScaled(g, getWidth(), getHeight(), plugin.windowScale(), scaled -> painter.paint(scaled,
 				plugin.viewport().view(width(), height()), plugin.area(), plugin.plane(), plugin.playerLocation(),

@@ -491,8 +491,17 @@ class RegionImages
 	}
 
 	/** Puts a floor's pictures in memory, replacing what was there. */
+	/** Counts the pictures that arrived, for the painters to know a paint is due. */
+	private final java.util.concurrent.atomic.AtomicInteger changes = new java.util.concurrent.atomic.AtomicInteger();
+
+	int changes()
+	{
+		return changes.get();
+	}
+
 	private void keep(int key, Level level, Drawn drawn)
 	{
+		changes.incrementAndGet();
 		if (drawn.full != null && level == Level.FULL)
 		{
 			images.get(Level.FULL).put(key, drawn.full);

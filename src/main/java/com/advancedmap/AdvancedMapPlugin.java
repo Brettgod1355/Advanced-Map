@@ -500,7 +500,13 @@ public class AdvancedMapPlugin extends Plugin
 		}
 		if (mapOpen || windowOpen)
 		{
+			WorldPoint before = player;
 			player = Prifddinas.toSurface(currentPlayerLocation());
+			if (!java.util.Objects.equals(before, player))
+			{
+				// the marker, and the view when following: a paint is due
+				touched();
+			}
 			follow();
 		}
 		if (windowOpen)
@@ -558,6 +564,8 @@ public class AdvancedMapPlugin extends Plugin
 			drawing.setFarming(config.farmingStatus() ? readFarming(now / 1000) : null);
 		}
 		showSlayerTask();
+		// other plugins' markers, the farming dots, the Slayer marks: read again, so a paint is due
+		touched();
 	}
 
 	/**
@@ -856,6 +864,7 @@ public class AdvancedMapPlugin extends Plugin
 		{
 			MapIcons current = icons;
 			progress = Progress.read(client, current == null ? Collections.emptySet() : current.watchedVars());
+			touched();
 		}
 		catch (RuntimeException e)
 		{
@@ -1059,6 +1068,14 @@ public class AdvancedMapPlugin extends Plugin
 	}
 
 	/** Counts the mouse and key events on the map over the game, for {@link MapOverlay} to draw again at once. */
+	/** Counts the pictures and layers that arrived, for the painters to know a paint is due ({@link RedrawClock}). */
+	int changes()
+	{
+		RegionImages current = images;
+		MapMessages layers = messages;
+		return (current == null ? 0 : current.changes()) + (layers == null ? 0 : layers.changes());
+	}
+
 	void touched()
 	{
 		touches.incrementAndGet();
