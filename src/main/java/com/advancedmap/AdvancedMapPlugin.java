@@ -1219,7 +1219,7 @@ public class AdvancedMapPlugin extends Plugin
 		MapPreparer currentPreparer = preparer;
 		return new MapMenu.Build(store == null ? -1 : store.count(),
 			currentPreparer == null ? -1 : currentPreparer.remaining(), config.prepareMap(), store == null && storeFailed,
-			currentPreparer != null && currentPreparer.isHalted());
+			currentPreparer != null && currentPreparer.isHalted(), currentPreparer == null ? 0 : currentPreparer.failed());
 	}
 
 	/** For the sidebar: how much of the map is saved on this computer. */
@@ -1244,8 +1244,9 @@ public class AdvancedMapPlugin extends Plugin
 		{
 			return count;
 		}
-		return remaining == 0 ? count + " The whole map is ready." : count + " Building the rest: " + remaining
-			+ " to go.";
+		int failed = currentPreparer.failed();
+		return remaining == 0 ? count + (failed == 0 ? " The whole map is ready." : " The whole map is ready but " + failed
+			+ " could not be built (the client's log says why).") : count + " Building the rest: " + remaining + " to go.";
 	}
 
 	/** True while the map is open, over the game or in its window. */

@@ -75,6 +75,8 @@ final class MapMenu
 		boolean unopened;
 		/** The game's map data could not be read: the building has stopped until the plugin is updated. */
 		boolean halted;
+		/** Floors left out because they could not be drawn; the log says why. */
+		int failed;
 	}
 
 	enum Part
@@ -499,7 +501,9 @@ final class MapMenu
 		{
 			heading(out, "The map is built", width);
 			paragraph(out, String.format(java.util.Locale.ROOT, "All %,d regions and floors are saved on this"
-				+ " computer, for every character.", build.getSaved()), width);
+				+ " computer, for every character.", build.getSaved()) + (build.getFailed() == 0 ? "" : String.format(
+				java.util.Locale.ROOT, " %,d could not be built; the client's log says why.", build.getFailed())),
+				width);
 		}
 	}
 

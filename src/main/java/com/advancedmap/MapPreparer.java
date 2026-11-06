@@ -90,6 +90,7 @@ final class MapPreparer
 		todo.clear();
 		building = null;
 		halted = false;
+		failed = 0;
 		restUntil = 0;
 		listed = false;
 		iconTodo = null;
@@ -110,6 +111,14 @@ final class MapPreparer
 	boolean isHalted()
 	{
 		return halted;
+	}
+
+	/** Floors left out because they could not be drawn (the log says why); counted so "ready" can say so. */
+	private volatile int failed;
+
+	int failed()
+	{
+		return failed;
 	}
 
 	private synchronized void halt(int key)
@@ -189,7 +198,11 @@ final class MapPreparer
 			{
 				try
 				{
-					images.prepare(key);
+					if (!images.prepare(key))
+					{
+						// left out, not tried again: the log says what went wrong with it
+						failed++;
+					}
 					return true;
 				}
 				catch (CacheNotReadyException e)

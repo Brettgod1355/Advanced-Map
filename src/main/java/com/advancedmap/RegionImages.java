@@ -409,21 +409,24 @@ class RegionImages
 	 * Draws and saves a floor of a region. Throws {@link CacheNotReadyException} when it must be tried again later, and
 	 * {@link MapDataException} when the game's data cannot be read at all (a game update changed its format): nothing
 	 * can be built until the plugin is updated, and the preparer stops rather than run through its list saving nothing.
+	 * False when the floor could not be drawn for another reason (logged): it is left out rather than tried forever.
 	 */
-	void prepare(int key)
+	boolean prepare(int key)
 	{
 		MapStore saved = store;
 		if (saved == null || saved.has(key))
 		{
-			return;
+			return true;
 		}
 		try
 		{
 			draw(key, Level.SMALL);
+			return true;
 		}
 		catch (CancellationException e)
 		{
 			// the plugin is stopping
+			return true;
 		}
 		catch (CacheNotReadyException e)
 		{
@@ -437,7 +440,8 @@ class RegionImages
 		}
 		catch (RuntimeException e)
 		{
-			log.debug("could not prepare region {} floor {}", region(key), plane(key), e);
+			log.warn("could not build region {} floor {}", region(key), plane(key), e);
+			return false;
 		}
 	}
 

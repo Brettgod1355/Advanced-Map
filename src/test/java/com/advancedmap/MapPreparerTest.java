@@ -127,6 +127,11 @@ public class MapPreparerTest
 			assertFalse(preparer.isHalted());
 			assertTrue(preparer.stepOnce());
 			assertEquals(4, store.count());
+			// any other failure on a floor leaves that floor out and counts it, rather than try it forever
+			flat.failWith = new IllegalStateException("one bad region");
+			assertTrue(preparer.stepOnce());
+			assertEquals(1, preparer.failed());
+			assertEquals("the floor is out of the list, not back in it", 3, preparer.remaining());
 		}
 		finally
 		{
