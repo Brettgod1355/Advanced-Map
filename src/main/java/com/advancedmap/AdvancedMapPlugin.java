@@ -2300,7 +2300,8 @@ public class AdvancedMapPlugin extends Plugin
 
 	/**
 	 * The menu's "Hidden icons": every icon hidden with a right-click, nearest first; a click goes there and shows the
-	 * hidden icons, faded, so it can be unhidden. Icons in places not built yet are only counted.
+	 * hidden icons, faded, so it can be unhidden. Icons not found yet this run (found as the map shows or scans their
+	 * places) are only counted.
 	 */
 	void showHiddenIcons()
 	{
@@ -2328,10 +2329,10 @@ public class AdvancedMapPlugin extends Plugin
 			rows.add(new SideList.Row(MapIcons.name(spot, progress), tilesAway(point(spot), from),
 				SearchSpots.name(point(spot), labelsNow()), null, point(spot), HIDDEN_LIST));
 		}
-		int unbuilt = hidden.size() - spots.size();
-		if (unbuilt > 0)
+		int notFound = hidden.size() - spots.size();
+		if (notFound > 0)
 		{
-			rows.add(note(unbuilt + " more in places not built yet."));
+			rows.add(note(notFound + " more not found yet: they are listed as the map finds their places' icons."));
 		}
 		sideList.open("Hidden icons (" + hidden.size() + "), nearest first", rows, HIDDEN_LIST);
 	}
