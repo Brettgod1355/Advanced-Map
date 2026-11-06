@@ -134,8 +134,14 @@ final class MapWindow extends JFrame
 		// else a slow heartbeat), so a map that sits still in its window is not repainted twenty times a second
 		redraw = new Timer(REDRAW_MS, e ->
 		{
-			if (panel.clock.due(plugin.touches(), plugin.changes(), panel.mouse, System.nanoTime()))
+			// the paint is noted here, at the tick's own time: noted when Swing gets to painting, a little later, the
+			// next tick would fall just short of the clock's rate and every paint land a tick late
+			long now = System.nanoTime();
+			int touches = plugin.touches();
+			int changes = plugin.changes();
+			if (panel.clock.due(touches, changes, panel.mouse, now))
 			{
+				panel.clock.painted(touches, changes, now);
 				panel.repaint();
 			}
 		});
@@ -178,6 +184,8 @@ final class MapWindow extends JFrame
 				if (plugin.selection() != null || plugin.typing() || plugin.sideListOpen())
 				{
 					plugin.escape();
+					// what closed goes at the next tick, as after a key on the map
+					plugin.touched();
 				}
 				else
 				{
@@ -385,7 +393,6 @@ final class MapWindow extends JFrame
 		@Override
 		protected void paintComponent(Graphics g)
 		{
-			clock.painted(plugin.touches(), plugin.changes(), System.nanoTime());
 			// drawn bigger by Stretched Mode's factor, as the map over the game is
 			paintScaled(g, getWidth(), getHeight(), plugin.windowScale(), scaled -> painter.paint(scaled,
 				plugin.viewport().view(width(), height()), plugin.area(), plugin.plane(), plugin.playerLocation(),
