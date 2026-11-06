@@ -5,7 +5,9 @@
  */
 package com.advancedmap;
 
+import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -86,6 +88,16 @@ public class SideListTest
 		list.scroll(1000, layout);
 		list.open("Hidden icons", places(54), hidden);
 		assertEquals(53, list.hitAt(rows.x + 10, rows.y + rows.height - 2, layout).getIndex());
+		// the scrollbar's thumb stays on its track too: nothing of the list is drawn below its panel
+		BufferedImage image = new BufferedImage(1200, 500, BufferedImage.TYPE_INT_ARGB);
+		Graphics2D g = image.createGraphics();
+		list.draw(g, layout, null);
+		g.dispose();
+		Rectangle panel = layout.getPanel();
+		for (int y = panel.y + panel.height + 1; y < 500; y += 3)
+		{
+			assertEquals("nothing drawn under the panel at y=" + y, 0, image.getRGB(panel.x + panel.width - 4, y) >>> 24);
+		}
 		list.open("Shop", places(55), new Object());
 		assertEquals(0, list.hitAt(rows.x + 10, rows.y + 2, layout).getIndex());
 	}

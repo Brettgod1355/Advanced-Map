@@ -386,7 +386,7 @@ final class SideList
 		if (all > list.height)
 		{
 			int thumb = Math.max(20, list.height * list.height / all);
-			int top = list.y + (list.height - thumb) * scroll / Math.max(1, all - list.height);
+			int top = list.y + (list.height - thumb) * offset(layout) / Math.max(1, all - list.height);
 			g.setColor(new Color(255, 255, 255, 60));
 			g.fillRoundRect(list.x + list.width - 5, top, 3, thumb, 3, 3);
 		}
