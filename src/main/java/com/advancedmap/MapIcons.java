@@ -109,6 +109,12 @@ final class MapIcons
 		byRegion.put(regionId, Collections.unmodifiableList(new ArrayList<>(spots)));
 	}
 
+	/** Every teleport's icon. */
+	static List<MapSpot> teleports()
+	{
+		return TELEPORTS;
+	}
+
 	/** Every icon found so far, on every map and floor (not the teleports). */
 	List<MapSpot> allSpots()
 	{

@@ -57,8 +57,11 @@ public class MapMenuTest
 					assertTrue(content.contains(open.getButton2()));
 				}
 			}
-			assertNull("Settings is no page: it opens RuneLite's", MapMenu.layout(buttons, size[0], size[1],
-				MapMenu.Page.SETTINGS).getContent());
+			for (MapMenu.Page list : new MapMenu.Page[]{MapMenu.Page.SETTINGS, MapMenu.Page.MARKERS, MapMenu.Page.HIDDEN})
+			{
+				assertNull(list + " is no page: it opens RuneLite's settings or the list on the right",
+					MapMenu.layout(buttons, size[0], size[1], list).getContent());
+			}
 		}
 	}
 

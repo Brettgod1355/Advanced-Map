@@ -30,13 +30,17 @@ final class MapMenu
 	{
 		WELCOME("Welcome", "Welcome to Advanced Map"),
 		HELP("How the map works"),
-		SETTINGS("Settings"),
+		/** Opens the list down the right side instead of a page, as the next does. */
+		MARKERS("Your markers", null),
+		HIDDEN("Hidden icons", null),
+		/** Opens RuneLite's settings page instead of a page. */
+		SETTINGS("Settings", null),
 		WHATS_NEW("What's new"),
 		IMPROVE("Help improve the map"),
 		REDRAW("Build the map again");
 
 		final String label;
-		/** The page's title, over its text. */
+		/** The page's title, over its text; null for an entry that opens something else instead. */
 		final String title;
 
 		Page(String label)
@@ -48,6 +52,12 @@ final class MapMenu
 		{
 			this.label = label;
 			this.title = title;
+		}
+
+		/** Whether the entry opens a page beside the menu. */
+		boolean isPage()
+		{
+			return title != null;
 		}
 	}
 
@@ -196,7 +206,7 @@ final class MapMenu
 	Layout layout(Map<MapPainter.Button, Rectangle> buttons, int width, int height)
 	{
 		Page open = page;
-		if (open == null || open == Page.SETTINGS)
+		if (open == null || !open.isPage())
 		{
 			return layout(buttons, width, height, open);
 		}
@@ -241,7 +251,7 @@ final class MapMenu
 		Rectangle content = null;
 		Rectangle button1 = null;
 		Rectangle button2 = null;
-		if (page != null && page != Page.SETTINGS)
+		if (page != null && page.isPage())
 		{
 			int x = menu.x + menu.width + GAP;
 			int contentWidth = pageWidth(buttons, width);
@@ -452,7 +462,7 @@ final class MapMenu
 		for (Page entry : Page.values())
 		{
 			int y = menu.y + PAD + entry.ordinal() * ROW;
-			boolean lit = entry == page && entry != Page.SETTINGS
+			boolean lit = entry == page && entry.isPage()
 				|| mouse != null && menu.contains(mouse) && mouse.y >= y && mouse.y < y + ROW;
 			if (lit)
 			{

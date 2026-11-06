@@ -154,6 +154,9 @@ Escape closes the page, then the menu.
 - **Welcome**: how far the map is built, and how it is built and kept up to date. It opens by itself the first
   time you open the map, and once each time the client starts while the map is still first being built.
 - **How the map works**: this help, inside the map.
+- **Your markers**: every marker you made, nearest first, in the list on the right; click one to go there.
+- **Hidden icons**: every icon you hid with a right-click, nearest first; click one to go there, where it shows
+  faded so you can right-click it and choose Unhide.
 - **Settings**: opens Advanced Map's page in RuneLite's own settings.
 - **What's new**: what this version brings, with the full release notes on GitHub a click away. It opens by itself
   the first time you open the map after the Plugin Hub has updated the plugin.

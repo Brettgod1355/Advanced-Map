@@ -1728,6 +1728,20 @@ public class AdvancedMapPlugin extends Plugin
 					menu.setOpen(false);
 					openSettings();
 				}
+				else if (!hit.getPage().isPage())
+				{
+					menu.setOpen(false);
+					selection = null;
+					showTransport(null);
+					if (hit.getPage() == MapMenu.Page.MARKERS)
+					{
+						showMarkers();
+					}
+					else
+					{
+						showHiddenIcons();
+					}
+				}
 				else
 				{
 					menu.setPage(hit.getPage());
@@ -1856,6 +1870,10 @@ public class AdvancedMapPlugin extends Plugin
 	private void saveMarkers(MapPins.Marker old, MapPins.Marker fresh)
 	{
 		pins.replace(old, fresh);
+		if (sideList.isOpen() && sideList.owner() == MARKERS_LIST)
+		{
+			showMarkers();
+		}
 		ExecutorService files = markerFiles;
 		if (files != null)
 		{
@@ -2174,6 +2192,85 @@ public class AdvancedMapPlugin extends Plugin
 		return best;
 	}
 
+	/** The side list of the menu's "Your markers", and of its "Hidden icons"; a hidden icon's rows too. */
+	private static final Object MARKERS_LIST = new Object();
+	private static final Object HIDDEN_LIST = new Object();
+
+	/** A row that only informs: no place, nothing to open. */
+	private static SideList.Row note(String text)
+	{
+		return new SideList.Row(text, null, null, null, null, null);
+	}
+
+	/** How far a place is, as the lists say it. */
+	private static String tilesAway(WorldPoint point, WorldPoint from)
+	{
+		int tiles = SearchSpots.distance(point, from);
+		return tiles >= 1000 ? "far" : tiles + " tiles";
+	}
+
+	/** The menu's "Your markers": every marker that shows, nearest first, where it is; a click goes there. */
+	void showMarkers()
+	{
+		WorldPoint from = player != null ? player : center();
+		List<MapPins.Marker> markers = new ArrayList<>(pins.shown());
+		markers.sort(java.util.Comparator.comparingInt(marker -> SearchSpots.distance(marker.getPoint(), from)));
+		List<SideList.Row> rows = new ArrayList<>();
+		if (markers.isEmpty())
+		{
+			rows.add(note("None yet. Right-click anywhere on the map and choose \"Add marker here\"."));
+		}
+		for (MapPins.Marker marker : markers)
+		{
+			rows.add(new SideList.Row(marker.getName().isEmpty() ? "Marker" : marker.getName(),
+				tilesAway(marker.getPoint(), from), SearchSpots.name(marker.getPoint(), labelsNow()), null,
+				marker.getPoint(), null));
+		}
+		sideList.open("Your markers (" + markers.size() + "), nearest first", rows, MARKERS_LIST);
+	}
+
+	/**
+	 * The menu's "Hidden icons": every icon hidden with a right-click, nearest first; a click goes there and shows the
+	 * hidden icons, faded, so it can be unhidden. Icons in places not built yet are only counted.
+	 */
+	void showHiddenIcons()
+	{
+		Set<String> hidden = settings.getHidden();
+		WorldPoint from = player != null ? player : center();
+		java.util.Map<String, MapSpot> found = new java.util.LinkedHashMap<>();
+		for (List<MapSpot> spots : java.util.Arrays.asList(icons.allSpots(), MapIcons.teleports()))
+		{
+			for (MapSpot spot : spots)
+			{
+				if (hidden.contains(spot.getKey()))
+				{
+					found.putIfAbsent(spot.getKey(), spot);
+				}
+			}
+		}
+		List<MapSpot> spots = new ArrayList<>(found.values());
+		spots.sort(java.util.Comparator.comparingInt(spot -> SearchSpots.distance(point(spot), from)));
+		List<SideList.Row> rows = new ArrayList<>();
+		rows.add(note(hidden.isEmpty() ? "None. Right-click an icon and choose Hide to hide it."
+			: "Click one to go there: it shows faded. Right-click it and choose Unhide."));
+		for (MapSpot spot : spots)
+		{
+			rows.add(new SideList.Row(MapIcons.name(spot, progress), tilesAway(point(spot), from),
+				SearchSpots.name(point(spot), labelsNow()), null, point(spot), HIDDEN_LIST));
+		}
+		int unbuilt = hidden.size() - spots.size();
+		if (unbuilt > 0)
+		{
+			rows.add(note(unbuilt + " more in places not built yet."));
+		}
+		sideList.open("Hidden icons (" + hidden.size() + "), nearest first", rows, HIDDEN_LIST);
+	}
+
+	private static WorldPoint point(MapSpot spot)
+	{
+		return new WorldPoint(spot.getX(), spot.getY(), spot.getPlane());
+	}
+
 	/** The tile at the middle of the map as it is shown now. */
 	private WorldPoint center()
 	{
@@ -2295,6 +2392,11 @@ public class AdvancedMapPlugin extends Plugin
 			else if (row.getTarget() instanceof MonsterInfo.WikiPage)
 			{
 				LinkBrowser.browse(((MonsterInfo.WikiPage) row.getTarget()).getUrl());
+			}
+			else if (row.getTarget() == HIDDEN_LIST && !settings.isShowHidden())
+			{
+				// to unhide it, it must show
+				setSwitch(AdvancedMapConfig.SHOW_HIDDEN, true);
 			}
 		}
 		return true;
@@ -2517,6 +2619,10 @@ public class AdvancedMapPlugin extends Plugin
 			configManager.unsetConfiguration(AdvancedMapConfig.GROUP, key);
 		}
 		settings = readSettings();
+		if (sideList.isOpen() && sideList.owner() == HIDDEN_LIST)
+		{
+			showHiddenIcons();
+		}
 	}
 
 	private void setSwitch(String key, boolean on)

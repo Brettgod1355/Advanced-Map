@@ -28,7 +28,7 @@ final class MapHelp
 		{"Markers", "Right-click anywhere and choose \"Add marker here\": name it, pick a picture and a color, Save."
 			+ " Right-click a marker to edit or remove it. Markers show on all your accounts (a setting keeps them"
 			+ " apart). Other plugins' markers (a clue scroll's spot, Quest Helper's next step) show too; click one"
-			+ " for what it says."},
+			+ " for what it says. \"Your markers\" in the menu lists them all, nearest first."},
 		{"Farming, multi-combat, Slayer", "A dot on each farming patch icon says how it is doing (from RuneLite's"
 			+ " Time Tracking plugin); click it for each crop and when it is ready. Zoomed in, multi-combat areas are"
 			+ " tinted red. \"Your Slayer task\" at the top of the Filters list marks every spawn of your task's"
@@ -54,7 +54,8 @@ final class MapHelp
 			+ " grouped (Banks, Quests, Shops ...). Tick or untick a whole group or a single kind, or type to search;"
 			+ " the mouse wheel scrolls it. An orange dot on the button means some icons are filtered out."},
 		{"Hidden icons", "Right-click one icon and choose Hide to hide just that one. \"Show hidden icons\" at the top"
-			+ " of the Filters list shows them again, faded, so you can right-click one and choose Unhide."},
+			+ " of the Filters list shows them again, faded, so you can right-click one and choose Unhide. \"Hidden"
+			+ " icons\" in the menu lists them all; click one to go there."},
 		{"Route here", "Right-click anywhere, or on an icon, and choose \"Route here\" to have the Shortest Path or"
 			+ " GPS plugin show the way. Choose which in the settings; it needs that plugin installed."},
 		{"Wilderness", "Zoomed in, red dashed lines show where the Wilderness passes level 20 and level 30, above"
@@ -65,8 +66,9 @@ final class MapHelp
 		{"Pop out", "The pop out button at the top right (a window with an arrow leaving it) moves the map into a"
 			+ " window of its own; the same button there brings it back. Escape closes it in either."},
 		{"Menu", "The three lines at the top left open the menu: a welcome (how far the map is built), this help,"
-			+ " the plugin's settings, what's new in this version, where to send ideas and bug reports, and building"
-			+ " the map again. Escape closes what is open, one step at a time."},
+			+ " lists of your markers and of the icons you hid, the plugin's settings, what's new in this version,"
+			+ " where to send ideas and bug reports, and building the map again. Escape closes what is open, one step"
+			+ " at a time."},
 	};
 
 	/** How the map is built and kept up to date: the end of the help, and the Welcome page. */
