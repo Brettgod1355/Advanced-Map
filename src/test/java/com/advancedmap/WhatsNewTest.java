@@ -13,6 +13,7 @@ import java.util.List;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -45,5 +46,17 @@ public class WhatsNewTest
 	{
 		String text = new String(Files.readAllBytes(new File(name).toPath()), StandardCharsets.UTF_8);
 		return Arrays.asList(text.split("\\R"));
+	}
+
+	@Test
+	public void aStartTellsAnUpdateFromAFreshInstallAndTheSameVersionAgain()
+	{
+		// an update from another version brings news when the note has any; a fresh install and a restart bring none
+		assertTrue(WhatsNew.start("1.0.0").isUpdated());
+		assertEquals(!WhatsNew.NOTE.isEmpty(), WhatsNew.start("1.0.0").isNews());
+		assertFalse("a fresh install", WhatsNew.start("").isUpdated() || WhatsNew.start("").isNews());
+		assertFalse("a fresh install", WhatsNew.start(null).isUpdated());
+		assertFalse("the same version again", WhatsNew.start(WhatsNew.VERSION).isUpdated()
+			|| WhatsNew.start(WhatsNew.VERSION).isNews());
 	}
 }

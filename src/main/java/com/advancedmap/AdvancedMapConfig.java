@@ -38,15 +38,8 @@ public interface AdvancedMapConfig extends Config
 	String SEARCH_SKIPPED = "searchSkipped";
 	String INFO_ON_HOVER = "infoOnHover";
 	String UPDATE_MESSAGE = "updateMessage";
+	/** An earlier version's "version last run", moved to the plugin's state file on this computer ({@link StateFile}). */
 	String LAST_VERSION = "lastVersion";
-	/** The version whose chat line is still to say, on the first game tick; else empty. */
-	String SAY_FOR = "sayFor";
-	/** Whether the Welcome page has opened by itself once. */
-	String WELCOMED = "welcomed";
-	/** The version whose What's new page is still to open by itself, the next time the map opens; else empty. */
-	String WHATS_NEW_FOR = "whatsNewFor";
-	/** Whether the whole map has been seen built, after which the Welcome page no longer opens by itself. */
-	String MAP_BUILT = "mapBuilt";
 	/** Before each hidden icon's own setting: "hidden.a1234@3222,3218" = true. */
 	String HIDDEN_PREFIX = "hidden.";
 
@@ -546,7 +539,10 @@ public interface AdvancedMapConfig extends Config
 		return true;
 	}
 
-	/** The version the plugin last ran as, to tell an update from a restart; empty before the first. */
+	/**
+	 * The version an earlier version of the plugin last ran as, in the profile; read once and moved to the state file
+	 * on this computer, where RuneLite's switching between profiles cannot reach it. Empty afterwards.
+	 */
 	@ConfigItem(
 		keyName = LAST_VERSION,
 		name = "",
@@ -556,50 +552,6 @@ public interface AdvancedMapConfig extends Config
 	default String lastVersion()
 	{
 		return "";
-	}
-
-	@ConfigItem(
-		keyName = SAY_FOR,
-		name = "",
-		description = "",
-		hidden = true
-	)
-	default String sayFor()
-	{
-		return "";
-	}
-
-	@ConfigItem(
-		keyName = WELCOMED,
-		name = "",
-		description = "",
-		hidden = true
-	)
-	default boolean welcomed()
-	{
-		return false;
-	}
-
-	@ConfigItem(
-		keyName = WHATS_NEW_FOR,
-		name = "",
-		description = "",
-		hidden = true
-	)
-	default String whatsNewFor()
-	{
-		return "";
-	}
-
-	@ConfigItem(
-		keyName = MAP_BUILT,
-		name = "",
-		description = "",
-		hidden = true
-	)
-	default boolean mapBuilt()
-	{
-		return false;
 	}
 
 	@ConfigItem(

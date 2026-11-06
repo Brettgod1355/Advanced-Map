@@ -136,7 +136,7 @@ public class AdvancedMapPlugin extends Plugin
 	private ItemManager itemManager;
 
 	/** What the update brought, to say on the first game tick; null when nothing is to be said. */
-	/** The line on what an update brought, still to say on the first game tick ({@link AdvancedMapConfig#SAY_FOR}). */
+	/** The line on what an update brought, still to say on the first game tick ({@link StateFile#SAY_FOR}). */
 	private volatile String updateLine;
 
 	@Inject
@@ -159,8 +159,10 @@ public class AdvancedMapPlugin extends Plugin
 	private final MapMenu menu = new MapMenu(this::savedMapStatus, this::buildState);
 	/** Whether the Welcome page opened by itself since the plugin started. */
 	private volatile boolean welcomedThisRun;
-	/** Whether the whole map has been seen built (the setting {@link AdvancedMapConfig#MAP_BUILT}). */
+	/** Whether the whole map has been seen built ({@link StateFile#MAP_BUILT}). */
 	private volatile boolean mapBuilt;
+	/** What is remembered about this computer: versions, the Welcome, the map built. Set in startUp. */
+	private volatile StateFile state = new StateFile(null);
 	private final java.util.concurrent.atomic.AtomicInteger touches = new java.util.concurrent.atomic.AtomicInteger();
 	private volatile MarkerStore markerStore;
 	/** When the pins, farming patches and Slayer task were last read, in milliseconds. Client thread, reset elsewhere. */
@@ -317,30 +319,52 @@ public class AdvancedMapPlugin extends Plugin
 			clientToolbar.addNavigation(button);
 		}
 		welcomedThisRun = false;
-		mapBuilt = config.mapBuilt();
-		String lastVersion = config.lastVersion();
-		if (!lastVersion.isEmpty() && !WhatsNew.VERSION.equals(lastVersion))
+		StateFile remembered;
+		try
 		{
-			// an update: the player has had the map before, so no Welcome; What's new opens with the map next time
-			configManager.setConfiguration(AdvancedMapConfig.GROUP, AdvancedMapConfig.WELCOMED, true);
-			if (config.updateMessage() && !WhatsNew.NOTE.isEmpty())
+			remembered = new StateFile(getPluginDirectory());
+		}
+		catch (IOException e)
+		{
+			log.warn("Advanced Map cannot reach its data folder; what it remembers about this computer is kept for this"
+				+ " run only", e);
+			remembered = new StateFile(null);
+		}
+		state = remembered;
+		String lastVersion = remembered.get(StateFile.LAST_VERSION);
+		if (lastVersion.isEmpty() && !config.lastVersion().isEmpty())
+		{
+			// an earlier version kept it in the profile: moved here once, so this start counts as the update it is
+			lastVersion = config.lastVersion();
+			remembered.set(StateFile.LAST_VERSION, lastVersion);
+			configManager.unsetConfiguration(AdvancedMapConfig.GROUP, AdvancedMapConfig.LAST_VERSION);
+		}
+		WhatsNew.Start start = WhatsNew.start(lastVersion);
+		if (start.isUpdated())
+		{
+			// an update: the player has had the map before, so no Welcome, and their map counts as built (a game
+			// update's few new regions never open the Welcome page); What's new opens with the map next time
+			remembered.set(StateFile.WELCOMED, true);
+			remembered.set(StateFile.MAP_BUILT, true);
+			if (start.isNews() && config.updateMessage())
 			{
-				configManager.setConfiguration(AdvancedMapConfig.GROUP, AdvancedMapConfig.WHATS_NEW_FOR,
-					WhatsNew.VERSION);
+				remembered.set(StateFile.WHATS_NEW_FOR, WhatsNew.VERSION);
 			}
 		}
-		if (WhatsNew.message(lastVersion) != null)
+		if (start.isNews())
 		{
-			configManager.setConfiguration(AdvancedMapConfig.GROUP, AdvancedMapConfig.SAY_FOR, WhatsNew.VERSION);
+			remembered.set(StateFile.SAY_FOR, WhatsNew.VERSION);
 		}
 		if (!WhatsNew.VERSION.equals(lastVersion))
 		{
 			// the version is noted at once, not when the line is said: a client closed before its first game tick (the
 			// map opened on the login screen, What's new seen) does not take this start for an update again
-			configManager.setConfiguration(AdvancedMapConfig.GROUP, AdvancedMapConfig.LAST_VERSION, WhatsNew.VERSION);
+			remembered.set(StateFile.LAST_VERSION, WhatsNew.VERSION);
 		}
-		// the line waits in its own setting until a game tick says it, in whichever run that comes
-		updateLine = WhatsNew.VERSION.equals(config.sayFor()) ? WhatsNew.message("", WhatsNew.NOTE, true) : null;
+		mapBuilt = remembered.is(StateFile.MAP_BUILT);
+		// the line waits in the file until a game tick says it, in whichever run that comes
+		updateLine = WhatsNew.VERSION.equals(remembered.get(StateFile.SAY_FOR)) ? WhatsNew.message("", WhatsNew.NOTE, true)
+			: null;
 		started = true;
 	}
 
@@ -772,7 +796,7 @@ public class AdvancedMapPlugin extends Plugin
 			return;
 		}
 		mapBuilt = true;
-		configManager.setConfiguration(AdvancedMapConfig.GROUP, AdvancedMapConfig.MAP_BUILT, true);
+		state.set(StateFile.MAP_BUILT, true);
 	}
 
 	/**
@@ -781,22 +805,24 @@ public class AdvancedMapPlugin extends Plugin
 	 */
 	private void popUp()
 	{
-		boolean whatsNew = WhatsNew.VERSION.equals(config.whatsNewFor());
-		MapMenu.Page page = MapMenu.popUp(whatsNew, config.welcomed(), welcomedThisRun, mapBuilt, leftToPrepare());
+		StateFile remembered = state;
+		boolean whatsNew = WhatsNew.VERSION.equals(remembered.get(StateFile.WHATS_NEW_FOR));
+		MapMenu.Page page = MapMenu.popUp(whatsNew, remembered.is(StateFile.WELCOMED), welcomedThisRun, mapBuilt,
+			leftToPrepare());
 		if (page == null)
 		{
 			return;
 		}
 		if (whatsNew)
 		{
-			configManager.unsetConfiguration(AdvancedMapConfig.GROUP, AdvancedMapConfig.WHATS_NEW_FOR);
+			remembered.unset(StateFile.WHATS_NEW_FOR);
 		}
 		if (page == MapMenu.Page.WELCOME)
 		{
 			welcomedThisRun = true;
-			if (!config.welcomed())
+			if (!remembered.is(StateFile.WELCOMED))
 			{
-				configManager.setConfiguration(AdvancedMapConfig.GROUP, AdvancedMapConfig.WELCOMED, true);
+				remembered.set(StateFile.WELCOMED, true);
 			}
 		}
 		filters.setOpen(false);
@@ -813,7 +839,7 @@ public class AdvancedMapPlugin extends Plugin
 			return;
 		}
 		updateLine = null;
-		configManager.unsetConfiguration(AdvancedMapConfig.GROUP, AdvancedMapConfig.SAY_FOR);
+		state.unset(StateFile.SAY_FOR);
 		if (config.updateMessage())
 		{
 			chatMessageManager.queue(QueuedMessage.builder()

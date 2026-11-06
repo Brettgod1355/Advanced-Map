@@ -25,6 +25,27 @@ final class WhatsNew
 		+ " markers and hidden icons, settings, what's new, where to write), \"Report a problem here\" on the map's"
 		+ " right-click menu, and the whole map built for the first time with half as many reads of the game's data";
 
+	/** What a start of the plugin does about the version last run: see {@link #start}. */
+	@lombok.Value
+	static class Start
+	{
+		/** The plugin was updated: a version was run before, and it was another. */
+		boolean updated;
+		/** The update line is to be said on a game tick, and What's new to open with the map, if wanted. */
+		boolean news;
+	}
+
+	/**
+	 * What a start does about {@code lastVersion}, the version run before this one ("" or null: none): an update is
+	 * one from another version, and brings news when the note is not empty. A fresh install and the same version
+	 * again bring nothing.
+	 */
+	static Start start(String lastVersion)
+	{
+		boolean updated = lastVersion != null && !lastVersion.isEmpty() && !VERSION.equals(lastVersion);
+		return new Start(updated, updated && !NOTE.isEmpty());
+	}
+
 	private WhatsNew()
 	{
 	}
