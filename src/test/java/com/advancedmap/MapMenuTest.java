@@ -217,4 +217,26 @@ public class MapMenuTest
 		assertNull("not once it is built", MapMenu.popUp(false, true, false, false, 0));
 		assertNull("not for a game update's few new regions", MapMenu.popUp(false, true, false, true, 12));
 	}
+
+	@Test
+	public void aPaintDrawsThePageItsLayoutWasMadeForWhateverInputDoesMeanwhile()
+	{
+		// over the game, Escape or a click (input thread) can change the page while a paint (client thread) is
+		// between laying it out and drawing it: the paint and the click go by the layout's page
+		Map<MapPainter.Button, Rectangle> buttons = MapPainter.buttons(1280, 800, false);
+		MapMenu menu = new MapMenu(() -> "saved", MapMenuTest::built);
+		menu.setOpen(true);
+		menu.setPage(MapMenu.Page.HELP);
+		MapMenu.Layout help = menu.layout(buttons, 1280, 800);
+		assertEquals(MapMenu.Page.HELP, help.getPage());
+		menu.setPage(null);
+		Graphics2D g = new BufferedImage(1280, 800, BufferedImage.TYPE_INT_ARGB).createGraphics();
+		menu.draw(g, help, null);
+		// Welcome chosen meanwhile: the help's layout, which has no buttons, is still drawn as the help
+		menu.setPage(MapMenu.Page.WELCOME);
+		menu.draw(g, help, null);
+		g.dispose();
+		Rectangle page = help.getContent();
+		assertEquals(MapMenu.Page.HELP, menu.hitAt(page.x + 50, page.y + 50, help).getPage());
+	}
 }

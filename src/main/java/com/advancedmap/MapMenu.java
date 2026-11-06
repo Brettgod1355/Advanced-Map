@@ -99,6 +99,13 @@ final class MapMenu
 		Rectangle content;
 		Rectangle button1;
 		Rectangle button2;
+		/**
+		 * The page this layout is for, read once: input on another thread may close or change the page while a paint
+		 * draws it, so drawing and clicks go by this, never by the menu's current page.
+		 */
+		Page page;
+		/** That page's lines, wrapped to its width; null when not wrapped. */
+		List<Line> lines;
 	}
 
 	@Value
@@ -210,14 +217,14 @@ final class MapMenu
 		{
 			return layout(buttons, width, height, open);
 		}
-		int textWidth = textWidth(pageWidth(buttons, width));
-		return layout(buttons, width, height, open, lines(open, textWidth).size() * LINE);
+		List<Line> lines = lines(open, textWidth(pageWidth(buttons, width)));
+		return layout(buttons, width, height, open, lines);
 	}
 
 	/** The menu under its button, and a page beside it down to the map's bottom edge. */
 	static Layout layout(Map<MapPainter.Button, Rectangle> buttons, int width, int height, Page page)
 	{
-		return layout(buttons, width, height, page, -1);
+		return layout(buttons, width, height, page, null);
 	}
 
 	/** How wide a page is beside the menu on a map {@code width} wide. */
@@ -233,12 +240,13 @@ final class MapMenu
 	}
 
 	/**
-	 * The menu under its button, as tall as its entries, and a page beside it as tall as its text, {@code textHeight}
-	 * pixels, needs with its title and buttons, no lower than the map's bottom edge (-1: down to that edge).
+	 * The menu under its button, as tall as its entries, and a page beside it as tall as its {@code lines} need with
+	 * its title and buttons, no lower than the map's bottom edge (null lines: down to that edge).
 	 */
 	private static Layout layout(Map<MapPainter.Button, Rectangle> buttons, int width, int height, Page page,
-		int textHeight)
+		List<Line> lines)
 	{
+		int textHeight = lines == null ? -1 : lines.size() * LINE;
 		Rectangle button = buttons.get(MapPainter.Button.MENU);
 		int y = button.y + button.height + 4;
 		// the list as tall as its entries and the links under them; a page may run down to the map's bottom edge
@@ -278,7 +286,8 @@ final class MapMenu
 					break;
 			}
 		}
-		return new Layout(menu, github, discord, content, button1, button2);
+		return new Layout(menu, github, discord, content, button1, button2, content == null ? null : page,
+			content == null ? null : lines);
 	}
 
 	Hit hitAt(int x, int y, Layout layout)
@@ -288,13 +297,13 @@ final class MapMenu
 		{
 			if (layout.getButton1() != null && layout.getButton1().contains(x, y))
 			{
-				return new Hit(Part.BUTTON1, page);
+				return new Hit(Part.BUTTON1, layout.getPage());
 			}
 			if (layout.getButton2() != null && layout.getButton2().contains(x, y))
 			{
-				return new Hit(Part.BUTTON2, page);
+				return new Hit(Part.BUTTON2, layout.getPage());
 			}
-			return new Hit(Part.CONTENT, page);
+			return new Hit(Part.CONTENT, layout.getPage());
 		}
 		Rectangle menu = layout.getMenu();
 		if (!menu.contains(x, y))
@@ -458,11 +467,12 @@ final class MapMenu
 		g.setFont(FontManager.getRunescapeSmallFont());
 		FontMetrics metrics = g.getFontMetrics();
 		Rectangle menu = layout.getMenu();
+		Page shown = layout.getPage();
 		panel(g, menu);
 		for (Page entry : Page.values())
 		{
 			int y = menu.y + PAD + entry.ordinal() * ROW;
-			boolean lit = entry == page && entry.isPage()
+			boolean lit = entry == shown
 				|| mouse != null && menu.contains(mouse) && mouse.y >= y && mouse.y < y + ROW;
 			if (lit)
 			{
@@ -476,7 +486,7 @@ final class MapMenu
 		MapFilters.drawButton(g, layout.getDiscord(), "Discord", metrics);
 
 		Rectangle content = layout.getContent();
-		if (content == null)
+		if (content == null || shown == null)
 		{
 			return;
 		}
@@ -484,12 +494,12 @@ final class MapMenu
 		g.setFont(FontManager.getRunescapeBoldFont());
 		FontMetrics bold = g.getFontMetrics();
 		g.setColor(MapFilters.TEXT);
-		g.drawString(page.title, content.x + PAD, content.y + PAD + (ROW + bold.getAscent() - bold.getDescent()) / 2);
+		g.drawString(shown.title, content.x + PAD, content.y + PAD + (ROW + bold.getAscent() - bold.getDescent()) / 2);
 		// the text, scrolled, between the title and the buttons
 		int top = textTop(content);
 		int bottom = content.y + content.height - (layout.getButton1() != null ? BUTTON + PAD * 2 : PAD);
 		Rectangle text = new Rectangle(content.x, top, content.width, bottom - top);
-		List<Line> lines = lines(page, textWidth(content.width));
+		List<Line> lines = layout.getLines() != null ? layout.getLines() : lines(shown, textWidth(content.width));
 		int lineHeight = LINE;
 		contentHeight = lines.size() * lineHeight;
 		Shape clip = g.getClip();
@@ -525,7 +535,7 @@ final class MapMenu
 			g.fillRoundRect(content.x + content.width - 7, thumbY, 4, thumb, 4, 4);
 		}
 		g.setFont(FontManager.getRunescapeSmallFont());
-		switch (page)
+		switch (shown)
 		{
 			case WELCOME:
 				MapFilters.drawButton(g, layout.getButton1(), "How the map works", metrics);
