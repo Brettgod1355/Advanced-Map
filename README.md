@@ -177,7 +177,7 @@ choose with Filters on the map itself.
 | Setting | Default | What it does |
 |---|---|---|
 | Open or close the map | Ctrl+M | The key that opens and closes the map |
-| World map orb menu entry | On | "Open Advanced Map" in the world map orb's right-click menu |
+| World map orb menu entry | On | "Open Advanced Map" in the world map orb's right-click menu, when the left click is the game's |
 | World map orb opens Advanced Map | On | A left click on the orb opens this map; the game's own map stays in the orb's menu |
 | Sidebar button | On | The sidebar tab with the open button and the saving progress |
 | Open in its own window | Off | Opens the map popped out instead of over the game |
