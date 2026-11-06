@@ -136,6 +136,20 @@ final class SideList
 		static final int PANEL = -1;
 
 		int index;
+		/** The row hit, from the same reading of the list as its index: the list may be made again meanwhile. */
+		@lombok.EqualsAndHashCode.Exclude
+		Row row;
+
+		Hit(int index)
+		{
+			this(index, null);
+		}
+
+		Hit(int index, Row row)
+		{
+			this.index = index;
+			this.row = row;
+		}
 	}
 
 	/** A row's lines, wrapped when the list opened (they are the same every paint), and its height. */
@@ -276,14 +290,16 @@ final class SideList
 		Rectangle list = layout.getList();
 		if (list.contains(x, y))
 		{
-			int top = list.y - offset(layout);
-			List<Laid> shown = content.laid;
+			// one reading of the list for the rows and their heights: another thread may put a shorter one in
+			Content open = content;
+			int top = list.y - Math.min(scroll, Math.max(0, open.height - list.height));
+			List<Laid> shown = open.laid;
 			for (int i = 0; i < shown.size(); i++)
 			{
 				int bottom = top + shown.get(i).height;
 				if (y >= top && y < bottom)
 				{
-					return new Hit(i);
+					return new Hit(i, open.rows.get(i));
 				}
 				top = bottom;
 			}

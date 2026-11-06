@@ -2479,7 +2479,7 @@ public class AdvancedMapPlugin extends Plugin
 		}
 		else if (hit.getIndex() >= 0)
 		{
-			SideList.Row row = sideList.rows().get(hit.getIndex());
+			SideList.Row row = hit.getRow();
 			if (row.getPoint() != null)
 			{
 				selection = null;
