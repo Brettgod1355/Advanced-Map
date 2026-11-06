@@ -191,6 +191,8 @@ public class AdvancedMapPlugin extends Plugin
 	private volatile boolean mapOpen;
 	/** Open in its own window; the window itself is touched on the Swing thread only. */
 	private volatile boolean windowOpen;
+	/** Between startUp and shutDown: a task queued for the client thread before a stop finds nothing to work on. */
+	private volatile boolean started;
 	private MapWindow window;
 	/** Where the player stands, kept by the client thread for the window to draw. */
 	private volatile WorldPoint player;
@@ -337,6 +339,7 @@ public class AdvancedMapPlugin extends Plugin
 		}
 		// the line waits in its own setting until a game tick says it, in whichever run that comes
 		updateLine = WhatsNew.VERSION.equals(config.sayFor()) ? WhatsNew.message("", WhatsNew.NOTE, true) : null;
+		started = true;
 	}
 
 	/**
@@ -369,6 +372,7 @@ public class AdvancedMapPlugin extends Plugin
 	@Override
 	protected void shutDown()
 	{
+		started = false;
 		boolean wasOpen = mapOpen || windowOpen;
 		mapOpen = false;
 		windowOpen = false;
@@ -2796,8 +2800,9 @@ public class AdvancedMapPlugin extends Plugin
 		}
 		clientThread.invokeLater(() ->
 		{
-			if (reader == null)
+			if (!started || reader == null)
 			{
+				// stopped since the key or the orb asked: what the map needs is gone
 				return;
 			}
 			player = Prifddinas.toSurface(currentPlayerLocation());
