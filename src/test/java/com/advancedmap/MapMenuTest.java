@@ -22,7 +22,7 @@ public class MapMenuTest
 
 	private static MapMenu.Build built()
 	{
-		return new MapMenu.Build(11716, 0, true);
+		return new MapMenu.Build(11716, 0, true, false);
 	}
 
 	@Test
@@ -181,8 +181,9 @@ public class MapMenuTest
 	public void theWelcomeShowsEachStageOfTheBuilding()
 	{
 		// not counted yet, building (with its bar), built, and built only as looked at: each draws, its title on top
-		MapMenu.Build[] stages = {new MapMenu.Build(-1, -1, true), new MapMenu.Build(120, -1, true),
-			new MapMenu.Build(4000, 7716, true), new MapMenu.Build(11716, 0, true), new MapMenu.Build(300, -1, false)};
+		MapMenu.Build[] stages = {new MapMenu.Build(-1, -1, true, false), new MapMenu.Build(-1, -1, true, true),
+			new MapMenu.Build(120, -1, true, false),
+			new MapMenu.Build(4000, 7716, true, false), new MapMenu.Build(11716, 0, true, false), new MapMenu.Build(300, -1, false, false)};
 		Map<MapPainter.Button, Rectangle> buttons = MapPainter.buttons(1280, 800, false);
 		for (MapMenu.Build stage : stages)
 		{
@@ -245,7 +246,7 @@ public class MapMenuTest
 	{
 		Map<MapPainter.Button, Rectangle> buttons = MapPainter.buttons(1280, 800, false);
 		int[] left = {500};
-		MapMenu menu = new MapMenu(() -> "saved", () -> new MapMenu.Build(1000, left[0], true));
+		MapMenu menu = new MapMenu(() -> "saved", () -> new MapMenu.Build(1000, left[0], true, false));
 		menu.setOpen(true);
 		menu.setPage(MapMenu.Page.HELP);
 		Graphics2D g = new BufferedImage(1280, 800, BufferedImage.TYPE_INT_ARGB).createGraphics();

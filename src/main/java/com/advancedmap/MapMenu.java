@@ -71,6 +71,8 @@ final class MapMenu
 		int left;
 		/** Whether the whole map is built in the background ("Build the whole map"). */
 		boolean background;
+		/** The saved map could not be opened (the log says why): nothing is built or saved this run. */
+		boolean unopened;
 	}
 
 	enum Part
@@ -452,7 +454,13 @@ final class MapMenu
 	/** The Welcome page's first lines: how far the building is, with a bar while it goes on. */
 	private static void status(List<Line> out, Build build, int width)
 	{
-		if (build.getSaved() < 0)
+		if (build.isUnopened())
+		{
+			heading(out, "The saved map could not be opened", width);
+			paragraph(out, "The client's log says why. Until it is put right, the map is drawn as you look around and"
+				+ " nothing is saved; a client restart tries again.", width);
+		}
+		else if (build.getSaved() < 0)
 		{
 			heading(out, "Getting ready", width);
 			paragraph(out, "The map starts building a few seconds after the client starts.", width);

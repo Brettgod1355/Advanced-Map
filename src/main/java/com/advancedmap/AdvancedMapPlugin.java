@@ -193,6 +193,8 @@ public class AdvancedMapPlugin extends Plugin
 	private volatile boolean windowOpen;
 	/** Between startUp and shutDown: a task queued for the client thread before a stop finds nothing to work on. */
 	private volatile boolean started;
+	/** The saved map could not be opened this run: the sidebar and the Welcome page say so instead of "not ready". */
+	private volatile boolean storeFailed;
 	private MapWindow window;
 	/** Where the player stands, kept by the client thread for the window to draw. */
 	private volatile WorldPoint player;
@@ -1087,6 +1089,7 @@ public class AdvancedMapPlugin extends Plugin
 		catch (IOException | RuntimeException e)
 		{
 			log.warn("Advanced Map could not open its saved map; it will be drawn each time", e);
+			storeFailed = true;
 		}
 	}
 
@@ -1212,7 +1215,7 @@ public class AdvancedMapPlugin extends Plugin
 		MapStore store = current == null ? null : current.store();
 		MapPreparer currentPreparer = preparer;
 		return new MapMenu.Build(store == null ? -1 : store.count(),
-			currentPreparer == null ? -1 : currentPreparer.remaining(), config.prepareMap());
+			currentPreparer == null ? -1 : currentPreparer.remaining(), config.prepareMap(), store == null && storeFailed);
 	}
 
 	/** For the sidebar: how much of the map is saved on this computer. */
@@ -1222,7 +1225,8 @@ public class AdvancedMapPlugin extends Plugin
 		MapStore store = current == null ? null : current.store();
 		if (store == null)
 		{
-			return "Not ready yet.";
+			return storeFailed ? "The saved map could not be opened (the client's log says why): the map is drawn as you"
+				+ " look around and nothing is saved until a client restart puts it right." : "Not ready yet.";
 		}
 		int remaining = preparer == null ? -1 : preparer.remaining();
 		String count = store.count() + " regions and floors saved on this computer, for every character and profile.";
