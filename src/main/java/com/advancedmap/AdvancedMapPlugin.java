@@ -1397,8 +1397,9 @@ public class AdvancedMapPlugin extends Plugin
 			case COPY_SPOT:
 				WorldPoint at = on.getSpot() != null ? new WorldPoint(on.getSpot().getX(), on.getSpot().getY(),
 					on.getSpot().getPlane()) : on.getPoint();
+				// "near" only a place that is near: with none within reach, or before the names have loaded, the tile alone
 				String spotText = MapPainter.spotText(on, progress, settings.getFloorNumbers(),
-					SearchSpots.name(at, labelsNow()));
+					SearchSpots.placeName(at, labelsNow()));
 				if (action == MapPainter.Action.REPORT)
 				{
 					LinkBrowser.browse(reportUrl(spotText));

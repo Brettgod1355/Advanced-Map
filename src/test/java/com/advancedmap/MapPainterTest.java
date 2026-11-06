@@ -155,6 +155,11 @@ public class MapPainterTest
 		MapPainter.Selection on = new MapPainter.Selection(furnace, true, 100, 100, new WorldPoint(2930, 10460, 0));
 		assertEquals("Ancient Furnace at 2929, 10461, Ground floor", MapPainter.spotText(on, Progress.NONE,
 			FloorNumbers.GROUND_IS_FIRST, null));
+		// no place name within reach (or none loaded yet): the tile alone, never "near" its own coordinates
+		assertNull(SearchSpots.placeName(new WorldPoint(3100, 3900, 0), java.util.Collections.emptyList()));
+		assertEquals("3100, 3900, Ground floor", MapPainter.spotText(new MapPainter.Selection(null, true, 10, 10,
+			new WorldPoint(3100, 3900, 0)), Progress.NONE, FloorNumbers.GROUND_IS_FIRST,
+			SearchSpots.placeName(new WorldPoint(3100, 3900, 0), java.util.Collections.emptyList())));
 		String url = AdvancedMapPlugin.reportUrl("3222, 3218, Floor 2, near Lumbridge");
 		assertTrue(url, url.startsWith(AdvancedMapPanel.GITHUB_URL + "/issues/new?title=Map%3A+3222%2C+3218%2C+Floor+2"));
 		assertTrue(url, url.contains("&body=Where%3A+3222") && url.contains("Advanced+Map+" + WhatsNew.VERSION));
