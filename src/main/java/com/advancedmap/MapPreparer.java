@@ -290,6 +290,7 @@ final class MapPreparer
 	{
 		// the listing waits for the client thread: outside the monitor, which the sidebar's refresh takes each second
 		List<Integer> regions = listed ? null : source.regionIds();
+		long tables = 0;
 		if (regions != null)
 		{
 			images.setRegionsInGame(regions);
@@ -297,7 +298,7 @@ final class MapPreparer
 			{
 				try
 				{
-					stamp = source.tablesStamp();
+					tables = source.tablesStamp();
 				}
 				catch (CacheNotReadyException e)
 				{
@@ -316,17 +317,25 @@ final class MapPreparer
 				}
 			}
 		}
-		synchronized (this)
-		{
-			return next(store, regions);
-		}
+		return next(store, regions, tables);
 	}
 
-	synchronized Integer next(MapStore store, List<Integer> regions)
+	/** For a test: lists {@code regions} (null: listed already) and takes the next floor. */
+	Integer next(MapStore store, List<Integer> regions)
+	{
+		return next(store, regions, regions == null ? 0 : source.tablesStamp());
+	}
+
+	/**
+	 * Lists the floors still to build from {@code regions} (null: listed already), with {@code tables} what the game's
+	 * tables hash to now, read by the caller: nothing here waits for the client thread, which takes this monitor every
+	 * tick for the count.
+	 */
+	private synchronized Integer next(MapStore store, List<Integer> regions, long tables)
 	{
 		if (regions != null && !listed)
 		{
-			stamp = source.tablesStamp();
+			stamp = tables;
 		}
 		if (!listed)
 		{
