@@ -544,9 +544,13 @@ class ClientMapSource implements MapSource
 		if (links == null)
 		{
 			byte[] script = reader.read(client -> client.getIndexScripts().loadData(MapLinks.SCRIPT, 0));
+			if (script == null)
+			{
+				// not downloaded yet: a region's icons are found again later, with its links
+				throw new CacheNotReadyException();
+			}
 			links = DungeonLinks.withExtra(Prifddinas.moveLinks(MapLinks.decode(script)));
-			// kept once read; a script the client has not got yet is asked for again
-			mapLinks = script == null ? null : links;
+			mapLinks = links;
 		}
 		return links;
 	}
@@ -813,7 +817,8 @@ class ClientMapSource implements MapSource
 
 	/**
 	 * The files of one group of the world map index, read in one wait for the client thread; empty while the client
-	 * has no world map data yet. Skips the surface (file 0) and the Last Man Standing maps when asked.
+	 * has no world map data yet, and not ready ({@link CacheNotReadyException}) while part of it is still downloading,
+	 * so a part is never kept as the whole. Skips the surface (file 0) and the Last Man Standing maps when asked.
 	 */
 	private List<byte[]> worldMapFiles(int group, boolean skipSurface, boolean skipLastManStanding)
 	{
@@ -832,10 +837,11 @@ class ClientMapSource implements MapSource
 						continue;
 					}
 					byte[] data = index.loadData(group, file);
-					if (data != null)
+					if (data == null)
 					{
-						out.add(data);
+						throw new CacheNotReadyException();
 					}
+					out.add(data);
 				}
 			}
 			return out;

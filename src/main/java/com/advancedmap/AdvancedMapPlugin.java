@@ -2987,14 +2987,19 @@ public class AdvancedMapPlugin extends Plugin
 				// the minigame teleports' icon
 				pictures.setMinigameArea(categories.getOrDefault(IconGroup.MINIGAME, -1));
 				list.setCategoryIcons(categories);
-				into.set(from.labels());
+				// all read before any is kept: a part still downloading throws, and the next opening reads it all again
+				var names = from.labels();
+				var maps = from.gameMaps();
+				var pieces = from.mapPieces();
+				var links = from.mapLinks();
+				into.set(names);
 				SailingDocks.place(into.all());
-				gameMaps = from.gameMaps();
+				gameMaps = maps;
 				MapPainter drawing = painter;
 				if (drawing != null)
 				{
-					drawing.setDungeonMaps(from.mapPieces());
-					drawing.setMapLinks(from.mapLinks());
+					drawing.setDungeonMaps(pieces);
+					drawing.setMapLinks(links);
 				}
 			}
 			catch (RuntimeException e)
