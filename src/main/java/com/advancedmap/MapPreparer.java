@@ -50,6 +50,8 @@ final class MapPreparer
 	private final ScheduledExecutorService worker;
 	/** Floors of regions still to prepare, in order; ticker thread, and {@link #restart} and {@link #remaining}. */
 	private final List<Integer> todo = new ArrayList<>();
+	/** The floor taken from the list and being built now, or null. */
+	private Integer building;
 	/** Regions whose icons are still to be found, nearest the player first; null until listed. */
 	private volatile List<Integer> iconTodo;
 	private volatile boolean listed;
@@ -85,6 +87,7 @@ final class MapPreparer
 	synchronized void restart()
 	{
 		todo.clear();
+		building = null;
 		listed = false;
 		iconTodo = null;
 	}
@@ -100,10 +103,39 @@ final class MapPreparer
 		restUntil = System.nanoTime() + REST_NANOS;
 	}
 
-	/** How many regions' floors are still to prepare; -1 before the list is made. */
+	/**
+	 * A floor taken from the list is done (drawn, or put back): it no longer counts as being built. A region's ground
+	 * saves its empty floors above with it (RegionImages.markEmptyFloors), so they leave the list now rather than
+	 * when their turn comes, and the count says what is really left.
+	 */
+	synchronized void finished(int key)
+	{
+		if (building != null && building == key)
+		{
+			building = null;
+		}
+		MapStore store = images.store();
+		if (RegionImages.plane(key) != 0 || store == null)
+		{
+			return;
+		}
+		for (int up = 1; up < RegionImages.PLANES; up++)
+		{
+			Integer floor = RegionImages.key(up, RegionImages.region(key));
+			if (store.has(floor))
+			{
+				todo.remove(floor);
+			}
+		}
+	}
+
+	/**
+	 * How many regions' floors are still to prepare, the one being built included; -1 before the list is made. Never
+	 * 0 while the last floor is still being built, or about to be put back for want of its data.
+	 */
 	synchronized int remaining()
 	{
-		return listed ? todo.size() : -1;
+		return listed ? todo.size() + (building != null ? 1 : 0) : -1;
 	}
 
 	private void step()
@@ -138,6 +170,10 @@ final class MapPreparer
 					// the client has not downloaded this part of the cache yet: last in the queue, not forgotten
 					requeue(key);
 					return false;
+				}
+				finally
+				{
+					finished(key);
 				}
 			}
 			// with nothing (more) to draw, the icons of the regions not drawn in this session, for search
@@ -215,7 +251,7 @@ final class MapPreparer
 		}
 	}
 
-	private Integer next(MapStore store, List<Integer> regions)
+	synchronized Integer next(MapStore store, List<Integer> regions)
 	{
 		if (!listed)
 		{
@@ -245,7 +281,8 @@ final class MapPreparer
 			todo.sort(Comparator.comparingLong(key -> order(key, around)));
 			sortedFor = aroundRegion;
 		}
-		return todo.isEmpty() ? null : todo.remove(0);
+		building = todo.isEmpty() ? null : todo.remove(0);
+		return building;
 	}
 
 	/**
