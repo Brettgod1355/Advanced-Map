@@ -136,6 +136,7 @@ public class AdvancedMapPlugin extends Plugin
 	private ItemManager itemManager;
 
 	/** What the update brought, to say on the first game tick; null when nothing is to be said. */
+	/** The line on what an update brought, still to say on the first game tick ({@link AdvancedMapConfig#SAY_FOR}). */
 	private volatile String updateLine;
 
 	@Inject
@@ -324,12 +325,18 @@ public class AdvancedMapPlugin extends Plugin
 					WhatsNew.VERSION);
 			}
 		}
-		updateLine = WhatsNew.message(lastVersion);
-		if (updateLine == null && !WhatsNew.VERSION.equals(config.lastVersion()))
+		if (WhatsNew.message(lastVersion) != null)
 		{
-			// nothing to say: the version is noted now; with a line, once it has been said (on the first game tick)
+			configManager.setConfiguration(AdvancedMapConfig.GROUP, AdvancedMapConfig.SAY_FOR, WhatsNew.VERSION);
+		}
+		if (!WhatsNew.VERSION.equals(lastVersion))
+		{
+			// the version is noted at once, not when the line is said: a client closed before its first game tick (the
+			// map opened on the login screen, What's new seen) does not take this start for an update again
 			configManager.setConfiguration(AdvancedMapConfig.GROUP, AdvancedMapConfig.LAST_VERSION, WhatsNew.VERSION);
 		}
+		// the line waits in its own setting until a game tick says it, in whichever run that comes
+		updateLine = WhatsNew.VERSION.equals(config.sayFor()) ? WhatsNew.message("", WhatsNew.NOTE, true) : null;
 	}
 
 	/**
@@ -785,7 +792,7 @@ public class AdvancedMapPlugin extends Plugin
 			return;
 		}
 		updateLine = null;
-		configManager.setConfiguration(AdvancedMapConfig.GROUP, AdvancedMapConfig.LAST_VERSION, WhatsNew.VERSION);
+		configManager.unsetConfiguration(AdvancedMapConfig.GROUP, AdvancedMapConfig.SAY_FOR);
 		if (config.updateMessage())
 		{
 			chatMessageManager.queue(QueuedMessage.builder()

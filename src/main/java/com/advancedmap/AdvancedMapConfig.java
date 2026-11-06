@@ -39,6 +39,8 @@ public interface AdvancedMapConfig extends Config
 	String INFO_ON_HOVER = "infoOnHover";
 	String UPDATE_MESSAGE = "updateMessage";
 	String LAST_VERSION = "lastVersion";
+	/** The version whose chat line is still to say, on the first game tick; else empty. */
+	String SAY_FOR = "sayFor";
 	/** Whether the Welcome page has opened by itself once. */
 	String WELCOMED = "welcomed";
 	/** The version whose What's new page is still to open by itself, the next time the map opens; else empty. */
@@ -551,6 +553,17 @@ public interface AdvancedMapConfig extends Config
 		hidden = true
 	)
 	default String lastVersion()
+	{
+		return "";
+	}
+
+	@ConfigItem(
+		keyName = SAY_FOR,
+		name = "",
+		description = "",
+		hidden = true
+	)
+	default String sayFor()
 	{
 		return "";
 	}

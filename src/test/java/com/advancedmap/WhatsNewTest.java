@@ -35,6 +35,10 @@ public class WhatsNewTest
 		assertNull("a fresh install", WhatsNew.message("", "icons say more"));
 		assertNull("a fresh install", WhatsNew.message(null, "icons say more"));
 		assertNull("nothing worth a line", WhatsNew.message("0.9.0", ""));
+		// a line still waiting from an earlier start, whose version has been noted since, is said all the same
+		assertEquals("Advanced Map updated to " + WhatsNew.VERSION + ": icons say more.",
+			WhatsNew.message(WhatsNew.VERSION, "icons say more", true));
+		assertNull(WhatsNew.message(WhatsNew.VERSION, "", true));
 	}
 
 	private static List<String> lines(String name) throws Exception

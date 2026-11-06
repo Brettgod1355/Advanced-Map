@@ -41,7 +41,14 @@ final class WhatsNew
 	 */
 	static String message(String lastVersion, String note)
 	{
-		if (lastVersion == null || lastVersion.isEmpty() || VERSION.equals(lastVersion) || note.isEmpty())
+		return message(lastVersion, note, false);
+	}
+
+	/** As above; {@code known} when the update is already known to have happened (the line waits to be said). */
+	static String message(String lastVersion, String note, boolean known)
+	{
+		boolean updated = known || lastVersion != null && !lastVersion.isEmpty() && !VERSION.equals(lastVersion);
+		if (!updated || note.isEmpty())
 		{
 			return null;
 		}
