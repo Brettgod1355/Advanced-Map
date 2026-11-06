@@ -161,6 +161,8 @@ Escape closes the page, then the menu.
 - **What's new**: what this version brings, with the full release notes on GitHub a click away. It opens by itself
   the first time you open the map after the Plugin Hub has updated the plugin.
 - **Help improve the map**: where to send ideas, suggestions and bug reports (Discord or GitHub, in your browser).
+  On the map, right-click a spot or an icon and choose **Report a problem here**: a new GitHub issue opens with
+  the place already filled in.
 - **Build the map again**: deletes the map saved on this computer and builds it again from the game's data.
 
 The GitHub and Discord buttons at the bottom of the menu open the project's pages in your browser.

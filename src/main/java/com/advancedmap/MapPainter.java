@@ -84,7 +84,8 @@ final class MapPainter
 		ADD_MARKER,
 		EDIT_MARKER,
 		REMOVE_MARKER,
-		WIKI
+		WIKI,
+		REPORT
 	}
 
 	@Value
@@ -1410,8 +1411,22 @@ final class MapPainter
 		if (pin == null)
 		{
 			entries.add(new MenuEntry(Action.ADD_MARKER, "Add marker here"));
+			entries.add(new MenuEntry(Action.REPORT, "Report a problem here"));
 		}
 		return entries;
+	}
+
+	/**
+	 * A right-clicked spot as a report says it: what is there (an icon's name), the game's own tile and
+	 * floor, and the place it is near ("Bank at 3208, 3220, Floor 3, near Lumbridge").
+	 */
+	static String spotText(Selection selection, Progress progress, FloorNumbers floors, String place)
+	{
+		MapSpot spot = selection.getSpot();
+		WorldPoint point = Prifddinas.toCity(spot != null ? new WorldPoint(spot.getX(), spot.getY(), spot.getPlane())
+			: selection.getPoint());
+		return (spot != null ? MapIcons.name(spot, progress) + " at " : "") + point.getX() + ", " + point.getY() + ", "
+			+ floors.name(point.getPlane()) + (place == null ? "" : ", near " + place);
 	}
 
 	/** The menu's name row: the icon's name, or the tile with no icon. */

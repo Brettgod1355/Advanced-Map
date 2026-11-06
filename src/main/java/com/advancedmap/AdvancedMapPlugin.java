@@ -1367,6 +1367,12 @@ public class AdvancedMapPlugin extends Plugin
 			case ROUTE:
 				route(on.getPoint());
 				break;
+			case REPORT:
+				WorldPoint at = on.getSpot() != null ? new WorldPoint(on.getSpot().getX(), on.getSpot().getY(),
+					on.getSpot().getPlane()) : on.getPoint();
+				LinkBrowser.browse(reportUrl(MapPainter.spotText(on, progress, settings.getFloorNumbers(),
+					SearchSpots.name(at, labelsNow()))));
+				break;
 			case WIKI:
 				NamedIcons.Named named = on.getSpot() == null ? null
 					: NamedIcons.at(on.getSpot().getX(), on.getSpot().getY(), on.getSpot().getPlane());
@@ -2190,6 +2196,22 @@ public class AdvancedMapPlugin extends Plugin
 			}
 		}
 		return best;
+	}
+
+	/** A new GitHub issue on the map, its title and the spot filled in; the player writes what is wrong. */
+	static String reportUrl(String spotText)
+	{
+		try
+		{
+			String enc = java.nio.charset.StandardCharsets.UTF_8.name();
+			return AdvancedMapPanel.GITHUB_URL + "/issues/new?title=" + java.net.URLEncoder.encode("Map: " + spotText,
+				enc) + "&body=" + java.net.URLEncoder.encode("Where: " + spotText + "\nAdvanced Map " + WhatsNew.VERSION
+				+ "\n\nWhat is wrong or missing:\n", enc);
+		}
+		catch (java.io.UnsupportedEncodingException e)
+		{
+			throw new IllegalStateException(e);
+		}
 	}
 
 	/** The side list of the menu's "Your markers", and of its "Hidden icons"; a hidden icon's rows too. */

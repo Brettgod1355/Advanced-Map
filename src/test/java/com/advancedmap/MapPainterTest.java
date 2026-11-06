@@ -94,7 +94,7 @@ public class MapPainterTest
 		MapSpot varrock = MapSpot.teleport(Teleport.named("VARROCK"));
 		MapPainter.Selection near = new MapPainter.Selection(varrock, true, 790, 590, Teleport.named("VARROCK").getLocation());
 		List<MapPainter.MenuEntry> entries = MapPainter.menuEntries(near, settings(RoutingPlugin.SHORTEST_PATH));
-		assertEquals(4, entries.size());
+		assertEquals(5, entries.size());
 		assertEquals(MapPainter.Action.HIDE, entries.get(0).getAction());
 		assertEquals("Route here (Shortest Path)", entries.get(1).getText());
 		assertEquals(MapPainter.Action.ADD_MARKER, entries.get(3).getAction());
@@ -132,15 +132,36 @@ public class MapPainterTest
 	{
 		MapPainter.Selection tile = new MapPainter.Selection(null, true, 10, 10, new WorldPoint(3222, 3218, 1));
 		List<MapPainter.MenuEntry> entries = MapPainter.menuEntries(tile, settings(RoutingPlugin.GPS));
-		assertEquals(3, entries.size());
+		assertEquals(4, entries.size());
 		assertEquals(MapPainter.Action.ROUTE, entries.get(0).getAction());
 		assertEquals("Route here (GPS)", entries.get(0).getText());
 		assertEquals("3222, 3218, Floor 2", MapPainter.menuTitle(tile, Progress.NONE, FloorNumbers.GROUND_IS_FIRST));
 		assertEquals("3222, 3218, Floor 1", MapPainter.menuTitle(tile, Progress.NONE,
 			FloorNumbers.FIRST_ABOVE_GROUND));
 		List<MapPainter.MenuEntry> plain = MapPainter.menuEntries(tile, settings(RoutingPlugin.NONE));
-		assertEquals(1, plain.size());
+		assertEquals(2, plain.size());
 		assertEquals("Add marker here", plain.get(0).getText());
+		assertEquals("Report a problem here", plain.get(1).getText());
+	}
+
+	@Test
+	public void aReportSaysWhatIsThereAndWhere()
+	{
+		MapPainter.Selection tile = new MapPainter.Selection(null, true, 10, 10, new WorldPoint(3222, 3218, 1));
+		assertEquals("3222, 3218, Floor 2, near Lumbridge", MapPainter.spotText(tile, Progress.NONE,
+			FloorNumbers.GROUND_IS_FIRST, "Lumbridge"));
+		MapSpot furnace = MapSpot.icon(2929, 10461, 0, 0, 1059);
+		MapPainter.Selection on = new MapPainter.Selection(furnace, true, 100, 100, new WorldPoint(2930, 10460, 0));
+		assertEquals("Ancient Furnace at 2929, 10461, Ground floor", MapPainter.spotText(on, Progress.NONE,
+			FloorNumbers.GROUND_IS_FIRST, null));
+		String url = AdvancedMapPlugin.reportUrl("3222, 3218, Floor 2, near Lumbridge");
+		assertTrue(url, url.startsWith(AdvancedMapPanel.GITHUB_URL + "/issues/new?title=Map%3A+3222%2C+3218%2C+Floor+2"));
+		assertTrue(url, url.contains("&body=Where%3A+3222") && url.contains("Advanced+Map+" + WhatsNew.VERSION));
+		// a marker's own menu has none: it is the player's
+		MapPins.Pin pin = new MapPins.Pin(new WorldPoint(3222, 3218, 0), null, new MapPins.Marker("m", new WorldPoint(
+			3222, 3218, 0), MarkerIcons.Design.values()[0], 0, "", ""), "", "", null, false);
+		assertTrue(MapPainter.menuEntries(tile, settings(RoutingPlugin.NONE), pin).stream()
+			.noneMatch(e -> e.getAction() == MapPainter.Action.REPORT));
 	}
 
 	@Test
