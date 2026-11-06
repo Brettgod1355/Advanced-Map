@@ -141,6 +141,8 @@ final class MapMenu
 	private final Supplier<String> savedStatus;
 	private final Supplier<Build> build;
 	private volatile boolean open;
+	/** The page's lines as last wrapped, with what they were wrapped for: a paint wraps them again only on a change. */
+	private volatile Wrapped wrapped;
 	/** Whether the open page opened by itself: then Escape closes the menu with it. */
 	private volatile boolean popped;
 	private volatile Page page;
@@ -217,9 +219,34 @@ final class MapMenu
 		{
 			return layout(buttons, width, height, open);
 		}
-		List<Line> lines = lines(open, textWidth(pageWidth(buttons, width)));
-		return layout(buttons, width, height, open, lines);
+		return layout(buttons, width, height, open, wrappedLines(open, textWidth(pageWidth(buttons, width))));
 	}
+
+	@Value
+	private static class Wrapped
+	{
+		/** The page, the width and what its text says that changes (the build's progress, the saved map). */
+		List<Object> key;
+		List<Line> lines;
+	}
+
+	/** A page's lines, wrapped again only when the page, the width or its changing text is not what it was. */
+	private List<Line> wrappedLines(Page page, int width)
+	{
+		List<Object> key = java.util.Arrays.asList(page, width, page == Page.WELCOME ? build.get()
+			: page == Page.REDRAW ? savedStatus.get() : null);
+		Wrapped last = wrapped;
+		if (last != null && last.getKey().equals(key))
+		{
+			return last.getLines();
+		}
+		List<Line> lines = lines(page, width);
+		wrapped = new Wrapped(key, lines);
+		return lines;
+	}
+
+	/** How many times a page's text has been wrapped, for a test. */
+	int wraps;
 
 	/** The menu under its button, and a page beside it down to the map's bottom edge. */
 	static Layout layout(Map<MapPainter.Button, Rectangle> buttons, int width, int height, Page page)
@@ -358,6 +385,7 @@ final class MapMenu
 	/** A page's lines, wrapped to {@code width}. */
 	private List<Line> lines(Page page, int width)
 	{
+		wraps++;
 		List<Line> out = new ArrayList<>();
 		switch (page)
 		{

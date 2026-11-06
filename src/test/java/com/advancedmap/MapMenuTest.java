@@ -239,4 +239,32 @@ public class MapMenuTest
 		Rectangle page = help.getContent();
 		assertEquals(MapMenu.Page.HELP, menu.hitAt(page.x + 50, page.y + 50, help).getPage());
 	}
+
+	@Test
+	public void aPageIsWrappedOnceAndAgainOnlyWhenWhatItSaysChanges()
+	{
+		Map<MapPainter.Button, Rectangle> buttons = MapPainter.buttons(1280, 800, false);
+		int[] left = {500};
+		MapMenu menu = new MapMenu(() -> "saved", () -> new MapMenu.Build(1000, left[0], true));
+		menu.setOpen(true);
+		menu.setPage(MapMenu.Page.HELP);
+		Graphics2D g = new BufferedImage(1280, 800, BufferedImage.TYPE_INT_ARGB).createGraphics();
+		for (int paint = 0; paint < 5; paint++)
+		{
+			// a paint lays out (twice: the drawing, and the check under the mouse) and draws
+			menu.layout(buttons, 1280, 800);
+			menu.draw(g, menu.layout(buttons, 1280, 800), null);
+		}
+		assertEquals("the help wrapped once for five paints", 1, menu.wraps);
+		menu.layout(MapPainter.buttons(700, 800, false), 700, 800);
+		assertEquals("a narrower page wraps it again", 2, menu.wraps);
+		menu.setPage(MapMenu.Page.WELCOME);
+		menu.layout(buttons, 1280, 800);
+		menu.layout(buttons, 1280, 800);
+		assertEquals(3, menu.wraps);
+		left[0] = 499;
+		menu.layout(buttons, 1280, 800);
+		assertEquals("the build's progress changed", 4, menu.wraps);
+		g.dispose();
+	}
 }
