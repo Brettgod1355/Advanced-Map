@@ -2374,7 +2374,16 @@ public class AdvancedMapPlugin extends Plugin
 	void showMarkers()
 	{
 		WorldPoint from = player != null ? player : center();
-		List<MapPins.Marker> markers = new ArrayList<>(pins.shown());
+		List<MapPins.Marker> markers = pins.shown();
+		markersFor = pins.filterAccount();
+		sideList.open("Your markers (" + markers.size() + "), nearest first", markerRows(markers, from, labelsNow()),
+			MARKERS_LIST);
+	}
+
+	/** The rows of "Your markers": each marker, nearest {@code from} first, how far and where; none, how to add one. */
+	static List<SideList.Row> markerRows(List<MapPins.Marker> shown, WorldPoint from, List<MapLabels.Label> labels)
+	{
+		List<MapPins.Marker> markers = new ArrayList<>(shown);
 		markers.sort(java.util.Comparator.comparingInt(marker -> SearchSpots.distance(marker.getPoint(), from)));
 		List<SideList.Row> rows = new ArrayList<>();
 		if (markers.isEmpty())
@@ -2384,11 +2393,10 @@ public class AdvancedMapPlugin extends Plugin
 		for (MapPins.Marker marker : markers)
 		{
 			rows.add(new SideList.Row(marker.getName().isEmpty() ? "Marker" : marker.getName(),
-				tilesAway(marker.getPoint(), from), SearchSpots.name(marker.getPoint(), labelsNow()), null,
+				tilesAway(marker.getPoint(), from), SearchSpots.name(marker.getPoint(), labels), null,
 				marker.getPoint(), null));
 		}
-		markersFor = pins.filterAccount();
-		sideList.open("Your markers (" + markers.size() + "), nearest first", rows, MARKERS_LIST);
+		return rows;
 	}
 
 	/**
@@ -2400,15 +2408,25 @@ public class AdvancedMapPlugin extends Plugin
 	{
 		Set<String> hidden = settings.getHidden();
 		WorldPoint from = player != null ? player : center();
+		List<MapSpot> candidates = new ArrayList<>(icons.allSpots());
+		candidates.addAll(MapIcons.teleports());
+		sideList.open("Hidden icons (" + hidden.size() + "), nearest first", hiddenRows(hidden, candidates, from,
+			labelsNow(), progress), HIDDEN_LIST);
+	}
+
+	/**
+	 * The rows of "Hidden icons": a line on what a click does, then each hidden icon found among {@code candidates},
+	 * nearest {@code from} first, and how many hidden icons are not found yet (their places' icons not loaded).
+	 */
+	static List<SideList.Row> hiddenRows(Set<String> hidden, List<MapSpot> candidates, WorldPoint from,
+		List<MapLabels.Label> labels, Progress progress)
+	{
 		java.util.Map<String, MapSpot> found = new java.util.LinkedHashMap<>();
-		for (List<MapSpot> spots : java.util.Arrays.asList(icons.allSpots(), MapIcons.teleports()))
+		for (MapSpot spot : candidates)
 		{
-			for (MapSpot spot : spots)
+			if (hidden.contains(spot.getKey()))
 			{
-				if (hidden.contains(spot.getKey()))
-				{
-					found.putIfAbsent(spot.getKey(), spot);
-				}
+				found.putIfAbsent(spot.getKey(), spot);
 			}
 		}
 		List<MapSpot> spots = new ArrayList<>(found.values());
@@ -2420,14 +2438,14 @@ public class AdvancedMapPlugin extends Plugin
 		for (MapSpot spot : spots)
 		{
 			rows.add(new SideList.Row(MapIcons.name(spot, progress), tilesAway(point(spot), from),
-				SearchSpots.name(point(spot), labelsNow()), null, point(spot), HIDDEN_LIST));
+				SearchSpots.name(point(spot), labels), null, point(spot), HIDDEN_LIST));
 		}
 		int notFound = hidden.size() - spots.size();
 		if (notFound > 0)
 		{
 			rows.add(note(notFound + " more not found yet: they are listed as the map finds their places' icons."));
 		}
-		sideList.open("Hidden icons (" + hidden.size() + "), nearest first", rows, HIDDEN_LIST);
+		return rows;
 	}
 
 	private static WorldPoint point(MapSpot spot)
