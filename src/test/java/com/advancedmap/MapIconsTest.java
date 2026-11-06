@@ -19,6 +19,8 @@ import net.runelite.client.game.AgilityShortcut;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -219,5 +221,37 @@ public class MapIconsTest
 	private static boolean has(List<MapIcons.Shown> shown, MapSpot spot)
 	{
 		return shown.stream().anyMatch(icon -> icon.getSpot().equals(spot));
+	}
+
+	@Test
+	public void aTeleportWithoutItsOwnPictureShowsItsItemOnceThatArrivesAndAGrayedCopyIsKept()
+	{
+		Teleport item = null;
+		Teleport minigame = null;
+		for (Teleport teleport : Teleport.values())
+		{
+			if (teleport.picture() == null && teleport.iconItem() >= 0 && item == null)
+			{
+				item = teleport;
+			}
+			if (teleport.picture() == null && Teleport.MINIGAME_ICON.equals(teleport.getIcon()) && minigame == null)
+			{
+				minigame = teleport;
+			}
+		}
+		assertNotNull("a teleport drawn with its item's picture", item);
+		assertNotNull("a teleport drawn with the game's minigame icon", minigame);
+		MapIcons icons = new MapIcons();
+		assertNull("nothing until the item's picture is loaded", icons.teleportPicture(item, false));
+		assertNull("nothing until the minigame icon is found", icons.teleportPicture(minigame, false));
+		java.awt.image.BufferedImage disc = new java.awt.image.BufferedImage(15, 15,
+			java.awt.image.BufferedImage.TYPE_INT_ARGB);
+		int wanted = item.iconItem();
+		icons.setItemPictures(id -> id == wanted ? disc : null);
+		assertSame(disc, icons.teleportPicture(item, false));
+		java.awt.image.BufferedImage gray = icons.teleportPicture(item, true);
+		assertNotNull(gray);
+		assertNotSame("grayed, not the item's own picture", disc, gray);
+		assertSame("the grayed copy is kept, not made again each paint", gray, icons.teleportPicture(item, true));
 	}
 }

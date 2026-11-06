@@ -570,4 +570,34 @@ public class MapPainterTest
 		assertTrue(box.x - (small.x + small.width) < MapPainter.BUTTON_HEIGHT);
 		assertTrue(filters.x + filters.width < MapSearch.layout(buttons, 1280, 0).getBox().x);
 	}
+
+	@Test
+	public void aPaintWithTheMenuOpenDrawsItsPageAndLeavesOutTheBar() throws InterruptedException
+	{
+		MapIcons icons = new MapIcons();
+		MapPainter plain = blankPainter(icons);
+		MapPainter withMenu = blankPainter(icons);
+		MapMenu menu = new MapMenu(() -> "saved", () -> new MapMenu.Build(1, 0, true, false, false, 0));
+		menu.setOpen(true);
+		menu.setPage(MapMenu.Page.HELP);
+		withMenu.setMenu(menu);
+		MapViewport.View view = new MapViewport.View(3222, 3218, 4, 800, 400);
+		// the pointer rests on a floor button, under the page that runs to the map's bottom on a map this short
+		Rectangle up = MapPainter.buttons(800, 400, true).get(MapPainter.Button.FLOOR_UP);
+		java.awt.Point onButton = new java.awt.Point(up.x + 2, up.y + 2);
+		BufferedImage without = restOn(plain, view, onButton);
+		BufferedImage with = restOn(withMenu, view, onButton);
+		MapMenu.Layout layout = menu.layout(MapPainter.buttons(800, 400, true), 800, 400);
+		Rectangle page = layout.getContent();
+		assertTrue("the page covers the button", page.contains(onButton));
+		assertTrue("the page is drawn", differences(with, without, page) > 0);
+		// the bar along the bottom is left out while the menu is open: the map shows there instead
+		Rectangle barLeft = new Rectangle(0, view.height - 18, Math.max(8, page.x - 2), 14);
+		assertTrue("the bar is gone", differences(with, without, barLeft) > 0);
+		// and the painter is none the worse for it: with the menu closed and the pointer off the map (no tip timers
+		// to differ by), it paints what the plain one paints
+		menu.setOpen(false);
+		assertEquals(0, differences(restOn(withMenu, view, null), restOn(plain, view, null),
+			new Rectangle(0, 0, view.width, view.height)));
+	}
 }
