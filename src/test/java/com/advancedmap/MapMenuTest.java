@@ -283,9 +283,10 @@ public class MapMenuTest
 		// ends at the bottom of that room, with nothing blank under it
 		int room = layout.getContent().height - (8 + 26 + 4) - 8;
 		assertEquals(layout.getLines().size() * MapMenu.LINE - room, menu.scrolled());
-		// a taller map shows more of the text: drawing takes the scroll back to the new end
+		// a taller map shows more of the text: the next turn of the wheel takes the scroll back to the new end
 		MapMenu.Layout taller = menu.layout(MapPainter.buttons(800, 700, false), 800, 700);
 		menu.draw(g, taller, null);
+		menu.scroll(0, taller);
 		int tallerRoom = taller.getContent().height - (8 + 26 + 4) - 8;
 		assertEquals(Math.max(0, taller.getLines().size() * MapMenu.LINE - tallerRoom), menu.scrolled());
 		g.dispose();

@@ -551,11 +551,12 @@ final class MapMenu
 			: lines(shown, textWidth(content.width), state(shown));
 		int lineHeight = LINE;
 		contentHeight = lines.size() * lineHeight;
-		// no further than the text's end, also after the page got taller or its text shorter
-		scroll = Math.min(scroll, Math.max(0, contentHeight - text.height));
+		// drawn no further than the text's end, also after the page got taller or its text shorter; kept here, not
+		// written back, where the wheel (another thread) may be scrolling meanwhile
+		int shownScroll = Math.min(scroll, Math.max(0, contentHeight - text.height));
 		Shape clip = g.getClip();
 		g.clip(text);
-		int y = top - scroll;
+		int y = top - shownScroll;
 		for (Line line : lines)
 		{
 			if (line.getBar() >= 0 && y + lineHeight >= top && y <= bottom)
@@ -581,7 +582,7 @@ final class MapMenu
 		if (contentHeight > text.height)
 		{
 			int thumb = Math.max(20, text.height * text.height / contentHeight);
-			int thumbY = text.y + (text.height - thumb) * scroll / Math.max(1, contentHeight - text.height);
+			int thumbY = text.y + (text.height - thumb) * shownScroll / Math.max(1, contentHeight - text.height);
 			g.setColor(new Color(255, 255, 255, 60));
 			g.fillRoundRect(content.x + content.width - 7, thumbY, 4, thumb, 4, 4);
 		}
