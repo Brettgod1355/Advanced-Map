@@ -1642,7 +1642,7 @@ public class AdvancedMapPlugin extends Plugin
 			return false;
 		}
 		Map<MapPainter.Button, java.awt.Rectangle> buttons = MapPainter.buttons(width, height, window);
-		MapMenu.Hit hit = menu.hitAt(x, y, MapMenu.layout(buttons, width, height, menu.page()));
+		MapMenu.Hit hit = menu.hitAt(x, y, menu.layout(buttons, width, height));
 		switch (hit.getPart())
 		{
 			case OUTSIDE:
@@ -2300,7 +2300,7 @@ public class AdvancedMapPlugin extends Plugin
 	{
 		if (menu.isOpen())
 		{
-			MapMenu.Layout open = MapMenu.layout(MapPainter.buttons(width, height, window), width, height, menu.page());
+			MapMenu.Layout open = menu.layout(MapPainter.buttons(width, height, window), width, height);
 			if (open.getContent() != null && open.getContent().contains(x, y))
 			{
 				menu.scroll(notches, open);

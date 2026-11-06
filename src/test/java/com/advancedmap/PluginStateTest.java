@@ -135,7 +135,7 @@ public class PluginStateTest
 		assertTrue(plugin.pressPanels(panel.x + 20, panel.y + 8 + MapMenu.Page.REDRAW.ordinal() * MapMenu.ROW + 5,
 			1200, 800, false));
 		assertEquals(MapMenu.Page.REDRAW, plugin.menu().page());
-		MapMenu.Layout open = MapMenu.layout(buttons, 1200, 800, MapMenu.Page.REDRAW);
+		MapMenu.Layout open = plugin.menu().layout(buttons, 1200, 800);
 		assertTrue(plugin.pressPanels(open.getButton2().x + 3, open.getButton2().y + 3, 1200, 800, false));
 		assertNull(plugin.menu().page());
 		assertTrue(plugin.menu().isOpen());

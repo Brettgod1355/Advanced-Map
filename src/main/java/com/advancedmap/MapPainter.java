@@ -522,8 +522,8 @@ final class MapPainter
 		if (menuOpen)
 		{
 			// over everything else: its page covers most of the map
-			shownMenu.draw(g, MapMenu.layout(buttons(view.width, view.height, window), view.width, view.height,
-				shownMenu.page()), mouse);
+			shownMenu.draw(g, shownMenu.layout(buttons(view.width, view.height, window), view.width, view.height),
+				mouse);
 		}
 		previewShown = false;
 		drawHovered(g, view, area, window, mouse, settings, progress, selection, shown, pinsShown, farms);
@@ -1072,7 +1072,7 @@ final class MapPainter
 		MapMenu shownMenu = menu;
 		if (shownMenu != null && shownMenu.isOpen())
 		{
-			MapMenu.Layout open = MapMenu.layout(buttons, view.width, view.height, shownMenu.page());
+			MapMenu.Layout open = shownMenu.layout(buttons, view.width, view.height);
 			if (open.getMenu().contains(mouse) || open.getContent() != null && open.getContent().contains(mouse))
 			{
 				return true;

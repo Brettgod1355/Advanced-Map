@@ -86,6 +86,15 @@ final class MapMenu
 	private static final int LEAST_CONTENT = 160;
 	/** The widest a page's text gets: a column that reads well on a wide map, rather than lines across the whole page. */
 	private static final int WIDEST_TEXT = 640;
+	/** A page's title row, above its text. */
+	private static final int TITLE = PAD + ROW + 4;
+	/** Room beside the text for the scroll bar. */
+	private static final int SCROLL_ROOM = 6;
+	/** The widest a page gets: its text column and the padding around it, no wider. */
+	private static final int WIDEST_PAGE = WIDEST_TEXT + PAD * 2 + SCROLL_ROOM;
+	/** How tall a line of a page's text is. */
+	private static final int LINE = new java.awt.image.BufferedImage(1, 1, java.awt.image.BufferedImage.TYPE_INT_ARGB)
+		.createGraphics().getFontMetrics(FontManager.getRunescapeSmallFont()).getHeight();
 	private static final Color LIT = new Color(255, 255, 255, 34);
 
 	/** What the sidebar tab says of the saved map, for the "Draw the map again" page. */
@@ -128,13 +137,48 @@ final class MapMenu
 		scroll = 0;
 	}
 
-	/** The menu under its button, down to the map's bottom edge, and the page beside it. */
+	/** The menu and the open page, the page as wide and as tall as its text needs. */
+	Layout layout(Map<MapPainter.Button, Rectangle> buttons, int width, int height)
+	{
+		Page open = page;
+		if (open == null || open == Page.SETTINGS)
+		{
+			return layout(buttons, width, height, open);
+		}
+		int textWidth = textWidth(pageWidth(buttons, width));
+		return layout(buttons, width, height, open, lines(open, textWidth).size() * LINE);
+	}
+
+	/** The menu under its button, and a page beside it down to the map's bottom edge. */
 	static Layout layout(Map<MapPainter.Button, Rectangle> buttons, int width, int height, Page page)
+	{
+		return layout(buttons, width, height, page, -1);
+	}
+
+	/** How wide a page is beside the menu on a map {@code width} wide. */
+	private static int pageWidth(Map<MapPainter.Button, Rectangle> buttons, int width)
+	{
+		int x = buttons.get(MapPainter.Button.MENU).x + WIDTH + GAP;
+		return Math.max(LEAST_CONTENT, Math.min(WIDEST_PAGE, width - x - GAP));
+	}
+
+	private static int textWidth(int pageWidth)
+	{
+		return Math.min(WIDEST_TEXT, pageWidth - PAD * 2 - SCROLL_ROOM);
+	}
+
+	/**
+	 * The menu under its button, as tall as its entries, and a page beside it as tall as its text, {@code textHeight}
+	 * pixels, needs with its title and buttons, no lower than the map's bottom edge (-1: down to that edge).
+	 */
+	private static Layout layout(Map<MapPainter.Button, Rectangle> buttons, int width, int height, Page page,
+		int textHeight)
 	{
 		Rectangle button = buttons.get(MapPainter.Button.MENU);
 		int y = button.y + button.height + 4;
-		Rectangle menu = new Rectangle(button.x, y, WIDTH, Math.max(ROW * Page.values().length + BUTTON + PAD * 3,
-			height - y - PAD));
+		// the list as tall as its entries and the links under them; a page may run down to the map's bottom edge
+		Rectangle menu = new Rectangle(button.x, y, WIDTH, ROW * Page.values().length + BUTTON + PAD * 3);
+		int room = Math.max(menu.height, height - y - PAD);
 		int half = (WIDTH - PAD * 3) / 2;
 		int linksY = menu.y + menu.height - PAD - BUTTON;
 		Rectangle github = new Rectangle(menu.x + PAD, linksY, half, BUTTON);
@@ -145,8 +189,12 @@ final class MapMenu
 		if (page != null && page != Page.SETTINGS)
 		{
 			int x = menu.x + menu.width + GAP;
-			int contentWidth = Math.max(LEAST_CONTENT, width - x - GAP);
-			content = new Rectangle(Math.max(GAP, Math.min(x, width - GAP - contentWidth)), y, contentWidth, menu.height);
+			int contentWidth = pageWidth(buttons, width);
+			boolean buttoned = page != Page.HELP;
+			int contentHeight = textHeight < 0 ? room : Math.min(room, TITLE + textHeight
+				+ (buttoned ? PAD * 2 + BUTTON : PAD));
+			content = new Rectangle(Math.max(GAP, Math.min(x, width - GAP - contentWidth)), y, contentWidth,
+				contentHeight);
 			int buttonsY = content.y + content.height - PAD - BUTTON;
 			int wide = Math.min(220, content.width - PAD * 2);
 			int narrow = (content.width - PAD * 3) / 2;
@@ -219,7 +267,7 @@ final class MapMenu
 	/** Where a page's text starts under its title. */
 	private static int textTop(Rectangle content)
 	{
-		return content.y + PAD + ROW + 4;
+		return content.y + TITLE;
 	}
 
 	/** A line of a page: its text, and whether it is a heading. */
@@ -328,8 +376,8 @@ final class MapMenu
 		int top = textTop(content);
 		int bottom = content.y + content.height - (layout.getButton1() != null ? BUTTON + PAD * 2 : PAD);
 		Rectangle text = new Rectangle(content.x, top, content.width, bottom - top);
-		List<Line> lines = lines(page, Math.min(WIDEST_TEXT, content.width - PAD * 2 - 6));
-		int lineHeight = metrics.getHeight();
+		List<Line> lines = lines(page, textWidth(content.width));
+		int lineHeight = LINE;
 		contentHeight = lines.size() * lineHeight;
 		Shape clip = g.getClip();
 		g.clip(text);

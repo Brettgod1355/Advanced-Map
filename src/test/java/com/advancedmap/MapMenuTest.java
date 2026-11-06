@@ -70,7 +70,9 @@ public class MapMenuTest
 			assertEquals(MapMenu.Part.ENTRY, hit.getPart());
 			assertEquals(page, hit.getPage());
 		}
-		assertEquals(MapMenu.Part.MENU, menu.hitAt(panel.x + 20, panel.y + panel.height / 2, closed).getPart());
+		// between the last entry and the links
+		assertEquals(MapMenu.Part.MENU, menu.hitAt(panel.x + 20, panel.y + 8 + MapMenu.Page.values().length
+			* MapMenu.ROW + 3, closed).getPart());
 		assertEquals(MapMenu.Part.GITHUB, menu.hitAt(closed.getGithub().x + 3, closed.getGithub().y + 3, closed).getPart());
 		assertEquals(MapMenu.Part.DISCORD, menu.hitAt(closed.getDiscord().x + 3, closed.getDiscord().y + 3, closed)
 			.getPart());
@@ -78,11 +80,12 @@ public class MapMenuTest
 
 		menu.setPage(MapMenu.Page.REDRAW);
 		MapMenu.Layout open = MapMenu.layout(buttons, 1280, 800, MapMenu.Page.REDRAW);
-		assertEquals(MapMenu.Part.CONTENT, menu.hitAt(1000, 300, open).getPart());
+		Rectangle page = open.getContent();
+		assertEquals(MapMenu.Part.CONTENT, menu.hitAt(page.x + 50, page.y + 50, open).getPart());
 		assertEquals(MapMenu.Part.BUTTON1, menu.hitAt(open.getButton1().x + 3, open.getButton1().y + 3, open).getPart());
 		assertEquals(MapMenu.Part.BUTTON2, menu.hitAt(open.getButton2().x + 3, open.getButton2().y + 3, open).getPart());
 		// the page is drawn over the map, so a press there is the page's, not the map's
-		assertEquals(MapMenu.Page.REDRAW, menu.hitAt(1000, 300, open).getPage());
+		assertEquals(MapMenu.Page.REDRAW, menu.hitAt(page.x + 50, page.y + 50, open).getPage());
 	}
 
 	@Test
@@ -107,5 +110,57 @@ public class MapMenuTest
 		assertEquals(MapMenu.Page.HELP, menu.page());
 		menu.setOpen(false);
 		assertNull("closing the menu closes its page", menu.page());
+	}
+
+	@Test
+	public void aPageIsAsWideAndAsTallAsItsTextNeeds()
+	{
+		// a wide map: no page runs to the map's right edge; the short pages end under their buttons
+		Map<MapPainter.Button, Rectangle> buttons = MapPainter.buttons(1920, 1080, false);
+		MapMenu menu = new MapMenu(() -> "11,716 regions and floors saved on this computer.");
+		menu.setOpen(true);
+		for (MapMenu.Page page : PAGES)
+		{
+			menu.setPage(page);
+			MapMenu.Layout fitted = menu.layout(buttons, 1920, 1080);
+			Rectangle content = fitted.getContent();
+			assertTrue(page + " no wider than its text column", content.width <= 640 + 8 * 2 + 6);
+			assertTrue(page + " leaves the map's right side free", content.x + content.width < 1920 - 500);
+			if (page == MapMenu.Page.HELP)
+			{
+				assertTrue("the help is long, but ends on the map", content.height > 600
+					&& content.y + content.height <= 1080);
+			}
+			else
+			{
+				assertTrue(page + " is short", content.height < 260);
+				assertTrue(content.contains(fitted.getButton1()));
+				// the buttons right under the text, at the page's foot
+				assertEquals(content.y + content.height - 8 - 24, fitted.getButton1().y);
+			}
+		}
+		// the same layout is what the plugin hit-tests and the painter draws: one method for both
+		menu.setPage(MapMenu.Page.REDRAW);
+		MapMenu.Layout fitted = menu.layout(buttons, 1920, 1080);
+		Rectangle cancel = fitted.getButton2();
+		assertEquals(MapMenu.Part.BUTTON2, menu.hitAt(cancel.x + 3, cancel.y + 3, fitted).getPart());
+		// a narrow map: the page still fits beside or over the menu
+		Map<MapPainter.Button, Rectangle> small = MapPainter.buttons(GameBox.MIN_WIDTH, GameBox.MIN_HEIGHT, false);
+		MapMenu.Layout tight = menu.layout(small, GameBox.MIN_WIDTH, GameBox.MIN_HEIGHT);
+		assertTrue(new Rectangle(0, 0, GameBox.MIN_WIDTH, GameBox.MIN_HEIGHT).contains(tight.getContent()));
+	}
+
+	@Test
+	public void onAShortMapTheHelpIsAsTallAsTheMenuAndScrolls()
+	{
+		Map<MapPainter.Button, Rectangle> buttons = MapPainter.buttons(800, 400, false);
+		MapMenu menu = new MapMenu(() -> "saved");
+		menu.setOpen(true);
+		menu.setPage(MapMenu.Page.HELP);
+		MapMenu.Layout fitted = menu.layout(buttons, 800, 400);
+		// down to the map's bottom edge, a padding above it
+		assertEquals(400 - 8, fitted.getContent().y + fitted.getContent().height);
+		// and the list itself only as tall as its entries and links
+		assertTrue(fitted.getMenu().height < 200);
 	}
 }
