@@ -320,8 +320,9 @@ final class MapWindow extends JFrame
 				@Override
 				public void mouseMoved(MouseEvent e)
 				{
+					// noted for the next redraw: a moving pointer does not cost a whole map paint per event (hover
+					// boxes and tips take longer than a redraw to appear anyway), as over the game
 					mouse = point(e);
-					repaint();
 				}
 
 				@Override
