@@ -34,6 +34,8 @@ class MapOverlay extends Overlay
 
 	MapOverlay(Client client, AdvancedMapPlugin plugin, MapPainter painter)
 	{
+		// the plugin this overlay is: RuneLite opens the plugin's settings page for it (the menu's Settings entry)
+		super(plugin);
 		this.client = client;
 		this.plugin = plugin;
 		this.painter = painter;

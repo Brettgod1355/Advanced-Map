@@ -16,6 +16,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 /** The plugin's own state between opens and closes, on an instance with nothing injected. */
@@ -116,5 +117,44 @@ public class PluginStateTest
 		plugin.pressPanels(lines.x + 4, lines.y + 4, 1200, 800, false);
 		plugin.pressPanels(lines.x + 4, lines.y + 4, 1200, 800, false);
 		assertFalse(plugin.search().isScopesOpen());
+	}
+
+	@Test
+	public void theMenuOpensFromItsButtonAndEscapeClosesItsPageThenTheMenu()
+	{
+		AdvancedMapPlugin plugin = new AdvancedMapPlugin();
+		plugin.search().setFocused(true);
+		plugin.pressButton(MapPainter.Button.MENU, false);
+		assertTrue(plugin.menu().isOpen());
+		assertFalse("the search gives the keys up for the menu", plugin.search().isFocused());
+		assertTrue("Escape goes to the map while it is open", plugin.sideListOpen());
+		java.util.Map<MapPainter.Button, java.awt.Rectangle> buttons = MapPainter.buttons(1200, 800, false);
+		MapMenu.Layout closed = MapMenu.layout(buttons, 1200, 800, null);
+		java.awt.Rectangle panel = closed.getMenu();
+		// "Draw the map again" opens its page; Cancel closes the page and keeps the menu
+		assertTrue(plugin.pressPanels(panel.x + 20, panel.y + 8 + MapMenu.Page.REDRAW.ordinal() * MapMenu.ROW + 5,
+			1200, 800, false));
+		assertEquals(MapMenu.Page.REDRAW, plugin.menu().page());
+		MapMenu.Layout open = MapMenu.layout(buttons, 1200, 800, MapMenu.Page.REDRAW);
+		assertTrue(plugin.pressPanels(open.getButton2().x + 3, open.getButton2().y + 3, 1200, 800, false));
+		assertNull(plugin.menu().page());
+		assertTrue(plugin.menu().isOpen());
+		// a press on the page is the page's; the wheel over it is too
+		plugin.menu().setPage(MapMenu.Page.HELP);
+		assertTrue(plugin.pressPanels(open.getContent().x + 50, open.getContent().y + 100, 1200, 800, false));
+		assertTrue(plugin.wheelPanels(open.getContent().x + 50, open.getContent().y + 100, 1, 1200, 800, false));
+		plugin.escape();
+		assertNull("Escape closes the page first", plugin.menu().page());
+		assertTrue(plugin.menu().isOpen());
+		plugin.escape();
+		assertFalse("then the menu", plugin.menu().isOpen());
+		// a press on the map beside the menu closes it and goes on to the map
+		plugin.pressButton(MapPainter.Button.MENU, false);
+		assertFalse(plugin.pressPanels(1000, 700, 1200, 800, false));
+		assertFalse(plugin.menu().isOpen());
+		// closing the map closes the menu
+		plugin.pressButton(MapPainter.Button.MENU, false);
+		plugin.giveKeysBack();
+		assertFalse(plugin.menu().isOpen());
 	}
 }

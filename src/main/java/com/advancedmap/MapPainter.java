@@ -44,6 +44,8 @@ final class MapPainter
 {
 	enum Button
 	{
+		/** Opens the menu: the help, the settings, what's new, where to write, drawing the map again. */
+		MENU,
 		CLOSE,
 		/** Over the game only: the map's box fills the game view, or goes back to its size. */
 		MAXIMIZE,
@@ -150,6 +152,8 @@ final class MapPainter
 	private final MapFilters filters;
 	private final SideList sideList;
 	private final MapSearch search;
+	/** The map's menu, drawn while open; null in a painter without one (the harness). */
+	private volatile MapMenu menu;
 	private volatile MapPins pins = new MapPins();
 	private volatile MarkerEditor editor = new MarkerEditor();
 	private volatile boolean multiCombat;
@@ -178,6 +182,11 @@ final class MapPainter
 	/** The icon or pin the mouse rests on (a {@link MapSpot} or a {@link MapPins.Pin}), and since when. */
 	private Object hovered;
 	private long hoveredSince;
+
+	void setMenu(MapMenu menu)
+	{
+		this.menu = menu;
+	}
 
 	MapPainter(RegionImages images, MapMessages messages, MapIcons icons, MapLabels labels, MapFilters filters,
 		SideList sideList, MapSearch search)
@@ -331,6 +340,8 @@ final class MapPainter
 	{
 		switch (button)
 		{
+			case MENU:
+				return "Menu";
 			case ICONS:
 				return settings.isIconsOff() ? "Show the map's icons" : "Hide the map's icons";
 			case FILTERS:
@@ -358,13 +369,15 @@ final class MapPainter
 		// a map too narrow for the search box between the top buttons at their full width gets the shorter ones, so the
 		// box stays on the top row
 		int squares = window ? 1 : 3;
-		int full = GAP * 3 + ICONS_WIDTH + FILTERS_WIDTH + squares * (BUTTON_HEIGHT + GAP) + AREA_WIDTH + GAP * 2;
+		int full = GAP * 4 + BUTTON_HEIGHT + ICONS_WIDTH + FILTERS_WIDTH + squares * (BUTTON_HEIGHT + GAP) + AREA_WIDTH
+			+ GAP * 2;
 		boolean compact = width - full < MapSearch.MIN_WIDTH;
 		int iconsWidth = compact ? ICONS_COMPACT : ICONS_WIDTH;
 		int filters = compact ? FILTERS_COMPACT : FILTERS_WIDTH;
 		int areaWidth = compact ? AREA_COMPACT : AREA_WIDTH;
-		out.put(Button.ICONS, new Rectangle(GAP, GAP, iconsWidth, BUTTON_HEIGHT));
-		out.put(Button.FILTERS, new Rectangle(GAP * 2 + iconsWidth, GAP, filters, BUTTON_HEIGHT));
+		out.put(Button.MENU, new Rectangle(GAP, GAP, BUTTON_HEIGHT, BUTTON_HEIGHT));
+		out.put(Button.ICONS, new Rectangle(GAP * 2 + BUTTON_HEIGHT, GAP, iconsWidth, BUTTON_HEIGHT));
+		out.put(Button.FILTERS, new Rectangle(GAP * 3 + BUTTON_HEIGHT + iconsWidth, GAP, filters, BUTTON_HEIGHT));
 		out.put(Button.LOCATE, new Rectangle(width - GAP - LOCATE_SIZE, height - GAP - LOCATE_SIZE, LOCATE_SIZE,
 			LOCATE_SIZE));
 		int down = height - GAP - LOCATE_SIZE - GAP - FLOOR_HEIGHT;
@@ -476,12 +489,15 @@ final class MapPainter
 				drawInfo(g, view, selected, settings, progress, farmingLines(selected.getSpot(), farms));
 			}
 		}
-		if (!filters.isOpen())
+		MapMenu shownMenu = menu;
+		boolean menuOpen = shownMenu != null && shownMenu.isOpen();
+		if (!filters.isOpen() && !menuOpen)
 		{
-			// the Filters list takes the bar's room, so a small map shows more of the list
+			// the Filters list and the menu take the bar's room, so a small map shows more of them
 			drawBar(g, view, bar);
 		}
-		drawButtons(g, view, area, plane, window, settings, player != null, following, gameMaximized, filters.isOpen());
+		drawButtons(g, view, area, plane, window, settings, player != null, following, gameMaximized, filters.isOpen(),
+			menuOpen);
 		int left = toPrepare.getAsInt();
 		if (left > 0)
 		{
@@ -503,6 +519,12 @@ final class MapPainter
 			sideList.draw(g, sideList.layout(buttons(view.width, view.height, window)), mouse);
 		}
 		search.draw(g, search.layout(buttons(view.width, view.height, window), view.width), mouse);
+		if (menuOpen)
+		{
+			// over everything else: its page covers most of the map
+			shownMenu.draw(g, MapMenu.layout(buttons(view.width, view.height, window), view.width, view.height,
+				shownMenu.page()), mouse);
+		}
 		previewShown = false;
 		drawHovered(g, view, area, window, mouse, settings, progress, selection, shown, pinsShown, farms);
 		drawButtonTip(g, view, area, plane, window, mouse, settings);
@@ -1046,6 +1068,15 @@ final class MapPainter
 		if (filters.isOpen() && MapFilters.layout(buttons.get(Button.FILTERS), view.height).getPanel().contains(mouse))
 		{
 			return true;
+		}
+		MapMenu shownMenu = menu;
+		if (shownMenu != null && shownMenu.isOpen())
+		{
+			MapMenu.Layout open = MapMenu.layout(buttons, view.width, view.height, shownMenu.page());
+			if (open.getMenu().contains(mouse) || open.getContent() != null && open.getContent().contains(mouse))
+			{
+				return true;
+			}
 		}
 		if (editor.isOpen() ? MarkerEditor.layout(buttons).getPanel().contains(mouse)
 			: sideList.isOpen() && sideList.layout(buttons).getPanel().contains(mouse))
@@ -1743,7 +1774,8 @@ final class MapPainter
 	}
 
 	private static void drawButtons(Graphics2D g, MapViewport.View view, MapArea area, int plane, boolean window,
-		MapSettings settings, boolean located, boolean following, boolean maximized, boolean filtersOpen)
+		MapSettings settings, boolean located, boolean following, boolean maximized, boolean filtersOpen,
+		boolean menuOpen)
 	{
 		for (Map.Entry<Button, Rectangle> entry : buttons(view.width, view.height, window).entrySet())
 		{
@@ -1779,6 +1811,9 @@ final class MapPainter
 					// the short name on a narrow map; its tip says the rest
 					drawLabel(g, button, button.width < AREA_WIDTH ? area.other().label
 						: "Show " + area.other().label.toLowerCase(Locale.ROOT));
+					break;
+				case MENU:
+					drawMenuButton(g, button, menuOpen);
 					break;
 				case ICONS:
 					drawSwitch(g, button, "Icons", !settings.isIconsOff());
@@ -1916,6 +1951,23 @@ final class MapPainter
 		if (antialiasing != null)
 		{
 			g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, antialiasing);
+		}
+	}
+
+	/** Three lines, lit while the menu is open. */
+	private static void drawMenuButton(Graphics2D g, Rectangle button, boolean open)
+	{
+		if (open)
+		{
+			g.setColor(new Color(255, 255, 255, 40));
+			g.fillRoundRect(button.x, button.y, button.width, button.height, 8, 8);
+		}
+		g.setColor(TEXT);
+		int x = button.x + (button.width - 14) / 2;
+		int y = button.y + (button.height - 10) / 2;
+		for (int i = 0; i < 3; i++)
+		{
+			g.fillRect(x, y + i * 4, 14, 2);
 		}
 	}
 

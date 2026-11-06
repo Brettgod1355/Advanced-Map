@@ -66,6 +66,8 @@ import net.runelite.client.ui.overlay.worldmap.WorldMapPoint;
 import net.runelite.client.ui.overlay.worldmap.WorldMapPointManager;
 import net.runelite.client.util.ColorUtil;
 import net.runelite.client.util.HotkeyListener;
+import net.runelite.client.events.OverlayMenuClicked;
+import net.runelite.client.ui.overlay.OverlayMenuEntry;
 import net.runelite.client.util.LinkBrowser;
 
 @Slf4j
@@ -153,6 +155,7 @@ public class AdvancedMapPlugin extends Plugin
 	private final MapSearch search = new MapSearch();
 	private final MapPins pins = new MapPins();
 	private final MarkerEditor editor = new MarkerEditor();
+	private final MapMenu menu = new MapMenu(this::savedMapStatus);
 	private final java.util.concurrent.atomic.AtomicInteger touches = new java.util.concurrent.atomic.AtomicInteger();
 	private volatile MarkerStore markerStore;
 	/** When the pins, farming patches and Slayer task were last read, in milliseconds. Client thread, reset elsewhere. */
@@ -263,6 +266,7 @@ public class AdvancedMapPlugin extends Plugin
 		preparer.start();
 		messages = new MapMessages(this::openMap);
 		painter = new MapPainter(images, messages, icons, labels, filters, sideList, search);
+		painter.setMenu(menu);
 		painter.setPins(pins, editor);
 		painter.setExecutor(executor);
 		// a new painter does not follow: neither does the map, until the locate button is pressed again
@@ -878,6 +882,7 @@ public class AdvancedMapPlugin extends Plugin
 	 */
 	void giveKeysBack()
 	{
+		menu.setOpen(false);
 		search.setFocused(false);
 		filters.setOpen(false);
 		editor.close();
@@ -1184,6 +1189,21 @@ public class AdvancedMapPlugin extends Plugin
 			case FILTERS:
 				filters.setOpen(!filters.isOpen());
 				selection = null;
+				break;
+			case MENU:
+				if (editor.isOpen())
+				{
+					// a marker half made is not thrown away for the menu
+					break;
+				}
+				menu.setOpen(!menu.isOpen());
+				if (menu.isOpen())
+				{
+					filters.setOpen(false);
+					search.setFocused(false);
+					selection = null;
+					showTransport(null);
+				}
 				break;
 			case FLOOR_UP:
 				MapViewport.View under = viewports.get(MapArea.UNDERGROUND).view(1, 1);
@@ -1557,6 +1577,14 @@ public class AdvancedMapPlugin extends Plugin
 		{
 			search.setFocused(false);
 		}
+		else if (menu.page() != null)
+		{
+			menu.setPage(null);
+		}
+		else if (menu.isOpen())
+		{
+			menu.setOpen(false);
+		}
 		else if (pins.selected() != null)
 		{
 			pins.select(null);
@@ -1579,7 +1607,7 @@ public class AdvancedMapPlugin extends Plugin
 	/** True while the list on the right is open, so Escape closes it before the map. */
 	boolean sideListOpen()
 	{
-		return sideList.isOpen() || editor.isOpen() || pins.selected() != null;
+		return sideList.isOpen() || editor.isOpen() || pins.selected() != null || menu.isOpen();
 	}
 
 	/** True while the Filters list is open, so keys go to its search box. */
@@ -1598,8 +1626,103 @@ public class AdvancedMapPlugin extends Plugin
 	{
 		// while the marker box is open it is drawn over the side list and takes the keys: neither the list nor the
 		// search box under it takes a press
-		return pressEditor(x, y, width, height, window) || !editor.isOpen() && (pressSearch(x, y, width, height, window)
-			|| pressSideList(x, y, width, height, window)) || pressFilters(x, y, width, height, window);
+		return pressEditor(x, y, width, height, window) || !editor.isOpen() && (pressMenu(x, y, width, height, window)
+			|| pressSearch(x, y, width, height, window) || pressSideList(x, y, width, height, window))
+			|| pressFilters(x, y, width, height, window);
+	}
+
+	/**
+	 * A left press on the menu or its page: an entry opens its page (Settings opens RuneLite's settings page), the
+	 * links and the page's buttons do their thing, a press elsewhere closes the menu. True when on the menu or page.
+	 */
+	private boolean pressMenu(int x, int y, int width, int height, boolean window)
+	{
+		if (!menu.isOpen())
+		{
+			return false;
+		}
+		Map<MapPainter.Button, java.awt.Rectangle> buttons = MapPainter.buttons(width, height, window);
+		MapMenu.Hit hit = menu.hitAt(x, y, MapMenu.layout(buttons, width, height, menu.page()));
+		switch (hit.getPart())
+		{
+			case OUTSIDE:
+				if (!buttons.get(MapPainter.Button.MENU).contains(x, y))
+				{
+					menu.setOpen(false);
+				}
+				return false;
+			case ENTRY:
+				if (hit.getPage() == MapMenu.Page.SETTINGS)
+				{
+					menu.setOpen(false);
+					openSettings();
+				}
+				else
+				{
+					menu.setPage(hit.getPage());
+				}
+				return true;
+			case GITHUB:
+				LinkBrowser.browse(AdvancedMapPanel.GITHUB_URL);
+				return true;
+			case DISCORD:
+				LinkBrowser.browse(AdvancedMapPanel.DISCORD_URL);
+				return true;
+			case BUTTON1:
+			case BUTTON2:
+				pressMenuButton(hit.getPart() == MapMenu.Part.BUTTON1);
+				return true;
+			default:
+				return true;
+		}
+	}
+
+	/** A page's first or second button. */
+	private void pressMenuButton(boolean first)
+	{
+		MapMenu.Page page = menu.page();
+		if (page == null)
+		{
+			return;
+		}
+		switch (page)
+		{
+			case WHATS_NEW:
+				LinkBrowser.browse(AdvancedMapPanel.GITHUB_URL + "/releases");
+				break;
+			case IMPROVE:
+				LinkBrowser.browse(first ? AdvancedMapPanel.DISCORD_URL : AdvancedMapPanel.GITHUB_URL + "/issues");
+				break;
+			case REDRAW:
+				if (first)
+				{
+					clearSavedMap();
+				}
+				menu.setPage(null);
+				break;
+			default:
+				break;
+		}
+	}
+
+	/**
+	 * Opens RuneLite's settings page for this plugin: the event RuneLite's own "Configure" entry on an overlay's menu
+	 * sends, which RuneLite's configuration plugin answers by opening the page of the overlay's plugin.
+	 */
+	void openSettings()
+	{
+		EventBus bus = eventBus;
+		MapOverlay current = overlay;
+		if (bus != null && current != null)
+		{
+			bus.post(new OverlayMenuClicked(new OverlayMenuEntry(MenuAction.RUNELITE_OVERLAY_CONFIG, "Configure",
+				"Advanced Map"), current));
+		}
+	}
+
+	MapMenu menu()
+	{
+		return menu;
 	}
 
 	/** A left press on the marker box: a picture or color is chosen, Save, Remove or Cancel. True when on the box. */
@@ -2175,6 +2298,19 @@ public class AdvancedMapPlugin extends Plugin
 	/** The mouse wheel over the Filters list or a transport's places scrolls it. True when it did. */
 	boolean wheelPanels(int x, int y, double notches, int width, int height, boolean window)
 	{
+		if (menu.isOpen())
+		{
+			MapMenu.Layout open = MapMenu.layout(MapPainter.buttons(width, height, window), width, height, menu.page());
+			if (open.getContent() != null && open.getContent().contains(x, y))
+			{
+				menu.scroll(notches, open);
+				return true;
+			}
+			if (open.getMenu().contains(x, y))
+			{
+				return true;
+			}
+		}
 		if (search.isScopesOpen()
 			&& search.layout(MapPainter.buttons(width, height, window), width).getResults().contains(x, y))
 		{

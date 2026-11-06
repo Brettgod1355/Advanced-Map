@@ -29,11 +29,11 @@ public class MapPainterTest
 	{
 		assertTrue(MapPainter.buttons(1200, 800, false).containsKey(MapPainter.Button.CLOSE));
 		assertFalse(MapPainter.buttons(1200, 800, true).containsKey(MapPainter.Button.CLOSE));
-		assertEquals(9, MapPainter.buttons(1200, 800, false).size());
+		assertEquals(10, MapPainter.buttons(1200, 800, false).size());
 		// maximize, over the game only
 		assertTrue(MapPainter.buttons(1200, 800, false).containsKey(MapPainter.Button.MAXIMIZE));
 		assertFalse(MapPainter.buttons(1200, 800, true).containsKey(MapPainter.Button.MAXIMIZE));
-		assertEquals(7, MapPainter.buttons(1200, 800, true).size());
+		assertEquals(8, MapPainter.buttons(1200, 800, true).size());
 	}
 
 	@Test

@@ -41,11 +41,11 @@ final class MapFilters
 	/** The line under "Show hidden icons" that says how to hide one. */
 	private static final int HINT = 14;
 
-	private static final Color PANEL = new Color(0x10, 0x18, 0x22, 240);
-	private static final Color EDGE = new Color(0x5A5040);
-	private static final Color TEXT = new Color(0xE8E2D0);
-	private static final Color QUIET = new Color(0x8C8676);
-	private static final Color FIELD = new Color(0x1E2833);
+	static final Color PANEL = new Color(0x10, 0x18, 0x22, 240);
+	static final Color EDGE = new Color(0x5A5040);
+	static final Color TEXT = new Color(0xE8E2D0);
+	static final Color QUIET = new Color(0x8C8676);
+	static final Color FIELD = new Color(0x1E2833);
 	private static final Color ON = new Color(0x3FA34D);
 
 	/** One row of the list: a group, or a kind of icon in it. */
@@ -466,7 +466,7 @@ final class MapFilters
 		}
 	}
 
-	private static void drawButton(Graphics2D g, Rectangle button, String text, FontMetrics metrics)
+	static void drawButton(Graphics2D g, Rectangle button, String text, FontMetrics metrics)
 	{
 		g.setColor(FIELD);
 		g.fillRoundRect(button.x, button.y, button.width, button.height, 6, 6);

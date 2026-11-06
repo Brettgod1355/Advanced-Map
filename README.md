@@ -40,6 +40,7 @@ The map opens on your character, on the surface or the underground map, whicheve
 | See what an icon is | Rest the pointer on it; click it to keep its box open |
 | Add a marker, route somewhere, hide an icon | Right-click the spot or the icon |
 | Choose which icons show, and mark your Slayer task | The Filters button at the top left |
+| Open the menu: help, settings, what's new, where to write | The three lines at the top left |
 | Search | Click the search box at the top and type; Enter or a click on a result goes there |
 | Choose what the search looks in | The three lines beside the magnifying glass |
 | Move or size the box over the game | Drag its top or bottom bar, or a corner |
@@ -144,6 +145,19 @@ on this computer, two clients at once included; turn off "Share markers between 
 Right-click anywhere on the map, or on an icon, and choose "Route here" to have
 [Shortest Path](https://runelite.net/plugin-hub/show/shortest-path) or [GPS](https://runelite.net/plugin-hub/show/gps)
 show the way ("Route with" in the settings). The plugin you pick must be installed and on.
+
+## The menu
+
+The three lines at the top left open a menu down the left side of the map; each entry opens a page beside it, and
+Escape closes the page, then the menu.
+
+- **How the map works**: this help, inside the map.
+- **Settings**: opens Advanced Map's page in RuneLite's own settings.
+- **What's new**: what this version brings, with the full release notes on GitHub a click away.
+- **Help improve the map**: where to send ideas, suggestions and bug reports (Discord or GitHub, in your browser).
+- **Draw the map again**: deletes the map saved on this computer and draws it again from the game's data.
+
+The GitHub and Discord buttons at the bottom of the menu open the project's pages in your browser.
 
 ## Settings
 
