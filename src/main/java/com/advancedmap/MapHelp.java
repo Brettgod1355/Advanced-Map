@@ -6,8 +6,8 @@
 package com.advancedmap;
 
 /**
- * What each part of the map does and how the map is built, a short paragraph each: the sidebar tab's text, the map's
- * own help page and its Welcome page.
+ * What each part of the map does and how the map is built, a short paragraph each: the map's help page, and its
+ * Welcome page.
  */
 final class MapHelp
 {

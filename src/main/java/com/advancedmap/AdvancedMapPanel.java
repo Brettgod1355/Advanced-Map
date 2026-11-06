@@ -20,7 +20,6 @@ import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 import net.runelite.client.ui.ColorScheme;
@@ -31,9 +30,8 @@ import net.runelite.client.util.LinkBrowser;
 
 /**
  * Advanced Map's sidebar tab: the title with buttons to the Discord server and the GitHub repository, a button that
- * opens and closes the map, a button that shows or hides how the map works, and how much of the map is saved on this
- * computer, with a button to build it all again. Scrolls when the explanation is taller than the sidebar. Swing thread
- * only.
+ * opens and closes the map, and how much of the map is built. The help, building the map again and the rest are in
+ * the map's own menu, which the tab points to. Swing thread only.
  */
 class AdvancedMapPanel extends PluginPanel
 {
@@ -52,9 +50,8 @@ class AdvancedMapPanel extends PluginPanel
 
 	private final AdvancedMapPlugin plugin;
 	private final JButton open = new JButton();
-	private final JButton help = new JButton();
-	private final JLabel helpText = text(explanation());
-	private final JLabel saved = new JLabel();	private final Timer refresh;
+	private final JLabel saved = new JLabel();
+	private final Timer refresh;
 
 	AdvancedMapPanel(AdvancedMapPlugin plugin, String keyName)
 	{
@@ -93,12 +90,8 @@ class AdvancedMapPanel extends PluginPanel
 		content.add(Box.createVerticalStrut(8));
 		content.add(left(text(keyName + " also opens and closes it, and Escape closes it.")));
 		content.add(Box.createVerticalStrut(8));
-
-		help.addActionListener(e -> showHelp(!helpText.isVisible()));
-		content.add(left(help));
-		content.add(Box.createVerticalStrut(6));
-		content.add(left(helpText));
-		showHelp(false);
+		content.add(left(text("The three lines at the map's top left open its menu: how the map works, your markers"
+			+ " and hidden icons, settings, what's new and building the map again.")));
 		content.add(Box.createVerticalStrut(14));
 
 		JLabel savedTitle = new JLabel("Saved map");
@@ -106,23 +99,6 @@ class AdvancedMapPanel extends PluginPanel
 		content.add(left(savedTitle));
 		content.add(Box.createVerticalStrut(4));
 		content.add(left(saved));
-		content.add(Box.createVerticalStrut(8));
-		JButton redraw = new JButton("Build the map again");
-		redraw.setToolTipText("Delete the map saved on this computer and build every region again from the game's data");
-		redraw.addActionListener(e ->
-		{
-			int answer = JOptionPane.showConfirmDialog(this,
-				"Delete the map saved on this computer and build every region again from the game's data?\n"
-					+ "What this client has already shown stays on the map until it restarts;\n"
-					+ "everything else is built again as you look around.",
-				"Build the map again", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
-			if (answer == JOptionPane.OK_OPTION)
-			{
-				plugin.clearSavedMap();
-				update();
-			}
-		});
-		content.add(left(redraw));
 
 		add(content, BorderLayout.NORTH);
 		refresh = new Timer(REFRESH_MS, e -> update());
@@ -205,28 +181,6 @@ class AdvancedMapPanel extends PluginPanel
 	{
 		return ImageUtil.resizeImage(ImageUtil.loadImageResource(AdvancedMapPanel.class, file), like.getWidth(),
 			like.getHeight());
-	}
-
-	private void showHelp(boolean shown)
-	{
-		helpText.setVisible(shown);
-		help.setText(shown ? "Hide how the map works" : "How the map works");
-		revalidate();
-	}
-
-	/** What each part of the map does, a short paragraph each ({@link MapHelp}). */
-	static String explanation()
-	{
-		StringBuilder out = new StringBuilder();
-		for (int i = 0; i < MapHelp.ALL.length; i++)
-		{
-			out.append("<b>").append(MapHelp.ALL[i][0]).append("</b><br>").append(MapHelp.ALL[i][1]);
-			if (i < MapHelp.ALL.length - 1)
-			{
-				out.append("<br><br>");
-			}
-		}
-		return out.toString();
 	}
 
 	private void update()

@@ -23,7 +23,7 @@ Install **Advanced Map** from RuneLite's Plugin Hub, then open the map in any of
 
 - **Ctrl+M** (change the key in the settings). Ctrl+M again or the close button close it, and so does Escape
   while the pointer is on the map.
-- The **Advanced Map** tab in RuneLite's sidebar. Its "How the map works" section explains each part of the map.
+- The **Advanced Map** tab in RuneLite's sidebar: a button to open the map and how far the map is built.
 - Click the **world map orb** by the minimap. The game's own world map stays in the orb's right-click menu, and
   "World map orb opens Advanced Map" off in the settings gives the orb back to it.
 
