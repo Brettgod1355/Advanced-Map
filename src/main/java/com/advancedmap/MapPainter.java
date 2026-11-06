@@ -305,7 +305,8 @@ final class MapPainter
 	private void drawButtonTip(Graphics2D g, MapViewport.View view, MapArea area, int plane, boolean window, Point mouse,
 		MapSettings settings)
 	{
-		Button button = mouse == null || dragging ? null
+		// a button under the open menu or its page (a narrow map) is covered: no tip over the page
+		Button button = mouse == null || dragging || onMenu(mouse, view, window) ? null
 			: buttonAt(mouse.x, mouse.y, view.width, view.height, window);
 		long now = System.nanoTime();
 		if (button != tipFor)
@@ -1060,6 +1061,18 @@ final class MapPainter
 	}
 
 	/** True when a point is on one of the map's buttons, its open lists or boxes, or the search bar. */
+	/** True when the mouse is on the open menu or its page. */
+	private boolean onMenu(Point mouse, MapViewport.View view, boolean window)
+	{
+		MapMenu shownMenu = menu;
+		if (shownMenu == null || !shownMenu.isOpen())
+		{
+			return false;
+		}
+		MapMenu.Layout open = shownMenu.layout(buttons(view.width, view.height, window), view.width, view.height);
+		return open.getMenu().contains(mouse) || open.getContent() != null && open.getContent().contains(mouse);
+	}
+
 	private boolean onPanel(Point mouse, MapViewport.View view, boolean window, MapSettings settings)
 	{
 		if (buttonAt(mouse.x, mouse.y, view.width, view.height, window) != null)
@@ -1071,14 +1084,9 @@ final class MapPainter
 		{
 			return true;
 		}
-		MapMenu shownMenu = menu;
-		if (shownMenu != null && shownMenu.isOpen())
+		if (onMenu(mouse, view, window))
 		{
-			MapMenu.Layout open = shownMenu.layout(buttons, view.width, view.height);
-			if (open.getMenu().contains(mouse) || open.getContent() != null && open.getContent().contains(mouse))
-			{
-				return true;
-			}
+			return true;
 		}
 		if (editor.isOpen() ? MarkerEditor.layout(buttons).getPanel().contains(mouse)
 			: sideList.isOpen() && sideList.layout(buttons).getPanel().contains(mouse))
