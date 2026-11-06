@@ -223,7 +223,7 @@ you can't use yet", "Icon size" and "Transport names".
   almost instantly, and a region is built again only when a game update changes it. "Build the whole map" off
   builds only what you look at.
 - **Memory.** While the map is open it keeps the pictures it has drawn at hand, so moving back over them is
-  instant; closing it lets go of the most detailed ones.
+  instant; closing it lets go of all but the smallest ones (about 32 MB at most), which a reopening needs first.
 - **After a game update**, new and changed areas, buildings and the game's own map icons show at once, since they
   are drawn from your client. New shops, monsters and their drops show in the search once the plugin is updated, and
   a brand-new quest's started or finished state once RuneLite knows the quest.

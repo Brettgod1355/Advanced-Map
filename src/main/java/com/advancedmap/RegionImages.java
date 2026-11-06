@@ -28,8 +28,9 @@ import net.runelite.api.coords.WorldPoint;
 
 /**
  * The drawn pictures of map regions, one per floor, made on background threads as the map needs them and kept at
- * three sizes: 4, 2 and 1 pixels per tile. The biggest are made first and shrunk for the others; only the smallest are
- * kept in memory for the whole world, the bigger ones for the regions seen last. With a {@link MapStore}, pictures are
+ * three sizes: 4, 2 and 1 pixels per tile. The biggest are made first and shrunk for the others; the smallest are
+ * kept in memory for a whole map, the bigger ones for the regions seen last, and closing the map lets the bigger ones
+ * go. With a {@link MapStore}, pictures are
  * read from disk when the game data they were drawn from has not changed, and saved once drawn. The game's map icons
  * are left out of the pictures: each region's are handed to {@link MapIcons}, which draws them so they can be clicked.
  * <p>
@@ -44,7 +45,8 @@ class RegionImages
 	{
 		FULL(MapImageRenderer.MAP_SCALE, 128),
 		HALF(2, 512),
-		SMALL(1, Integer.MAX_VALUE);
+		/** About 32 MB at most: enough for the whole of one map at the farthest zoom, with room to spare. */
+		SMALL(1, 2048);
 
 		final int pixelsPerTile;
 		final int kept;
@@ -351,7 +353,9 @@ class RegionImages
 	/** Lets the biggest pictures go when the map closes; the smaller ones stay, so it opens again at once. */
 	void trim()
 	{
+		// the smallest (32 MB at most) stay for a quick reopening; the bigger two are read back from the store as needed
 		images.get(Level.FULL).clear();
+		images.get(Level.HALF).clear();
 	}
 
 	private void make(int key, Level level, long job)
