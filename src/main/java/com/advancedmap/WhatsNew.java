@@ -14,13 +14,14 @@ package com.advancedmap;
 final class WhatsNew
 {
 	/** The version being run. Must match {@code version} in build.gradle and runelite-plugin.properties. */
-	static final String VERSION = "1.0.1";
+	static final String VERSION = "1.1.0";
 
 	/**
 	 * One line on what this version brings, no links; a full stop is added when it is said. Empty for a release not
 	 * worth a line (a fix, a wording change), and for the first release: nothing is said.
 	 */
-	static final String NOTE = "";
+	static final String NOTE = "a menu at the top left, items on the ground and a \"Search in\" list in the search, your"
+		+ " Slayer task at the top of the Filters list, and the saved map loading in a second";
 
 	private WhatsNew()
 	{
