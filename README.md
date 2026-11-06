@@ -163,7 +163,8 @@ Escape closes the page, then the menu.
   the first time you open the map after the Plugin Hub has updated the plugin.
 - **Help improve the map**: where to send ideas, suggestions and bug reports (Discord or GitHub, in your browser).
   On the map, right-click a spot or an icon and choose **Report a problem here**: a new GitHub issue opens with
-  the place already filled in.
+  the place already filled in. **Copy this spot** copies the same line ("Bank at 3208, 3220, Floor 3, near
+  Lumbridge") to paste on Discord or anywhere else.
 - **Build the map again**: deletes the map saved on this computer and builds it again from the game's data.
 
 The GitHub and Discord buttons at the bottom of the menu open the project's pages in your browser.

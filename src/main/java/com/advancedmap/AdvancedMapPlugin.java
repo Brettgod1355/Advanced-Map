@@ -1368,10 +1368,21 @@ public class AdvancedMapPlugin extends Plugin
 				route(on.getPoint());
 				break;
 			case REPORT:
+			case COPY_SPOT:
 				WorldPoint at = on.getSpot() != null ? new WorldPoint(on.getSpot().getX(), on.getSpot().getY(),
 					on.getSpot().getPlane()) : on.getPoint();
-				LinkBrowser.browse(reportUrl(MapPainter.spotText(on, progress, settings.getFloorNumbers(),
-					SearchSpots.name(at, labelsNow()))));
+				String spotText = MapPainter.spotText(on, progress, settings.getFloorNumbers(),
+					SearchSpots.name(at, labelsNow()));
+				if (action == MapPainter.Action.REPORT)
+				{
+					LinkBrowser.browse(reportUrl(spotText));
+				}
+				else
+				{
+					// to paste where the player writes (Discord, a clan chat): copied, nothing sent
+					java.awt.Toolkit.getDefaultToolkit().getSystemClipboard()
+						.setContents(new java.awt.datatransfer.StringSelection(spotText), null);
+				}
 				break;
 			case WIKI:
 				NamedIcons.Named named = on.getSpot() == null ? null

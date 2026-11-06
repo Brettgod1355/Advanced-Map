@@ -61,8 +61,8 @@ final class MapHelp
 		{"Wilderness", "Zoomed in, red dashed lines show where the Wilderness passes level 20 and level 30, above"
 			+ " which most teleports stop working."},
 		{"Something wrong?", "Right-click the spot, or the icon, and choose \"Report a problem here\": a new GitHub"
-			+ " issue opens in your browser with the place filled in; say what is wrong or missing. Or write on"
-			+ " Discord (the menu's \"Help improve the map\")."},
+			+ " issue opens in your browser with the place filled in; say what is wrong or missing. Or choose \"Copy"
+			+ " this spot\" and paste it on Discord (the menu's \"Help improve the map\")."},
 		{"Over the game", "The map opens in a box over the game; the game goes on around it, and a click outside the"
 			+ " box is the game's. Drag the bar along its top or bottom (the dots) to move it, a corner or side to"
 			+ " size it. The square button at the top right fills the game view with it; press it again to go back."},

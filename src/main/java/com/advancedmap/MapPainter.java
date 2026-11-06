@@ -85,7 +85,8 @@ final class MapPainter
 		EDIT_MARKER,
 		REMOVE_MARKER,
 		WIKI,
-		REPORT
+		REPORT,
+		COPY_SPOT
 	}
 
 	@Value
@@ -1412,12 +1413,13 @@ final class MapPainter
 		{
 			entries.add(new MenuEntry(Action.ADD_MARKER, "Add marker here"));
 			entries.add(new MenuEntry(Action.REPORT, "Report a problem here"));
+			entries.add(new MenuEntry(Action.COPY_SPOT, "Copy this spot"));
 		}
 		return entries;
 	}
 
 	/**
-	 * A right-clicked spot as a report says it: what is there (an icon's name), the game's own tile and
+	 * A right-clicked spot as a report or a paste says it: what is there (an icon's name), the game's own tile and
 	 * floor, and the place it is near ("Bank at 3208, 3220, Floor 3, near Lumbridge").
 	 */
 	static String spotText(Selection selection, Progress progress, FloorNumbers floors, String place)
