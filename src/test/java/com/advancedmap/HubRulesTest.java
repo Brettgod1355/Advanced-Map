@@ -50,7 +50,9 @@ public class HubRulesTest
 		{"awaitTermination\\(", "never block in shutDown; use shutdownNow (Hub AGENTS.md)"},
 		{"java\\.awt\\.Desktop", "use LinkBrowser, not Desktop (reviewer, plugin-hub#16712)"},
 		{"LinkBrowser\\.open\\(", "LinkBrowser.open is not allowed; only LinkBrowser.browse (Hub wiki, 2026-10-05)"},
-		{"\\bToolkit\\b", "no JVM-wide hooks through the Toolkit (shared rules)"},
+		// the system clipboard is no hook ("Copy this spot", owner 2026-11-06); any other use of the Toolkit still fails
+		{"\\bToolkit\\b(?!\\.getDefaultToolkit\\(\\)\\.getSystemClipboard\\(\\))",
+			"no JVM-wide hooks through the Toolkit (shared rules); only its system clipboard"},
 		{"java\\.awt\\.Robot|\\.dispatchEvent\\(", "no injected input (Jagex rules, Hub wiki)"},
 		{"\\bClientUI\\b|setExtendedState\\(|toFront\\(|setAlwaysOnTop\\(", "no manipulation of the client window (Hub wiki)"},
 		{"KeyboardFocusManager", "KeyboardFocusManager is not allowed (reviewer, plugin-hub#17279)"},
@@ -242,6 +244,13 @@ public class HubRulesTest
 		assertEquals(1, violations("class X { void f(Exception e) { e.printStackTrace(); } }").size());
 		assertEquals(1, violations("class X { Object f = Filepath.Unchecked.getRooted(null); }").size());
 		assertTrue(violations("class X { Object t = new TypeToken<java.util.List<String>>() {}; }").isEmpty());
+		// the Toolkit only for its clipboard
+		assertTrue(violations("class X { Object c = java.awt.Toolkit.getDefaultToolkit().getSystemClipboard(); }")
+			.isEmpty());
+		// a listener breaks both rules: the Toolkit's and the input hook's
+		assertEquals(2, violations("class X { void f() { Toolkit.getDefaultToolkit().addAWTEventListener(null, 0); } }")
+			.size());
+		assertEquals(1, violations("class X { Object s = Toolkit.getDefaultToolkit().getScreenSize(); }").size());
 		// ...and ignores the same words in comments and strings.
 		assertTrue(violations("// Thread.sleep( is forbidden\nclass X { String s = \"new Gson(\"; }").isEmpty());
 	}
