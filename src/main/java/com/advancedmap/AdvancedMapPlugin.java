@@ -1082,7 +1082,7 @@ public class AdvancedMapPlugin extends Plugin
 		executor.execute(() ->
 		{
 			// said in the log: a whole map gone is otherwise a mystery when its owner did not see it go
-			log.debug("deleting the saved map ({} regions and floors) on \"Draw the map again\"", store.count());
+			log.debug("deleting the saved map ({} regions and floors) on \"Build the map again\"", store.count());
 			store.clear();
 			currentPreparer.restart();
 		});
@@ -1115,7 +1115,7 @@ public class AdvancedMapPlugin extends Plugin
 		{
 			return count;
 		}
-		return remaining == 0 ? count + " The whole map is ready." : count + " Preparing the rest: " + remaining
+		return remaining == 0 ? count + " The whole map is ready." : count + " Building the rest: " + remaining
 			+ " to go.";
 	}
 

@@ -131,7 +131,7 @@ public class PluginStateTest
 		java.util.Map<MapPainter.Button, java.awt.Rectangle> buttons = MapPainter.buttons(1200, 800, false);
 		MapMenu.Layout closed = MapMenu.layout(buttons, 1200, 800, null);
 		java.awt.Rectangle panel = closed.getMenu();
-		// "Draw the map again" opens its page; Cancel closes the page and keeps the menu
+		// "Build the map again" opens its page; Cancel closes the page and keeps the menu
 		assertTrue(plugin.pressPanels(panel.x + 20, panel.y + 8 + MapMenu.Page.REDRAW.ordinal() * MapMenu.ROW + 5,
 			1200, 800, false));
 		assertEquals(MapMenu.Page.REDRAW, plugin.menu().page());

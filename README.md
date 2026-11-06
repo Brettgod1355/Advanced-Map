@@ -155,7 +155,7 @@ Escape closes the page, then the menu.
 - **Settings**: opens Advanced Map's page in RuneLite's own settings.
 - **What's new**: what this version brings, with the full release notes on GitHub a click away.
 - **Help improve the map**: where to send ideas, suggestions and bug reports (Discord or GitHub, in your browser).
-- **Draw the map again**: deletes the map saved on this computer and draws it again from the game's data.
+- **Build the map again**: deletes the map saved on this computer and builds it again from the game's data.
 
 The GitHub and Discord buttons at the bottom of the menu open the project's pages in your browser.
 
@@ -184,7 +184,7 @@ choose with Filters on the map itself.
 | Floor numbers | Ground, 2, 3, 4 | How floors above the ground are numbered (or Ground, 1, 2, 3) |
 | Route with | Shortest Path | The plugin "Route here" asks |
 | Say when updated | On | One line in chat, once, after the Plugin Hub updates the plugin, saying what is new |
-| Prepare the whole map | On | Draws the rest of the map in the background, nearest you first (about 15 minutes, once) |
+| Build the whole map | On | Builds the rest of the map in the background, nearest you first (about 15 minutes, once) |
 
 The **Icons** section holds a switch per kind of icon (the same as Filters), "Hide completed quests", "Mark what
 you can't use yet", "Icon size" and "Transport names".
@@ -205,12 +205,12 @@ you can't use yet", "Icon size" and "Transport names".
 
 ## Good to know
 
-- **The first time.** From the moment the client starts, the map draws the regions it has not saved yet in the
+- **The first time.** From the moment the client starts, the map builds the regions it has not saved yet in the
   background, nearest you first, using spare processor time: about 15 minutes for the whole world, once per
-  computer, shared by every account and profile. Until then places not drawn yet are blank or blurry, and the map
-  says "Drawing the map... N to go" at the top left; the sidebar tab shows the same count. Afterwards the map opens
-  at once, and a region is drawn again only when a game update changes it. "Prepare the whole map" off draws only
-  what you look at.
+  computer, shared by every account and profile. Until then places not built yet are blank or blurry, and the map
+  says "Building the map... N to go" at the top left; the sidebar tab shows the same count. Afterwards the map opens
+  almost instantly, and a region is built again only when a game update changes it. "Build the whole map" off
+  builds only what you look at.
 - **Memory.** While the map is open it keeps the pictures it has drawn at hand, so moving back over them is
   instant; closing it lets go of the most detailed ones.
 - **After a game update**, new and changed areas, buildings and the game's own map icons show at once, since they

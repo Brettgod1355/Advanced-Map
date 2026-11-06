@@ -32,7 +32,7 @@ import net.runelite.client.util.LinkBrowser;
 /**
  * Advanced Map's sidebar tab: the title with buttons to the Discord server and the GitHub repository, a button that
  * opens and closes the map, a button that shows or hides how the map works, and how much of the map is saved on this
- * computer, with a button to draw it all again. Scrolls when the explanation is taller than the sidebar. Swing thread
+ * computer, with a button to build it all again. Scrolls when the explanation is taller than the sidebar. Swing thread
  * only.
  */
 class AdvancedMapPanel extends PluginPanel
@@ -107,15 +107,15 @@ class AdvancedMapPanel extends PluginPanel
 		content.add(Box.createVerticalStrut(4));
 		content.add(left(saved));
 		content.add(Box.createVerticalStrut(8));
-		JButton redraw = new JButton("Draw the map again");
-		redraw.setToolTipText("Delete the map saved on this computer and save every region again from the game's data");
+		JButton redraw = new JButton("Build the map again");
+		redraw.setToolTipText("Delete the map saved on this computer and build every region again from the game's data");
 		redraw.addActionListener(e ->
 		{
 			int answer = JOptionPane.showConfirmDialog(this,
-				"Delete the map saved on this computer and save every region again from the game's data?\n"
-					+ "What this client has already drawn stays on the map until it restarts;\n"
-					+ "everything else is drawn again as you look around.",
-				"Draw the map again", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
+				"Delete the map saved on this computer and build every region again from the game's data?\n"
+					+ "What this client has already shown stays on the map until it restarts;\n"
+					+ "everything else is built again as you look around.",
+				"Build the map again", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
 			if (answer == JOptionPane.OK_OPTION)
 			{
 				plugin.clearSavedMap();

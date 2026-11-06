@@ -44,7 +44,7 @@ final class MapPainter
 {
 	enum Button
 	{
-		/** Opens the menu: the help, the settings, what's new, where to write, drawing the map again. */
+		/** Opens the menu: the help, the settings, what's new, where to write, building the map again. */
 		MENU,
 		CLOSE,
 		/** Over the game only: the map's box fills the game view, or goes back to its size. */
@@ -1688,7 +1688,7 @@ final class MapPainter
 		g.setStroke(stroke);
 	}
 
-	/** What the bar along the bottom says: the tile under the mouse, how to use the map, and whether it is drawing. */
+	/** What the bar along the bottom says: the tile under the mouse, how to use the map, and whether the map is being built. */
 	private static String barText(MapViewport.View view, Point mouse, boolean loading, boolean window, boolean icons,
 		boolean hover)
 	{
@@ -1706,24 +1706,24 @@ final class MapPainter
 		}
 		if (loading)
 		{
-			text.append("    Drawing the map...");
+			text.append("    Building the map...");
 		}
 		return text.toString();
 	}
 
-	/** What the notice says while the view is drawing. */
-	static final List<String> NOTICE = java.util.Arrays.asList("The first time, Advanced Map draws the map from the"
-		+ " game's data and saves it on this computer. Until it is done, places not drawn yet are blank or blurry, and their icons are"
-		+ " missing from the map and the search.", "Once it is done, the map opens at once every time. Advanced Map's"
-		+ " sidebar shows how far along it is.");
+	/** What the notice says while the map is first built. */
+	static final List<String> NOTICE = java.util.Arrays.asList("The first time, Advanced Map builds the map from the"
+		+ " game's data and saves it on this computer. Until it is done, places not built yet are blank or blurry, and"
+		+ " their icons are missing from the map and the search.", "This happens once: afterwards the map opens almost"
+		+ " instantly, on every character.");
 
-	/** The notice's title, with how many regions' floors are still to draw. */
+	/** The notice's title, with how many regions' floors are still to build. */
 	static String noticeTitle(int left)
 	{
-		return String.format(Locale.ROOT, "Drawing the map... %,d to go", left);
+		return String.format(Locale.ROOT, "Building the map... %,d to go", left);
 	}
 
-	/** A box at the top left, under the buttons, saying the map is being drawn and why. */
+	/** A box at the top left, under the buttons, saying the map is being built and why. */
 	private static void drawNotice(Graphics2D g, MapViewport.View view, Map<Button, Rectangle> buttons, String title)
 	{
 		java.awt.Font titleFont = FontManager.getRunescapeBoldFont();

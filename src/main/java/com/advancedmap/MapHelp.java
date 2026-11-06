@@ -62,7 +62,7 @@ final class MapHelp
 		{"Pop out", "The pop out button at the top right (a window with an arrow leaving it) moves the map into a"
 			+ " window of its own; the same button there brings it back. Escape closes it in either."},
 		{"Menu", "The three lines at the top left open the menu: this help, the plugin's settings, what's new in"
-			+ " this version, where to send ideas and bug reports, and drawing the saved map again. Escape closes"
+			+ " this version, where to send ideas and bug reports, and building the map again. Escape closes"
 			+ " what is open, one step at a time."},
 	};
 

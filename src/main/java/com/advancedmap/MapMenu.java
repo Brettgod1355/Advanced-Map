@@ -20,7 +20,7 @@ import net.runelite.client.ui.FontManager;
 
 /**
  * The map's menu, behind the three lines at the top left: a list down the left side, and a page over the rest of the
- * map for the entry chosen (the help, what's new, where to write, drawing the map again); Settings opens RuneLite's
+ * map for the entry chosen (the help, what's new, where to write, building the map again); Settings opens RuneLite's
  * own settings page instead. Drawn by the painter over the game and in the window alike.
  */
 final class MapMenu
@@ -31,7 +31,7 @@ final class MapMenu
 		SETTINGS("Settings"),
 		WHATS_NEW("What's new"),
 		IMPROVE("Help improve the map"),
-		REDRAW("Draw the map again");
+		REDRAW("Build the map again");
 
 		final String label;
 
@@ -51,7 +51,7 @@ final class MapMenu
 		DISCORD,
 		/** On the page, off its buttons. */
 		CONTENT,
-		/** The page's first button: the release notes, Discord, or "Delete and draw again". */
+		/** The page's first button: the release notes, Discord, or "Delete and build again". */
 		BUTTON1,
 		/** The page's second button: GitHub issues, or Cancel. */
 		BUTTON2
@@ -97,7 +97,7 @@ final class MapMenu
 		.createGraphics().getFontMetrics(FontManager.getRunescapeSmallFont()).getHeight();
 	private static final Color LIT = new Color(255, 255, 255, 34);
 
-	/** What the sidebar tab says of the saved map, for the "Draw the map again" page. */
+	/** What the sidebar tab says of the saved map, for the "Build the map again" page. */
 	private final Supplier<String> savedStatus;
 	private volatile boolean open;
 	private volatile Page page;
@@ -306,9 +306,9 @@ final class MapMenu
 				break;
 			case REDRAW:
 				paragraph(out, savedStatus.get(), width);
-				paragraph(out, "Drawing the map again deletes the map saved on this computer and saves every region"
-					+ " again from the game's data. What this client has already drawn stays on the map until it"
-					+ " restarts; everything else is drawn again as you look around.", width);
+				paragraph(out, "Building the map again deletes the map saved on this computer and builds every region"
+					+ " again from the game's data. What this client has already shown stays on the map until it"
+					+ " restarts; everything else is built again as you look around.", width);
 				break;
 			default:
 				break;
@@ -411,7 +411,7 @@ final class MapMenu
 				MapFilters.drawButton(g, layout.getButton2(), "GitHub issues", metrics);
 				break;
 			case REDRAW:
-				MapFilters.drawButton(g, layout.getButton1(), "Delete and draw again", metrics);
+				MapFilters.drawButton(g, layout.getButton1(), "Delete and build again", metrics);
 				MapFilters.drawButton(g, layout.getButton2(), "Cancel", metrics);
 				break;
 			default:

@@ -21,7 +21,7 @@ final class WhatsNew
 	 * worth a line (a fix, a wording change), and for the first release: nothing is said.
 	 */
 	static final String NOTE = "a menu at the top left (help, settings, what's new, where to write), and the whole map"
-		+ " drawn for the first time in about half the time";
+		+ " built for the first time in about half the time";
 
 	private WhatsNew()
 	{

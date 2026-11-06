@@ -485,9 +485,9 @@ public class MapPainterTest
 	}
 
 	@Test
-	public void theDrawingNoticeCountsWhatIsLeftToDraw()
+	public void theBuildingNoticeCountsWhatIsLeftToBuild()
 	{
-		assertEquals("Drawing the map... 1,234 to go", MapPainter.noticeTitle(1234));	}
+		assertEquals("Building the map... 1,234 to go", MapPainter.noticeTitle(1234));	}
 
 	@Test
 	public void noPlaceNameIsDrawnUnderTheBottomBarOrASpaceAlreadyTaken()
