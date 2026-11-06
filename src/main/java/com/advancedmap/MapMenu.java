@@ -132,7 +132,7 @@ final class MapMenu
 	/** The widest a page gets: its text column and the padding around it, no wider. */
 	private static final int WIDEST_PAGE = WIDEST_TEXT + PAD * 2 + SCROLL_ROOM;
 	/** How tall a line of a page's text is. */
-	private static final int LINE = new java.awt.image.BufferedImage(1, 1, java.awt.image.BufferedImage.TYPE_INT_ARGB)
+	static final int LINE = new java.awt.image.BufferedImage(1, 1, java.awt.image.BufferedImage.TYPE_INT_ARGB)
 		.createGraphics().getFontMetrics(FontManager.getRunescapeSmallFont()).getHeight();
 	private static final Color LIT = new Color(255, 255, 255, 34);
 	private static final Color BAR = new Color(90, 170, 90);
@@ -361,9 +361,20 @@ final class MapMenu
 		{
 			return;
 		}
-		int room = content.height - textTop(content) - (layout.getButton1() != null ? BUTTON + PAD * 2 : PAD);
-		int max = Math.max(0, contentHeight - room);
+		int max = Math.max(0, contentHeight - textRoom(layout));
 		scroll = (int) Math.max(0, Math.min(max, scroll + Math.round(notches * ROW * 3)));
+	}
+
+	/** How far the open page's text is scrolled, for a test. */
+	int scrolled()
+	{
+		return scroll;
+	}
+
+	/** How tall the room for a page's text is, between its title and its buttons. */
+	private static int textRoom(Layout layout)
+	{
+		return layout.getContent().height - TITLE - (layout.getButton1() != null ? BUTTON + PAD * 2 : PAD);
 	}
 
 	/** Where a page's text starts under its title. */
@@ -525,11 +536,13 @@ final class MapMenu
 		g.drawString(shown.title, content.x + PAD, content.y + PAD + (ROW + bold.getAscent() - bold.getDescent()) / 2);
 		// the text, scrolled, between the title and the buttons
 		int top = textTop(content);
-		int bottom = content.y + content.height - (layout.getButton1() != null ? BUTTON + PAD * 2 : PAD);
+		int bottom = top + textRoom(layout);
 		Rectangle text = new Rectangle(content.x, top, content.width, bottom - top);
 		List<Line> lines = layout.getLines() != null ? layout.getLines() : lines(shown, textWidth(content.width));
 		int lineHeight = LINE;
 		contentHeight = lines.size() * lineHeight;
+		// no further than the text's end, also after the page got taller or its text shorter
+		scroll = Math.min(scroll, Math.max(0, contentHeight - text.height));
 		Shape clip = g.getClip();
 		g.clip(text);
 		int y = top - scroll;

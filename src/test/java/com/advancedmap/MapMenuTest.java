@@ -267,4 +267,27 @@ public class MapMenuTest
 		assertEquals("the build's progress changed", 4, menu.wraps);
 		g.dispose();
 	}
+
+	@Test
+	public void aPageScrollsToTheEndOfItsTextAndNoFurther()
+	{
+		Map<MapPainter.Button, Rectangle> buttons = MapPainter.buttons(800, 400, false);
+		MapMenu menu = new MapMenu(() -> "saved", MapMenuTest::built);
+		menu.setOpen(true);
+		menu.setPage(MapMenu.Page.HELP);
+		Graphics2D g = new BufferedImage(800, 400, BufferedImage.TYPE_INT_ARGB).createGraphics();
+		MapMenu.Layout layout = menu.layout(buttons, 800, 400);
+		menu.draw(g, layout, null);
+		menu.scroll(1000, layout);
+		// the text's height less the room between the title (8 + 26 + 4) and the page's foot (8): the last line
+		// ends at the bottom of that room, with nothing blank under it
+		int room = layout.getContent().height - (8 + 26 + 4) - 8;
+		assertEquals(layout.getLines().size() * MapMenu.LINE - room, menu.scrolled());
+		// a taller map shows more of the text: drawing takes the scroll back to the new end
+		MapMenu.Layout taller = menu.layout(MapPainter.buttons(800, 700, false), 800, 700);
+		menu.draw(g, taller, null);
+		int tallerRoom = taller.getContent().height - (8 + 26 + 4) - 8;
+		assertEquals(Math.max(0, taller.getLines().size() * MapMenu.LINE - tallerRoom), menu.scrolled());
+		g.dispose();
+	}
 }
