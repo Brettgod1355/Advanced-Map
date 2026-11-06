@@ -180,4 +180,24 @@ public class PluginStateTest
 		plugin.closeMenuLists();
 		assertTrue(plugin.sideList().isOpen());
 	}
+
+	@Test
+	public void aRightPressOnTheMenuOrItsPageOpensNoMenuUnderneath()
+	{
+		AdvancedMapPlugin plugin = new AdvancedMapPlugin();
+		plugin.pressButton(MapPainter.Button.MENU, false);
+		plugin.menu().setPage(MapMenu.Page.HELP);
+		java.util.Map<MapPainter.Button, java.awt.Rectangle> buttons = MapPainter.buttons(1200, 800, false);
+		MapMenu.Layout open = plugin.menu().layout(buttons, 1200, 800);
+		java.awt.Rectangle page = open.getContent();
+		plugin.rightClick(page.x + 50, page.y + 100, 1200, 800);
+		assertNull("the page is the menu's: no tile menu beneath it", plugin.selection());
+		plugin.rightClick(open.getMenu().x + 20, open.getMenu().y + 20, 1200, 800);
+		assertNull(plugin.selection());
+		assertTrue("and the menu stays as it was", plugin.menu().isOpen() && plugin.menu().page() == MapMenu.Page.HELP);
+		// so does a button: the right press on it is not a press on the map under it
+		java.awt.Rectangle lines = buttons.get(MapPainter.Button.MENU);
+		plugin.rightClick(lines.x + 4, lines.y + 4, 1200, 800);
+		assertNull(plugin.selection());
+	}
 }

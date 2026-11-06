@@ -1655,6 +1655,13 @@ public class AdvancedMapPlugin extends Plugin
 	 */
 	void rightClick(int x, int y, int width, int height)
 	{
+		if (MapPainter.buttonAt(x, y, width, height, windowOpen) != null || menu.isOpen()
+			&& menu.hitAt(x, y, menu.layout(MapPainter.buttons(width, height, windowOpen), width, height)).getPart()
+			!= MapMenu.Part.OUTSIDE)
+		{
+			// a button, the menu or its page is over the map there: no tile or icon menu opens underneath it
+			return;
+		}
 		pins.select(null);
 		MapPins.Pin pin = pinAt(x, y, width, height);
 		setMenuPin(pin);
