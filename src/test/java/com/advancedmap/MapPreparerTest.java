@@ -81,6 +81,15 @@ public class MapPreparerTest
 			assertEquals(0, preparer.remaining());
 			assertEquals(8, store.count());
 			assertEquals("nothing left to take", null, preparer.next(store, regions));
+			// a floor put back for want of its data counts once, never twice, while it goes back
+			preparer.restart();
+			java.util.List<Integer> fresh = java.util.Collections.singletonList(52 << 8 | 50);
+			int ground = preparer.next(store, fresh);
+			assertEquals(4, preparer.remaining());
+			preparer.requeue(ground);
+			assertEquals(4, preparer.remaining());
+			preparer.finished(ground);
+			assertEquals(4, preparer.remaining());
 		}
 		finally
 		{

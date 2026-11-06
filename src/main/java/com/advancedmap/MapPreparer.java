@@ -97,8 +97,13 @@ final class MapPreparer
 	/** How long the preparer rests after a region the client has not got, so the client thread is not asked 40 times a second. */
 	static final long REST_NANOS = 1_000_000_000L;
 
-	private synchronized void requeue(int key)
+	synchronized void requeue(int key)
 	{
+		// back in the list and no longer being built, in one step: never counted twice
+		if (building != null && building == key)
+		{
+			building = null;
+		}
 		todo.add(key);
 		restUntil = System.nanoTime() + REST_NANOS;
 	}

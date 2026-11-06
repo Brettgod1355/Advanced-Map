@@ -233,14 +233,15 @@ final class MapMenu
 	/** A page's lines, wrapped again only when the page, the width or its changing text is not what it was. */
 	private List<Line> wrappedLines(Page page, int width)
 	{
-		List<Object> key = java.util.Arrays.asList(page, width, page == Page.WELCOME ? build.get()
-			: page == Page.REDRAW ? savedStatus.get() : null);
+		Object state = state(page);
+		List<Object> key = java.util.Arrays.asList(page, width, state);
 		Wrapped last = wrapped;
 		if (last != null && last.getKey().equals(key))
 		{
 			return last.getLines();
 		}
-		List<Line> lines = lines(page, width);
+		// wrapped from the very state the key holds, read once: never another moment's
+		List<Line> lines = lines(page, width, state);
 		wrapped = new Wrapped(key, lines);
 		return lines;
 	}
@@ -395,15 +396,21 @@ final class MapMenu
 		double bar;
 	}
 
-	/** A page's lines, wrapped to {@code width}. */
-	private List<Line> lines(Page page, int width)
+	/** What a page shows that changes: the build's progress on Welcome, the saved map on the rebuild page. */
+	private Object state(Page page)
+	{
+		return page == Page.WELCOME ? build.get() : page == Page.REDRAW ? savedStatus.get() : null;
+	}
+
+	/** A page's lines, wrapped to {@code width}, its changing part as {@code state} says it. */
+	private List<Line> lines(Page page, int width, Object state)
 	{
 		wraps++;
 		List<Line> out = new ArrayList<>();
 		switch (page)
 		{
 			case WELCOME:
-				status(out, build.get(), width);
+				status(out, (Build) state, width);
 				for (String[] section : MapHelp.BUILDING)
 				{
 					heading(out, section[0], width);
@@ -431,7 +438,7 @@ final class MapMenu
 					+ " the OSRS Wiki and are updated with the plugin.", width);
 				break;
 			case REDRAW:
-				paragraph(out, savedStatus.get(), width);
+				paragraph(out, (String) state, width);
 				paragraph(out, "Building the map again deletes the map saved on this computer and builds every region"
 					+ " again from the game's data. What this client has already shown stays on the map until it"
 					+ " restarts; everything else is built again as you look around.", width);
@@ -540,7 +547,8 @@ final class MapMenu
 		int top = textTop(content);
 		int bottom = top + textRoom(layout);
 		Rectangle text = new Rectangle(content.x, top, content.width, bottom - top);
-		List<Line> lines = layout.getLines() != null ? layout.getLines() : lines(shown, textWidth(content.width));
+		List<Line> lines = layout.getLines() != null ? layout.getLines()
+			: lines(shown, textWidth(content.width), state(shown));
 		int lineHeight = LINE;
 		contentHeight = lines.size() * lineHeight;
 		// no further than the text's end, also after the page got taller or its text shorter
