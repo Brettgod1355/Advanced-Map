@@ -20,8 +20,10 @@ final class WhatsNew
 	 * One line on what this version brings, no links; a full stop is added when it is said. Empty for a release not
 	 * worth a line (a fix, a wording change), and for the first release: nothing is said.
 	 */
-	static final String NOTE = "a menu at the top left (a welcome page, help, settings, what's new, where to write), and the whole map"
-		+ " built for the first time in about half the time";
+	static final String NOTE = "a left click on the world map orb now opens Advanced Map (the game's map is in the"
+		+ " orb's right-click menu, and a setting turns it back), a menu at the top left (a welcome page, help, your"
+		+ " markers and hidden icons, settings, what's new, where to write), \"Report a problem here\" on the map's"
+		+ " right-click menu, and the whole map built for the first time in about half the time";
 
 	private WhatsNew()
 	{

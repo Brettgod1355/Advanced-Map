@@ -24,7 +24,8 @@ Install **Advanced Map** from RuneLite's Plugin Hub, then open the map in any of
 - **Ctrl+M** (change the key in the settings). Ctrl+M again or the close button close it, and so does Escape
   while the pointer is on the map.
 - The **Advanced Map** tab in RuneLite's sidebar. Its "How the map works" section explains each part of the map.
-- Right-click the **world map orb** by the minimap and choose "Open Advanced Map".
+- Click the **world map orb** by the minimap. The game's own world map stays in the orb's right-click menu, and
+  "World map orb opens Advanced Map" off in the settings gives the orb back to it.
 
 The map opens on your character, on the surface or the underground map, whichever you are on.
 
@@ -176,7 +177,7 @@ choose with Filters on the map itself.
 |---|---|---|
 | Open or close the map | Ctrl+M | The key that opens and closes the map |
 | World map orb menu entry | On | "Open Advanced Map" in the world map orb's right-click menu |
-| World map orb opens Advanced Map | Off | A left click on the orb opens this map; the game's own map stays in the orb's menu |
+| World map orb opens Advanced Map | On | A left click on the orb opens this map; the game's own map stays in the orb's menu |
 | Sidebar button | On | The sidebar tab with the open button and the saving progress |
 | Open in its own window | Off | Opens the map popped out instead of over the game |
 | Info on hover | On | Shows an icon's details when the pointer rests on it; off, a click shows them |

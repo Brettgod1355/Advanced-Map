@@ -84,12 +84,12 @@ public interface AdvancedMapConfig extends Config
 		keyName = "orbLeftClick",
 		name = "World map orb opens Advanced Map",
 		description = "Left-click the world map orb to open Advanced Map. The game's own world map stays in the orb's"
-			+ " right-click menu.",
+			+ " right-click menu. Turn this off to have the orb open the game's map again.",
 		position = -1
 	)
 	default boolean orbLeftClick()
 	{
-		return false;
+		return true;
 	}
 
 	@ConfigItem(
