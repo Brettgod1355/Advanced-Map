@@ -5,7 +5,10 @@
  */
 package com.advancedmap;
 
-/** What each part of the map does, a short paragraph each: the sidebar tab's text and the map's own help page. */
+/**
+ * What each part of the map does and how the map is built, a short paragraph each: the sidebar tab's text, the map's
+ * own help page and its Welcome page.
+ */
 final class MapHelp
 {
 	/** Each section's title and text. */
@@ -61,10 +64,33 @@ final class MapHelp
 			+ " size it. The square button at the top right fills the game view with it; press it again to go back."},
 		{"Pop out", "The pop out button at the top right (a window with an arrow leaving it) moves the map into a"
 			+ " window of its own; the same button there brings it back. Escape closes it in either."},
-		{"Menu", "The three lines at the top left open the menu: this help, the plugin's settings, what's new in"
-			+ " this version, where to send ideas and bug reports, and building the map again. Escape closes"
-			+ " what is open, one step at a time."},
+		{"Menu", "The three lines at the top left open the menu: a welcome (how far the map is built), this help,"
+			+ " the plugin's settings, what's new in this version, where to send ideas and bug reports, and building"
+			+ " the map again. Escape closes what is open, one step at a time."},
 	};
+
+	/** How the map is built and kept up to date: the end of the help, and the Welcome page. */
+	static final String[][] BUILDING = {
+		{"Once, then almost instant", "The first time, Advanced Map builds the map on this computer from the game data"
+			+ " your client already has, and saves it (about 60 MB). This happens once: from then on the map opens"
+			+ " almost instantly, on every character and RuneLite profile on this computer. Nothing is downloaded."},
+		{"How the map is built", "In the background from the moment the client starts, one region after another: the"
+			+ " ground near you first, then farther out, then the floors above. It uses spare processor time, so the"
+			+ " game comes first, and takes up to about 15 minutes for the whole world. You can play and use the map"
+			+ " meanwhile: places not built yet are blank or blurry, and their icons are missing from the map and the"
+			+ " search. The sidebar tab shows how far along it is. With \"Build the whole map\" off, only what you"
+			+ " look at is built."},
+		{"Game updates and plugin updates", "Game updates need nothing from you. The map, its place names and the"
+			+ " game's own map icons come from your client, so when an update changes the world (a new island, a"
+			+ " moved wall), the regions it changed are built again the first time you look at them, and new ones in"
+			+ " the background. Shops and what they sell, prices, monsters with their stats and drops, items on the"
+			+ " ground, and teleport and transport details come from the OSRS Wiki with the plugin: they change when"
+			+ " the Plugin Hub updates Advanced Map, which RuneLite does by itself when it starts."},
+	};
+
+	/** Every section: how to use the map, then how it is built. */
+	static final String[][] ALL = java.util.stream.Stream.concat(java.util.Arrays.stream(SECTIONS),
+		java.util.Arrays.stream(BUILDING)).toArray(String[][]::new);
 
 	private MapHelp()
 	{

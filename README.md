@@ -151,9 +151,12 @@ show the way ("Route with" in the settings). The plugin you pick must be install
 The three lines at the top left open a menu down the left side of the map; each entry opens a page beside it, and
 Escape closes the page, then the menu.
 
+- **Welcome**: how far the map is built, and how it is built and kept up to date. It opens by itself the first
+  time you open the map, and once each time the client starts while the map is still first being built.
 - **How the map works**: this help, inside the map.
 - **Settings**: opens Advanced Map's page in RuneLite's own settings.
-- **What's new**: what this version brings, with the full release notes on GitHub a click away.
+- **What's new**: what this version brings, with the full release notes on GitHub a click away. It opens by itself
+  the first time you open the map after the Plugin Hub has updated the plugin.
 - **Help improve the map**: where to send ideas, suggestions and bug reports (Discord or GitHub, in your browser).
 - **Build the map again**: deletes the map saved on this computer and builds it again from the game's data.
 
@@ -183,7 +186,7 @@ choose with Filters on the map itself.
 | Place names | On | Kingdom, town and place names |
 | Floor numbers | Ground, 2, 3, 4 | How floors above the ground are numbered (or Ground, 1, 2, 3) |
 | Route with | Shortest Path | The plugin "Route here" asks |
-| Say when updated | On | One line in chat, once, after the Plugin Hub updates the plugin, saying what is new |
+| Say when updated | On | Once after the Plugin Hub updates the plugin: one line in chat, and the What's new page when you next open the map |
 | Build the whole map | On | Builds the rest of the map in the background, nearest you first (about 15 minutes, once) |
 
 The **Icons** section holds a switch per kind of icon (the same as Filters), "Hide completed quests", "Mark what

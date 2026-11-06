@@ -17,8 +17,13 @@ import static org.junit.Assert.assertTrue;
 
 public class MapMenuTest
 {
-	private static final MapMenu.Page[] PAGES = {MapMenu.Page.HELP, MapMenu.Page.WHATS_NEW, MapMenu.Page.IMPROVE,
-		MapMenu.Page.REDRAW};
+	private static final MapMenu.Page[] PAGES = {MapMenu.Page.WELCOME, MapMenu.Page.HELP, MapMenu.Page.WHATS_NEW,
+		MapMenu.Page.IMPROVE, MapMenu.Page.REDRAW};
+
+	private static MapMenu.Build built()
+	{
+		return new MapMenu.Build(11716, 0, true);
+	}
 
 	@Test
 	public void theMenuAndItsPageFitTheMapDownToTheSmallestBox()
@@ -60,7 +65,7 @@ public class MapMenuTest
 	@Test
 	public void aClickFindsTheEntryLinkOrButtonUnderIt()
 	{
-		MapMenu menu = new MapMenu(() -> "saved");
+		MapMenu menu = new MapMenu(() -> "saved", MapMenuTest::built);
 		Map<MapPainter.Button, Rectangle> buttons = MapPainter.buttons(1280, 800, false);
 		MapMenu.Layout closed = MapMenu.layout(buttons, 1280, 800, null);
 		Rectangle panel = closed.getMenu();
@@ -91,7 +96,7 @@ public class MapMenuTest
 	@Test
 	public void theHelpPageScrollsAndClosingTheMenuClosesItsPage()
 	{
-		MapMenu menu = new MapMenu(() -> "saved");
+		MapMenu menu = new MapMenu(() -> "saved", MapMenuTest::built);
 		menu.setOpen(true);
 		menu.setPage(MapMenu.Page.HELP);
 		// a short map: the help does not fit, and the wheel scrolls it, no further than its end
@@ -117,7 +122,7 @@ public class MapMenuTest
 	{
 		// a wide map: no page runs to the map's right edge; the short pages end under their buttons
 		Map<MapPainter.Button, Rectangle> buttons = MapPainter.buttons(1920, 1080, false);
-		MapMenu menu = new MapMenu(() -> "11,716 regions and floors saved on this computer.");
+		MapMenu menu = new MapMenu(() -> "11,716 regions and floors saved on this computer.", MapMenuTest::built);
 		menu.setOpen(true);
 		for (MapMenu.Page page : PAGES)
 		{
@@ -130,6 +135,11 @@ public class MapMenuTest
 			{
 				assertTrue("the help is long, but ends on the map", content.height > 600
 					&& content.y + content.height <= 1080);
+			}
+			else if (page == MapMenu.Page.WELCOME)
+			{
+				assertTrue("the welcome ends on the map, under its buttons", content.y + content.height <= 1080
+					&& fitted.getButton2().y == content.y + content.height - 8 - 24);
 			}
 			else
 			{
@@ -154,13 +164,54 @@ public class MapMenuTest
 	public void onAShortMapTheHelpIsAsTallAsTheMenuAndScrolls()
 	{
 		Map<MapPainter.Button, Rectangle> buttons = MapPainter.buttons(800, 400, false);
-		MapMenu menu = new MapMenu(() -> "saved");
+		MapMenu menu = new MapMenu(() -> "saved", MapMenuTest::built);
 		menu.setOpen(true);
 		menu.setPage(MapMenu.Page.HELP);
 		MapMenu.Layout fitted = menu.layout(buttons, 800, 400);
 		// down to the map's bottom edge, a padding above it
 		assertEquals(400 - 8, fitted.getContent().y + fitted.getContent().height);
 		// and the list itself only as tall as its entries and links
-		assertTrue(fitted.getMenu().height < 200);
+		assertEquals(MapMenu.ROW * MapMenu.Page.values().length + 24 + 8 * 3, fitted.getMenu().height);
+	}
+
+	@Test
+	public void theWelcomeShowsEachStageOfTheBuilding()
+	{
+		// not counted yet, building (with its bar), built, and built only as looked at: each draws, its title on top
+		MapMenu.Build[] stages = {new MapMenu.Build(-1, -1, true), new MapMenu.Build(120, -1, true),
+			new MapMenu.Build(4000, 7716, true), new MapMenu.Build(11716, 0, true), new MapMenu.Build(300, -1, false)};
+		Map<MapPainter.Button, Rectangle> buttons = MapPainter.buttons(1280, 800, false);
+		for (MapMenu.Build stage : stages)
+		{
+			MapMenu menu = new MapMenu(() -> "saved", () -> stage);
+			menu.popUp(MapMenu.Page.WELCOME);
+			assertTrue(menu.isOpen() && menu.popped());
+			MapMenu.Layout layout = menu.layout(buttons, 1280, 800);
+			BufferedImage image = new BufferedImage(1280, 800, BufferedImage.TYPE_INT_ARGB);
+			Graphics2D g = image.createGraphics();
+			menu.draw(g, layout, null);
+			g.dispose();
+			assertTrue(new Rectangle(0, 0, 1280, 800).contains(layout.getContent()));
+			// chosen from the menu, it is an ordinary page again
+			menu.setPage(MapMenu.Page.WELCOME);
+			assertTrue(!menu.popped());
+		}
+	}
+
+	@Test
+	public void whatsNewOpensOnceAfterAnUpdateAndTheWelcomeForNewPlayersAndWhileTheMapIsFirstBuilt()
+	{
+		// what's new, after an update, comes first
+		assertEquals(MapMenu.Page.WHATS_NEW, MapMenu.popUp(true, true, false, true, 0));
+		assertEquals(MapMenu.Page.WHATS_NEW, MapMenu.popUp(true, false, false, false, 500));
+		// the very first opening welcomes, built or not
+		assertEquals(MapMenu.Page.WELCOME, MapMenu.popUp(false, false, false, true, 0));
+		assertEquals(MapMenu.Page.WELCOME, MapMenu.popUp(false, false, true, false, -1));
+		// later, once a run while the map is still first being built
+		assertEquals(MapMenu.Page.WELCOME, MapMenu.popUp(false, true, false, false, 500));
+		assertNull("not twice a run", MapMenu.popUp(false, true, true, false, 500));
+		assertNull("not before the preparer has counted", MapMenu.popUp(false, true, false, false, -1));
+		assertNull("not once it is built", MapMenu.popUp(false, true, false, false, 0));
+		assertNull("not for a game update's few new regions", MapMenu.popUp(false, true, false, true, 12));
 	}
 }

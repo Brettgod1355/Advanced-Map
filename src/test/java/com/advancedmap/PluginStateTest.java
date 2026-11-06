@@ -156,5 +156,9 @@ public class PluginStateTest
 		plugin.pressButton(MapPainter.Button.MENU, false);
 		plugin.giveKeysBack();
 		assertFalse(plugin.menu().isOpen());
+		// a page that opened by itself goes with one Escape, menu and all
+		plugin.menu().popUp(MapMenu.Page.WHATS_NEW);
+		plugin.escape();
+		assertFalse(plugin.menu().isOpen());
 	}
 }

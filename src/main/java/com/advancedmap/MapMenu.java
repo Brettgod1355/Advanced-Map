@@ -20,13 +20,15 @@ import net.runelite.client.ui.FontManager;
 
 /**
  * The map's menu, behind the three lines at the top left: a list down the left side, and a page over the rest of the
- * map for the entry chosen (the help, what's new, where to write, building the map again); Settings opens RuneLite's
- * own settings page instead. Drawn by the painter over the game and in the window alike.
+ * map for the entry chosen (the welcome, the help, what's new, where to write, building the map again); Settings opens
+ * RuneLite's own settings page instead. The Welcome and What's new pages also open by themselves (see
+ * {@link #popUp}). Drawn by the painter over the game and in the window alike.
  */
 final class MapMenu
 {
 	enum Page
 	{
+		WELCOME("Welcome", "Welcome to Advanced Map"),
 		HELP("How the map works"),
 		SETTINGS("Settings"),
 		WHATS_NEW("What's new"),
@@ -34,11 +36,31 @@ final class MapMenu
 		REDRAW("Build the map again");
 
 		final String label;
+		/** The page's title, over its text. */
+		final String title;
 
 		Page(String label)
 		{
-			this.label = label;
+			this(label, label);
 		}
+
+		Page(String label, String title)
+		{
+			this.label = label;
+			this.title = title;
+		}
+	}
+
+	/** How far the building of the map is, for the Welcome page. */
+	@Value
+	static class Build
+	{
+		/** Regions' floors saved on this computer; -1 while the saved map is not open yet. */
+		int saved;
+		/** Floors still to build in the background; -1 before they are counted. */
+		int left;
+		/** Whether the whole map is built in the background ("Build the whole map"). */
+		boolean background;
 	}
 
 	enum Part
@@ -51,9 +73,9 @@ final class MapMenu
 		DISCORD,
 		/** On the page, off its buttons. */
 		CONTENT,
-		/** The page's first button: the release notes, Discord, or "Delete and build again". */
+		/** The page's first button: the help, the release notes, Discord, or "Delete and build again". */
 		BUTTON1,
-		/** The page's second button: GitHub issues, or Cancel. */
+		/** The page's second button: Close, GitHub issues, or Cancel. */
 		BUTTON2
 	}
 
@@ -96,18 +118,23 @@ final class MapMenu
 	private static final int LINE = new java.awt.image.BufferedImage(1, 1, java.awt.image.BufferedImage.TYPE_INT_ARGB)
 		.createGraphics().getFontMetrics(FontManager.getRunescapeSmallFont()).getHeight();
 	private static final Color LIT = new Color(255, 255, 255, 34);
+	private static final Color BAR = new Color(90, 170, 90);
 
 	/** What the sidebar tab says of the saved map, for the "Build the map again" page. */
 	private final Supplier<String> savedStatus;
+	private final Supplier<Build> build;
 	private volatile boolean open;
+	/** Whether the open page opened by itself: then Escape closes the menu with it. */
+	private volatile boolean popped;
 	private volatile Page page;
 	private volatile int scroll;
 	/** How tall the open page's text was last drawn, for scrolling. */
 	private volatile int contentHeight;
 
-	MapMenu(Supplier<String> savedStatus)
+	MapMenu(Supplier<String> savedStatus, Supplier<Build> build)
 	{
 		this.savedStatus = savedStatus;
+		this.build = build;
 	}
 
 	boolean isOpen()
@@ -134,7 +161,35 @@ final class MapMenu
 	void setPage(Page page)
 	{
 		this.page = page;
+		popped = false;
 		scroll = 0;
+	}
+
+	/** Opens the menu on a page by itself, as the map opens. */
+	void popUp(Page page)
+	{
+		open = true;
+		setPage(page);
+		popped = true;
+	}
+
+	/** Whether the open page opened by itself. */
+	boolean popped()
+	{
+		return popped;
+	}
+
+	/**
+	 * The page to open by itself as the map opens, or null: What's new once after an update; else Welcome the first
+	 * time the map is opened, and once a run while the map is still first being built.
+	 */
+	static Page popUp(boolean whatsNewDue, boolean welcomed, boolean welcomedThisRun, boolean built, int left)
+	{
+		if (whatsNewDue)
+		{
+			return Page.WHATS_NEW;
+		}
+		return !welcomed || !welcomedThisRun && !built && left > 0 ? Page.WELCOME : null;
 	}
 
 	/** The menu and the open page, the page as wide and as tall as its text needs. */
@@ -203,6 +258,7 @@ final class MapMenu
 				case WHATS_NEW:
 					button1 = new Rectangle(content.x + PAD, buttonsY, wide, BUTTON);
 					break;
+				case WELCOME:
 				case IMPROVE:
 				case REDRAW:
 					button1 = new Rectangle(content.x + PAD, buttonsY, narrow, BUTTON);
@@ -270,12 +326,14 @@ final class MapMenu
 		return content.y + TITLE;
 	}
 
-	/** A line of a page: its text, and whether it is a heading. */
+	/** A line of a page: its text, and whether it is a heading; or a progress bar, filled {@code bar} of the way. */
 	@Value
 	private static class Line
 	{
 		String text;
 		boolean heading;
+		/** How far the bar is filled, 0 to 1; negative for a line of text. */
+		double bar;
 	}
 
 	/** A page's lines, wrapped to {@code width}. */
@@ -284,8 +342,16 @@ final class MapMenu
 		List<Line> out = new ArrayList<>();
 		switch (page)
 		{
+			case WELCOME:
+				status(out, build.get(), width);
+				for (String[] section : MapHelp.BUILDING)
+				{
+					heading(out, section[0], width);
+					paragraph(out, section[1], width);
+				}
+				break;
 			case HELP:
-				for (String[] section : MapHelp.SECTIONS)
+				for (String[] section : MapHelp.ALL)
 				{
 					heading(out, section[0], width);
 					paragraph(out, section[1], width);
@@ -294,7 +360,7 @@ final class MapMenu
 			case WHATS_NEW:
 				heading(out, "Advanced Map " + WhatsNew.VERSION, width);
 				paragraph(out, WhatsNew.NOTE.isEmpty() ? "Nothing new to see in this version: fixes only."
-					: WhatsNew.NOTE + ".", width);
+					: Character.toUpperCase(WhatsNew.NOTE.charAt(0)) + WhatsNew.NOTE.substring(1) + ".", width);
 				paragraph(out, "Earlier versions and the full notes are on GitHub.", width);
 				break;
 			case IMPROVE:
@@ -316,27 +382,64 @@ final class MapMenu
 		return out;
 	}
 
+	/** The Welcome page's first lines: how far the building is, with a bar while it goes on. */
+	private static void status(List<Line> out, Build build, int width)
+	{
+		if (build.getSaved() < 0)
+		{
+			heading(out, "Getting ready", width);
+			paragraph(out, "The map starts building a few seconds after the client starts.", width);
+		}
+		else if (!build.isBackground())
+		{
+			heading(out, "Built as you look around", width);
+			paragraph(out, String.format(java.util.Locale.ROOT, "\"Build the whole map\" is off in the settings, so"
+				+ " only the places you look at are built and saved: %,d regions and floors so far.", build.getSaved()),
+				width);
+		}
+		else if (build.getLeft() < 0)
+		{
+			heading(out, "Building the map", width);
+			paragraph(out, "Counting what is left to build...", width);
+		}
+		else if (build.getLeft() > 0)
+		{
+			int total = build.getSaved() + build.getLeft();
+			heading(out, String.format(java.util.Locale.ROOT, "Building the map: %,d to go", build.getLeft()), width);
+			out.add(new Line("", false, (double) build.getSaved() / total));
+			paragraph(out, String.format(java.util.Locale.ROOT, "%,d regions and floors built of %,d. You can play"
+				+ " and use the map meanwhile.", build.getSaved(), total), width);
+		}
+		else
+		{
+			heading(out, "The map is built", width);
+			paragraph(out, String.format(java.util.Locale.ROOT, "All %,d regions and floors are saved on this"
+				+ " computer, for every character.", build.getSaved()), width);
+		}
+	}
+
 	private static void heading(List<Line> out, String text, int width)
 	{
 		if (!out.isEmpty())
 		{
-			out.add(new Line("", false));
+			out.add(new Line("", false, -1));
 		}
 		for (String line : SideList.wrap(text, width, FontManager.getRunescapeBoldFont()))
 		{
-			out.add(new Line(line, true));
+			out.add(new Line(line, true, -1));
 		}
 	}
 
 	private static void paragraph(List<Line> out, String text, int width)
 	{
-		if (!out.isEmpty() && !out.get(out.size() - 1).isHeading() && !out.get(out.size() - 1).getText().isEmpty())
+		Line last = out.isEmpty() ? null : out.get(out.size() - 1);
+		if (last != null && !last.isHeading() && (!last.getText().isEmpty() || last.getBar() >= 0))
 		{
-			out.add(new Line("", false));
+			out.add(new Line("", false, -1));
 		}
 		for (String line : SideList.wrap(text, width))
 		{
-			out.add(new Line(line, false));
+			out.add(new Line(line, false, -1));
 		}
 	}
 
@@ -371,7 +474,7 @@ final class MapMenu
 		g.setFont(FontManager.getRunescapeBoldFont());
 		FontMetrics bold = g.getFontMetrics();
 		g.setColor(MapFilters.TEXT);
-		g.drawString(page.label, content.x + PAD, content.y + PAD + (ROW + bold.getAscent() - bold.getDescent()) / 2);
+		g.drawString(page.title, content.x + PAD, content.y + PAD + (ROW + bold.getAscent() - bold.getDescent()) / 2);
 		// the text, scrolled, between the title and the buttons
 		int top = textTop(content);
 		int bottom = content.y + content.height - (layout.getButton1() != null ? BUTTON + PAD * 2 : PAD);
@@ -384,7 +487,18 @@ final class MapMenu
 		int y = top - scroll;
 		for (Line line : lines)
 		{
-			if (y + lineHeight >= top && y <= bottom)
+			if (line.getBar() >= 0 && y + lineHeight >= top && y <= bottom)
+			{
+				int barWidth = textWidth(content.width);
+				g.setColor(new Color(0, 0, 0, 120));
+				g.fillRoundRect(content.x + PAD, y + 2, barWidth, lineHeight - 4, 6, 6);
+				g.setColor(BAR);
+				g.fillRoundRect(content.x + PAD, y + 2, (int) Math.round(barWidth * Math.min(1, line.getBar())),
+					lineHeight - 4, 6, 6);
+				g.setColor(MapFilters.EDGE);
+				g.drawRoundRect(content.x + PAD, y + 2, barWidth - 1, lineHeight - 5, 6, 6);
+			}
+			else if (y + lineHeight >= top && y <= bottom)
 			{
 				g.setFont(line.isHeading() ? FontManager.getRunescapeBoldFont() : FontManager.getRunescapeSmallFont());
 				g.setColor(MapFilters.TEXT);
@@ -403,6 +517,10 @@ final class MapMenu
 		g.setFont(FontManager.getRunescapeSmallFont());
 		switch (page)
 		{
+			case WELCOME:
+				MapFilters.drawButton(g, layout.getButton1(), "How the map works", metrics);
+				MapFilters.drawButton(g, layout.getButton2(), "Close", metrics);
+				break;
 			case WHATS_NEW:
 				MapFilters.drawButton(g, layout.getButton1(), "Full release notes on GitHub", metrics);
 				break;

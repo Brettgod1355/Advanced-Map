@@ -155,7 +155,11 @@ public class AdvancedMapPlugin extends Plugin
 	private final MapSearch search = new MapSearch();
 	private final MapPins pins = new MapPins();
 	private final MarkerEditor editor = new MarkerEditor();
-	private final MapMenu menu = new MapMenu(this::savedMapStatus);
+	private final MapMenu menu = new MapMenu(this::savedMapStatus, this::buildState);
+	/** Whether the Welcome page opened by itself since the plugin started. */
+	private volatile boolean welcomedThisRun;
+	/** Whether the whole map has been seen built (the setting {@link AdvancedMapConfig#MAP_BUILT}). */
+	private volatile boolean mapBuilt;
 	private final java.util.concurrent.atomic.AtomicInteger touches = new java.util.concurrent.atomic.AtomicInteger();
 	private volatile MarkerStore markerStore;
 	/** When the pins, farming patches and Slayer task were last read, in milliseconds. Client thread, reset elsewhere. */
@@ -307,7 +311,20 @@ public class AdvancedMapPlugin extends Plugin
 		{
 			clientToolbar.addNavigation(button);
 		}
-		updateLine = WhatsNew.message(config.lastVersion());
+		welcomedThisRun = false;
+		mapBuilt = config.mapBuilt();
+		String lastVersion = config.lastVersion();
+		if (!lastVersion.isEmpty() && !WhatsNew.VERSION.equals(lastVersion))
+		{
+			// an update: the player has had the map before, so no Welcome; What's new opens with the map next time
+			configManager.setConfiguration(AdvancedMapConfig.GROUP, AdvancedMapConfig.WELCOMED, true);
+			if (config.updateMessage() && !WhatsNew.NOTE.isEmpty())
+			{
+				configManager.setConfiguration(AdvancedMapConfig.GROUP, AdvancedMapConfig.WHATS_NEW_FOR,
+					WhatsNew.VERSION);
+			}
+		}
+		updateLine = WhatsNew.message(lastVersion);
 		if (updateLine == null && !WhatsNew.VERSION.equals(config.lastVersion()))
 		{
 			// nothing to say: the version is noted now; with a line, once it has been said (on the first game tick)
@@ -713,6 +730,50 @@ public class AdvancedMapPlugin extends Plugin
 			askForRoute(layers);
 		}
 		sayWhatsNew();
+		noteMapBuilt();
+	}
+
+	/** Remembers, once, that the whole map has been built: the Welcome page then no longer opens by itself. */
+	private void noteMapBuilt()
+	{
+		MapPreparer currentPreparer = preparer;
+		RegionImages current = images;
+		if (mapBuilt || !config.prepareMap() || currentPreparer == null || current == null || current.store() == null
+			|| currentPreparer.remaining() != 0)
+		{
+			return;
+		}
+		mapBuilt = true;
+		configManager.setConfiguration(AdvancedMapConfig.GROUP, AdvancedMapConfig.MAP_BUILT, true);
+	}
+
+	/**
+	 * As the map opens: What's new once after an update, or the Welcome page the first time, and once a run while the
+	 * map is still first being built (see {@link MapMenu#popUp(boolean, boolean, boolean, boolean, int)}).
+	 */
+	private void popUp()
+	{
+		boolean whatsNew = WhatsNew.VERSION.equals(config.whatsNewFor());
+		MapMenu.Page page = MapMenu.popUp(whatsNew, config.welcomed(), welcomedThisRun, mapBuilt, leftToPrepare());
+		if (page == null)
+		{
+			return;
+		}
+		if (whatsNew)
+		{
+			configManager.unsetConfiguration(AdvancedMapConfig.GROUP, AdvancedMapConfig.WHATS_NEW_FOR);
+		}
+		if (page == MapMenu.Page.WELCOME)
+		{
+			welcomedThisRun = true;
+			if (!config.welcomed())
+			{
+				configManager.setConfiguration(AdvancedMapConfig.GROUP, AdvancedMapConfig.WELCOMED, true);
+			}
+		}
+		filters.setOpen(false);
+		search.setFocused(false);
+		menu.popUp(page);
 	}
 
 	/** The line on what an update brought, said once on the first game tick; "Say when updated" off keeps it quiet. */
@@ -1098,6 +1159,16 @@ public class AdvancedMapPlugin extends Plugin
 			return 0;
 		}
 		return Math.max(0, currentPreparer.remaining());
+	}
+
+	/** For the menu's Welcome page: how far the building of the map is. */
+	MapMenu.Build buildState()
+	{
+		RegionImages current = images;
+		MapStore store = current == null ? null : current.store();
+		MapPreparer currentPreparer = preparer;
+		return new MapMenu.Build(store == null ? -1 : store.count(),
+			currentPreparer == null ? -1 : currentPreparer.remaining(), config.prepareMap());
 	}
 
 	/** For the sidebar: how much of the map is saved on this computer. */
@@ -1577,7 +1648,7 @@ public class AdvancedMapPlugin extends Plugin
 		{
 			search.setFocused(false);
 		}
-		else if (menu.page() != null)
+		else if (menu.page() != null && !menu.popped())
 		{
 			menu.setPage(null);
 		}
@@ -1687,6 +1758,20 @@ public class AdvancedMapPlugin extends Plugin
 		}
 		switch (page)
 		{
+			case WELCOME:
+				if (first)
+				{
+					menu.setPage(MapMenu.Page.HELP);
+				}
+				else if (menu.popped())
+				{
+					menu.setOpen(false);
+				}
+				else
+				{
+					menu.setPage(null);
+				}
+				break;
 			case WHATS_NEW:
 				LinkBrowser.browse(AdvancedMapPanel.GITHUB_URL + "/releases");
 				break;
@@ -2528,6 +2613,7 @@ public class AdvancedMapPlugin extends Plugin
 			if (!wasOpen)
 			{
 				postState(true);
+				popUp();
 			}
 		});
 	}

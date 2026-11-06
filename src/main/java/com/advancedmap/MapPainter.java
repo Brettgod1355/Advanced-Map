@@ -1715,7 +1715,7 @@ final class MapPainter
 	static final List<String> NOTICE = java.util.Arrays.asList("The first time, Advanced Map builds the map from the"
 		+ " game's data and saves it on this computer. Until it is done, places not built yet are blank or blurry, and"
 		+ " their icons are missing from the map and the search.", "This happens once: afterwards the map opens almost"
-		+ " instantly, on every character.");
+		+ " instantly, on every character. The menu's Welcome page says more.");
 
 	/** The notice's title, with how many regions' floors are still to build. */
 	static String noticeTitle(int left)

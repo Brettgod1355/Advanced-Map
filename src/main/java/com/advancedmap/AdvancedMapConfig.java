@@ -39,6 +39,12 @@ public interface AdvancedMapConfig extends Config
 	String INFO_ON_HOVER = "infoOnHover";
 	String UPDATE_MESSAGE = "updateMessage";
 	String LAST_VERSION = "lastVersion";
+	/** Whether the Welcome page has opened by itself once. */
+	String WELCOMED = "welcomed";
+	/** The version whose What's new page is still to open by itself, the next time the map opens; else empty. */
+	String WHATS_NEW_FOR = "whatsNewFor";
+	/** Whether the whole map has been seen built, after which the Welcome page no longer opens by itself. */
+	String MAP_BUILT = "mapBuilt";
 	/** Before each hidden icon's own setting: "hidden.a1234@3222,3218" = true. */
 	String HIDDEN_PREFIX = "hidden.";
 
@@ -528,8 +534,8 @@ public interface AdvancedMapConfig extends Config
 	@ConfigItem(
 		keyName = UPDATE_MESSAGE,
 		name = "Say when updated",
-		description = "One line in chat, once, the first time you log in after the Plugin Hub has updated the plugin,"
-			+ " saying what the new version brings.",
+		description = "Once, after the Plugin Hub has updated the plugin: one line in chat the first time you log in,"
+			+ " and the map's What's new page the next time you open the map.",
 		position = 16
 	)
 	default boolean updateMessage()
@@ -547,6 +553,39 @@ public interface AdvancedMapConfig extends Config
 	default String lastVersion()
 	{
 		return "";
+	}
+
+	@ConfigItem(
+		keyName = WELCOMED,
+		name = "",
+		description = "",
+		hidden = true
+	)
+	default boolean welcomed()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = WHATS_NEW_FOR,
+		name = "",
+		description = "",
+		hidden = true
+	)
+	default String whatsNewFor()
+	{
+		return "";
+	}
+
+	@ConfigItem(
+		keyName = MAP_BUILT,
+		name = "",
+		description = "",
+		hidden = true
+	)
+	default boolean mapBuilt()
+	{
+		return false;
 	}
 
 	@ConfigItem(

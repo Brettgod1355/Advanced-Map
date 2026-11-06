@@ -218,10 +218,10 @@ class AdvancedMapPanel extends PluginPanel
 	static String explanation()
 	{
 		StringBuilder out = new StringBuilder();
-		for (int i = 0; i < MapHelp.SECTIONS.length; i++)
+		for (int i = 0; i < MapHelp.ALL.length; i++)
 		{
-			out.append("<b>").append(MapHelp.SECTIONS[i][0]).append("</b><br>").append(MapHelp.SECTIONS[i][1]);
-			if (i < MapHelp.SECTIONS.length - 1)
+			out.append("<b>").append(MapHelp.ALL[i][0]).append("</b><br>").append(MapHelp.ALL[i][1]);
+			if (i < MapHelp.ALL.length - 1)
 			{
 				out.append("<br><br>");
 			}
