@@ -421,7 +421,10 @@ class RegionImages
 		}
 		try
 		{
-			draw(key, Level.SMALL);
+			// from the game's data, never the saved picture: a floor saved before a game update changed the tables
+			// would otherwise be read back and only queued for a check, and counted as built meanwhile
+			checked.add(key);
+			drawChecked(key, Level.SMALL);
 			return true;
 		}
 		catch (CancellationException e)

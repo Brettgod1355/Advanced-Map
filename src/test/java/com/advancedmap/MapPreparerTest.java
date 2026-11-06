@@ -161,16 +161,25 @@ public class MapPreparerTest
 			// a game update changed an overlay: every floor's hash has a new top half, so the next client start lists
 			// them all again, and building a ground saves its empty floors above with the new one
 			flat.hash = 1L << 32 | 1;
-			MapPreparer next = new MapPreparer(images, flat, () -> true, () -> LUMBRIDGE);
-			int ground = next.next(store, regions);
+			// the next client start: a fresh picture cache over the same saved map, nothing checked yet this session
+			RegionImages fresh = new RegionImages(flat, executor, new MapIcons());
+			MapStore reopened = MapStore.open(net.runelite.client.util.Filepath.Unchecked.getRooted(
+				folder.getRoot().toPath()));
+			fresh.setStore(reopened);
+			MapPreparer next = new MapPreparer(fresh, flat, () -> true, () -> LUMBRIDGE);
+			int ground = next.next(reopened, regions);
 			assertEquals("all eight stale", 8, next.remaining());
-			images.prepare(ground);
+			int reads = flat.draws.get();
+			fresh.prepare(ground);
 			next.finished(ground);
+			assertTrue("drawn again from the game's data, not read back from the saved picture", flat.draws.get() > reads);
+			assertEquals("saved from the new tables", 1, reopened.savedHash(ground) >>> 32);
 			assertEquals("that region's four are current again", 4, next.remaining());
-			assertEquals("the same eight files, four of them new", 8, store.count());
+			assertEquals("the same eight files, four of them new", 8, reopened.count());
+			store = reopened;
 			// a region whose own data changed but the tables did not is not listed: it is built again when looked at
 			flat.hash = 1L << 32 | 2;
-			MapPreparer later = new MapPreparer(images, flat, () -> true, () -> LUMBRIDGE);
+			MapPreparer later = new MapPreparer(fresh, flat, () -> true, () -> LUMBRIDGE);
 			later.next(store, regions);
 			assertEquals(4, later.remaining());
 		}
