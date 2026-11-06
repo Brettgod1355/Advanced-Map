@@ -39,7 +39,7 @@ final class Teleport
 		ANCIENT_MAGICKS("Ancient Magicks"),
 		LUNAR_MAGIC("Lunar spellbook"),
 		ARCEUUS_MAGIC("Arceuus spellbook"),
-		JEWELLERY("Jewellery"),
+		JEWELLERY("Jewelry"),
 		SCROLL("Teleport scroll"),
 		OTHER("Item or object");
 

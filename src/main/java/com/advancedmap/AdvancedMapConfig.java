@@ -268,7 +268,7 @@ public interface AdvancedMapConfig extends Config
 	@ConfigItem(
 		keyName = "showTeleports",
 		name = "Teleports",
-		description = "Where spells, jewellery, scrolls and other items teleport you.",
+		description = "Where spells, jewelry, scrolls and other items teleport you.",
 		section = ICONS,
 		hidden = true,
 		position = 3
