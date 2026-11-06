@@ -48,10 +48,13 @@ final class MapSpot
 	 * all where the game has a bank icon near them (found once the region with that icon is drawn). Else null.
 	 */
 	private final Rectangle cluster;
+	/** The kind of icon as the Filters list turns it off ({@link MapSettings#typeKey}), made once: asked every paint. */
+	private final String typeKey;
 
 	private MapSpot(String key, int x, int y, int plane, int areaId, int category, IconGroup group, Teleport teleport,
 		AgilityShortcut shortcut, Unlock unlock, Unlockable unlockable, String detail, Rectangle cluster)
 	{
+		this.typeKey = teleport != null ? MapSettings.typeKey(teleport.getType()) : MapSettings.typeKey(category);
 		this.key = key;
 		this.x = x;
 		this.y = y;
