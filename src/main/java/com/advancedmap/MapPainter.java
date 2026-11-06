@@ -1705,7 +1705,7 @@ final class MapPainter
 		g.setStroke(stroke);
 	}
 
-	/** What the bar along the bottom says: the tile under the mouse, how to use the map, and whether the map is being built. */
+	/** What the bar along the bottom says: the tile under the mouse, how to use the map, and whether places on screen are still loading. */
 	private static String barText(MapViewport.View view, Point mouse, boolean loading, boolean window, boolean icons,
 		boolean hover)
 	{
@@ -1723,7 +1723,7 @@ final class MapPainter
 		}
 		if (loading)
 		{
-			text.append("    Building the map...");
+			text.append("    Loading the map...");
 		}
 		return text.toString();
 	}
