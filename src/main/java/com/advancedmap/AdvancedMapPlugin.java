@@ -1847,10 +1847,11 @@ public class AdvancedMapPlugin extends Plugin
 	{
 		EventBus bus = eventBus;
 		MapOverlay current = overlay;
-		if (bus != null && current != null)
+		if (bus != null && current != null && clientThread != null)
 		{
-			bus.post(new OverlayMenuClicked(new OverlayMenuEntry(MenuAction.RUNELITE_OVERLAY_CONFIG, "Configure",
-				"Advanced Map"), current));
+			// on the client thread, where RuneLite posts it: its other listeners expect that thread
+			clientThread.invokeLater(() -> bus.post(new OverlayMenuClicked(new OverlayMenuEntry(
+				MenuAction.RUNELITE_OVERLAY_CONFIG, "Configure", "Advanced Map"), current)));
 		}
 	}
 
