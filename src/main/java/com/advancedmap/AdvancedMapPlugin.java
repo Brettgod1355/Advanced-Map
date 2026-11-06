@@ -942,7 +942,8 @@ public class AdvancedMapPlugin extends Plugin
 		}
 		if (sideList.owner() == MARKERS_LIST && sideList.isOpen() && AdvancedMapConfig.SHARE_MARKERS.equals(event.getKey()))
 		{
-			// shared between accounts or kept apart: which markers are "yours" changed
+			// shared between accounts or kept apart: which markers are "yours" changed, so the filter first, then the list
+			pins.setFilter(config.shareMarkers(), account());
 			showMarkers();
 		}
 		MapPainter drawing = painter;
