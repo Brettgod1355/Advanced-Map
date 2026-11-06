@@ -75,6 +75,22 @@ public class SideListTest
 	}
 
 	@Test
+	public void aListMadeAgainForItsOwnerKeepsItsPlaceAndAnotherStartsAtTheTop()
+	{
+		// "Hidden icons" made again after an unhide stays where the player was; a new list starts at the top
+		SideList list = new SideList();
+		Object hidden = new Object();
+		list.open("Hidden icons", places(55), hidden);
+		SideList.Layout layout = list.layout(MapPainter.buttons(1200, 500, true));
+		Rectangle rows = layout.getList();
+		list.scroll(1000, layout);
+		list.open("Hidden icons", places(54), hidden);
+		assertEquals(53, list.hitAt(rows.x + 10, rows.y + rows.height - 2, layout).getIndex());
+		list.open("Shop", places(55), new Object());
+		assertEquals(0, list.hitAt(rows.x + 10, rows.y + 2, layout).getIndex());
+	}
+
+	@Test
 	public void aRowIsTallerByALinePerNeed()
 	{
 		SideList list = new SideList();

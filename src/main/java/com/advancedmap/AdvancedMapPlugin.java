@@ -864,6 +864,13 @@ public class AdvancedMapPlugin extends Plugin
 		eventBus.post(new PluginMessage(ShortestPathRoute.NAMESPACE, "getTarget", ShortestPathRoute.getTarget()));
 	}
 
+	/** Another RuneLite profile: its own markers and hidden icons, so the lists made for the last one go. */
+	@Subscribe
+	public void onProfileChanged(net.runelite.client.events.ProfileChanged event)
+	{
+		closeMenuLists();
+	}
+
 	@Subscribe
 	public void onConfigChanged(ConfigChanged event)
 	{
@@ -876,9 +883,10 @@ public class AdvancedMapPlugin extends Plugin
 		}
 		settings = readSettings();
 		search.setSkipped(MapSearch.Scope.parse(config.searchSkipped()));
-		if (sideList.owner() == HIDDEN_LIST && sideList.isOpen())
+		if (sideList.owner() == HIDDEN_LIST && sideList.isOpen() && event.getKey() != null
+			&& event.getKey().startsWith(AdvancedMapConfig.HIDDEN_PREFIX))
 		{
-			// an icon hidden or shown, here or by another client, or another RuneLite profile's settings
+			// an icon hidden or shown again, here or by another client: only that changes the list
 			showHiddenIcons();
 		}
 		MapPainter drawing = painter;

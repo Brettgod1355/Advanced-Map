@@ -171,9 +171,13 @@ final class SideList
 		return !content.rows.isEmpty();
 	}
 
-	/** Opens a list of rows, named {@code title}, for {@code owner}: the rows' text is wrapped here, once. */
+	/**
+	 * Opens a list of rows, named {@code title}, for {@code owner}: the rows' text is wrapped here, once. The same
+	 * owner's list made again (its rows changed) keeps its place; another starts at the top.
+	 */
 	void open(String title, List<Row> rows, Object owner)
 	{
+		boolean again = owner != null && owner == content.owner;
 		List<Laid> laid = new ArrayList<>(rows.size());
 		int height = 0;
 		for (Row row : rows)
@@ -187,7 +191,10 @@ final class SideList
 		List<String> titleLines = wrap(title, WIDTH - PAD * 3 - CLOSE, FontManager.getRunescapeBoldFont());
 		content = new Content(title, titleLines.isEmpty() ? Collections.singletonList("") : titleLines,
 			Collections.unmodifiableList(new ArrayList<>(rows)), Collections.unmodifiableList(laid), height, owner);
-		scroll = 0;
+		if (!again)
+		{
+			scroll = 0;
+		}
 	}
 
 	void close()
@@ -269,7 +276,7 @@ final class SideList
 		Rectangle list = layout.getList();
 		if (list.contains(x, y))
 		{
-			int top = list.y - scroll;
+			int top = list.y - offset(layout);
 			List<Laid> shown = content.laid;
 			for (int i = 0; i < shown.size(); i++)
 			{
@@ -285,6 +292,12 @@ final class SideList
 	}
 
 	/** Scrolls the rows by mouse wheel notches. */
+	/** How far the list is scrolled, no further than its end: rows made again may be fewer than before. */
+	private int offset(Layout layout)
+	{
+		return Math.min(scroll, Math.max(0, contentHeight() - layout.getList().height));
+	}
+
 	void scroll(double notches, Layout layout)
 	{
 		int max = Math.max(0, contentHeight() - layout.getList().height);
@@ -323,7 +336,7 @@ final class SideList
 		Rectangle list = layout.getList();
 		Shape clip = g.getClip();
 		g.clip(list);
-		int y = list.y - scroll;
+		int y = list.y - offset(layout);
 		for (int i = 0; i < shown.rows.size(); i++)
 		{
 			Row row = shown.rows.get(i);
