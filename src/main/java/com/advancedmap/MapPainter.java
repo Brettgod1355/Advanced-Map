@@ -1755,6 +1755,26 @@ final class MapPainter
 		return String.format(Locale.ROOT, "Building the map... %,d to go", left);
 	}
 
+	/** The notice's lines as last wrapped, with the width they were wrapped to: wrapped again only when that changes. */
+	private static volatile Map.Entry<Integer, List<String>> noticeWrapped;
+
+	private static List<String> noticeLines(int width, java.awt.Font font)
+	{
+		Map.Entry<Integer, List<String>> last = noticeWrapped;
+		if (last != null && last.getKey() == width)
+		{
+			return last.getValue();
+		}
+		List<String> lines = new java.util.ArrayList<>();
+		for (String paragraph : NOTICE)
+		{
+			// a little short of the edge: the frame's text can come out a few pixels wider than measured
+			lines.addAll(SideList.wrap(paragraph, width - PAD * 3, font));
+		}
+		noticeWrapped = new java.util.AbstractMap.SimpleImmutableEntry<>(width, lines);
+		return lines;
+	}
+
 	/** A box at the top left, under the buttons, saying the map is being built and why. */
 	private static void drawNotice(Graphics2D g, MapViewport.View view, Map<Button, Rectangle> buttons, String title)
 	{
@@ -1763,12 +1783,7 @@ final class MapPainter
 		FontMetrics titleMetrics = g.getFontMetrics(titleFont);
 		FontMetrics metrics = g.getFontMetrics(font);
 		int width = Math.min(NOTICE_WIDTH, view.width - GAP * 2);
-		List<String> lines = new java.util.ArrayList<>();
-		for (String paragraph : NOTICE)
-		{
-			// a little short of the edge: the frame's text can come out a few pixels wider than measured
-			lines.addAll(SideList.wrap(paragraph, width - PAD * 3, font));
-		}
+		List<String> lines = noticeLines(width, font);
 		Rectangle icons = buttons.get(Button.ICONS);
 		int height = PAD * 2 + titleMetrics.getHeight() + metrics.getHeight() * lines.size() + PAD / 2;
 		Rectangle box = new Rectangle(icons.x, icons.y + icons.height + GAP, width, height);

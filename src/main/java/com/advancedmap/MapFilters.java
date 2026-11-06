@@ -196,9 +196,23 @@ final class MapFilters
 	}
 
 	/** The rows to show: every group with its kinds, sorted by name; while searching, only what matches. */
+	/** The entries as last made, with what they were made from: made again only when that changes (paints are many). */
+	private volatile Object[] made;
+
 	List<Entry> entries(Progress progress)
 	{
-		return entries(categoryIcons, progress, search);
+		Map<Integer, Integer> icons = categoryIcons;
+		String wanted = search;
+		Object[] last = made;
+		if (last != null && last[0] == icons && last[1] == progress && last[2].equals(wanted))
+		{
+			@SuppressWarnings("unchecked")
+			List<Entry> entries = (List<Entry>) last[3];
+			return entries;
+		}
+		List<Entry> entries = entries(icons, progress, wanted);
+		made = new Object[]{icons, progress, wanted, entries};
+		return entries;
 	}
 
 	static List<Entry> entries(Map<Integer, Integer> categoryIcons, Progress progress, String search)
