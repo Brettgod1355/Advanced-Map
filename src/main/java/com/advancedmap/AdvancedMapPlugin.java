@@ -506,7 +506,13 @@ public class AdvancedMapPlugin extends Plugin
 			});
 		}
 		pins.setOthers(others);
-		pins.setFilter(config.shareMarkers(), account());
+		String account = account();
+		pins.setFilter(config.shareMarkers(), account);
+		if (sideList.owner() == MARKERS_LIST && sideList.isOpen() && !java.util.Objects.equals(account, markersFor))
+		{
+			// another account logged in with the window open: its markers, not the last one's
+			showMarkers();
+		}
 		MapPainter drawing = painter;
 		if (drawing != null && now - farmingRead >= FARMING_MILLIS)
 		{
@@ -870,6 +876,11 @@ public class AdvancedMapPlugin extends Plugin
 		}
 		settings = readSettings();
 		search.setSkipped(MapSearch.Scope.parse(config.searchSkipped()));
+		if (sideList.owner() == HIDDEN_LIST && sideList.isOpen())
+		{
+			// an icon hidden or shown, here or by another client, or another RuneLite profile's settings
+			showHiddenIcons();
+		}
 		MapPainter drawing = painter;
 		if (drawing != null)
 		{
@@ -2233,8 +2244,23 @@ public class AdvancedMapPlugin extends Plugin
 	}
 
 	/** The side list of the menu's "Your markers", and of its "Hidden icons"; a hidden icon's rows too. */
-	private static final Object MARKERS_LIST = new Object();
-	private static final Object HIDDEN_LIST = new Object();
+	static final Object MARKERS_LIST = new Object();
+	static final Object HIDDEN_LIST = new Object();
+	/** The account "Your markers" was listed for. */
+	private volatile String markersFor;
+
+	/**
+	 * Closes "Your markers" and "Hidden icons" as the map closes: they were made for the account, the markers and the
+	 * settings of then, which a logout, another account or another client may change before the map opens again.
+	 */
+	void closeMenuLists()
+	{
+		Object owner = sideList.owner();
+		if (owner == MARKERS_LIST || owner == HIDDEN_LIST)
+		{
+			sideList.close();
+		}
+	}
 
 	/** A row that only informs: no place, nothing to open. */
 	private static SideList.Row note(String text)
@@ -2266,6 +2292,7 @@ public class AdvancedMapPlugin extends Plugin
 				tilesAway(marker.getPoint(), from), SearchSpots.name(marker.getPoint(), labelsNow()), null,
 				marker.getPoint(), null));
 		}
+		markersFor = pins.filterAccount();
 		sideList.open("Your markers (" + markers.size() + "), nearest first", rows, MARKERS_LIST);
 	}
 
@@ -2965,6 +2992,7 @@ public class AdvancedMapPlugin extends Plugin
 
 	private void closed()
 	{
+		closeMenuLists();
 		giveKeysBack();
 		// a window closed with the button down never sees the release: hover boxes and tips would stay off
 		setDragging(false);

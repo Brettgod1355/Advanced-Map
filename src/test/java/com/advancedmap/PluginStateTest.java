@@ -161,4 +161,23 @@ public class PluginStateTest
 		plugin.escape();
 		assertFalse(plugin.menu().isOpen());
 	}
+
+	@Test
+	public void theMenusListsCloseWithTheMapAndOtherListsStay()
+	{
+		AdvancedMapPlugin plugin = new AdvancedMapPlugin();
+		java.util.List<SideList.Row> rows = java.util.Collections.singletonList(
+			new SideList.Row("Bank stash", "12 tiles", null, null, null, null));
+		for (Object list : new Object[]{AdvancedMapPlugin.MARKERS_LIST, AdvancedMapPlugin.HIDDEN_LIST})
+		{
+			plugin.sideList().open("Your markers", rows, list);
+			plugin.closeMenuLists();
+			assertFalse("made for the account and settings of then", plugin.sideList().isOpen());
+		}
+		// a shop's stock or a search's results stay, as before
+		Object shop = new Object();
+		plugin.sideList().open("General store", rows, shop);
+		plugin.closeMenuLists();
+		assertTrue(plugin.sideList().isOpen());
+	}
 }

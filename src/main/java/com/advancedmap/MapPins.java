@@ -93,6 +93,12 @@ final class MapPins
 		this.account = account;
 	}
 
+	/** The account the markers shown are filtered for, or null. */
+	String filterAccount()
+	{
+		return account;
+	}
+
 	/** The markers that show now ({@link #setFilter}). */
 	List<Marker> shown()
 	{
