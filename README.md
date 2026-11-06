@@ -1,6 +1,6 @@
 # Advanced Map
 
-A full-screen world map for [RuneLite](https://runelite.net/), drawn on your computer from the game's own map data,
+A full-screen world map for [RuneLite](https://runelite.net/), built on your computer from the game's own map data,
 with smooth pan and zoom, a fuzzy search over places, shops, items and monsters, and icons you can point at for
 their details.
 
@@ -208,10 +208,11 @@ you can't use yet", "Icon size" and "Transport names".
 - **What it reads in the client**: your position, levels, quest states and what you have unlocked (for the locked
   marks and the finished quests), and, read only, what RuneLite's Time Tracking and Slayer plugins have saved. It
   changes nothing of theirs.
-- **What it keeps on your computer**, in RuneLite's plugin data folder: the drawn map (about 60 MB for the whole
+- **What it keeps on your computer**, in RuneLite's plugin data folder: the built map (about 60 MB for the whole
   world), so it opens at once, and one small file per marker.
-- **The two buttons beside the sidebar tab's title** open this project's GitHub issues and Discord in your browser,
-  only when you click them.
+- **What opens your browser**, each only when you click it: the GitHub and Discord buttons on the sidebar tab and in
+  the map's menu, "Help improve the map" (Discord, GitHub issues), "What's new" (the release notes on GitHub),
+  "Report a problem here" (a new GitHub issue) and "Open its wiki page" on the few icons that have one.
 
 ## Good to know
 
