@@ -565,7 +565,8 @@ class ClientMapSource implements MapSource
 	}
 
 	/** Every region the game has on either map, by region id. One wait for the client thread. */
-	List<Integer> regionIds()
+	@Override
+	public List<Integer> regionIds()
 	{
 		return reader.read(client ->
 		{

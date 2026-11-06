@@ -405,7 +405,11 @@ class RegionImages
 	 * Draws a region's floor ahead of time, for the disk only: nothing is kept in memory. Does nothing when it is
 	 * saved already. Render threads.
 	 */
-	/** Draws and saves a floor of a region. Throws {@link CacheNotReadyException} when it must be tried again later. */
+	/**
+	 * Draws and saves a floor of a region. Throws {@link CacheNotReadyException} when it must be tried again later, and
+	 * {@link MapDataException} when the game's data cannot be read at all (a game update changed its format): nothing
+	 * can be built until the plugin is updated, and the preparer stops rather than run through its list saving nothing.
+	 */
 	void prepare(int key)
 	{
 		MapStore saved = store;
@@ -429,6 +433,7 @@ class RegionImages
 		catch (MapDataException e)
 		{
 			warnOnce(e);
+			throw e;
 		}
 		catch (RuntimeException e)
 		{

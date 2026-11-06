@@ -9,6 +9,7 @@ import net.runelite.api.coords.WorldPoint;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class MapPreparerTest
@@ -59,11 +60,12 @@ public class MapPreparerTest
 		java.util.concurrent.ExecutorService executor = java.util.concurrent.Executors.newSingleThreadExecutor();
 		try
 		{
-			RegionImages images = new RegionImages(new RegionImagesCacheTest.Flat(), executor, new MapIcons());
+			RegionImagesCacheTest.Flat flat = new RegionImagesCacheTest.Flat();
+			RegionImages images = new RegionImages(flat, executor, new MapIcons());
 			MapStore store = MapStore.open(net.runelite.client.util.Filepath.Unchecked.getRooted(
 				folder.getRoot().toPath()));
 			images.setStore(store);
-			MapPreparer preparer = new MapPreparer(images, null, () -> true, () -> LUMBRIDGE);
+			MapPreparer preparer = new MapPreparer(images, flat, () -> true, () -> LUMBRIDGE);
 			java.util.List<Integer> regions = java.util.Arrays.asList(50 << 8 | 50, 51 << 8 | 50);
 			int first = preparer.next(store, regions);
 			assertEquals(0, RegionImages.plane(first));
@@ -90,6 +92,41 @@ public class MapPreparerTest
 			assertEquals(4, preparer.remaining());
 			preparer.finished(ground);
 			assertEquals(4, preparer.remaining());
+		}
+		finally
+		{
+			executor.shutdownNow();
+		}
+	}
+
+	@Test
+	public void unreadableMapDataStopsTheBuildingWithTheListKept() throws Exception
+	{
+		// a game update changed a format the plugin reads: nothing can be built until the plugin is updated, so the
+		// preparer stops with its list whole (the count says what is left), rather than run through it saving nothing
+		java.util.concurrent.ExecutorService executor = java.util.concurrent.Executors.newSingleThreadExecutor();
+		try
+		{
+			RegionImagesCacheTest.Flat flat = new RegionImagesCacheTest.Flat();
+			flat.regionIds = java.util.Arrays.asList(50 << 8 | 50, 51 << 8 | 50);
+			RegionImages images = new RegionImages(flat, executor, new MapIcons());
+			MapStore store = MapStore.open(net.runelite.client.util.Filepath.Unchecked.getRooted(
+				folder.getRoot().toPath()));
+			images.setStore(store);
+			MapPreparer preparer = new MapPreparer(images, flat, () -> true, () -> LUMBRIDGE);
+			flat.failWith = new MapDataException(new RuntimeException("a changed format"));
+			assertFalse(preparer.stepOnce());
+			assertTrue(preparer.isHalted());
+			assertEquals("eight floors listed, the failed one back among them", 8, preparer.remaining());
+			assertEquals(0, store.count());
+			assertFalse("resting: nothing is tried for a while", preparer.stepOnce());
+			assertEquals(8, preparer.remaining());
+			// "Build the map again" (or a plugin that reads the data again) starts afresh
+			flat.failWith = null;
+			preparer.restart();
+			assertFalse(preparer.isHalted());
+			assertTrue(preparer.stepOnce());
+			assertEquals(4, store.count());
 		}
 		finally
 		{

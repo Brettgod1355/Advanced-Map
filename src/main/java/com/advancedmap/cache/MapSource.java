@@ -65,4 +65,10 @@ public interface MapSource
 	{
 		return java.util.Collections.emptyMap();
 	}
+
+	/** Every region the game has, by region id; empty while that is not known yet. */
+	default java.util.List<Integer> regionIds()
+	{
+		return java.util.Collections.emptyList();
+	}
 }

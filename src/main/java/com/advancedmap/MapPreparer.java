@@ -5,6 +5,7 @@
  */
 package com.advancedmap;
 
+import com.advancedmap.cache.MapSource;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -44,7 +45,7 @@ final class MapPreparer
 	private static final boolean MANY_CORES = ForkJoinPool.getCommonPoolParallelism() >= 3;
 
 	private final RegionImages images;
-	private final ClientMapSource source;
+	private final MapSource source;
 	private final BooleanSupplier enabled;
 	private final Supplier<WorldPoint> focus;
 	private final ScheduledExecutorService worker;
@@ -58,7 +59,7 @@ final class MapPreparer
 	/** The region the list was last sorted around. */
 	private int sortedFor = -1;
 
-	MapPreparer(RegionImages images, ClientMapSource source, BooleanSupplier enabled, Supplier<WorldPoint> focus)
+	MapPreparer(RegionImages images, MapSource source, BooleanSupplier enabled, Supplier<WorldPoint> focus)
 	{
 		this.images = images;
 		this.source = source;
@@ -88,6 +89,8 @@ final class MapPreparer
 	{
 		todo.clear();
 		building = null;
+		halted = false;
+		restUntil = 0;
 		listed = false;
 		iconTodo = null;
 	}
@@ -96,6 +99,25 @@ final class MapPreparer
 	private volatile long restUntil;
 	/** How long the preparer rests after a region the client has not got, so the client thread is not asked 40 times a second. */
 	static final long REST_NANOS = 1_000_000_000L;
+	/**
+	 * The game's map data could not be read (a game update changed its format): nothing can be built until the plugin
+	 * is updated. The list is kept, so the count says what is left, and a step is tried again now and then in case.
+	 */
+	private volatile boolean halted;
+	static final long HALT_NANOS = 60_000_000_000L;
+
+	/** True while the game's map data cannot be read: the building has stopped, nothing was lost. */
+	boolean isHalted()
+	{
+		return halted;
+	}
+
+	private synchronized void halt(int key)
+	{
+		requeue(key);
+		halted = true;
+		restUntil = System.nanoTime() + HALT_NANOS;
+	}
 
 	synchronized void requeue(int key)
 	{
@@ -153,7 +175,7 @@ final class MapPreparer
 	}
 
 	/** Draws and saves one region's floor, or finds one region's icons: true if it did. */
-	private boolean stepOnce()
+	boolean stepOnce()
 	{
 		try
 		{
@@ -174,6 +196,12 @@ final class MapPreparer
 				{
 					// the client has not downloaded this part of the cache yet: last in the queue, not forgotten
 					requeue(key);
+					return false;
+				}
+				catch (MapDataException e)
+				{
+					// nothing of the map can be read: stopped, with the floor and the rest of the list kept
+					halt(key);
 					return false;
 				}
 				finally

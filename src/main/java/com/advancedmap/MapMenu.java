@@ -73,6 +73,8 @@ final class MapMenu
 		boolean background;
 		/** The saved map could not be opened (the log says why): nothing is built or saved this run. */
 		boolean unopened;
+		/** The game's map data could not be read: the building has stopped until the plugin is updated. */
+		boolean halted;
 	}
 
 	enum Part
@@ -459,6 +461,14 @@ final class MapMenu
 			heading(out, "The saved map could not be opened", width);
 			paragraph(out, "The client's log says why. Until it is put right, the map is drawn as you look around and"
 				+ " nothing is saved; a client restart tries again.", width);
+		}
+		else if (build.isHalted())
+		{
+			heading(out, "Building stopped", width);
+			paragraph(out, String.format(java.util.Locale.ROOT, "The game's map data could not be read: a game update"
+				+ " may have changed its format. What is saved (%,d regions and floors) still shows; nothing more is"
+				+ " built until Advanced Map is updated, which RuneLite does by itself.", Math.max(0, build.getSaved())),
+				width);
 		}
 		else if (build.getSaved() < 0)
 		{

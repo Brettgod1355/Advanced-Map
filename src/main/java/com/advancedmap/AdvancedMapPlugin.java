@@ -766,8 +766,9 @@ public class AdvancedMapPlugin extends Plugin
 		MapPreparer currentPreparer = preparer;
 		RegionImages current = images;
 		if (mapBuilt || !config.prepareMap() || currentPreparer == null || current == null || current.store() == null
-			|| currentPreparer.remaining() != 0)
+			|| currentPreparer.remaining() != 0 || currentPreparer.isHalted() || current.store().count() == 0)
 		{
+			// never "built" on an empty store, or while the game's data cannot be read
 			return;
 		}
 		mapBuilt = true;
@@ -1201,8 +1202,10 @@ public class AdvancedMapPlugin extends Plugin
 	{
 		RegionImages current = images;
 		MapPreparer currentPreparer = preparer;
-		if (!config.prepareMap() || current == null || current.store() == null || currentPreparer == null)
+		if (!config.prepareMap() || current == null || current.store() == null || currentPreparer == null
+			|| currentPreparer.isHalted())
 		{
+			// halted: the notice would count floors that cannot be built now; the sidebar and Welcome say why
 			return 0;
 		}
 		return Math.max(0, currentPreparer.remaining());
@@ -1215,7 +1218,8 @@ public class AdvancedMapPlugin extends Plugin
 		MapStore store = current == null ? null : current.store();
 		MapPreparer currentPreparer = preparer;
 		return new MapMenu.Build(store == null ? -1 : store.count(),
-			currentPreparer == null ? -1 : currentPreparer.remaining(), config.prepareMap(), store == null && storeFailed);
+			currentPreparer == null ? -1 : currentPreparer.remaining(), config.prepareMap(), store == null && storeFailed,
+			currentPreparer != null && currentPreparer.isHalted());
 	}
 
 	/** For the sidebar: how much of the map is saved on this computer. */
@@ -1228,8 +1232,14 @@ public class AdvancedMapPlugin extends Plugin
 			return storeFailed ? "The saved map could not be opened (the client's log says why): the map is drawn as you"
 				+ " look around and nothing is saved until a client restart puts it right." : "Not ready yet.";
 		}
-		int remaining = preparer == null ? -1 : preparer.remaining();
+		MapPreparer currentPreparer = preparer;
+		int remaining = currentPreparer == null ? -1 : currentPreparer.remaining();
 		String count = store.count() + " regions and floors saved on this computer, for every character and profile.";
+		if (currentPreparer != null && currentPreparer.isHalted())
+		{
+			return count + " Building stopped: the game's map data could not be read (a game update may have changed"
+				+ " it); a plugin update is needed.";
+		}
 		if (!config.prepareMap() || remaining < 0)
 		{
 			return count;
