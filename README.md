@@ -220,8 +220,9 @@ you can't use yet", "Icon size" and "Transport names".
   background, nearest you first, using spare processor time: up to about 10 minutes for the whole world, once per
   computer, shared by every account and profile. Until then places not built yet are blank or blurry, and the map
   says "Building the map... N to go" at the top left; the sidebar tab shows the same count. Afterwards the map opens
-  almost instantly, and a region is built again only when a game update changes it. "Build the whole map" off
-  builds only what you look at.
+  almost instantly, and a region is built again only when a game update changes it: as you look at it, or all of
+  them in the background after an update that changes the whole map's look. "Build the whole map" off builds only
+  what you look at.
 - **Memory.** While the map is open it keeps the pictures it has drawn at hand, so moving back over them is
   instant; closing it lets go of all but the smallest ones (about 32 MB at most), which a reopening needs first.
 - **After a game update**, new and changed areas, buildings and the game's own map icons show at once, since they

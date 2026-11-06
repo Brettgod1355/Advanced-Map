@@ -640,10 +640,24 @@ class ClientMapSource implements MapSource
 			update(crc, data, id);
 			update(crc, data, objectCrcs.getOrDefault(id, 0L));
 		}
+		return stamp() << 32 | crc.getValue();
+	}
+
+	/** One CRC32 of the tables' and the map scenery's: the top half of every region hash. */
+	private long stamp()
+	{
+		ByteBuffer data = ByteBuffer.allocate(8);
 		CRC32 tables = new CRC32();
 		update(tables, data, tablesCrc);
 		update(tables, data, spritesCrc);
-		return tables.getValue() << 32 | crc.getValue();
+		return tables.getValue();
+	}
+
+	@Override
+	public long tablesStamp()
+	{
+		loadTables();
+		return stamp();
 	}
 
 	private static void update(CRC32 crc, ByteBuffer data, long value)

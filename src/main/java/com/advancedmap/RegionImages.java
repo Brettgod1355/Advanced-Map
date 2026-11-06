@@ -414,7 +414,8 @@ class RegionImages
 	boolean prepare(int key)
 	{
 		MapStore saved = store;
-		if (saved == null || saved.has(key))
+		// saved from the current tables: a floor saved before a game update changed them is built again
+		if (saved == null || saved.isCurrent(key, source.tablesStamp()))
 		{
 			return true;
 		}

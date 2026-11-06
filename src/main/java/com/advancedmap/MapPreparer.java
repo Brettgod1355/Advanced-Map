@@ -24,8 +24,9 @@ import net.runelite.api.coords.WorldPoint;
  * the client launched), so the map is ready when it is first opened. Nearest the player first (Lumbridge before
  * logging in), the ground of the player's map, then the other map's, then the floors above; the order follows the
  * player as they move. One region after another on a thread of its own at the lowest priority, so the game and the
- * map's own drawing come first, and paused while the map is drawing what is on screen. After a game update only the
- * changed regions are drawn again, when they are next looked at.
+ * map's own drawing come first, and paused while the map is drawing what is on screen. After a game update that
+ * changed a region, it is drawn again when next looked at; one that changed the tables every region is drawn from
+ * leaves every saved floor stale, and they are all built again here in the background.
  */
 @Slf4j
 final class MapPreparer
@@ -58,6 +59,8 @@ final class MapPreparer
 	private volatile boolean listed;
 	/** The region the list was last sorted around. */
 	private int sortedFor = -1;
+	/** What the tables every region is drawn from hashed to when the list was made: a saved floor with another is stale. */
+	private long stamp;
 
 	MapPreparer(RegionImages images, MapSource source, BooleanSupplier enabled, Supplier<WorldPoint> focus)
 	{
@@ -158,7 +161,7 @@ final class MapPreparer
 		for (int up = 1; up < RegionImages.PLANES; up++)
 		{
 			Integer floor = RegionImages.key(up, RegionImages.region(key));
-			if (store.has(floor))
+			if (store.isCurrent(floor, stamp))
 			{
 				todo.remove(floor);
 			}
@@ -290,6 +293,28 @@ final class MapPreparer
 		if (regions != null)
 		{
 			images.setRegionsInGame(regions);
+			if (!regions.isEmpty())
+			{
+				try
+				{
+					stamp = source.tablesStamp();
+				}
+				catch (CacheNotReadyException e)
+				{
+					// the tables are not downloaded yet: listed on a later step
+					restUntil = System.nanoTime() + REST_NANOS;
+					return null;
+				}
+				catch (MapDataException e)
+				{
+					synchronized (this)
+					{
+						halted = true;
+						restUntil = System.nanoTime() + HALT_NANOS;
+					}
+					return null;
+				}
+			}
 		}
 		synchronized (this)
 		{
@@ -299,6 +324,10 @@ final class MapPreparer
 
 	synchronized Integer next(MapStore store, List<Integer> regions)
 	{
+		if (regions != null && !listed)
+		{
+			stamp = source.tablesStamp();
+		}
 		if (!listed)
 		{
 			if (regions == null || regions.isEmpty())
@@ -311,7 +340,8 @@ final class MapPreparer
 				for (int region : regions)
 				{
 					int key = RegionImages.key(plane, region);
-					if (!store.has(key))
+					// not saved, or saved before a game update changed the tables every region is drawn from
+					if (!store.isCurrent(key, stamp))
 					{
 						todo.add(key);
 					}

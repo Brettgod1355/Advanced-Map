@@ -53,6 +53,12 @@ public class RegionImagesCacheTest
 			return regionIds;
 		}
 
+		@Override
+		public long tablesStamp()
+		{
+			return hash >>> 32;
+		}
+
 		private static final byte[] TERRAIN = flatTerrain();
 		private final UnderlayDefinition grass = new UnderlayLoader().load(0, new byte[]{1, 0x4C, 0x7A, 0x2B, 0});
 

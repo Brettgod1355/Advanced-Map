@@ -138,4 +138,45 @@ public class MapPreparerTest
 			executor.shutdownNow();
 		}
 	}
+
+	@Test
+	public void aChangeToTheTablesEveryRegionIsDrawnFromListsEverySavedFloorAgain() throws Exception
+	{
+		java.util.concurrent.ExecutorService executor = java.util.concurrent.Executors.newSingleThreadExecutor();
+		try
+		{
+			RegionImagesCacheTest.Flat flat = new RegionImagesCacheTest.Flat();
+			RegionImages images = new RegionImages(flat, executor, new MapIcons());
+			MapStore store = MapStore.open(net.runelite.client.util.Filepath.Unchecked.getRooted(
+				folder.getRoot().toPath()));
+			images.setStore(store);
+			java.util.List<Integer> regions = java.util.Arrays.asList(50 << 8 | 50, 51 << 8 | 50);
+			MapPreparer first = new MapPreparer(images, flat, () -> true, () -> LUMBRIDGE);
+			for (Integer key = first.next(store, regions); key != null; key = first.next(store, regions))
+			{
+				images.prepare(key);
+				first.finished(key);
+			}
+			assertEquals(8, store.count());
+			// a game update changed an overlay: every floor's hash has a new top half, so the next client start lists
+			// them all again, and building a ground saves its empty floors above with the new one
+			flat.hash = 1L << 32 | 1;
+			MapPreparer next = new MapPreparer(images, flat, () -> true, () -> LUMBRIDGE);
+			int ground = next.next(store, regions);
+			assertEquals("all eight stale", 8, next.remaining());
+			images.prepare(ground);
+			next.finished(ground);
+			assertEquals("that region's four are current again", 4, next.remaining());
+			assertEquals("the same eight files, four of them new", 8, store.count());
+			// a region whose own data changed but the tables did not is not listed: it is built again when looked at
+			flat.hash = 1L << 32 | 2;
+			MapPreparer later = new MapPreparer(images, flat, () -> true, () -> LUMBRIDGE);
+			later.next(store, regions);
+			assertEquals(4, later.remaining());
+		}
+		finally
+		{
+			executor.shutdownNow();
+		}
+	}
 }
