@@ -290,4 +290,20 @@ public class MapMenuTest
 		assertEquals(Math.max(0, taller.getLines().size() * MapMenu.LINE - tallerRoom), menu.scrolled());
 		g.dispose();
 	}
+
+	@Test
+	public void aPageScrollsByItsOwnTextBeforeItIsFirstDrawn()
+	{
+		// the wheel right after a page is chosen, before a paint: the help scrolls, though a short page was drawn last
+		Map<MapPainter.Button, Rectangle> buttons = MapPainter.buttons(800, 400, false);
+		MapMenu menu = new MapMenu(() -> "saved", MapMenuTest::built);
+		menu.setOpen(true);
+		menu.setPage(MapMenu.Page.REDRAW);
+		Graphics2D g = new BufferedImage(800, 400, BufferedImage.TYPE_INT_ARGB).createGraphics();
+		menu.draw(g, menu.layout(buttons, 800, 400), null);
+		g.dispose();
+		menu.setPage(MapMenu.Page.HELP);
+		menu.scroll(1, menu.layout(buttons, 800, 400));
+		assertTrue(menu.scrolled() > 0);
+	}
 }

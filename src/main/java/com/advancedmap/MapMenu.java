@@ -361,7 +361,9 @@ final class MapMenu
 		{
 			return;
 		}
-		int max = Math.max(0, contentHeight - textRoom(layout));
+		// the text this layout holds; the height last drawn may be another page's
+		int height = layout.getLines() != null ? layout.getLines().size() * LINE : contentHeight;
+		int max = Math.max(0, height - textRoom(layout));
 		scroll = (int) Math.max(0, Math.min(max, scroll + Math.round(notches * ROW * 3)));
 	}
 
