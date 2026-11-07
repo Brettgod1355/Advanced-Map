@@ -228,11 +228,7 @@ public class AdvancedMapPlugin extends Plugin
 			thread.setDaemon(true);
 			return thread;
 		});
-		viewports.put(MapArea.SURFACE, MapArea.SURFACE.newViewport());
-		viewports.put(MapArea.UNDERGROUND, MapArea.UNDERGROUND.newViewport());
-		viewports.get(MapArea.SURFACE).centerOn(LUMBRIDGE.getX(), LUMBRIDGE.getY());
-		viewports.get(MapArea.UNDERGROUND).centerOn(EDGEVILLE_DUNGEON.getX(), EDGEVILLE_DUNGEON.getY());
-		area = MapArea.SURFACE;
+		newViews();
 		mapOpen = false;
 		windowOpen = false;
 		// what was read and drawn before the plugin was last stopped is gone with it: read and drawn again
@@ -1792,14 +1788,30 @@ public class AdvancedMapPlugin extends Plugin
 		return 0;
 	}
 
-	/** Moves the map to a tile: onto its map and floor, centered there. The mouse's back button returns. */
-	private void goTo(WorldPoint to)
+	/** Both maps' views as at the start: the surface at Lumbridge, underground at Edgeville's dungeon. */
+	void newViews()
 	{
-		jumps.jumped(lookingAt());
+		viewports.put(MapArea.SURFACE, MapArea.SURFACE.newViewport());
+		viewports.put(MapArea.UNDERGROUND, MapArea.UNDERGROUND.newViewport());
+		viewports.get(MapArea.SURFACE).centerOn(LUMBRIDGE.getX(), LUMBRIDGE.getY());
+		viewports.get(MapArea.UNDERGROUND).centerOn(EDGEVILLE_DUNGEON.getX(), EDGEVILLE_DUNGEON.getY());
+		area = MapArea.SURFACE;
+	}
+
+	/**
+	 * Moves the map to a tile: onto its map and floor, centered there, as close as the map was (a dungeon's way in
+	 * keeps the zoom, not the other map's own from its last visit; owner, 2026-11-07). The mouse's back button returns.
+	 */
+	void goTo(WorldPoint to)
+	{
+		JumpHistory.Place from = lookingAt();
+		jumps.jumped(from);
 		setFollowing(false);
 		area = MapArea.of(to.getY());
 		plane = to.getPlane();
-		viewports.get(area).centerOn(to.getX(), to.getY());
+		MapViewport there = viewports.get(area);
+		there.setZoom(from.zoom);
+		there.centerOn(to.getX(), to.getY());
 	}
 
 	/** Where the map looks now, for the jump history. */

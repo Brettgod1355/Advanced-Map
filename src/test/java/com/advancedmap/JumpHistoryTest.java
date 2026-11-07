@@ -86,6 +86,32 @@ public class JumpHistoryTest
 	}
 
 	@Test
+	public void aDungeonsWayInKeepsTheZoomAndBackReturnsToTheSurface()
+	{
+		AdvancedMapPlugin plugin = new AdvancedMapPlugin();
+		plugin.newViews();
+		plugin.switchArea();
+		plugin.viewport().setZoom(2);
+		plugin.switchArea();
+		plugin.viewport().setZoom(8);
+		MapViewport.View surface = plugin.viewport().view(1, 1);
+
+		// the Edgeville dungeon's ladder: the underground map, as close as the surface was, not its own 2 of before
+		plugin.goTo(new net.runelite.api.coords.WorldPoint(3097, 9868, 0));
+		assertEquals(MapArea.UNDERGROUND, plugin.area());
+		assertEquals(8, plugin.viewport().view(1, 1).zoom, 0);
+
+		assertTrue(plugin.historyButton(AdvancedMapPlugin.BACK_BUTTON));
+		assertEquals(MapArea.SURFACE, plugin.area());
+		MapViewport.View back = plugin.viewport().view(1, 1);
+		assertEquals(surface.centerX, back.centerX, 0);
+		assertEquals(surface.centerY, back.centerY, 0);
+		assertEquals(8, back.zoom, 0);
+		assertTrue(plugin.historyButton(AdvancedMapPlugin.FORWARD_BUTTON));
+		assertEquals(MapArea.UNDERGROUND, plugin.area());
+	}
+
+	@Test
 	public void theSideButtonsAreTheMapsAndNoOtherButtonIs()
 	{
 		AdvancedMapPlugin plugin = new AdvancedMapPlugin();
