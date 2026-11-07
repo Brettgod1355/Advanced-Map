@@ -1752,7 +1752,7 @@ public class AdvancedMapPlugin extends Plugin
 	WorldPoint linkDestination(MapSpot spot)
 	{
 		ClientMapSource links = source;
-		if (links == null || !IconGroup.mayBeEntrance(spot.getCategory()))
+		if (links == null || !IconGroup.mayBeEntrance(spot))
 		{
 			return null;
 		}

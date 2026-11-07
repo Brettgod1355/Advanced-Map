@@ -63,4 +63,13 @@ public class SkillSpotsTest
 		assertTrue(IconGroup.mayBeEntrance(1062));
 		assertTrue(IconGroup.mayBeEntrance(1104));
 	}
+
+	@Test
+	public void aTeleportBesideADungeonsWayInKeepsItsOwnDetails()
+	{
+		// the Skull Sceptre lands two tiles from the Stronghold of Security's hole: pointing at it showed the
+		// Stronghold's preview, never the teleport's box (owner, 2026-11-07)
+		MapSpot sceptre = MapSpot.teleport(Teleport.named("STRONGHOLD_OF_SECURITY"));
+		assertFalse(IconGroup.mayBeEntrance(sceptre));
+	}
 }
