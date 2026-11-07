@@ -544,8 +544,9 @@ public class AdvancedMapPlugin extends Plugin
 				log.debug("could not read the house and boats", e);
 			}
 		}
-		else if (state != GameState.LOADING)
+		else if (state != GameState.LOADING && state != GameState.HOPPING)
 		{
+			// out of the game; a scene load or a world hop keeps the account and its pins
 			yourPlaces = Collections.emptyList();
 		}
 		return yourPlaces;
@@ -802,10 +803,11 @@ public class AdvancedMapPlugin extends Plugin
 			// game has them (after a login they arrive a tick after this event), not at the refresh up to 3 s later
 			progressDue = true;
 		}
-		if (windowOpen && (state == GameState.LOGIN_SCREEN || state == GameState.HOPPING))
+		if (windowOpen && state == GameState.LOGIN_SCREEN)
 		{
 			// the window stays open, and no game tick comes on the login screen to read the account again: read now, so
-			// it stops showing the last account's quests, levels and locks (client thread)
+			// it stops showing the last account's quests, levels and locks (client thread). A hop keeps the account, so
+			// it keeps them through the hop as through a scene load, read again on the tick after it
 			readProgress();
 		}
 		MapInput keys = input;
@@ -904,10 +906,11 @@ public class AdvancedMapPlugin extends Plugin
 	/** Reads the player's levels and quests again, keeping the last copy if the game cannot answer now. */
 	private void readProgress()
 	{
-		if (client.getGameState() == GameState.LOADING)
+		GameState state = client.getGameState();
+		if (state == GameState.LOADING || state == GameState.HOPPING)
 		{
-			// the game reads as logged out while a scene loads: the last levels and quests are kept, and read again on
-			// the tick after the load ends (progressDue), not shown as an empty account meanwhile
+			// the game reads as logged out while a scene loads or a hop is under way: the last levels and quests are kept,
+			// read again on the tick after (progressDue), not shown as an empty account meanwhile
 			return;
 		}
 		try
