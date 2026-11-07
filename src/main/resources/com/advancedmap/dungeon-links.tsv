@@ -55,3 +55,5 @@
 3483	9510	2	3227	3108	0	In game, 2026-11-07: Kalphite Lair, the rope up to its entrance in the desert
 3060	9764	0	3728	5692	0	In game, 2026-11-07: Dwarven Mine, the way into the Motherlode Mine, where it lands
 3728	5692	0	3060	9764	0	In game, 2026-11-07: Motherlode Mine, the way back out to the Dwarven Mine	Dwarven Mine
+3056	9744	0	3718	5678	0	In game, 2026-11-07: Mining Guild, the way into the Motherlode Mine, to its west ladder
+3718	5678	0	3056	9744	0	In game, 2026-11-07: Motherlode Mine's west ladder, back to the Mining Guild	Mining Guild
