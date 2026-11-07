@@ -180,6 +180,24 @@ public class MapSearchTest
 	}
 
 	@Test
+	public void theTearsOfGuthixOpensOnTheCavesFloor() throws IOException
+	{
+		// RuneLite's list says floor 0; the cave is on floor 2, U3 (owner, 2026-11-07: search should show U3)
+		try (java.io.InputStream in = MapSearch.class.getResourceAsStream("places.tsv"))
+		{
+			for (MapSearch.Entry place : MapSearch.parsePlaces(in))
+			{
+				if (place.getName().equals("Tears of Guthix"))
+				{
+					assertEquals(Collections.singletonList(new WorldPoint(3257, 9517, 2)), place.getPoints());
+					return;
+				}
+			}
+		}
+		throw new AssertionError("no Tears of Guthix in places.tsv");
+	}
+
+	@Test
 	public void entrancesWithTheSameNameAreOneEntry() throws IOException
 	{
 		String tsv = "D\tSmoke Dungeon\t3309\t2962\t0\nD\tSmoke Dungeon\t3206\t9379\t0\nG\tCastle Wars\t2440\t3090\t0\n";

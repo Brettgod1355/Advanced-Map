@@ -293,7 +293,8 @@ G	Soul Wars	2209	2855	0
 G	Soul Wars	3082	3474	0
 G	Tackle Organized Crime	1503	3635	0
 G	Tai Bwo Wannai Cleanup	2795	3066	0
-G	Tears of Guthix	3257	9517	0
+# RuneLite's list has floor 0; the cave is on floor 2 (owner in game, 2026-11-07: search should open on U3)
+G	Tears of Guthix	3257	9517	2
 G	Temple Trekking	3479	3240	0
 G	The Gauntlet	3223	12505	1
 G	The Mess	1640	3626	0
