@@ -27,8 +27,8 @@ import net.runelite.api.coords.WorldPoint;
  * crossing a tile the game has nothing on (the dark between caves), found on the map's own smallest pictures, and
  * without leaving the game's own map of that part of the underground ("Taverley Underground" ends where the Dwarven
  * Mines begin, though their floors touch). From there it follows the ladders, ropes and stairs that stay on that map
- * ({@code inner-links.tsv}, and the game's own map links), so the floors below count too, except a way with its own
- * icon in {@code dungeon-links.tsv}, which has its own preview (the Kalphite Queen's chamber, below the lair).
+ * ({@code inner-links.tsv}, and the game's own map links), so the floors below count too: the Kalphite Queen is a
+ * rope below the lair's tunnels. A way back to the icon pointed at is not followed.
  */
 final class DungeonPreview
 {
@@ -282,10 +282,30 @@ final class DungeonPreview
 	}
 
 	/**
-	 * The monsters inside the dungeon an entrance leads to ({@code to}), from what is known of its floor so far; while
-	 * some of it is still being drawn, looked through again every so often, and the pictures asked for.
+	 * The ways a preview follows: all but those back to the icon pointed at, whose own floor is not "inside". The
+	 * Kalphite Queen's chamber counts from the desert's entrance, not from the chamber's rope up to the lair (owner,
+	 * 2026-11-07: "KQ is not in the lair, only the chamber"; "KQ should be on the list from the surface level").
 	 */
-	Look look(WorldPoint to)
+	static List<Way> notBackTo(List<Way> ways, WorldPoint from)
+	{
+		List<Way> out = new ArrayList<>();
+		for (Way way : ways)
+		{
+			WorldPoint to = way.getTo();
+			if (to.getPlane() != from.getPlane() || Math.abs(to.getX() - from.getX()) > RegionImages.LINK_REACH
+				|| Math.abs(to.getY() - from.getY()) > RegionImages.LINK_REACH)
+			{
+				out.add(way);
+			}
+		}
+		return out;
+	}
+
+	/**
+	 * The monsters inside the dungeon an entrance ({@code from}) leads to ({@code to}), from what is known of its floor
+	 * so far; while some of it is still being drawn, looked through again every so often, and the pictures asked for.
+	 */
+	Look look(WorldPoint to, WorldPoint from)
 	{
 		Look known = looked.get(to);
 		long now = System.nanoTime();
@@ -293,11 +313,9 @@ final class DungeonPreview
 		{
 			return known;
 		}
-		List<Way> ways = new ArrayList<>(innerWays);
-		ways.addAll(mapWays);
-		// a way with its own icon in dungeon-links.tsv has its own preview: the Kalphite Queen is in her chamber's,
-		// not the lair's (owner, 2026-11-07: "KQ is not in the lair, only the chamber")
-		ways.removeIf(way -> DungeonLinks.listedNear(way.getFrom()));
+		List<Way> innerAndMap = new ArrayList<>(innerWays);
+		innerAndMap.addAll(mapWays);
+		List<Way> ways = notBackTo(innerAndMap, from);
 		List<List<WorldMapElements.Piece>> mapsNow = maps;
 		java.util.concurrent.Executor run = executor;
 		if (run == null)

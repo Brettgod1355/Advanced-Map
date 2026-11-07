@@ -226,6 +226,32 @@ public class DungeonPreviewTest
 	}
 
 	@Test
+	public void theQueensChamberCountsFromTheDesertButNotFromItsOwnRopeUp() throws Exception
+	{
+		List<DungeonPreview.Way> all;
+		try (java.io.InputStream in = DungeonPreview.class.getResourceAsStream("inner-links.tsv"))
+		{
+			all = DungeonPreview.parseWays(in);
+		}
+		WorldPoint chamber = new WorldPoint(3508, 9493, 0);
+		// the desert's entrance: the lair's ways down to the chamber are followed, so its Queen is listed
+		assertTrue(downToChamber(DungeonPreview.notBackTo(all, new WorldPoint(3227, 3108, 0)), chamber) > 0);
+		// the chamber's rope up to the lair: the ways back down to where the player stands are not
+		assertEquals(0, downToChamber(DungeonPreview.notBackTo(all, chamber), chamber));
+	}
+
+	private static int downToChamber(List<DungeonPreview.Way> ways, WorldPoint chamber)
+	{
+		int count = 0;
+		for (DungeonPreview.Way way : ways)
+		{
+			count += way.getTo().getPlane() == chamber.getPlane() && Math.abs(way.getTo().getX() - chamber.getX()) <= 2
+				&& Math.abs(way.getTo().getY() - chamber.getY()) <= 2 ? 1 : 0;
+		}
+		return count;
+	}
+
+	@Test
 	public void aLinksOwnNameWinsAndAWayOutNamedForItsDungeonGoesUpToTheSurface()
 	{
 		// the Queen's chamber's rope up: the label nearest where it lands is the chamber's own, a floor below

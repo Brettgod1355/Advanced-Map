@@ -15,7 +15,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.coords.WorldPoint;
 
 /**
  * Dungeon entrances the game's own map links leave out (its icon there leads nowhere, on RuneLite's map too), with
@@ -63,12 +62,6 @@ final class DungeonLinks
 			}
 		}
 		return null;
-	}
-
-	/** True when the list has a link from within {@link RegionImages#LINK_REACH} of a tile. */
-	static boolean listedNear(WorldPoint at)
-	{
-		return MapLinks.destinationNear(EXTRA, at.getX(), at.getY(), at.getPlane(), RegionImages.LINK_REACH) >= 0;
 	}
 
 	/** The links the list adds. */

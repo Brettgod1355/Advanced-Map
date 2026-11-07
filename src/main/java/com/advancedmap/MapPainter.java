@@ -1201,7 +1201,8 @@ final class MapPainter
 			title = DungeonPreview.wayOutTitle(name, search.places());
 		}
 		boolean inside = toArea == MapArea.UNDERGROUND;
-		DungeonPreview.Look look = inside ? preview.look(to) : null;
+		DungeonPreview.Look look = inside ? preview.look(to, new WorldPoint(spot.getX(), spot.getY(), spot.getPlane()))
+			: null;
 		MapViewport.View small = DungeonPreview.framing(to, look == null ? null : look.getFirstFloor());
 		images.requestBesides(to.getPlane(), regionsOn(small, toArea), RegionImages.Level.forZoom(small.zoom),
 			inside ? DungeonPreview.regionsAround(look.getFloors()) : Collections.emptyList());
