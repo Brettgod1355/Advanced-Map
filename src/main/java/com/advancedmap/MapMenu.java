@@ -11,6 +11,7 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Shape;
+import java.awt.font.FontRenderContext;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -137,7 +138,7 @@ final class MapMenu
 	private static final int SCROLL_ROOM = 6;
 	/** The widest a page gets: its text column and the padding around it, no wider. */
 	private static final int WIDEST_PAGE = WIDEST_TEXT + PAD * 2 + SCROLL_ROOM;
-	/** How tall a line of a page's text is. */
+	/** How tall a line of a page's text is; a heading's is {@link SideList#BOLD_LINE}, its font standing taller. */
 	static final int LINE = new java.awt.image.BufferedImage(1, 1, java.awt.image.BufferedImage.TYPE_INT_ARGB)
 		.createGraphics().getFontMetrics(FontManager.getRunescapeSmallFont()).getHeight();
 	private static final Color LIT = new Color(255, 255, 255, 34);
@@ -155,6 +156,11 @@ final class MapMenu
 	private volatile int scroll;
 	/** How tall the open page's text was last drawn, for scrolling. */
 	private volatile int contentHeight;
+	/**
+	 * How the painter last drew text: the page is wrapped by it. On a screen scaled by Windows (1.75 here) a line of the
+	 * RuneScape fonts runs some 4% wider than unscaled, so text wrapped unscaled ran past the page's right edge.
+	 */
+	private volatile FontRenderContext measure = new FontRenderContext(null, false, false);
 
 	MapMenu(Supplier<String> savedStatus, Supplier<Build> build)
 	{
@@ -228,28 +234,58 @@ final class MapMenu
 		return layout(buttons, width, height, open, wrappedLines(open, textWidth(pageWidth(buttons, width))));
 	}
 
+	/** Wraps the page from now on as {@code g} draws text: called by the painter before it lays the menu out. */
+	void measureWith(Graphics2D g)
+	{
+		FontRenderContext drawn = g.getFontRenderContext();
+		if (!drawn.equals(measure))
+		{
+			measure = drawn;
+		}
+	}
+
 	@Value
 	private static class Wrapped
 	{
-		/** The page, the width and what its text says that changes (the build's progress, the saved map). */
+		/** The page, the column and what its text says that changes (the build's progress, the saved map). */
 		List<Object> key;
 		List<Line> lines;
 	}
 
-	/** A page's lines, wrapped again only when the page, the width or its changing text is not what it was. */
+	/** How wide a page's text is, and how its words are measured. */
+	@Value
+	static class Column
+	{
+		int width;
+		FontRenderContext measure;
+	}
+
+	/** A page's lines, wrapped again only when the page, the column or its changing text is not what it was. */
 	private List<Line> wrappedLines(Page page, int width)
 	{
 		Object state = state(page);
-		List<Object> key = java.util.Arrays.asList(page, width, state);
+		Column column = new Column(width, measure);
+		List<Object> key = java.util.Arrays.asList(page, column, state);
 		Wrapped last = wrapped;
 		if (last != null && last.getKey().equals(key))
 		{
 			return last.getLines();
 		}
 		// wrapped from the very state the key holds, read once: never another moment's
-		List<Line> lines = lines(page, width, state);
+		List<Line> lines = lines(page, column, state);
 		wrapped = new Wrapped(key, lines);
 		return lines;
+	}
+
+	/** How tall a page's lines are: a heading as its bold font, every other line as the text's. */
+	static int height(List<Line> lines)
+	{
+		int height = 0;
+		for (Line line : lines)
+		{
+			height += line.isHeading() ? SideList.BOLD_LINE : LINE;
+		}
+		return height;
 	}
 
 	/** How many times a page's text has been wrapped, for a test. */
@@ -268,7 +304,7 @@ final class MapMenu
 		return Math.max(LEAST_CONTENT, Math.min(WIDEST_PAGE, width - x - GAP));
 	}
 
-	private static int textWidth(int pageWidth)
+	static int textWidth(int pageWidth)
 	{
 		return Math.min(WIDEST_TEXT, pageWidth - PAD * 2 - SCROLL_ROOM);
 	}
@@ -280,7 +316,7 @@ final class MapMenu
 	private static Layout layout(Map<MapPainter.Button, Rectangle> buttons, int width, int height, Page page,
 		List<Line> lines)
 	{
-		int textHeight = lines == null ? -1 : lines.size() * LINE;
+		int textHeight = lines == null ? -1 : height(lines);
 		Rectangle button = buttons.get(MapPainter.Button.MENU);
 		int y = button.y + button.height + 4;
 		// the list as tall as its entries and the links under them; a page may run down to the map's bottom edge
@@ -369,7 +405,7 @@ final class MapMenu
 			return;
 		}
 		// the text this layout holds; the height last drawn may be another page's
-		int height = layout.getLines() != null ? layout.getLines().size() * LINE : contentHeight;
+		int height = layout.getLines() != null ? height(layout.getLines()) : contentHeight;
 		int max = Math.max(0, height - textRoom(layout));
 		scroll = (int) Math.max(0, Math.min(max, scroll + Math.round(notches * ROW * 3)));
 	}
@@ -394,7 +430,7 @@ final class MapMenu
 
 	/** A line of a page: its text, and whether it is a heading; or a progress bar, filled {@code bar} of the way. */
 	@Value
-	private static class Line
+	static class Line
 	{
 		String text;
 		boolean heading;
@@ -408,46 +444,46 @@ final class MapMenu
 		return page == Page.WELCOME ? build.get() : page == Page.REDRAW ? savedStatus.get() : null;
 	}
 
-	/** A page's lines, wrapped to {@code width}, its changing part as {@code state} says it. */
-	private List<Line> lines(Page page, int width, Object state)
+	/** A page's lines, wrapped to its {@code column}, its changing part as {@code state} says it. */
+	private List<Line> lines(Page page, Column column, Object state)
 	{
 		wraps++;
 		List<Line> out = new ArrayList<>();
 		switch (page)
 		{
 			case WELCOME:
-				status(out, (Build) state, width);
+				status(out, (Build) state, column);
 				for (String[] section : MapHelp.BUILDING)
 				{
-					heading(out, section[0], width);
-					paragraph(out, section[1], width);
+					heading(out, section[0], column);
+					paragraph(out, section[1], column);
 				}
 				break;
 			case HELP:
 				for (String[] section : MapHelp.ALL)
 				{
-					heading(out, section[0], width);
-					paragraph(out, section[1], width);
+					heading(out, section[0], column);
+					paragraph(out, section[1], column);
 				}
 				break;
 			case WHATS_NEW:
-				heading(out, "Advanced Map " + WhatsNew.VERSION, width);
+				heading(out, "Advanced Map " + WhatsNew.VERSION, column);
 				paragraph(out, WhatsNew.NOTE.isEmpty() ? "Nothing new to see in this version: fixes only."
-					: Character.toUpperCase(WhatsNew.NOTE.charAt(0)) + WhatsNew.NOTE.substring(1) + ".", width);
-				paragraph(out, "Earlier versions and the full notes are on GitHub.", width);
+					: Character.toUpperCase(WhatsNew.NOTE.charAt(0)) + WhatsNew.NOTE.substring(1) + ".", column);
+				paragraph(out, "Earlier versions and the full notes are on GitHub.", column);
 				break;
 			case IMPROVE:
 				paragraph(out, "Ideas, suggestions and bug reports are welcome, on Discord or on GitHub, whichever you"
-					+ " prefer. Both open in your browser.", width);
+					+ " prefer. Both open in your browser.", column);
 				paragraph(out, "If something on the map is wrong or missing, say where. The map itself comes from the"
 					+ " game's own data and keeps up with it; shops, prices, monsters and items on the ground come from"
-					+ " the OSRS Wiki and are updated with the plugin.", width);
+					+ " the OSRS Wiki and are updated with the plugin.", column);
 				break;
 			case REDRAW:
-				paragraph(out, (String) state, width);
+				paragraph(out, (String) state, column);
 				paragraph(out, "Building the map again deletes the map saved on this computer and builds every region"
 					+ " again from the game's data. What this client has already shown stays on the map until it"
-					+ " restarts; everything else is built again as you look around.", width);
+					+ " restarts; everything else is built again as you look around.", column);
 				break;
 			default:
 				break;
@@ -456,77 +492,79 @@ final class MapMenu
 	}
 
 	/** The Welcome page's first lines: how far the building is, with a bar while it goes on. */
-	private static void status(List<Line> out, Build build, int width)
+	private static void status(List<Line> out, Build build, Column column)
 	{
 		if (build.isUnopened())
 		{
-			heading(out, "The saved map could not be opened", width);
+			heading(out, "The saved map could not be opened", column);
 			paragraph(out, "The client's log says why. Until it is put right, the map is drawn as you look around and"
-				+ " nothing is saved; a client restart tries again.", width);
+				+ " nothing is saved; a client restart tries again.", column);
 		}
 		else if (build.isHalted())
 		{
-			heading(out, "Building stopped", width);
+			heading(out, "Building stopped", column);
 			paragraph(out, String.format(java.util.Locale.ROOT, "The game's map data could not be read: a game update"
 				+ " may have changed its format. What is saved (%,d regions and floors) still shows; nothing more is"
 				+ " built until Advanced Map is updated, which RuneLite does by itself.", Math.max(0, build.getSaved())),
-				width);
+				column);
 		}
 		else if (build.getSaved() < 0)
 		{
-			heading(out, "Getting ready", width);
-			paragraph(out, "The map starts building a few seconds after the client starts.", width);
+			heading(out, "Getting ready", column);
+			paragraph(out, "The map starts building a few seconds after the client starts.", column);
 		}
 		else if (!build.isBackground())
 		{
-			heading(out, "Built as you look around", width);
+			heading(out, "Built as you look around", column);
 			paragraph(out, String.format(java.util.Locale.ROOT, "\"Build the whole map\" is off in the settings, so"
 				+ " only the places you look at are built and saved: %,d regions and floors so far.", build.getSaved()),
-				width);
+				column);
 		}
 		else if (build.getLeft() < 0)
 		{
-			heading(out, "Building the map", width);
-			paragraph(out, "Counting what is left to build...", width);
+			heading(out, "Building the map", column);
+			paragraph(out, "Counting what is left to build...", column);
 		}
 		else if (build.getLeft() > 0)
 		{
 			int total = build.getSaved() + build.getLeft();
-			heading(out, String.format(java.util.Locale.ROOT, "Building the map: %,d to go", build.getLeft()), width);
+			heading(out, String.format(java.util.Locale.ROOT, "Building the map: %,d to go", build.getLeft()), column);
 			out.add(new Line("", false, (double) build.getSaved() / total));
 			paragraph(out, String.format(java.util.Locale.ROOT, "%,d regions and floors built of %,d. You can play"
-				+ " and use the map meanwhile.", build.getSaved(), total), width);
+				+ " and use the map meanwhile.", build.getSaved(), total), column);
 		}
 		else
 		{
-			heading(out, "The map is built", width);
+			heading(out, "The map is built", column);
 			paragraph(out, String.format(java.util.Locale.ROOT, "All %,d regions and floors are saved on this"
 				+ " computer, for every character.", build.getSaved()) + (build.getFailed() == 0 ? "" : String.format(
 				java.util.Locale.ROOT, " %,d could not be built; the client's log says why.", build.getFailed())),
-				width);
+				column);
 		}
 	}
 
-	private static void heading(List<Line> out, String text, int width)
+	private static void heading(List<Line> out, String text, Column column)
 	{
 		if (!out.isEmpty())
 		{
 			out.add(new Line("", false, -1));
 		}
-		for (String line : SideList.wrap(text, width, FontManager.getRunescapeBoldFont()))
+		for (String line : SideList.wrap(text, column.getWidth(), FontManager.getRunescapeBoldFont(),
+			column.getMeasure()))
 		{
 			out.add(new Line(line, true, -1));
 		}
 	}
 
-	private static void paragraph(List<Line> out, String text, int width)
+	private static void paragraph(List<Line> out, String text, Column column)
 	{
 		Line last = out.isEmpty() ? null : out.get(out.size() - 1);
 		if (last != null && !last.isHeading() && (!last.getText().isEmpty() || last.getBar() >= 0))
 		{
 			out.add(new Line("", false, -1));
 		}
-		for (String line : SideList.wrap(text, width))
+		for (String line : SideList.wrap(text, column.getWidth(), FontManager.getRunescapeSmallFont(),
+			column.getMeasure()))
 		{
 			out.add(new Line(line, false, -1));
 		}
@@ -570,9 +608,8 @@ final class MapMenu
 		int bottom = top + textRoom(layout);
 		Rectangle text = new Rectangle(content.x, top, content.width, bottom - top);
 		List<Line> lines = layout.getLines() != null ? layout.getLines()
-			: lines(shown, textWidth(content.width), state(shown));
-		int lineHeight = LINE;
-		contentHeight = lines.size() * lineHeight;
+			: lines(shown, new Column(textWidth(content.width), measure), state(shown));
+		contentHeight = height(lines);
 		// drawn no further than the text's end, also after the page got taller or its text shorter; kept here, not
 		// written back, where the wheel (another thread) may be scrolling meanwhile
 		int shownScroll = Math.min(scroll, Math.max(0, contentHeight - text.height));
@@ -581,6 +618,7 @@ final class MapMenu
 		int y = top - shownScroll;
 		for (Line line : lines)
 		{
+			int lineHeight = line.isHeading() ? SideList.BOLD_LINE : LINE;
 			if (line.getBar() >= 0 && y + lineHeight >= top && y <= bottom)
 			{
 				int barWidth = textWidth(content.width);
@@ -594,9 +632,11 @@ final class MapMenu
 			}
 			else if (y + lineHeight >= top && y <= bottom)
 			{
+				// each line on its own font's baseline: a heading's bold letters stand taller than the text's, and
+				// drawn on the text's they were cut at the top of the first line
 				g.setFont(line.isHeading() ? FontManager.getRunescapeBoldFont() : FontManager.getRunescapeSmallFont());
 				g.setColor(MapFilters.TEXT);
-				g.drawString(line.getText(), content.x + PAD, y + metrics.getAscent());
+				g.drawString(line.getText(), content.x + PAD, y + g.getFontMetrics().getAscent());
 			}
 			y += lineHeight;
 		}

@@ -437,11 +437,22 @@ final class SideList
 	static List<String> wrap(String text, int width, java.awt.Font font)
 	{
 		FontMetrics metrics = MEASURE.getFontMetrics(font);
+		return wrap(text, width, metrics::stringWidth);
+	}
+
+	/** As {@link #wrap(String, int, java.awt.Font)}, measured as a painter with {@code measure} draws the text. */
+	static List<String> wrap(String text, int width, java.awt.Font font, java.awt.font.FontRenderContext measure)
+	{
+		return wrap(text, width, line -> (int) Math.ceil(font.getStringBounds(line, measure).getWidth()));
+	}
+
+	private static List<String> wrap(String text, int width, java.util.function.ToIntFunction<String> widthOf)
+	{
 		List<String> lines = new ArrayList<>();
 		StringBuilder line = new StringBuilder();
 		for (String word : text.split(" "))
 		{
-			if (line.length() > 0 && metrics.stringWidth(line + " " + word) > width)
+			if (line.length() > 0 && widthOf.applyAsInt(line + " " + word) > width)
 			{
 				lines.add(line.toString());
 				line.setLength(0);

@@ -526,7 +526,8 @@ final class MapPainter
 		search.draw(g, search.layout(buttons(view.width, view.height, window), view.width), mouse);
 		if (menuOpen)
 		{
-			// over everything else: its page covers most of the map
+			// over everything else: its page covers most of the map, wrapped as this graphics draws its text
+			shownMenu.measureWith(g);
 			shownMenu.draw(g, shownMenu.layout(buttons(view.width, view.height, window), view.width, view.height),
 				mouse);
 		}

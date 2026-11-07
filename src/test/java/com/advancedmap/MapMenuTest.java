@@ -284,13 +284,13 @@ public class MapMenuTest
 		// the text's height less the room between the title (8 + 26 + 4) and the page's foot (8): the last line
 		// ends at the bottom of that room, with nothing blank under it
 		int room = layout.getContent().height - (8 + 26 + 4) - 8;
-		assertEquals(layout.getLines().size() * MapMenu.LINE - room, menu.scrolled());
+		assertEquals(MapMenu.height(layout.getLines()) - room, menu.scrolled());
 		// a taller map shows more of the text: the next turn of the wheel takes the scroll back to the new end
 		MapMenu.Layout taller = menu.layout(MapPainter.buttons(800, 700, false), 800, 700);
 		menu.draw(g, taller, null);
 		menu.scroll(0, taller);
 		int tallerRoom = taller.getContent().height - (8 + 26 + 4) - 8;
-		assertEquals(Math.max(0, taller.getLines().size() * MapMenu.LINE - tallerRoom), menu.scrolled());
+		assertEquals(Math.max(0, MapMenu.height(taller.getLines()) - tallerRoom), menu.scrolled());
 		g.dispose();
 	}
 
@@ -308,5 +308,33 @@ public class MapMenuTest
 		menu.setPage(MapMenu.Page.HELP);
 		menu.scroll(1, menu.layout(buttons, 800, 400));
 		assertTrue(menu.scrolled() > 0);
+	}
+
+	@Test
+	public void onAScreenWindowsScalesEveryLineStaysInsideThePage()
+	{
+		// the owner's screen, scaled 1.75: there the RuneScape fonts draw some 4% wider than unscaled, and the help
+		// wrapped unscaled ran a word past the page's right edge on nearly every line (2026-11-07)
+		Map<MapPainter.Button, Rectangle> buttons = MapPainter.buttons(1280, 800, false);
+		Graphics2D g = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB).createGraphics();
+		g.scale(1.75, 1.75);
+		g.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING, java.awt.RenderingHints.VALUE_ANTIALIAS_ON);
+		for (MapMenu.Page page : PAGES)
+		{
+			MapMenu menu = new MapMenu(() -> "saved", MapMenuTest::built);
+			menu.setOpen(true);
+			menu.setPage(page);
+			menu.measureWith(g);
+			MapMenu.Layout layout = menu.layout(buttons, 1280, 800);
+			int room = MapMenu.textWidth(layout.getContent().width);
+			for (MapMenu.Line line : layout.getLines())
+			{
+				java.awt.Font font = line.isHeading() ? net.runelite.client.ui.FontManager.getRunescapeBoldFont()
+					: net.runelite.client.ui.FontManager.getRunescapeSmallFont();
+				int drawn = g.getFontMetrics(font).stringWidth(line.getText());
+				assertTrue(page + ": \"" + line.getText() + "\" draws " + drawn + " wide in " + room, drawn <= room);
+			}
+		}
+		g.dispose();
 	}
 }
