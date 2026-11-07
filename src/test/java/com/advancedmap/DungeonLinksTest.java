@@ -35,14 +35,15 @@ public class DungeonLinksTest
 	@Test
 	public void theKalphiteLairAndTheQueensChamberLinkBothWays()
 	{
-		// the owner, 2026-11-07, in game: the lair's tunnel (floor 3) down to the chamber, and the rope back up
+		// the owner, 2026-11-07, in game: the lair's tunnel (floor 3) down to the chamber, and the rope back up; each
+		// lands on the tile the player stood on after the climb (Black Box), the chamber's icon on its own landing
 		Map<Integer, Integer> extra = DungeonLinks.extra();
-		int lair = MapLinks.pack(3509, 9497, 2);
-		int chamber = MapLinks.pack(3510, 9492, 0);
+		int lair = MapLinks.pack(3508, 9497, 2);
+		int chamber = MapLinks.pack(3508, 9493, 0);
 		assertEquals(chamber, MapLinks.destinationNear(extra, 3509, 9497, 2, RegionImages.LINK_REACH));
-		assertEquals(lair, MapLinks.destinationNear(extra, 3510, 9492, 0, RegionImages.LINK_REACH));
+		assertEquals(lair, MapLinks.destinationNear(extra, 3508, 9493, 0, RegionImages.LINK_REACH));
 		// on top of each other but a floor apart: each icon leads only its own way
-		assertEquals(-1, MapLinks.destinationNear(extra, 3510, 9492, 1, RegionImages.LINK_REACH));
+		assertEquals(-1, MapLinks.destinationNear(extra, 3508, 9493, 1, RegionImages.LINK_REACH));
 	}
 
 	@Test
