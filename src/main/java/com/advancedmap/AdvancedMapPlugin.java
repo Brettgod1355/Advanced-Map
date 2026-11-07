@@ -919,6 +919,13 @@ public class AdvancedMapPlugin extends Plugin
 		}
 		else if (ShortestPathRoute.NAMESPACE.equals(event.getNamespace()))
 		{
+			if (!client.isClientThread())
+			{
+				// another plugin may post to Shortest Path from the Swing thread (Quest Helper does as a step shuts down),
+				// and the player's place is read from the client: done there instead (seen 2026-11-03, Black Box)
+				clientThread.invokeLater(() -> onPluginMessage(event));
+				return;
+			}
 			Map<String, Object> query = route.onMessage(event.getName(), event.getData(), currentPlayerLocation(), layers);
 			if (query != null)
 			{
