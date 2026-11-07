@@ -798,9 +798,9 @@ public class AdvancedMapPlugin extends Plugin
 		}
 		if ((mapOpen || windowOpen) && state == GameState.LOGGED_IN)
 		{
-			// a load just ended (or a login): a map opened during it has the account's levels and quests at once, not
-			// at the next refresh up to 3 s later
-			readProgress();
+			// a load just ended, or a login or hop: the account's levels and quests are read on the next tick, when the
+			// game has them (after a login they arrive a tick after this event), not at the refresh up to 3 s later
+			progressDue = true;
 		}
 		if (windowOpen && (state == GameState.LOGIN_SCREEN || state == GameState.HOPPING))
 		{
@@ -838,7 +838,9 @@ public class AdvancedMapPlugin extends Plugin
 		{
 			lastSeen = Prifddinas.toSurface(here);
 		}
-		if ((mapOpen || windowOpen) && ++ticks % PROGRESS_TICKS == 0)
+		boolean due = progressDue;
+		progressDue = false;
+		if ((mapOpen || windowOpen) && (++ticks % PROGRESS_TICKS == 0 || due))
 		{
 			readProgress();
 		}
@@ -897,6 +899,9 @@ public class AdvancedMapPlugin extends Plugin
 	}
 
 	/** Reads the player's levels and quests again, keeping the last copy if the game cannot answer now. */
+	/** A login, a hop or the end of a scene load asks for the levels and quests on the next game tick. */
+	private volatile boolean progressDue;
+
 	private void readProgress()
 	{
 		if (client.getGameState() == GameState.LOADING)
