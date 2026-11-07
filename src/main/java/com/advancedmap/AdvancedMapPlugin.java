@@ -898,16 +898,16 @@ public class AdvancedMapPlugin extends Plugin
 		menu.popUp(page);
 	}
 
-	/** Reads the player's levels and quests again, keeping the last copy if the game cannot answer now. */
 	/** A login, a hop or the end of a scene load asks for the levels and quests on the next game tick. */
 	private volatile boolean progressDue;
 
+	/** Reads the player's levels and quests again, keeping the last copy if the game cannot answer now. */
 	private void readProgress()
 	{
 		if (client.getGameState() == GameState.LOADING)
 		{
-			// the game reads as logged out while a scene loads: the last levels and quests are kept, and read again as
-			// the load ends (onGameStateChanged), not shown as an empty account meanwhile
+			// the game reads as logged out while a scene loads: the last levels and quests are kept, and read again on
+			// the tick after the load ends (progressDue), not shown as an empty account meanwhile
 			return;
 		}
 		try
@@ -2973,6 +2973,9 @@ public class AdvancedMapPlugin extends Plugin
 			}
 			player = Prifddinas.toSurface(currentPlayerLocation());
 			readProgress();
+			// and again on the next tick: a map opened in the tick right after a login read the account before its
+			// levels and quests had come
+			progressDue = true;
 			listRegions();
 			loadLabels();
 			WorldPoint center = at != null ? at : player != null ? player : LUMBRIDGE;
