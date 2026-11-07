@@ -6,6 +6,13 @@
 package com.advancedmap;
 
 import java.awt.Color;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import lombok.Value;
@@ -39,6 +46,14 @@ final class MapLabels
 		Color color;
 	}
 
+	/** How far from a {@code label-names.tsv} row's tile the game's label may be. */
+	static final int RENAME_REACH = 16;
+	/**
+	 * The game's labels Advanced Map names otherwise, from {@code label-names.tsv}: x, y, the game's text, the name
+	 * instead ("Lower level" over the Motherlode Mine; owner, 2026-11-07). In a data file, so a rename costs no tokens.
+	 */
+	private static final List<String[]> RENAMES = readRenames();
+
 	private volatile List<Label> labels = Collections.emptyList();
 
 	List<Label> all()
@@ -48,7 +63,50 @@ final class MapLabels
 
 	void set(List<Label> loaded)
 	{
-		labels = Collections.unmodifiableList(loaded);
+		List<Label> named = new ArrayList<>(loaded.size());
+		for (Label label : loaded)
+		{
+			named.add(renamed(label));
+		}
+		labels = Collections.unmodifiableList(named);
+	}
+
+	/** A label as Advanced Map names it: the list's name for the game's text near its tile, "|" breaking lines. */
+	static Label renamed(Label label)
+	{
+		String text = String.join(" ", label.getLines());
+		for (String[] row : RENAMES)
+		{
+			if (row[2].equalsIgnoreCase(text) && Math.abs(Integer.parseInt(row[0]) - label.getX()) <= RENAME_REACH
+				&& Math.abs(Integer.parseInt(row[1]) - label.getY()) <= RENAME_REACH)
+			{
+				return new Label(Arrays.asList(row[3].split("\\|")), label.getX(), label.getY(), label.getSize(),
+					label.getColor());
+			}
+		}
+		return label;
+	}
+
+	private static List<String[]> readRenames()
+	{
+		List<String[]> out = new ArrayList<>();
+		try (InputStream in = MapLabels.class.getResourceAsStream("label-names.tsv"))
+		{
+			BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
+			String line;
+			while ((line = reader.readLine()) != null)
+			{
+				if (!line.isEmpty() && !line.startsWith("#"))
+				{
+					out.add(line.split("\t"));
+				}
+			}
+		}
+		catch (IOException | RuntimeException e)
+		{
+			// the game's own names then
+		}
+		return out;
 	}
 
 	/** True when labels of a size show at a zoom. */

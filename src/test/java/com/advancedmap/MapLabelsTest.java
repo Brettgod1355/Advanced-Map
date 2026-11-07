@@ -50,4 +50,27 @@ public class MapLabelsTest
 		assertEquals(new WorldMapElements.Element(7, 48 * 64 + 10, 150 * 64 + 20, 0), elements.get(0));
 		assertEquals(new WorldMapElements.Element(8, 3100, 3500, 0), elements.get(1));
 	}
+
+	@Test
+	public void aLabelTheListRenamesNearItsTileTakesTheNewNameAndOnlyThere()
+	{
+		// the owner, 2026-11-07: the game's "Lower level" over the Motherlode Mine reads "Motherlode Mine"
+		MapLabels.Label lower = new MapLabels.Label(java.util.Arrays.asList("Lower", "level"), 3745, 5698,
+			MapLabels.PLACE, java.awt.Color.YELLOW);
+		MapLabels.Label renamed = MapLabels.renamed(lower);
+		assertEquals(java.util.Collections.singletonList("Motherlode Mine"), renamed.getLines());
+		assertEquals(lower.getX(), renamed.getX());
+		assertEquals(lower.getColor(), renamed.getColor());
+		// another "Lower level" elsewhere keeps the game's name, and so does another label by the mine
+		MapLabels.Label elsewhere = new MapLabels.Label(java.util.Collections.singletonList("Lower level"), 2900, 9900,
+			MapLabels.PLACE, java.awt.Color.YELLOW);
+		assertEquals(elsewhere, MapLabels.renamed(elsewhere));
+		MapLabels.Label other = new MapLabels.Label(java.util.Collections.singletonList("Upper level"), 3745, 5698,
+			MapLabels.PLACE, java.awt.Color.YELLOW);
+		assertEquals(other, MapLabels.renamed(other));
+		// what the map, its search and its previews read
+		MapLabels labels = new MapLabels();
+		labels.set(java.util.Arrays.asList(lower, elsewhere));
+		assertEquals("Motherlode Mine", String.join(" ", labels.all().get(0).getLines()));
+	}
 }

@@ -1,0 +1,5 @@
+# Labels of the game's own world map that Advanced Map names otherwise, read by MapLabels. A row renames the label with
+# the game's text (any case) within 16 tiles of its x, y; "|" in the new name breaks it into lines. Text here costs no
+# Plugin Hub tokens. Tiles are read off the owner's screenshots on Advanced Map's map.
+# x, y, the game's text, the name instead
+3743	5695	Lower level	Motherlode Mine
