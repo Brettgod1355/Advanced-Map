@@ -1231,9 +1231,14 @@ final class MapPainter
 				}
 				list.add(monsters.get(i).text());
 			}
-			if (list.isEmpty())
+			if (list.isEmpty() && look.isComplete())
 			{
-				list.add(look.isComplete() ? "No monsters" : "Looking...");
+				// nothing to fight there (the Motherlode Mine): no column, the small map alone (owner, 2026-11-07)
+				inside = false;
+			}
+			else if (list.isEmpty())
+			{
+				list.add("Looking...");
 			}
 			else if (!look.isComplete())
 			{
