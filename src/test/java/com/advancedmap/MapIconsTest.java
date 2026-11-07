@@ -137,6 +137,36 @@ public class MapIconsTest
 		assertEquals(MapIcons.PLAIN, MapIcons.needLine(need, Progress.NONE).getColor());
 	}
 
+	@Test
+	public void theOtherShortcutsThatNeedADiarySayWhich()
+	{
+		// the wiki's Shortcuts page, 2026-11-07: every shortcut whose use needs a diary (both ends where RuneLite has two)
+		Map<String, Integer> diaries = new HashMap<>();
+		diaries.put("Needs the Easy Falador Diary", net.runelite.api.gameval.VarbitID.FALADOR_DIARY_EASY_COMPLETE);
+		diaries.put("Needs the Medium Wilderness Diary",
+			net.runelite.api.gameval.VarbitID.WILDERNESS_DIARY_MEDIUM_COMPLETE);
+		diaries.put("Needs the Medium Falador Diary", net.runelite.api.gameval.VarbitID.FALADOR_DIARY_MEDIUM_COMPLETE);
+		diaries.put("Needs the Hard Falador Diary", net.runelite.api.gameval.VarbitID.FALADOR_DIARY_HARD_COMPLETE);
+		Map<net.runelite.client.game.AgilityShortcut, String> wanted = new HashMap<>();
+		wanted.put(net.runelite.client.game.AgilityShortcut.GOBLIN_VILLAGE_WALL, "Needs the Easy Falador Diary");
+		wanted.put(net.runelite.client.game.AgilityShortcut.DEEP_WILDERNESS_DUNGEON_CREVICE_NORTH,
+			"Needs the Medium Wilderness Diary");
+		wanted.put(net.runelite.client.game.AgilityShortcut.DEEP_WILDERNESS_DUNGEON_CREVICE_SOUTH,
+			"Needs the Medium Wilderness Diary");
+		wanted.put(net.runelite.client.game.AgilityShortcut.MOTHERLODE_MINE_WALL_EAST, "Needs the Medium Falador Diary");
+		wanted.put(net.runelite.client.game.AgilityShortcut.MOTHERLODE_MINE_WALL_WEST, "Needs the Medium Falador Diary");
+		wanted.put(net.runelite.client.game.AgilityShortcut.HEROES_GUILD_TUNNEL_EAST, "Needs the Hard Falador Diary");
+		wanted.put(net.runelite.client.game.AgilityShortcut.HEROES_GUILD_TUNNEL_WEST, "Needs the Hard Falador Diary");
+		for (Map.Entry<net.runelite.client.game.AgilityShortcut, String> each : wanted.entrySet())
+		{
+			Shortcuts.Need need = Shortcuts.needs(each.getKey());
+			assertEquals(each.getKey().name(), new Shortcuts.Need(each.getValue(), diaries.get(each.getValue())), need);
+			// at RuneLite's own place, which these keep
+			assertEquals(each.getKey().getWorldMapLocation(), Shortcuts.place(each.getKey()));
+		}
+		assertTrue(Shortcuts.needVars().containsAll(diaries.values()));
+	}
+
 	private static Progress diary(int varbit, int value)
 	{
 		return new Progress(true, new int[Skill.values().length], new EnumMap<>(Quest.class), Collections.emptyMap(),
