@@ -466,6 +466,10 @@ public class AdvancedMapPlugin extends Plugin
 		icons = null;
 		labels = null;
 		YourPlaces.forget();
+		// RuneLite keeps the plugin object while it is off: let go of pictures and other plugins' pins
+		itemDiscs.clear();
+		itemDiscsAsked.clear();
+		pins.setOthers(Collections.emptyList());
 		images = null;
 		preparer = null;
 		panel = null;
@@ -756,6 +760,13 @@ public class AdvancedMapPlugin extends Plugin
 				drawn.forget();
 			}
 		}
+		if (state == GameState.LOGGED_IN || state == GameState.LOGIN_SCREEN)
+		{
+			// another account may be next: its farming patches and Slayer task read on the next frame, not 10 s later
+			extrasRead = 0;
+			farmingRead = 0;
+			slayerShown = slayerShown == null ? null : "";
+		}
 		if (windowOpen && (state == GameState.LOGIN_SCREEN || state == GameState.HOPPING))
 		{
 			// the window stays open, and no game tick comes on the login screen to read the account again: read now, so
@@ -965,7 +976,17 @@ public class AdvancedMapPlugin extends Plugin
 	 */
 	boolean mapTakesInput()
 	{
-		return mapOpen && client.getGameState() == GameState.LOGGED_IN;
+		return mapOpen && inGame();
+	}
+
+	/**
+	 * Logged in, or loading a scene (a region's edge, a teleport, often while sailing): the box over the game stays the
+	 * map's. Only the login screen and the like count as out of the game.
+	 */
+	private boolean inGame()
+	{
+		GameState state = client.getGameState();
+		return state == GameState.LOGGED_IN || state == GameState.LOADING;
 	}
 
 	/** True while the game's own right-click menu is open. */
@@ -2901,7 +2922,7 @@ public class AdvancedMapPlugin extends Plugin
 				viewport.setZoom(zoom);
 			}
 			boolean wasOpen = mapOpen || windowOpen;
-			boolean inWindow = opensInWindow(windowOpen, config.popOut(), client.getGameState() == GameState.LOGGED_IN);
+			boolean inWindow = opensInWindow(windowOpen, config.popOut(), inGame());
 			showIn(inWindow);
 			if (inWindow)
 			{
@@ -2983,7 +3004,14 @@ public class AdvancedMapPlugin extends Plugin
 		if (disc == null && itemDiscsAsked.add(itemId))
 		{
 			net.runelite.client.util.AsyncBufferedImage item = itemManager.getImage(itemId);
-			item.onLoaded(() -> itemDiscs.put(itemId, MapIcons.onDisc(item)));
+			item.onLoaded(() ->
+			{
+				// a picture that arrives after the plugin stopped is not kept
+				if (started)
+				{
+					itemDiscs.put(itemId, MapIcons.onDisc(item));
+				}
+			});
 		}
 		return disc;
 	}
