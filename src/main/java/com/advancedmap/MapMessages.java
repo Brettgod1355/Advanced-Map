@@ -96,7 +96,8 @@ class MapMessages
 			case "removeLayer":
 				if (in.get("id") instanceof String)
 				{
-					layers.remove(in.get("id"));
+					// through remove(), so the painters see the change at once rather than on their next heartbeat
+					remove((String) in.get("id"));
 				}
 				break;
 			case "show":
@@ -148,8 +149,8 @@ class MapMessages
 					label instanceof String ? (String) label : null));
 			}
 		}
-		layers.put((String) id, new MapLayer((String) id, (int) number(in.get("order"), 0),
-			Collections.unmodifiableList(lines), Collections.unmodifiableList(markers)));
+		put(new MapLayer((String) id, (int) number(in.get("order"), 0), Collections.unmodifiableList(lines),
+			Collections.unmodifiableList(markers)));
 	}
 
 	private static List<Map<?, ?>> maps(Object value)

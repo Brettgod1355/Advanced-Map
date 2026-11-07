@@ -258,6 +258,10 @@ public class AdvancedMapPlugin extends Plugin
 		selection = null;
 		plane = 0;
 		images = new RegionImages(source, executor, icons);
+		// RuneLite keeps the plugin object between a stop and a start: last run's failure and Sailing icons are not this
+		// run's (a preparer step still finishing at the stop may have put some back after it forgot them)
+		storeFailed = false;
+		YourPlaces.forget();
 		executor.execute(this::openStore);
 		markerFiles = Executors.newSingleThreadExecutor(task ->
 		{
