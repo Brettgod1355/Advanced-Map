@@ -81,7 +81,7 @@ final class MapHelp
 			+ " almost instantly, on every character and RuneLite profile on this computer. Nothing is downloaded."},
 		{"How the map is built", "In the background from the moment the client starts, one region after another: the"
 			+ " ground near you first, then farther out, then the floors above. It uses spare processor time, so the"
-			+ " game comes first, and takes up to about 10 minutes for the whole world. You can play and use the map"
+			+ " game comes first, and takes about 10 to 15 minutes for the whole world. You can play and use the map"
 			+ " meanwhile: places not built yet are blank or blurry, and their icons are missing from the map and the"
 			+ " search. The sidebar tab shows how far along it is. With \"Build the whole map\" off, only what you"
 			+ " look at is built."},

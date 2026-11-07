@@ -194,7 +194,7 @@ choose with Filters on the map itself.
 | Floor numbers | Ground, 2, 3, 4 | How floors above the ground are numbered (or Ground, 1, 2, 3) |
 | Route with | Shortest Path | The plugin "Route here" asks |
 | Say when updated | On | Once after the Plugin Hub updates the plugin: one line in chat, and the What's new page when you next open the map |
-| Build the whole map | On | Builds the rest of the map in the background, nearest you first (up to about 10 minutes, once) |
+| Build the whole map | On | Builds the rest of the map in the background, nearest you first (about 10 to 15 minutes, once) |
 
 The **Icons** section holds a switch per kind of icon (the same as Filters), "Hide completed quests", "Mark what
 you can't use yet", "Icon size" and "Transport names".
@@ -217,7 +217,7 @@ you can't use yet", "Icon size" and "Transport names".
 ## Good to know
 
 - **The first time.** From the moment the client starts, the map builds the regions it has not saved yet in the
-  background, nearest you first, using spare processor time: up to about 10 minutes for the whole world, once per
+  background, nearest you first, using spare processor time: about 10 to 15 minutes for the whole world, once per
   computer, shared by every account and profile. Until then places not built yet are blank or blurry, and the map
   says "Building the map... N to go" at the top left; the sidebar tab shows the same count. Afterwards the map opens
   almost instantly, and a region is built again only when a game update changes it: as you look at it, or all of
