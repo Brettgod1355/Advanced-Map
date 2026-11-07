@@ -796,6 +796,12 @@ public class AdvancedMapPlugin extends Plugin
 				drawn.forget();
 			}
 		}
+		if ((mapOpen || windowOpen) && state == GameState.LOGGED_IN)
+		{
+			// a load just ended (or a login): a map opened during it has the account's levels and quests at once, not
+			// at the next refresh up to 3 s later
+			readProgress();
+		}
 		if (windowOpen && (state == GameState.LOGIN_SCREEN || state == GameState.HOPPING))
 		{
 			// the window stays open, and no game tick comes on the login screen to read the account again: read now, so
@@ -893,6 +899,12 @@ public class AdvancedMapPlugin extends Plugin
 	/** Reads the player's levels and quests again, keeping the last copy if the game cannot answer now. */
 	private void readProgress()
 	{
+		if (client.getGameState() == GameState.LOADING)
+		{
+			// the game reads as logged out while a scene loads: the last levels and quests are kept, and read again as
+			// the load ends (onGameStateChanged), not shown as an empty account meanwhile
+			return;
+		}
 		try
 		{
 			MapIcons current = icons;
@@ -1025,7 +1037,9 @@ public class AdvancedMapPlugin extends Plugin
 	 */
 	boolean mapTakesInput()
 	{
-		return mapOpen && inGame();
+		// logged in, not merely in the game: during a scene load the box stays open but is not drawn, and must not take
+		// clicks the player cannot see land (the PR audit, 2026-11-07)
+		return mapOpen && client.getGameState() == GameState.LOGGED_IN;
 	}
 
 	/**
