@@ -467,6 +467,7 @@ public class AdvancedMapPlugin extends Plugin
 		icons = null;
 		labels = null;
 		YourPlaces.forget();
+		yourPlaces = Collections.emptyList();
 		// RuneLite keeps the plugin object while it is off: let go of pictures and other plugins' pins
 		itemDiscs.clear();
 		itemDiscsAsked.clear();
@@ -514,6 +515,37 @@ public class AdvancedMapPlugin extends Plugin
 		}
 	}
 
+	/** The house and boat pins last read: kept through a scene load, which drops none of them. */
+	private volatile List<MapPins.Pin> yourPlaces = Collections.emptyList();
+
+	/**
+	 * The logged-in account's house and boat pins: read again while logged in, the last ones kept while a scene loads
+	 * (a region's edge, a teleport, often while sailing), none while out of the game. Client thread.
+	 */
+	private List<MapPins.Pin> yourPlaces()
+	{
+		GameState state = client.getGameState();
+		if (state == GameState.LOGGED_IN)
+		{
+			try
+			{
+				// the names read once: the plugin may be stopping on the Swing thread meanwhile
+				yourPlaces = YourPlaces.read(client, labelsNow(), progress.getCategoryNames());
+			}
+			catch (RuntimeException e)
+			{
+				// the game's own varbit table missing (seen on a fresh cache at the login screen, 2026-11-07): the last
+				// pins kept, asked again a second later, never an error out of the frame
+				log.debug("could not read the house and boats", e);
+			}
+		}
+		else if (state != GameState.LOADING)
+		{
+			yourPlaces = Collections.emptyList();
+		}
+		return yourPlaces;
+	}
+
 	/**
 	 * Reads what other plugins and RuneLite keep that the map shows: other plugins' world map markers, the farming
 	 * patches Time Tracking saved (every {@link #FARMING_MILLIS}), the Slayer task. Client thread.
@@ -534,11 +566,9 @@ public class AdvancedMapPlugin extends Plugin
 				return false;
 			});
 		}
-		if (config.yourPlaces() && client.getGameState() == GameState.LOGGED_IN)
+		if (config.yourPlaces())
 		{
-			// the house and boats are the logged-in account's: none while logged out or loading; the names read once,
-			// the plugin may be stopping on the Swing thread meanwhile
-			others.addAll(YourPlaces.read(client, labelsNow(), progress.getCategoryNames()));
+			others.addAll(yourPlaces());
 		}
 		pins.setOthers(others);
 		String account = account();
@@ -783,6 +813,7 @@ public class AdvancedMapPlugin extends Plugin
 	@Subscribe
 	public void onRuneScapeProfileChanged(RuneScapeProfileChanged event)
 	{
+		yourPlaces = Collections.emptyList();
 		extrasRead = 0;
 		farmingRead = 0;
 		slayerShown = slayerShown == null ? null : "";
