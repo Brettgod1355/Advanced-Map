@@ -180,6 +180,33 @@ final class SideList
 	/** Scrolled by the wheel on the Swing thread, read when the list is drawn on the client thread. */
 	private volatile int scroll;
 
+	/**
+	 * A shop's rows, as a click on it lists them and pointing at it shows them: what it sells and for how much, and
+	 * the other shops beside it.
+	 */
+	static List<Row> shopRows(Shops.Shop shop)
+	{
+		List<Row> rows = new ArrayList<>();
+		if (shop.getFloor() > shop.getPoint().getPlane())
+		{
+			// shown on the floor below, where the map has ground
+			rows.add(Row.heading("Upstairs, floor up " + shop.getFloor()));
+		}
+		for (Shops.Item item : shop.getItems())
+		{
+			rows.add(new Row(item.getName(), item.priceText(), null, null, null, null));
+		}
+		net.runelite.api.coords.WorldPoint at = shop.getPoint();
+		for (Shops.Shop other : Shops.within(at.getX(), at.getY(), at.getPlane()))
+		{
+			if (other != shop)
+			{
+				rows.add(new Row("Also here: " + other.getName(), "", null, null, other.getPoint(), other));
+			}
+		}
+		return rows;
+	}
+
 	boolean isOpen()
 	{
 		return !content.rows.isEmpty();

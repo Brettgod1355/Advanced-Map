@@ -1671,25 +1671,7 @@ public class AdvancedMapPlugin extends Plugin
 	/** Lists what a shop sells and for how much, and any other shops beside it, which a click opens in turn. */
 	private void showShop(Shops.Shop shop)
 	{
-		List<SideList.Row> rows = new ArrayList<>();
-		if (shop.getFloor() > shop.getPoint().getPlane())
-		{
-			// shown on the floor below, where the map has ground
-			rows.add(SideList.Row.heading("Upstairs, floor up " + shop.getFloor()));
-		}
-		for (Shops.Item item : shop.getItems())
-		{
-			rows.add(new SideList.Row(item.getName(), item.priceText(), null, null, null, null));
-		}
-		WorldPoint at = shop.getPoint();
-		for (Shops.Shop other : Shops.within(at.getX(), at.getY(), at.getPlane()))
-		{
-			if (other != shop)
-			{
-				rows.add(new SideList.Row("Also here: " + other.getName(), "", null, null, other.getPoint(), other));
-			}
-		}
-		sideList.open(shop.getName(), rows, shop);
+		sideList.open(shop.getName(), SideList.shopRows(shop), shop);
 	}
 
 	/**

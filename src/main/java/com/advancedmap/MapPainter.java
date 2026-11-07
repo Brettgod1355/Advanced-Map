@@ -154,6 +154,10 @@ final class MapPainter
 	private final MapLabels labels;
 	private final MapFilters filters;
 	private final SideList sideList;
+	/** What a shop sells, shown in the side list's place while the mouse rests on the shop (a click keeps it open). */
+	private final SideList shopPreview = new SideList();
+	/** The shop {@link #shopPreview} lists; painter thread. */
+	private Shops.Shop previewedShop;
 	private final MapSearch search;
 	/** The map's menu, drawn while open; null in a painter without one (the harness). */
 	private volatile MapMenu menu;
@@ -1106,6 +1110,29 @@ final class MapPainter
 				drawInfo(g, view, icon, settings, progress, farmingLines(spot, farms));
 			}
 		}
+		if (spot.getGroup() == IconGroup.SHOPS)
+		{
+			drawShopPreview(g, view, window, spot);
+		}
+	}
+
+	/**
+	 * What a shop sells, in the list a click opens on the right, while the mouse rests on it (owner, 2026-11-07: "I
+	 * wanted the hover to show the box at the top right"). Not while the list already shows that shop.
+	 */
+	private void drawShopPreview(Graphics2D g, MapViewport.View view, boolean window, MapSpot spot)
+	{
+		Shops.Shop shop = Shops.near(spot.getX(), spot.getY(), spot.getPlane());
+		if (shop == null || sideList.isOpen() && sideList.owner() == shop)
+		{
+			return;
+		}
+		if (shop != previewedShop)
+		{
+			shopPreview.open(shop.getName(), SideList.shopRows(shop), shop);
+			previewedShop = shop;
+		}
+		shopPreview.draw(g, shopPreview.layout(buttons(view.width, view.height, window)), null);
 	}
 
 	/** True when a point is on one of the map's buttons, its open lists or boxes, or the search bar. */

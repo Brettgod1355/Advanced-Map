@@ -80,28 +80,14 @@ public class ShopsTest
 	}
 
 	@Test
-	public void aShopsInfoBoxListsItsFirstItemsAndSaysHowManyMore()
+	public void pointingAtAShopListsWhatAClickLists()
 	{
-		// pointing at a shop shows what it sells without a click (owner, 2026-11-07); a click still lists it all
+		// the hover shows the click's list on the right, not lines in the small box (owner, 2026-11-07)
 		Shops.load();
-		Shops.Shop big = Shops.all().stream().filter(shop -> shop.getItems().size() > MapIcons.SHOP_ITEMS + 2)
-			.findFirst().orElse(null);
-		List<MapIcons.Line> lines = new java.util.ArrayList<>();
-		MapIcons.shopInfo(lines, big);
-		assertEquals(big.getName(), lines.get(0).getText());
-		Shops.Item first = big.getItems().get(0);
-		assertEquals(first.getName() + ": " + first.priceText(), lines.get(1).getText());
-		assertEquals(1 + MapIcons.SHOP_ITEMS + 1, lines.size());
-		assertEquals("and " + (big.getItems().size() - MapIcons.SHOP_ITEMS) + " more: click for them all",
-			lines.get(lines.size() - 1).getText());
-		// a small shop lists all it sells, and no "more" line
-		Shops.Shop small = Shops.all().stream().filter(shop -> !shop.getItems().isEmpty()
-			&& shop.getItems().size() <= MapIcons.SHOP_ITEMS).findFirst().orElse(null);
-		lines.clear();
-		MapIcons.shopInfo(lines, small);
-		assertEquals(1 + small.getItems().size(), lines.size());
-		lines.clear();
-		MapIcons.shopInfo(lines, null);
-		assertTrue(lines.isEmpty());
+		Shops.Shop daga = Shops.near(2759, 2774, 0);
+		List<SideList.Row> rows = SideList.shopRows(daga);
+		assertEquals("Bronze scimitar", rows.get(0).getText());
+		assertEquals(daga.getItems().get(0).priceText(), rows.get(0).getNote());
+		assertTrue(rows.size() >= daga.getItems().size());
 	}
 }
