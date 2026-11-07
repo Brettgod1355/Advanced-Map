@@ -10,13 +10,15 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 import java.util.TreeMap;
+import java.util.concurrent.Executor;
+import java.util.concurrent.RejectedExecutionException;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.client.util.Filepath;
 
 /**
  * What the plugin remembers about this computer, in a small file beside the saved map rather than in a RuneLite
  * profile: the version last run, whether the Welcome page has opened once, whether the whole map has been seen
- * built, and which version's update line and What's new page are still to show. RuneLite switches to a profile
+ * built, and which version's What's new page is still to show. RuneLite switches to a profile
  * bound to an account at login, so a value written into one profile at startUp would be read from another later;
  * the saved map these things are about is per computer anyway. Without a folder (a test), kept in memory.
  */
@@ -31,9 +33,18 @@ final class StateFile
 
 	private final Filepath file;
 	private final Properties values = new Properties();
+	/** Where the file is written: off the client thread, which sets values on a game tick and as the map opens. */
+	private final Executor writes;
 
 	StateFile(Filepath folder)
 	{
+		this(folder, Runnable::run);
+	}
+
+	/** Reads the file now; each change is written by {@code writes}, in order when it runs one task at a time. */
+	StateFile(Filepath folder, Executor writes)
+	{
+		this.writes = writes;
 		file = folder == null ? null : folder.joinSegment(FILE);
 		if (file != null && file.exists())
 		{
@@ -75,7 +86,10 @@ final class StateFile
 		save();
 	}
 
-	/** One line per value, in order: the same values make the same file. */
+	/**
+	 * One line per value, in order: the same values make the same file. The text is made now, under the lock, and
+	 * written by the executor; once that has stopped (the plugin stopping), here.
+	 */
 	private void save()
 	{
 		if (file == null)
@@ -87,13 +101,25 @@ final class StateFile
 		{
 			out.append(entry.getKey()).append('=').append(entry.getValue()).append('\n');
 		}
+		byte[] bytes = out.toString().getBytes(StandardCharsets.UTF_8);
+		Runnable write = () ->
+		{
+			try
+			{
+				SafeFiles.write(file, bytes);
+			}
+			catch (IOException e)
+			{
+				log.debug("could not write {}", file, e);
+			}
+		};
 		try
 		{
-			SafeFiles.write(file, out.toString().getBytes(StandardCharsets.UTF_8));
+			writes.execute(write);
 		}
-		catch (IOException e)
+		catch (RejectedExecutionException e)
 		{
-			log.debug("could not write {}", file, e);
+			write.run();
 		}
 	}
 }

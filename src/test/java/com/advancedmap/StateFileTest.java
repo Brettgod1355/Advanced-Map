@@ -49,4 +49,25 @@ public class StateFileTest
 		state.set(StateFile.MAP_BUILT, true);
 		assertTrue(state.is(StateFile.MAP_BUILT));
 	}
+
+	@Test
+	public void theFileIsWrittenOffTheCallersThreadAndHereOnceThatHasStopped() throws Exception
+	{
+		// the client thread sets values on a game tick and as the map opens: the disk is left to another thread (the
+		// PR audit, 2026-11-07), in order, and to the caller only once that thread has stopped with the plugin
+		Filepath root = Filepath.Unchecked.getRooted(folder.getRoot().toPath());
+		java.util.List<Runnable> queued = new java.util.ArrayList<>();
+		StateFile state = new StateFile(root, queued::add);
+		state.set(StateFile.WELCOMED, true);
+		assertTrue("the value is there at once", state.is(StateFile.WELCOMED));
+		File file = new File(folder.getRoot(), StateFile.FILE);
+		assertFalse("not written by the caller", file.exists());
+		queued.forEach(Runnable::run);
+		assertEquals("welcomed=true\n", new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8));
+		java.util.concurrent.ExecutorService stopped = java.util.concurrent.Executors.newSingleThreadExecutor();
+		stopped.shutdown();
+		new StateFile(root, stopped).set(StateFile.MAP_BUILT, true);
+		assertEquals("mapBuilt=true\nwelcomed=true\n", new String(Files.readAllBytes(file.toPath()),
+			StandardCharsets.UTF_8));
+	}
 }

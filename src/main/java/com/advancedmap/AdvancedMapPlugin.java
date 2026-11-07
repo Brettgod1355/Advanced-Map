@@ -311,7 +311,7 @@ public class AdvancedMapPlugin extends Plugin
 		StateFile remembered;
 		try
 		{
-			remembered = new StateFile(getPluginDirectory());
+			remembered = new StateFile(getPluginDirectory(), markerFiles);
 		}
 		catch (IOException e)
 		{
@@ -523,9 +523,11 @@ public class AdvancedMapPlugin extends Plugin
 				return false;
 			});
 		}
-		if (config.yourPlaces())
+		if (config.yourPlaces() && client.getGameState() == GameState.LOGGED_IN)
 		{
-			others.addAll(YourPlaces.read(client, labels.all(), progress.getCategoryNames()));
+			// the house and boats are the logged-in account's: none while logged out or loading; the names read once,
+			// the plugin may be stopping on the Swing thread meanwhile
+			others.addAll(YourPlaces.read(client, labelsNow(), progress.getCategoryNames()));
 		}
 		pins.setOthers(others);
 		String account = account();
@@ -747,6 +749,12 @@ public class AdvancedMapPlugin extends Plugin
 			{
 				drawn.forget();
 			}
+		}
+		if (windowOpen && (state == GameState.LOGIN_SCREEN || state == GameState.HOPPING))
+		{
+			// the window stays open, and no game tick comes on the login screen to read the account again: read now, so
+			// it stops showing the last account's quests, levels and locks (client thread)
+			readProgress();
 		}
 		MapInput keys = input;
 		if (keys != null && state == GameState.LOGIN_SCREEN)
