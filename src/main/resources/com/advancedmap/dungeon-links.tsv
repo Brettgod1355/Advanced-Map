@@ -2,7 +2,9 @@
 # a click on the entrance's dungeon icon moves the map there. Each from tile is the game's dungeon icon. Sources, per
 # row: "Shortest Path" rows are its src/main/resources/transports/transports.tsv entrance rows at the Plugin Hub pin
 # 50f30435f37d1d5c5e2af790925fa7aa70b7840d (BSD 2-Clause), destination as it gives; "OSRS Wiki" rows are the map
-# coordinates on the wiki page of that name (checked 2026-10-27). See THIRD_PARTY_NOTICES.md.
+# coordinates on the wiki page of that name (checked 2026-10-27). See THIRD_PARTY_NOTICES.md. "In game" rows are ways
+# between a dungeon's floors that the owner marked in game, where the game's map shows no icon: the map draws its link
+# icon on the from tile.
 # from_x	from_y	from_plane	to_x	to_y	to_plane	source
 2316	3894	0	2420	10279	1	Shortest Path: Jatizso
 2485	3043	0	2477	9437	2	Shortest Path: Jiggig
@@ -45,3 +47,5 @@
 2501	2991	0	2529	9437	0	OSRS Wiki: Skavid caves
 2562	3025	0	2529	9437	0	OSRS Wiki: Skavid caves
 2575	3028	0	2529	9437	0	OSRS Wiki: Skavid caves
+3509	9497	2	3510	9492	0	In game, 2026-11-07: Kalphite Lair, the tunnel down to the Kalphite Queen's chamber
+3510	9492	0	3509	9497	2	In game, 2026-11-07: Kalphite Queen's chamber, the rope up to the Kalphite Lair

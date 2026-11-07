@@ -18,8 +18,9 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * Dungeon entrances the game's own map links leave out (its icon there leads nowhere, on RuneLite's map too), with
- * where they lead, from {@code dungeon-links.tsv}: Shortest Path's entrance rows and the OSRS Wiki's map coordinates.
- * Added to the game's links, never in place of one.
+ * where they lead, from {@code dungeon-links.tsv}: Shortest Path's entrance rows, the OSRS Wiki's map coordinates, and
+ * ways between a dungeon's floors the owner marked in game (the Kalphite Queen's chamber). Added to the game's links,
+ * never in place of one; a link with no icon near gets the game's link icon.
  */
 @Slf4j
 final class DungeonLinks

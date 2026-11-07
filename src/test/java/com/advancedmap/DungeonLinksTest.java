@@ -18,7 +18,7 @@ public class DungeonLinksTest
 	public void theEntrancesTheGameLeavesOutLeadIntoTheirDungeons()
 	{
 		Map<Integer, Integer> extra = DungeonLinks.extra();
-		assertEquals(41, extra.size());
+		assertEquals(43, extra.size());
 		// Tonali Cavern's two entrances, from the wiki
 		int cavern = MapLinks.pack(1311, 9382, 0);
 		assertEquals(cavern, MapLinks.destinationNear(extra, 1306, 3035, 0, RegionImages.LINK_REACH));
@@ -30,6 +30,19 @@ public class DungeonLinksTest
 		{
 			assertTrue(MapArea.of(MapLinks.y(to)) == MapArea.UNDERGROUND);
 		}
+	}
+
+	@Test
+	public void theKalphiteLairAndTheQueensChamberLinkBothWays()
+	{
+		// the owner, 2026-11-07, in game: the lair's tunnel (floor 3) down to the chamber, and the rope back up
+		Map<Integer, Integer> extra = DungeonLinks.extra();
+		int lair = MapLinks.pack(3509, 9497, 2);
+		int chamber = MapLinks.pack(3510, 9492, 0);
+		assertEquals(chamber, MapLinks.destinationNear(extra, 3509, 9497, 2, RegionImages.LINK_REACH));
+		assertEquals(lair, MapLinks.destinationNear(extra, 3510, 9492, 0, RegionImages.LINK_REACH));
+		// on top of each other but a floor apart: each icon leads only its own way
+		assertEquals(-1, MapLinks.destinationNear(extra, 3510, 9492, 1, RegionImages.LINK_REACH));
 	}
 
 	@Test
