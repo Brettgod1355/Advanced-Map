@@ -88,10 +88,47 @@ public class MapPreparerTest
 			java.util.List<Integer> fresh = java.util.Collections.singletonList(52 << 8 | 50);
 			int ground = preparer.next(store, fresh);
 			assertEquals(4, preparer.remaining());
-			preparer.requeue(ground);
+			preparer.requeue(ground, true);
 			assertEquals(4, preparer.remaining());
 			preparer.finished(ground);
 			assertEquals(4, preparer.remaining());
+		}
+		finally
+		{
+			executor.shutdownNow();
+		}
+	}
+
+	@Test
+	public void aFloorNotDownloadedYetIsPassedOverAtOnceAndOnlyARunOfThemRests() throws Exception
+	{
+		// a fresh install spent 266 of its 603 seconds resting a second after each floor not downloaded yet, while the
+		// next in the list were there (2026-11-07): it now goes on to the next, and rests only after a run of them
+		java.util.concurrent.ExecutorService executor = java.util.concurrent.Executors.newSingleThreadExecutor();
+		try
+		{
+			RegionImagesCacheTest.Flat flat = new RegionImagesCacheTest.Flat();
+			flat.regionIds = new java.util.ArrayList<>();
+			for (int x = 40; x < 50; x++)
+			{
+				flat.regionIds.add(x << 8 | 50);
+			}
+			RegionImages images = new RegionImages(flat, executor, new MapIcons());
+			MapStore store = MapStore.open(net.runelite.client.util.Filepath.Unchecked.getRooted(
+				folder.getRoot().toPath()));
+			images.setStore(store);
+			MapPreparer preparer = new MapPreparer(images, flat, () -> true, () -> LUMBRIDGE);
+			flat.notReady = true;
+			assertFalse(preparer.stepOnce());
+			flat.notReady = false;
+			assertTrue("the next floor is drawn at once, with no rest", preparer.stepOnce());
+			flat.notReady = true;
+			for (int i = 0; i < MapPreparer.NOT_READY_RUN; i++)
+			{
+				assertFalse(preparer.stepOnce());
+			}
+			flat.notReady = false;
+			assertFalse("after a run of them it rests, the download behind", preparer.stepOnce());
 		}
 		finally
 		{

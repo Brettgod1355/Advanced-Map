@@ -141,12 +141,21 @@ final class MapPreparer
 		listed = false;
 		iconTodo = null;
 		timing = null;
+		notReady = 0;
 	}
 
 	/** When a floor of a region the client had not downloaded was put back: the next steps rest a while after it. */
 	private volatile long restUntil;
 	/** How long the preparer rests after a region the client has not got, so the client thread is not asked 40 times a second. */
 	static final long REST_NANOS = 1_000_000_000L;
+	/**
+	 * How many floors in a row may be put back for want of their data before the preparer rests. Resting after each
+	 * one cost a fresh install 266 seconds of its 603 (owner's PC, 2026-11-07) while the regions next in the list were
+	 * downloaded already; a run this long means the download is behind everything left, and then it rests.
+	 */
+	static final int NOT_READY_RUN = 20;
+	/** Floors put back for want of their data since the last one drawn; preparer thread. */
+	private int notReady;
 	/**
 	 * The game's map data could not be read (a game update changed its format): nothing can be built until the plugin
 	 * is updated. The list is kept, so the count says what is left, and a step is tried again now and then in case.
@@ -170,12 +179,13 @@ final class MapPreparer
 
 	private synchronized void halt(int key)
 	{
-		requeue(key);
+		requeue(key, true);
 		halted = true;
 		restUntil = System.nanoTime() + HALT_NANOS;
 	}
 
-	synchronized void requeue(int key)
+	/** Puts a floor back last in the list, and rests a while after it when {@code rest}. */
+	synchronized void requeue(int key, boolean rest)
 	{
 		// back in the list and no longer being built, in one step: never counted twice
 		if (building != null && building == key)
@@ -183,7 +193,10 @@ final class MapPreparer
 			building = null;
 		}
 		todo.add(key);
-		restUntil = System.nanoTime() + REST_NANOS;
+		if (rest)
+		{
+			restUntil = System.nanoTime() + REST_NANOS;
+		}
 	}
 
 	/**
@@ -266,16 +279,22 @@ final class MapPreparer
 					{
 						timed.drawn++;
 					}
+					notReady = 0;
 					return true;
 				}
 				catch (CacheNotReadyException e)
 				{
-					// the client has not downloaded this part of the cache yet: last in the queue, not forgotten
+					// the client has not downloaded this part of the cache yet: last in the queue, not forgotten, and
+					// the next floor tried at once; a rest only after a run of them, the download behind all that is left
 					if (timed != null)
 					{
 						timed.notReady++;
 					}
-					requeue(key);
+					requeue(key, ++notReady >= NOT_READY_RUN);
+					if (notReady >= NOT_READY_RUN)
+					{
+						notReady = 0;
+					}
 					return false;
 				}
 				catch (MapDataException e)
