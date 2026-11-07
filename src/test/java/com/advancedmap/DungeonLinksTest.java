@@ -18,7 +18,7 @@ public class DungeonLinksTest
 	public void theEntrancesTheGameLeavesOutLeadIntoTheirDungeons()
 	{
 		Map<Integer, Integer> extra = DungeonLinks.extra();
-		assertEquals(43, extra.size());
+		assertEquals(45, extra.size());
 		// Tonali Cavern's two entrances, from the wiki
 		int cavern = MapLinks.pack(1311, 9382, 0);
 		assertEquals(cavern, MapLinks.destinationNear(extra, 1306, 3035, 0, RegionImages.LINK_REACH));
@@ -26,9 +26,11 @@ public class DungeonLinksTest
 		// the Smoke Dungeon's well, from Shortest Path
 		assertEquals(MapLinks.pack(3206, 9379, 0), MapLinks.destinationNear(extra, 3310, 2962, 0,
 			RegionImages.LINK_REACH));
-		for (int to : extra.values())
+		// a way in from the surface leads underground (a way out, from a dungeon, may lead up to it)
+		for (Map.Entry<Integer, Integer> link : extra.entrySet())
 		{
-			assertTrue(MapArea.of(MapLinks.y(to)) == MapArea.UNDERGROUND);
+			assertTrue(MapArea.of(MapLinks.y(link.getKey())) == MapArea.UNDERGROUND
+				|| MapArea.of(MapLinks.y(link.getValue())) == MapArea.UNDERGROUND);
 		}
 	}
 
@@ -44,6 +46,11 @@ public class DungeonLinksTest
 		assertEquals(lair, MapLinks.destinationNear(extra, 3508, 9493, 0, RegionImages.LINK_REACH));
 		// on top of each other but a floor apart: each icon leads only its own way
 		assertEquals(-1, MapLinks.destinationNear(extra, 3508, 9493, 1, RegionImages.LINK_REACH));
+		// and the lair's way out, to its entrance in the desert, and in again to where the climb down lands
+		int entrance = MapLinks.pack(3227, 3108, 0);
+		int landing = MapLinks.pack(3483, 9510, 2);
+		assertEquals(entrance, MapLinks.destinationNear(extra, 3483, 9510, 2, RegionImages.LINK_REACH));
+		assertEquals(landing, MapLinks.destinationNear(extra, 3227, 3108, 0, RegionImages.LINK_REACH));
 	}
 
 	@Test
