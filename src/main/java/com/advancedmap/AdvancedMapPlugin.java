@@ -2357,7 +2357,7 @@ public class AdvancedMapPlugin extends Plugin
 				break;
 			}
 			case ICON:
-				sideList.open("Nearest: " + entry.getName(), nearestRows(entry.getPoints(), from), entry);
+				sideList.open("Nearest: " + entry.getName(), nearestRows(entry.getPoints(), from, entry.getName()), entry);
 				break;
 			case MONSTER:
 			case NPC:
@@ -2399,7 +2399,7 @@ public class AdvancedMapPlugin extends Plugin
 	}
 
 	/** Every place of a kind of map icon, nearest first: named by the game's nearest place name, with how far. */
-	private List<SideList.Row> nearestRows(List<WorldPoint> points, WorldPoint from)
+	private List<SideList.Row> nearestRows(List<WorldPoint> points, WorldPoint from, String kind)
 	{
 		List<WorldPoint> sorted = new ArrayList<>(points);
 		sorted.sort(java.util.Comparator.comparingInt(point -> SearchSpots.distance(point, from)));
@@ -2407,8 +2407,13 @@ public class AdvancedMapPlugin extends Plugin
 		for (WorldPoint point : sorted)
 		{
 			int tiles = SearchSpots.distance(point, from);
-			rows.add(new SideList.Row(SearchSpots.name(point, labelsNow()), tiles >= 1000 ? "far" : tiles + " tiles",
-				null, null, point, null));
+			// each called as its box calls it: its own name, which minigame, else the nearest place's (Guardians of the
+			// Rift read "Queen's Chamber", the Tears of Guthix "Giant frogs"; owner, 2026-11-07)
+			NamedIcons.Named own = NamedIcons.at(point.getX(), point.getY(), point.getPlane());
+			String minigame = "Minigame".equals(kind) ? MapSearch.minigameNear(point.getX(), point.getY()) : null;
+			rows.add(new SideList.Row(own != null ? own.getName() : minigame != null ? minigame
+				: SearchSpots.name(point, labelsNow()), tiles >= 1000 ? "far" : tiles + " tiles", null, null, point,
+				null));
 		}
 		return rows;
 	}
