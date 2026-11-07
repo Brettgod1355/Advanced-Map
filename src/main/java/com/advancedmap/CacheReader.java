@@ -60,10 +60,6 @@ class CacheReader
 	private final GameCache client;
 	private final Queue<Pending<?>> queue = new ConcurrentLinkedQueue<>();
 	private volatile boolean open = true;
-	/** Frames served so far; written by the client thread only. For the build's timing in the log. */
-	private volatile long frames;
-	/** For each thread, its reads that waited for the client thread: how many, and the nanoseconds waited. */
-	private final ThreadLocal<long[]> waits = ThreadLocal.withInitial(() -> new long[2]);
 
 	CacheReader(GameCache client)
 	{
@@ -90,7 +86,6 @@ class CacheReader
 			throw new CancellationException("Advanced Map stopped");
 		}
 		Pending<T> pending = new Pending<>(work);
-		long asked = System.nanoTime();
 		queue.add(pending);
 		if (!open)
 		{
@@ -109,30 +104,11 @@ class CacheReader
 			Throwable cause = e.getCause();
 			throw cause instanceof RuntimeException ? (RuntimeException) cause : new IllegalStateException(cause);
 		}
-		finally
-		{
-			long[] mine = waits.get();
-			mine[0]++;
-			mine[1] += System.nanoTime() - asked;
-		}
-	}
-
-	/** This thread's reads that waited for the client thread so far: how many, and the nanoseconds waited. */
-	long[] waitedHere()
-	{
-		return waits.get().clone();
-	}
-
-	/** How many frames have served reads so far. */
-	long frames()
-	{
-		return frames;
 	}
 
 	/** Works through queued reads for a few milliseconds. Client thread, once a frame. */
 	void service()
 	{
-		frames++;
 		long until = System.nanoTime() + BUDGET_NANOS;
 		Pending<?> pending;
 		while (System.nanoTime() < until && (pending = queue.poll()) != null)

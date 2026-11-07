@@ -263,7 +263,6 @@ public class AdvancedMapPlugin extends Plugin
 		lastSeen = null;
 		preparer = new MapPreparer(images, source, () -> true,
 			() -> lastSeen != null ? lastSeen : LUMBRIDGE);
-		preparer.timeWith(reader);
 		preparer.start();
 		messages = new MapMessages(this::openMap);
 		painter = new MapPainter(images, messages, icons, labels, filters, sideList, search);
