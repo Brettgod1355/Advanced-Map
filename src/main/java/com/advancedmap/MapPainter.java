@@ -277,6 +277,10 @@ final class MapPainter
 	void setMultiCombat(boolean on)
 	{
 		multiCombat = on;
+		if (filters != null)
+		{
+			filters.setMultiCombat(on);
+		}
 	}
 
 	void setFarming(Map<Farming.Site, List<Farming.Reading>> readings)
@@ -1461,7 +1465,9 @@ final class MapPainter
 			entries.add(new MenuEntry(Action.ROUTE, "Route here (" + routing.getLabel() + ")"));
 			entries.add(new MenuEntry(Action.CLEAR_ROUTE, "Clear route"));
 		}
-		if (pin == null)
+		// not on the player's own marker, which has its own entries; on another plugin's pin (a Sailing charting spot)
+		// and the house and boat pins, as on any other spot
+		if (pin == null || pin.getMarker() == null)
 		{
 			entries.add(new MenuEntry(Action.ADD_MARKER, "Add marker here"));
 			entries.add(new MenuEntry(Action.REPORT, "Report a problem here"));

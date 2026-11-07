@@ -37,7 +37,6 @@ public interface AdvancedMapConfig extends Config
 	/** What the search does not look in, as the "Search in" list by its box left it: "MONSTERS;NPCS". */
 	String SEARCH_SKIPPED = "searchSkipped";
 	String INFO_ON_HOVER = "infoOnHover";
-	String UPDATE_MESSAGE = "updateMessage";
 	/** An earlier version's "version last run", moved to the plugin's state file on this computer ({@link StateFile}). */
 	String LAST_VERSION = "lastVersion";
 	/** Before each hidden icon's own setting: "hidden.a1234@3222,3218" = true. */
@@ -158,12 +157,15 @@ public interface AdvancedMapConfig extends Config
 		return true;
 	}
 
+	/**
+	 * "Multi-combat areas" at the top of the Filters list: when zoomed in, the areas where combat is multi-way are tinted
+	 * with a red edge. Off until ticked; turned on and off there while playing, so not among the settings.
+	 */
 	@ConfigItem(
 		keyName = MULTI_COMBAT,
-		name = "Multi-combat areas",
-		description = "When zoomed in, tint the areas where combat is multi-way (several can attack one), in the Wilderness"
-			+ " and everywhere else, with a red edge.",
-		position = 7
+		name = "",
+		description = "",
+		hidden = true
 	)
 	default boolean multiCombat()
 	{
@@ -538,18 +540,6 @@ public interface AdvancedMapConfig extends Config
 		return RoutingPlugin.SHORTEST_PATH;
 	}
 
-	@ConfigItem(
-		keyName = UPDATE_MESSAGE,
-		name = "Say when updated",
-		description = "Once, after the Plugin Hub has updated the plugin: one line in chat the first time you log in,"
-			+ " and the map's What's new page the next time you open the map.",
-		position = 16
-	)
-	default boolean updateMessage()
-	{
-		return true;
-	}
-
 	/**
 	 * The version an earlier version of the plugin last ran as, in the profile; read once and moved to the state file
 	 * on this computer, where RuneLite's switching between profiles cannot reach it. Empty afterwards.
@@ -563,19 +553,6 @@ public interface AdvancedMapConfig extends Config
 	default String lastVersion()
 	{
 		return "";
-	}
-
-	@ConfigItem(
-		keyName = "prepareMap",
-		name = "Build the whole map",
-		description = "From the moment the client starts, build the regions not saved yet in the background, nearest you"
-			+ " first, so the map is ready when you open it. Uses spare processor time for about 5 to 10 minutes the"
-			+ " first time, and again after a game update that changes the whole map's look.",
-		position = 17
-	)
-	default boolean prepareMap()
-	{
-		return true;
 	}
 
 	/** Where the pop-out window was last, and its size: "x,y,width,height" on the desktop, or empty. */

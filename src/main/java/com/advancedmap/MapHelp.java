@@ -30,9 +30,9 @@ final class MapHelp
 			+ " apart). Other plugins' markers (a clue scroll's spot, Quest Helper's next step) show too; click one"
 			+ " for what it says. \"Your markers\" in the menu lists them all, nearest first."},
 		{"Farming, multi-combat, Slayer", "A dot on each farming patch icon says how it is doing (from RuneLite's"
-			+ " Time Tracking plugin); click it for each crop and when it is ready. Zoomed in, multi-combat areas are"
-			+ " tinted red. \"Your Slayer task\" at the top of the Filters list marks every spawn of your task's"
-			+ " monsters, with how many are left."},
+			+ " Time Tracking plugin); click it for each crop and when it is ready. \"Multi-combat areas\" at the top"
+			+ " of the Filters list tints them red when zoomed in. \"Your Slayer task\" there marks every spawn of your"
+			+ " task's monsters, with how many are left."},
 		{"Surface and underground", "The button at the top right switches between the two maps. Basements, caves and"
 			+ " dungeons are on the underground map."},
 		{"Floors", "The arrows at the bottom right go up and down a floor. The floors below are shown darkened"
@@ -84,8 +84,7 @@ final class MapHelp
 			+ " ground near you first, then farther out, then the floors above. It uses spare processor time, so the"
 			+ " game comes first, and takes about 5 to 10 minutes for the whole world. You can play and use the map"
 			+ " meanwhile: places not built yet are blank or blurry, and their icons are missing from the map and the"
-			+ " search. The sidebar tab shows how far along it is. With \"Build the whole map\" off, only what you"
-			+ " look at is built."},
+			+ " search. The sidebar tab shows how far along it is."},
 		{"Game updates and plugin updates", "Game updates need nothing from you. The map, its place names and the"
 			+ " game's own map icons come from your client, so when an update changes the world (a new island, a"
 			+ " moved wall), the regions it changed are built again the first time you look at them, and new ones in"

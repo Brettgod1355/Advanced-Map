@@ -167,6 +167,13 @@ public class MapPainterTest
 			3222, 3218, 0), MarkerIcons.Design.values()[0], 0, "", ""), "", "", null, false);
 		assertTrue(MapPainter.menuEntries(tile, settings(RoutingPlugin.NONE), pin).stream()
 			.noneMatch(e -> e.getAction() == MapPainter.Action.REPORT));
+		// another plugin's pin (Sailing's charting spot) is a spot like any other: the owner found it offered only the
+		// route (2026-11-07)
+		MapPins.Pin other = new MapPins.Pin(new WorldPoint(3222, 3218, 0), new BufferedImage(8, 8,
+			BufferedImage.TYPE_INT_ARGB), null, "Charting spot", "Current duck", null, false);
+		List<MapPainter.MenuEntry> onOther = MapPainter.menuEntries(tile, settings(RoutingPlugin.SHORTEST_PATH), other);
+		assertTrue(onOther.stream().anyMatch(e -> e.getAction() == MapPainter.Action.REPORT));
+		assertTrue(onOther.stream().anyMatch(e -> e.getAction() == MapPainter.Action.ADD_MARKER));
 	}
 
 	@Test
@@ -576,7 +583,7 @@ public class MapPainterTest
 		MapIcons icons = new MapIcons();
 		MapPainter plain = blankPainter(icons);
 		MapPainter withMenu = blankPainter(icons);
-		MapMenu menu = new MapMenu(() -> "saved", () -> new MapMenu.Build(1, 0, true, false, false, 0));
+		MapMenu menu = new MapMenu(() -> "saved", () -> new MapMenu.Build(1, 0, false, false, 0));
 		menu.setOpen(true);
 		menu.setPage(MapMenu.Page.HELP);
 		withMenu.setMenu(menu);

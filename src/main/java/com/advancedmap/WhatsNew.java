@@ -6,10 +6,10 @@
 package com.advancedmap;
 
 /**
- * The one chat line said after the Plugin Hub updates the plugin. The Hub swaps the jar and restarts the plugin, and
- * the plugin also restarts with the client, so the only way to tell an update from a restart is to remember the last
- * version seen. Bump {@link #VERSION} and rewrite {@link #NOTE} with every release; a test keeps the version in step
- * with the build.
+ * What a version brings, shown on the map menu's What's new page, which opens by itself once after the Plugin Hub
+ * updates the plugin. The Hub swaps the jar and restarts the plugin, and the plugin also restarts with the client, so
+ * the only way to tell an update from a restart is to remember the last version seen. Bump {@link #VERSION} and
+ * rewrite {@link #NOTE} with every release; a test keeps the version in step with the build.
  */
 final class WhatsNew
 {
@@ -17,10 +17,11 @@ final class WhatsNew
 	static final String VERSION = "1.0";
 
 	/**
-	 * One line on what this version brings, no links; a full stop is added when it is said. Empty for a release not
-	 * worth a line (a fix, a wording change), and for the first release: nothing is said.
+	 * One line on what this version brings, no links; a full stop is added on the page. Empty for a release not worth
+	 * a line (a fix, a wording change): then the page does not open by itself. The first release says only that it is
+	 * one (a fresh install never opens the page by itself, there being no earlier version to update from).
 	 */
-	static final String NOTE = "";
+	static final String NOTE = "the first release of Advanced Map";
 
 	/** What a start of the plugin does about the version last run: see {@link #start}. */
 	@lombok.Value
@@ -28,7 +29,7 @@ final class WhatsNew
 	{
 		/** The plugin was updated: a version was run before, and it was another. */
 		boolean updated;
-		/** The update line is to be said on a game tick, and What's new to open with the map, if wanted. */
+		/** What's new is to open with the map: an update whose note has something to tell. */
 		boolean news;
 	}
 
@@ -45,31 +46,5 @@ final class WhatsNew
 
 	private WhatsNew()
 	{
-	}
-
-	/** The line to say for this version's {@link #NOTE}, or null. */
-	static String message(String lastVersion)
-	{
-		return message(lastVersion, NOTE);
-	}
-
-	/**
-	 * The line to say, or null: nothing to say, the same version, or a fresh install (no version remembered; every
-	 * version from the first release on remembers itself).
-	 */
-	static String message(String lastVersion, String note)
-	{
-		return message(lastVersion, note, false);
-	}
-
-	/** As above; {@code known} when the update is already known to have happened (the line waits to be said). */
-	static String message(String lastVersion, String note, boolean known)
-	{
-		boolean updated = known || lastVersion != null && !lastVersion.isEmpty() && !VERSION.equals(lastVersion);
-		if (!updated || note.isEmpty())
-		{
-			return null;
-		}
-		return "Advanced Map updated to " + VERSION + ": " + note + ".";
 	}
 }

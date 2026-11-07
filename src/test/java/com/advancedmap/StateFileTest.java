@@ -31,12 +31,12 @@ public class StateFileTest
 		assertFalse(state.is(StateFile.WELCOMED));
 		state.set(StateFile.LAST_VERSION, "1.0.0");
 		state.set(StateFile.WELCOMED, true);
-		state.set(StateFile.SAY_FOR, "1.1.0");
-		state.unset(StateFile.SAY_FOR);
+		state.set(StateFile.WHATS_NEW_FOR, "1.1.0");
+		state.unset(StateFile.WHATS_NEW_FOR);
 		StateFile again = new StateFile(root);
 		assertEquals("1.0.0", again.get(StateFile.LAST_VERSION));
 		assertTrue(again.is(StateFile.WELCOMED));
-		assertEquals("unset is gone", "", again.get(StateFile.SAY_FOR));
+		assertEquals("unset is gone", "", again.get(StateFile.WHATS_NEW_FOR));
 		// one line per value, in order: the file reads plainly and the same values make the same file
 		assertEquals("lastVersion=1.0.0\nwelcomed=true\n", new String(Files.readAllBytes(new File(folder.getRoot(),
 			StateFile.FILE).toPath()), StandardCharsets.UTF_8));

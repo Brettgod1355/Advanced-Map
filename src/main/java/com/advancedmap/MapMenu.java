@@ -70,8 +70,6 @@ final class MapMenu
 		int saved;
 		/** Floors still to build in the background; -1 before they are counted. */
 		int left;
-		/** Whether the whole map is built in the background ("Build the whole map"). */
-		boolean background;
 		/** The saved map could not be opened (the log says why): nothing is built or saved this run. */
 		boolean unopened;
 		/** The game's map data could not be read: the building has stopped until the plugin is updated. */
@@ -468,10 +466,10 @@ final class MapMenu
 				break;
 			case WHATS_NEW:
 				heading(out, "Advanced Map " + WhatsNew.VERSION, column);
-				// empty for the first release as for one of fixes only: neither has news to tell
-				paragraph(out, WhatsNew.NOTE.isEmpty() ? "Nothing new to tell of in this version."
+				// empty for a release of fixes only
+				paragraph(out, WhatsNew.NOTE.isEmpty() ? "Nothing new to tell of in this version: fixes only."
 					: Character.toUpperCase(WhatsNew.NOTE.charAt(0)) + WhatsNew.NOTE.substring(1) + ".", column);
-				paragraph(out, "Earlier versions and the full notes are on GitHub.", column);
+				paragraph(out, "The full release notes are on GitHub.", column);
 				break;
 			case IMPROVE:
 				paragraph(out, "Ideas, suggestions and bug reports are welcome, on Discord or on GitHub, whichever you"
@@ -513,13 +511,6 @@ final class MapMenu
 		{
 			heading(out, "Getting ready", column);
 			paragraph(out, "The map starts building a few seconds after the client starts.", column);
-		}
-		else if (!build.isBackground())
-		{
-			heading(out, "Built as you look around", column);
-			paragraph(out, String.format(java.util.Locale.ROOT, "\"Build the whole map\" is off in the settings, so"
-				+ " only the places you look at are built and saved: %,d regions and floors so far.", build.getSaved()),
-				column);
 		}
 		else if (build.getLeft() < 0)
 		{

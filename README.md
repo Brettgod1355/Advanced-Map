@@ -129,8 +129,8 @@ on this computer, two clients at once included; turn off "Share markers between 
 
 - **Wilderness teleport limits**: zoomed in, red dashed lines show where the Wilderness passes level 20 and level
   30, above which most teleports stop working.
-- **Multi-combat areas** (off by default): tinted red with a solid edge when zoomed in, in the Wilderness and
-  everywhere else.
+- **Multi-combat areas** (off by default, ticked at the top of the Filters list): tinted red with a solid edge
+  when zoomed in, in the Wilderness and everywhere else.
 - **Farming patches**: a dot on each patch icon, green ready, yellow growing, red diseased or dead, gray empty;
   click one for its crop and when it is ready. Read from what RuneLite's Time Tracking plugin saved.
 - **Your Slayer task** (off by default): tick it at the top of the Filters list to mark every spawn of your task's
@@ -185,7 +185,6 @@ choose with Filters on the map itself.
 | Dungeon monsters | Highest level first | The order a dungeon preview lists its monsters in |
 | Arrow to you | On | The arrow at the edge pointing to you when you are out of view |
 | Wilderness teleport limits | On | The level 20 and 30 lines |
-| Multi-combat areas | Off | The multi-combat tint |
 | Farming patch status | On | The dots on farming patch icons |
 | Other plugins' markers | On | Other plugins' world map markers |
 | Search finds shops by name | Off | Shops in the search results by their own names |
@@ -193,8 +192,6 @@ choose with Filters on the map itself.
 | Place names | On | Kingdom, town and place names |
 | Floor numbers | Ground, 2, 3, 4 | How floors above the ground are numbered (or Ground, 1, 2, 3) |
 | Route with | Shortest Path | The plugin "Route here" asks |
-| Say when updated | On | Once after the Plugin Hub updates the plugin: one line in chat, and the What's new page when you next open the map |
-| Build the whole map | On | Builds the rest of the map in the background, nearest you first (about 5 to 10 minutes, once) |
 
 The **Icons** section holds a switch per kind of icon (the same as Filters), "Hide completed quests", "Mark what
 you can't use yet", "Icon size" and "Transport names".
@@ -221,8 +218,7 @@ you can't use yet", "Icon size" and "Transport names".
   computer, shared by every account and profile. Until then places not built yet are blank or blurry, and the map
   says "Building the map... N to go" at the top left; the sidebar tab shows the same count. Afterwards the map opens
   almost instantly, and a region is built again only when a game update changes it: as you look at it, or all of
-  them in the background after an update that changes the whole map's look. "Build the whole map" off builds only
-  what you look at.
+  them in the background after an update that changes the whole map's look.
 - **Memory.** While the map is open it keeps the pictures it has drawn at hand, so moving back over them is
   instant; closing it lets go of all but the smallest ones (about 32 MB at most), which a reopening needs first.
 - **After a game update**, new and changed areas, buildings and the game's own map icons show at once, since they

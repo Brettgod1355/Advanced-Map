@@ -14,7 +14,6 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 public class WhatsNewTest
@@ -25,21 +24,6 @@ public class WhatsNewTest
 		assertTrue("build.gradle", lines("build.gradle").contains("version = '" + WhatsNew.VERSION + "'"));
 		assertTrue("runelite-plugin.properties", lines("runelite-plugin.properties").contains("version="
 			+ WhatsNew.VERSION));
-	}
-
-	@Test
-	public void anUpdateIsSaidOnceAndAFreshInstallHearsNothing()
-	{
-		assertEquals("Advanced Map updated to " + WhatsNew.VERSION + ": icons say more.",
-			WhatsNew.message("0.9.0", "icons say more"));
-		assertNull("the same version again", WhatsNew.message(WhatsNew.VERSION, "icons say more"));
-		assertNull("a fresh install", WhatsNew.message("", "icons say more"));
-		assertNull("a fresh install", WhatsNew.message(null, "icons say more"));
-		assertNull("nothing worth a line", WhatsNew.message("0.9.0", ""));
-		// a line still waiting from an earlier start, whose version has been noted since, is said all the same
-		assertEquals("Advanced Map updated to " + WhatsNew.VERSION + ": icons say more.",
-			WhatsNew.message(WhatsNew.VERSION, "icons say more", true));
-		assertNull(WhatsNew.message(WhatsNew.VERSION, "", true));
 	}
 
 	private static List<String> lines(String name) throws Exception

@@ -27,7 +27,6 @@ final class StateFile
 	static final String LAST_VERSION = "lastVersion";
 	static final String WELCOMED = "welcomed";
 	static final String MAP_BUILT = "mapBuilt";
-	static final String SAY_FOR = "sayFor";
 	static final String WHATS_NEW_FOR = "whatsNewFor";
 
 	private final Filepath file;

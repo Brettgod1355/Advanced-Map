@@ -25,7 +25,6 @@ import java.util.concurrent.Executors;
 import javax.inject.Inject;
 import javax.swing.SwingUtilities;
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.Menu;
@@ -42,10 +41,6 @@ import net.runelite.api.events.GameTick;
 import net.runelite.api.events.PostMenuSort;
 import net.runelite.api.gameval.InterfaceID;
 import net.runelite.client.callback.ClientThread;
-import net.runelite.client.chat.ChatColorType;
-import net.runelite.client.chat.ChatMessageBuilder;
-import net.runelite.client.chat.ChatMessageManager;
-import net.runelite.client.chat.QueuedMessage;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.eventbus.Subscribe;
@@ -131,13 +126,7 @@ public class AdvancedMapPlugin extends Plugin
 	private PluginManager pluginManager;
 
 	@Inject
-	private ChatMessageManager chatMessageManager;
-	@Inject
 	private ItemManager itemManager;
-
-	/** What the update brought, to say on the first game tick; null when nothing is to be said. */
-	/** The line on what an update brought, still to say on the first game tick ({@link StateFile#SAY_FOR}). */
-	private volatile String updateLine;
 
 	@Inject
 	private WorldMapPointManager worldMapPointManager;
@@ -272,7 +261,7 @@ public class AdvancedMapPlugin extends Plugin
 		});
 		markerFiles.execute(this::openMarkers);
 		lastSeen = null;
-		preparer = new MapPreparer(images, source, config::prepareMap,
+		preparer = new MapPreparer(images, source, () -> true,
 			() -> lastSeen != null ? lastSeen : LUMBRIDGE);
 		preparer.timeWith(reader);
 		preparer.start();
@@ -347,25 +336,18 @@ public class AdvancedMapPlugin extends Plugin
 			// update's few new regions never open the Welcome page); What's new opens with the map next time
 			remembered.set(StateFile.WELCOMED, true);
 			remembered.set(StateFile.MAP_BUILT, true);
-			if (start.isNews() && config.updateMessage())
+			if (start.isNews())
 			{
 				remembered.set(StateFile.WHATS_NEW_FOR, WhatsNew.VERSION);
 			}
 		}
-		if (start.isNews())
-		{
-			remembered.set(StateFile.SAY_FOR, WhatsNew.VERSION);
-		}
 		if (!WhatsNew.VERSION.equals(lastVersion))
 		{
-			// the version is noted at once, not when the line is said: a client closed before its first game tick (the
-			// map opened on the login screen, What's new seen) does not take this start for an update again
+			// the version is noted at once: a client closed before the map was next opened does not take its next start
+			// for an update again (What's new waits in the file meanwhile)
 			remembered.set(StateFile.LAST_VERSION, WhatsNew.VERSION);
 		}
 		mapBuilt = remembered.is(StateFile.MAP_BUILT);
-		// the line waits in the file until a game tick says it, in whichever run that comes
-		updateLine = WhatsNew.VERSION.equals(remembered.get(StateFile.SAY_FOR)) ? WhatsNew.message("", WhatsNew.NOTE, true)
-			: null;
 		started = true;
 	}
 
@@ -793,7 +775,6 @@ public class AdvancedMapPlugin extends Plugin
 		{
 			askForRoute(layers);
 		}
-		sayWhatsNew();
 		noteMapBuilt();
 	}
 
@@ -802,7 +783,7 @@ public class AdvancedMapPlugin extends Plugin
 	{
 		MapPreparer currentPreparer = preparer;
 		RegionImages current = images;
-		if (mapBuilt || !config.prepareMap() || currentPreparer == null || current == null || current.store() == null
+		if (mapBuilt || currentPreparer == null || current == null || current.store() == null
 			|| currentPreparer.remaining() != 0 || currentPreparer.isHalted() || current.store().count() == 0)
 		{
 			// never "built" on an empty store, or while the game's data cannot be read
@@ -841,25 +822,6 @@ public class AdvancedMapPlugin extends Plugin
 		filters.setOpen(false);
 		search.setFocused(false);
 		menu.popUp(page);
-	}
-
-	/** The line on what an update brought, said once on the first game tick; "Say when updated" off keeps it quiet. */
-	private void sayWhatsNew()
-	{
-		String line = updateLine;
-		if (line == null)
-		{
-			return;
-		}
-		updateLine = null;
-		state.unset(StateFile.SAY_FOR);
-		if (config.updateMessage())
-		{
-			chatMessageManager.queue(QueuedMessage.builder()
-				.type(ChatMessageType.GAMEMESSAGE)
-				.runeLiteFormattedMessage(new ChatMessageBuilder().append(ChatColorType.HIGHLIGHT).append(line).build())
-				.build());
-		}
 	}
 
 	/** Reads the player's levels and quests again, keeping the last copy if the game cannot answer now. */
@@ -1246,13 +1208,12 @@ public class AdvancedMapPlugin extends Plugin
 		});
 	}
 
-	/** How many regions' floors the background preparing still has to draw: 0 when done, off, or unable to save. */
+	/** How many regions' floors the background preparing still has to draw: 0 when done, or unable to save. */
 	private int leftToPrepare()
 	{
 		RegionImages current = images;
 		MapPreparer currentPreparer = preparer;
-		if (!config.prepareMap() || current == null || current.store() == null || currentPreparer == null
-			|| currentPreparer.isHalted())
+		if (current == null || current.store() == null || currentPreparer == null || currentPreparer.isHalted())
 		{
 			// halted: the notice would count floors that cannot be built now; the sidebar and Welcome say why
 			return 0;
@@ -1267,7 +1228,7 @@ public class AdvancedMapPlugin extends Plugin
 		MapStore store = current == null ? null : current.store();
 		MapPreparer currentPreparer = preparer;
 		return new MapMenu.Build(store == null ? -1 : store.count(),
-			currentPreparer == null ? -1 : currentPreparer.remaining(), config.prepareMap(), store == null && storeFailed,
+			currentPreparer == null ? -1 : currentPreparer.remaining(), store == null && storeFailed,
 			currentPreparer != null && currentPreparer.isHalted(), currentPreparer == null ? 0 : currentPreparer.failed());
 	}
 
@@ -1289,7 +1250,7 @@ public class AdvancedMapPlugin extends Plugin
 			return count + " Building stopped: the game's map data could not be read (a game update may have changed"
 				+ " it); a plugin update is needed.";
 		}
-		if (!config.prepareMap() || remaining < 0)
+		if (remaining < 0)
 		{
 			return count;
 		}
@@ -2188,7 +2149,7 @@ public class AdvancedMapPlugin extends Plugin
 		{
 			if (!placeNames.contains(MapSearch.normalize(name)))
 			{
-				out.add(new MapSearch.Entry(MapSearch.Kind.PLACE, name, "The game's " + name + " map",
+				out.add(new MapSearch.Entry(MapSearch.Kind.PLACE, name, "Place",
 					Collections.singletonList(at), Collections.emptyList(), null));
 			}
 		});
@@ -2645,6 +2606,11 @@ public class AdvancedMapPlugin extends Plugin
 				{
 					configManager.setConfiguration(AdvancedMapConfig.GROUP, group.key, false);
 				}
+				break;
+			case MULTI_COMBAT:
+				// the painter follows the setting's change, as it did from the settings panel
+				configManager.setConfiguration(AdvancedMapConfig.GROUP, AdvancedMapConfig.MULTI_COMBAT,
+					!config.multiCombat());
 				break;
 			case SHOW_HIDDEN:
 				configManager.setConfiguration(AdvancedMapConfig.GROUP, AdvancedMapConfig.SHOW_HIDDEN,
