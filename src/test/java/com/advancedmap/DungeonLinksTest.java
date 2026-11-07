@@ -54,7 +54,8 @@ public class DungeonLinksTest
 		// a rope into the lair and down to the Queen (OSRS Wiki), none for the ropes back up; the game's icon may sit
 		// beside the listed tile
 		String rope = "Needs a rope, unless the Hard Desert Diary is done";
-		assertEquals(rope, DungeonLinks.needs(3226, 3108, 0));
+		assertEquals("Needs a rope (a 2nd for the Queen's chamber), unless the Hard Desert Diary is done",
+			DungeonLinks.needs(3226, 3108, 0));
 		assertEquals(rope, DungeonLinks.needs(3509, 9497, 2));
 		assertEquals(null, DungeonLinks.needs(3508, 9493, 0));
 		assertEquals(null, DungeonLinks.needs(3483, 9510, 2));
