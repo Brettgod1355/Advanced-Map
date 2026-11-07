@@ -105,6 +105,9 @@ class ClientMapSource implements MapSource
 	/** Set once the shared tables, or an object, could not be decoded: every read after that throws it at once. */
 	private volatile MapDataException dataFailure;
 	private volatile Map<Integer, Integer> mapLinks;
+	/** When the link script was last found missing: it is asked for again only after {@link #LINKS_RETRY_NANOS}. */
+	private volatile long linksMissingAt;
+	private static final long LINKS_RETRY_NANOS = 5_000_000_000L;
 
 	ClientMapSource(CacheReader reader)
 	{
@@ -543,10 +546,18 @@ class ClientMapSource implements MapSource
 		Map<Integer, Integer> links = mapLinks;
 		if (links == null)
 		{
+			long missing = linksMissingAt;
+			if (missing != 0 && System.nanoTime() - missing < LINKS_RETRY_NANOS)
+			{
+				// asked again so soon, the client thread is not: a script gone after a game update would be asked for
+				// by every region on every paint
+				throw new CacheNotReadyException();
+			}
 			byte[] script = reader.read(client -> client.getIndexScripts().loadData(MapLinks.SCRIPT, 0));
 			if (script == null)
 			{
 				// not downloaded yet: a region's icons are found again later, with its links
+				linksMissingAt = System.nanoTime();
 				throw new CacheNotReadyException();
 			}
 			links = DungeonLinks.withExtra(Prifddinas.moveLinks(MapLinks.decode(script)));

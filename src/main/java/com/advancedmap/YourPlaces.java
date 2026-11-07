@@ -89,7 +89,21 @@ final class YourPlaces
 				sailing.add(new int[]{spot.getX(), spot.getY(), spot.getCategory()});
 			}
 		}
-		SAILING_ICONS.put(region, sailing);
+		// only regions with some: the icon scan covers every region in the game, and read() walks them every second
+		if (sailing.isEmpty())
+		{
+			SAILING_ICONS.remove(region);
+		}
+		else
+		{
+			SAILING_ICONS.put(region, sailing);
+		}
+	}
+
+	/** Forgets the Sailing icons seen: the plugin stops, and its next start finds them again. */
+	static void forget()
+	{
+		SAILING_ICONS.clear();
 	}
 
 	/** The pins of the player's house and boats. Client thread. */

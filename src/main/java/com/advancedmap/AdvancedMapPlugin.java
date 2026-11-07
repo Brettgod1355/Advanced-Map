@@ -182,6 +182,9 @@ public class AdvancedMapPlugin extends Plugin
 	private volatile boolean mapOpen;
 	/** Open in its own window; the window itself is touched on the Swing thread only. */
 	private volatile boolean windowOpen;
+	/** The orb's two settings, read once and again on a change: the menu is sorted every frame. */
+	private volatile boolean orbLeftClick;
+	private volatile boolean orbMenu;
 	/** Between startUp and shutDown: a task queued for the client thread before a stop finds nothing to work on. */
 	private volatile boolean started;
 	/** The saved map could not be opened this run: the sidebar and the Welcome page say so instead of "not ready". */
@@ -247,6 +250,8 @@ public class AdvancedMapPlugin extends Plugin
 		regionsListing = false;
 		moveHiddenIcons();
 		settings = readSettings();
+		orbLeftClick = config.orbLeftClick();
+		orbMenu = config.orbMenu();
 		search.setSkipped(MapSearch.Scope.parse(config.searchSkipped()));
 		progress = Progress.NONE;
 		selection = null;
@@ -460,6 +465,7 @@ public class AdvancedMapPlugin extends Plugin
 		source = null;
 		icons = null;
 		labels = null;
+		YourPlaces.forget();
 		images = null;
 		preparer = null;
 		panel = null;
@@ -656,8 +662,8 @@ public class AdvancedMapPlugin extends Plugin
 	@Subscribe(priority = -1)
 	public void onPostMenuSort(PostMenuSort event)
 	{
-		boolean left = config.orbLeftClick();
-		if (reader == null || !left && !config.orbMenu() || client.isMenuOpen())
+		boolean left = orbLeftClick;
+		if (reader == null || !left && !orbMenu || client.isMenuOpen())
 		{
 			return;
 		}
@@ -907,6 +913,8 @@ public class AdvancedMapPlugin extends Plugin
 			return;
 		}
 		settings = readSettings();
+		orbLeftClick = config.orbLeftClick();
+		orbMenu = config.orbMenu();
 		search.setSkipped(MapSearch.Scope.parse(config.searchSkipped()));
 		if (sideList.owner() == HIDDEN_LIST && sideList.isOpen() && event.getKey() != null
 			&& event.getKey().startsWith(AdvancedMapConfig.HIDDEN_PREFIX))

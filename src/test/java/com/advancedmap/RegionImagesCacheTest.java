@@ -46,11 +46,23 @@ public class RegionImagesCacheTest
 		volatile long hash = 1;
 		/** The regions the game has, for a preparer. */
 		volatile java.util.List<Integer> regionIds = java.util.Collections.emptyList();
+		/** The map-link script is missing (still downloading, or gone after a game update). */
+		volatile boolean linksMissing;
 
 		@Override
 		public java.util.List<Integer> regionIds()
 		{
 			return regionIds;
+		}
+
+		@Override
+		public java.util.Map<Integer, Integer> mapLinks()
+		{
+			if (linksMissing)
+			{
+				throw new CacheNotReadyException();
+			}
+			return java.util.Collections.emptyMap();
 		}
 
 		@Override

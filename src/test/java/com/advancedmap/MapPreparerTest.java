@@ -100,6 +100,31 @@ public class MapPreparerTest
 	}
 
 	@Test
+	public void aMissingMapLinkScriptStillLetsTheRegionsBeBuilt() throws Exception
+	{
+		// the link script missing (a game update removing it, say) once left every new region "not ready" for good
+		// (the PR audit, 2026-11-07): the region is drawn and saved without its link icons
+		java.util.concurrent.ExecutorService executor = java.util.concurrent.Executors.newSingleThreadExecutor();
+		try
+		{
+			RegionImagesCacheTest.Flat flat = new RegionImagesCacheTest.Flat();
+			flat.regionIds = java.util.Collections.singletonList(50 << 8 | 50);
+			flat.linksMissing = true;
+			RegionImages images = new RegionImages(flat, executor, new MapIcons());
+			MapStore store = MapStore.open(net.runelite.client.util.Filepath.Unchecked.getRooted(
+				folder.getRoot().toPath()));
+			images.setStore(store);
+			MapPreparer preparer = new MapPreparer(images, flat, () -> true, () -> LUMBRIDGE);
+			assertTrue(preparer.stepOnce());
+			assertTrue("the ground and its empty floors saved", store.count() > 0);
+		}
+		finally
+		{
+			executor.shutdownNow();
+		}
+	}
+
+	@Test
 	public void aFloorNotDownloadedYetIsPassedOverAtOnceAndOnlyARunOfThemRests() throws Exception
 	{
 		// a fresh install spent 266 of its 603 seconds resting a second after each floor not downloaded yet, while the

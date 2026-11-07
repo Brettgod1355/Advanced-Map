@@ -829,24 +829,34 @@ class RegionImages
 		{
 			icons.addSprite(all.get(i).getAreaId(), source.areaIcon(all.get(i).getAreaId()));
 		}
-		addLinkIcons(region, all);
+		boolean linked = addLinkIcons(region, all);
 		addTransportIcons(region, all);
 		YourPlaces.sawIcons(region.getRegionID(), all);
 		icons.addRegion(region.getRegionID(), all);
-		return complete;
+		return complete && linked;
 	}
 
 	/**
 	 * The game's map link icon on each link spot in a region that has no icon of its own within {@link #LINK_REACH}
 	 * tiles: mostly the ways out of dungeons. A dungeon's entrance usually has its dungeon icon already.
 	 */
-	private void addLinkIcons(Region region, List<MapSpot> all)
+	private boolean addLinkIcons(Region region, List<MapSpot> all)
 	{
-		Map<Integer, Integer> links = source.mapLinks();
+		Map<Integer, Integer> links;
+		try
+		{
+			links = source.mapLinks();
+		}
+		catch (CacheNotReadyException e)
+		{
+			// the link script not there (still downloading, or gone after a game update): the region is drawn all the
+			// same, without its link icons, and its icons are found again later
+			return false;
+		}
 		int linkArea = source.categoryArea(IconGroup.MAP_LINK);
 		if (linkArea < 0)
 		{
-			return;
+			return true;
 		}
 		for (int from : links.keySet())
 		{
@@ -868,6 +878,7 @@ class RegionImages
 				all.add(MapSpot.icon(x, y, MapLinks.plane(from), linkArea, IconGroup.MAP_LINK));
 			}
 		}
+		return true;
 	}
 
 	/**
