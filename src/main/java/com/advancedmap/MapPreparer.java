@@ -59,6 +59,10 @@ final class MapPreparer
 	private volatile boolean listed;
 	/** The region the list was last sorted around. */
 	private int sortedFor = -1;
+	/** Whose reads and frames the build's timing counts; null in tests, and then nothing is timed. */
+	private volatile CacheReader reader;
+	/** The build under way, timed for the log; null before its first floor, and again after a restart. */
+	private volatile Timing timing;
 	/** What the tables every region is drawn from hashed to when the list was made: a saved floor with another is stale. */
 	private long stamp;
 
@@ -87,6 +91,45 @@ final class MapPreparer
 		worker.shutdownNow();
 	}
 
+	/** Times each build by {@code reader}'s waits and frames, and says in the debug log where its time went. */
+	void timeWith(CacheReader reader)
+	{
+		this.reader = reader;
+	}
+
+	/**
+	 * Where a build's time goes, to tell whether the client thread's reads (one wait of up to a frame each) or the
+	 * drawing set its pace. Preparer thread only.
+	 */
+	private static final class Timing
+	{
+		final long started = System.nanoTime();
+		final long framesBefore;
+		final long[] waitsBefore;
+		long drawing;
+		int drawn;
+		int notReady;
+		boolean said;
+
+		Timing(CacheReader reader)
+		{
+			framesBefore = reader.frames();
+			waitsBefore = reader.waitedHere();
+		}
+
+		void say(CacheReader reader)
+		{
+			said = true;
+			double seconds = (System.nanoTime() - started) / 1e9;
+			long frames = reader.frames() - framesBefore;
+			long[] waits = reader.waitedHere();
+			log.debug(String.format(java.util.Locale.ROOT, "map built: %d floors in %.0f s; drawing them %.0f s, of"
+				+ " which waiting for the client thread %.0f s over %d reads; %d frames (%.0f fps); %d put back for"
+				+ " data not downloaded yet", drawn, seconds, drawing / 1e9, (waits[1] - waitsBefore[1]) / 1e9,
+				waits[0] - waitsBefore[0], frames, frames / Math.max(1, seconds), notReady));
+		}
+	}
+
 	/** Lists the regions again, after the saved map was deleted. */
 	synchronized void restart()
 	{
@@ -97,6 +140,7 @@ final class MapPreparer
 		restUntil = 0;
 		listed = false;
 		iconTodo = null;
+		timing = null;
 	}
 
 	/** When a floor of a region the client had not downloaded was put back: the next steps rest a while after it. */
@@ -197,8 +241,20 @@ final class MapPreparer
 				return false;
 			}
 			Integer key = enabled.getAsBoolean() && store != null ? next(store) : null;
+			CacheReader timer = reader;
+			Timing timed = timing;
+			if (key != null && timed == null && timer != null)
+			{
+				timed = new Timing(timer);
+				timing = timed;
+			}
+			if (key == null && timed != null && !timed.said && listed && remaining() == 0)
+			{
+				timed.say(timer);
+			}
 			if (key != null)
 			{
+				long drawing = System.nanoTime();
 				try
 				{
 					if (!images.prepare(key))
@@ -206,11 +262,19 @@ final class MapPreparer
 						// left out, not tried again: the log says what went wrong with it
 						failed++;
 					}
+					else if (timed != null)
+					{
+						timed.drawn++;
+					}
 					return true;
 				}
 				catch (CacheNotReadyException e)
 				{
 					// the client has not downloaded this part of the cache yet: last in the queue, not forgotten
+					if (timed != null)
+					{
+						timed.notReady++;
+					}
 					requeue(key);
 					return false;
 				}
@@ -223,6 +287,10 @@ final class MapPreparer
 				finally
 				{
 					finished(key);
+					if (timed != null)
+					{
+						timed.drawing += System.nanoTime() - drawing;
+					}
 				}
 			}
 			// with nothing (more) to draw, the icons of the regions not drawn in this session, for search
