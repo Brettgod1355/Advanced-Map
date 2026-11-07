@@ -21,7 +21,8 @@ final class WhatsNew
 	 * a line (a fix, a wording change): then the page does not open by itself. The first release says only that it is
 	 * one (a fresh install never opens the page by itself, there being no earlier version to update from).
 	 */
-	static final String NOTE = "the first release of Advanced Map";
+	static final String NOTE = "hover over a shop to see what it sells. After clicking into a dungeon, your mouse's"
+		+ " back button takes you back out (forward goes in again), and the dungeon opens at the zoom you were at";
 
 	/** What a start of the plugin does about the version last run: see {@link #start}. */
 	@lombok.Value
