@@ -27,8 +27,8 @@ import net.runelite.api.coords.WorldPoint;
  * crossing a tile the game has nothing on (the dark between caves), found on the map's own smallest pictures, and
  * without leaving the game's own map of that part of the underground ("Taverley Underground" ends where the Dwarven
  * Mines begin, though their floors touch). From there it follows the ladders, ropes and stairs that stay on that map
- * ({@code inner-links.tsv}, and the game's own map links), so the floors below count too: the Kalphite Queen is a
- * rope below the lair's tunnels.
+ * ({@code inner-links.tsv}, and the game's own map links), so the floors below count too, except a way with its own
+ * icon in {@code dungeon-links.tsv}, which has its own preview (the Kalphite Queen's chamber, below the lair).
  */
 final class DungeonPreview
 {
@@ -295,6 +295,9 @@ final class DungeonPreview
 		}
 		List<Way> ways = new ArrayList<>(innerWays);
 		ways.addAll(mapWays);
+		// a way with its own icon in dungeon-links.tsv has its own preview: the Kalphite Queen is in her chamber's,
+		// not the lair's (owner, 2026-11-07: "KQ is not in the lair, only the chamber")
+		ways.removeIf(way -> DungeonLinks.listedNear(way.getFrom()));
 		List<List<WorldMapElements.Piece>> mapsNow = maps;
 		java.util.concurrent.Executor run = executor;
 		if (run == null)

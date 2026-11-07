@@ -58,6 +58,11 @@ public class DungeonLinksTest
 		assertEquals(rope, DungeonLinks.needs(3509, 9497, 2));
 		assertEquals(null, DungeonLinks.needs(3508, 9493, 0));
 		assertEquals(null, DungeonLinks.needs(3483, 9510, 2));
+		// Shortest Path's ways down to the chamber (3508 9498 2, 3510 9496 2) have the list's icon beside them, so the
+		// lair's preview leaves the chamber, and its Queen, to the chamber's own (owner: "KQ is not in the lair")
+		assertTrue(DungeonLinks.listedNear(new net.runelite.api.coords.WorldPoint(3508, 9498, 2)));
+		assertTrue(DungeonLinks.listedNear(new net.runelite.api.coords.WorldPoint(3510, 9496, 2)));
+		assertTrue(!DungeonLinks.listedNear(new net.runelite.api.coords.WorldPoint(3514, 9521, 2)));
 	}
 
 	@Test
