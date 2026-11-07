@@ -526,12 +526,14 @@ final class MapIcons
 	static final String FISHING_SPOT = "Fishing spot";
 	static final String HUNTER = "Hunter training";
 
-	/** The lines of an icon's info box, after its name. */
-
 	/** The game's names for its Sailing icons where a boat docks. */
 	static final String DOCKING_POINT = "Docking point";
 	static final String PORT = "Port";
 
+	/** How many of a shop's items its info box lists; a click lists them all. */
+	static final int SHOP_ITEMS = 8;
+
+	/** The lines of an icon's info box, after its name. */
 	static List<Line> info(MapSpot spot, Progress progress, boolean hidden, FloorNumbers floors)
 	{
 		List<Line> lines = new ArrayList<>();
@@ -611,6 +613,10 @@ final class MapIcons
 				}
 			}
 		}
+		if (spot.getGroup() == IconGroup.SHOPS)
+		{
+			shopInfo(lines, Shops.near(spot.getX(), spot.getY(), spot.getPlane()));
+		}
 		// the game's own tile, in Prifddinas the city's
 		WorldPoint tile = Prifddinas.toCity(new WorldPoint(spot.getX(), spot.getY(), spot.getPlane()));
 		lines.add(new Line(tile.getPlane() > 0 ? tile.getX() + ", " + tile.getY() + ", " + floors.name(tile.getPlane())
@@ -619,6 +625,29 @@ final class MapIcons
 		lines.add(new Line(hidden ? "Hidden: right-click to unhide" : wiki ? "Right-click to hide it or open its wiki page"
 			: "Right-click to hide this icon", QUIET));
 		return lines;
+	}
+
+	/**
+	 * A shop's name and its first few items with their prices, as the click's list has them, so a look is enough; a
+	 * longer stock says how much more a click lists (owner, 2026-11-07: "can hovering over a shop also show what it
+	 * sells").
+	 */
+	static void shopInfo(List<Line> lines, Shops.Shop shop)
+	{
+		if (shop == null)
+		{
+			return;
+		}
+		lines.add(new Line(shop.getName(), PLAIN));
+		List<Shops.Item> items = shop.getItems();
+		for (int i = 0; i < Math.min(SHOP_ITEMS, items.size()); i++)
+		{
+			lines.add(new Line(items.get(i).getName() + ": " + items.get(i).priceText(), PLAIN));
+		}
+		if (items.size() > SHOP_ITEMS)
+		{
+			lines.add(new Line("and " + (items.size() - SHOP_ITEMS) + " more: click for them all", QUIET));
+		}
 	}
 
 	private static void questInfo(List<Line> lines, Progress.QuestInfo quest, Progress progress)
