@@ -361,6 +361,29 @@ public class MapPainterTest
 	}
 
 	@Test
+	public void restingOnATransportShowsTheListAClickOpensAtTheTopRight() throws InterruptedException
+	{
+		// the owner, 2026-11-07: "i want to see that box at the top right on hover, not just the lines"
+		Transports.load();
+		MapIcons icons = new MapIcons();
+		icons.addSprite(0, com.advancedmap.cache.MapSprite.of(15, 15, 0, 0, 1, 1, new int[]{0xFFFFFF}));
+		// the magic carpet by the Shantay Pass: to Bedabin Camp, Pollnivneach and Uzer
+		MapSpot carpet = MapSpot.icon(3312, 3107, 0, 0, 1104);
+		assertFalse(Transports.from(carpet).isEmpty());
+		icons.addRegion(3312 >> 6 << 8 | 3107 >> 6, Collections.singletonList(carpet));
+		// the carpet well left of the middle, so its own box stays clear of the list's corner
+		MapViewport.View view = new MapViewport.View(3312 + 60, 3107, 4, 800, 600);
+		java.awt.Point on = new java.awt.Point((int) Math.round(view.screenX(3312.5)),
+			(int) Math.round(view.screenY(3107.5)));
+		Rectangle corner = new Rectangle(560, 60, 230, 120);
+
+		MapPainter off = blankPainter(icons);
+		MapPainter hover = blankPainter(icons);
+		hover.setInfoOnHover(true);
+		assertTrue(differences(restOn(off, view, on), restOn(hover, view, on), corner) > 500);
+	}
+
+	@Test
 	public void theArrowToThePlayerSitsAtTheEdgeTowardThemOnlyWhenTheyAreOutOfView()
 	{
 		MapViewport.View view = new MapViewport.View(3222, 3218, 4, 800, 600);

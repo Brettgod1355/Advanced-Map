@@ -154,10 +154,13 @@ final class MapPainter
 	private final MapLabels labels;
 	private final MapFilters filters;
 	private final SideList sideList;
-	/** What a shop sells, shown in the side list's place while the mouse rests on the shop (a click keeps it open). */
-	private final SideList shopPreview = new SideList();
-	/** The shop {@link #shopPreview} lists; painter thread. */
-	private Shops.Shop previewedShop;
+	/**
+	 * The list a click on a shop or transport opens, shown in the side list's place while the mouse rests on it (a
+	 * click keeps it open).
+	 */
+	private final SideList clickPreview = new SideList();
+	/** What {@link #clickPreview} lists, a shop or a transport's spot; painter thread. */
+	private Object previewed;
 	private final MapSearch search;
 	/** The map's menu, drawn while open; null in a painter without one (the harness). */
 	private volatile MapMenu menu;
@@ -1090,11 +1093,12 @@ final class MapPainter
 		{
 			return;
 		}
-		// a transport's lines to where it goes, as a click shows them (without the list), under its box
+		// a transport's lines to where it goes, as a click shows them, under its box; its list is drawn last, below
 		List<Transports.Destination> destinations = Transports.from(spot);
+		WorldPoint from = new WorldPoint(spot.getX(), spot.getY(), spot.getPlane());
 		if (!destinations.isEmpty())
 		{
-			drawLayer(g, view, Transports.layer(new WorldPoint(spot.getX(), spot.getY(), spot.getPlane()), destinations));
+			drawLayer(g, view, Transports.layer(from, destinations));
 		}
 		WorldPoint to = links.apply(spot);
 		if (to != null)
@@ -1110,29 +1114,39 @@ final class MapPainter
 				drawInfo(g, view, icon, settings, progress, farmingLines(spot, farms));
 			}
 		}
-		if (spot.getGroup() == IconGroup.SHOPS)
+		if (!destinations.isEmpty())
 		{
-			drawShopPreview(g, view, window, spot);
+			drawClickPreview(g, view, window, spot, () -> MapIcons.name(spot, progress),
+				() -> AdvancedMapPlugin.transportRows(from, destinations));
+		}
+		else if (spot.getGroup() == IconGroup.SHOPS)
+		{
+			Shops.Shop shop = Shops.near(spot.getX(), spot.getY(), spot.getPlane());
+			if (shop != null)
+			{
+				drawClickPreview(g, view, window, shop, shop::getName, () -> SideList.shopRows(shop));
+			}
 		}
 	}
 
 	/**
-	 * What a shop sells, in the list a click opens on the right, while the mouse rests on it (owner, 2026-11-07: "I
-	 * wanted the hover to show the box at the top right"). Not while the list already shows that shop.
+	 * The list a click opens on the right (a shop's wares, a transport's places and fares), while the mouse rests on
+	 * its icon (owner, 2026-11-07: "I wanted the hover to show the box at the top right"; "hovering on a transport or
+	 * any icon needs to show the same details as a click"). Not while the list already shows it. Made once per icon.
 	 */
-	private void drawShopPreview(Graphics2D g, MapViewport.View view, boolean window, MapSpot spot)
+	private void drawClickPreview(Graphics2D g, MapViewport.View view, boolean window, Object owner,
+		java.util.function.Supplier<String> title, java.util.function.Supplier<List<SideList.Row>> rows)
 	{
-		Shops.Shop shop = Shops.near(spot.getX(), spot.getY(), spot.getPlane());
-		if (shop == null || sideList.isOpen() && sideList.owner() == shop)
+		if (sideList.isOpen() && owner.equals(sideList.owner()))
 		{
 			return;
 		}
-		if (shop != previewedShop)
+		if (!owner.equals(previewed))
 		{
-			shopPreview.open(shop.getName(), SideList.shopRows(shop), shop);
-			previewedShop = shop;
+			clickPreview.open(title.get(), rows.get(), owner);
+			previewed = owner;
 		}
-		shopPreview.draw(g, shopPreview.layout(buttons(view.width, view.height, window)), null);
+		clickPreview.draw(g, clickPreview.layout(buttons(view.width, view.height, window)), null);
 	}
 
 	/** True when a point is on one of the map's buttons, its open lists or boxes, or the search bar. */
