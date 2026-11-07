@@ -468,7 +468,8 @@ final class MapMenu
 				break;
 			case WHATS_NEW:
 				heading(out, "Advanced Map " + WhatsNew.VERSION, column);
-				paragraph(out, WhatsNew.NOTE.isEmpty() ? "Nothing new to see in this version: fixes only."
+				// empty for the first release as for one of fixes only: neither has news to tell
+				paragraph(out, WhatsNew.NOTE.isEmpty() ? "Nothing new to tell of in this version."
 					: Character.toUpperCase(WhatsNew.NOTE.charAt(0)) + WhatsNew.NOTE.substring(1) + ".", column);
 				paragraph(out, "Earlier versions and the full notes are on GitHub.", column);
 				break;
