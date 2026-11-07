@@ -164,8 +164,7 @@ Escape closes the page, then the menu.
 - **Help improve the map**: where to send ideas, suggestions and bug reports (Discord or GitHub, in your browser).
   On the map, right-click a spot or an icon and choose **Report a problem here**: a new GitHub issue opens with
   the place already filled in, and a picture of the map with the spot ringed is put on your clipboard to paste
-  into it (Ctrl+V). The picture is only the map: nothing of the game, its chat or names. **Copy this spot** copies the same line ("Bank at 3208, 3220, Floor 3, near
-  Lumbridge") to paste on Discord or anywhere else.
+  into it (Ctrl+V). The picture is only the map: nothing of the game, its chat or names.
 - **Build the map again**: deletes the map saved on this computer and builds it again from the game's data.
 
 The GitHub and Discord buttons at the bottom of the menu open the project's pages in your browser.
@@ -195,7 +194,7 @@ choose with Filters on the map itself.
 | Floor numbers | Ground, 2, 3, 4 | How floors above the ground are numbered (or Ground, 1, 2, 3) |
 | Route with | Shortest Path | The plugin "Route here" asks |
 | Say when updated | On | Once after the Plugin Hub updates the plugin: one line in chat, and the What's new page when you next open the map |
-| Build the whole map | On | Builds the rest of the map in the background, nearest you first (about 10 to 15 minutes, once) |
+| Build the whole map | On | Builds the rest of the map in the background, nearest you first (about 5 to 10 minutes, once) |
 
 The **Icons** section holds a switch per kind of icon (the same as Filters), "Hide completed quests", "Mark what
 you can't use yet", "Icon size" and "Transport names".
@@ -218,7 +217,7 @@ you can't use yet", "Icon size" and "Transport names".
 ## Good to know
 
 - **The first time.** From the moment the client starts, the map builds the regions it has not saved yet in the
-  background, nearest you first, using spare processor time: about 10 to 15 minutes for the whole world, once per
+  background, nearest you first, using spare processor time: about 5 to 10 minutes for the whole world, once per
   computer, shared by every account and profile. Until then places not built yet are blank or blurry, and the map
   says "Building the map... N to go" at the top left; the sidebar tab shows the same count. Afterwards the map opens
   almost instantly, and a region is built again only when a game update changes it: as you look at it, or all of

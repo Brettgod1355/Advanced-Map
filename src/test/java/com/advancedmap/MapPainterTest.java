@@ -94,7 +94,7 @@ public class MapPainterTest
 		MapSpot varrock = MapSpot.teleport(Teleport.named("VARROCK"));
 		MapPainter.Selection near = new MapPainter.Selection(varrock, true, 790, 590, Teleport.named("VARROCK").getLocation());
 		List<MapPainter.MenuEntry> entries = MapPainter.menuEntries(near, settings(RoutingPlugin.SHORTEST_PATH));
-		assertEquals(6, entries.size());
+		assertEquals(5, entries.size());
 		assertEquals(MapPainter.Action.HIDE, entries.get(0).getAction());
 		assertEquals("Route here (Shortest Path)", entries.get(1).getText());
 		assertEquals(MapPainter.Action.ADD_MARKER, entries.get(3).getAction());
@@ -132,17 +132,16 @@ public class MapPainterTest
 	{
 		MapPainter.Selection tile = new MapPainter.Selection(null, true, 10, 10, new WorldPoint(3222, 3218, 1));
 		List<MapPainter.MenuEntry> entries = MapPainter.menuEntries(tile, settings(RoutingPlugin.GPS));
-		assertEquals(5, entries.size());
+		assertEquals(4, entries.size());
 		assertEquals(MapPainter.Action.ROUTE, entries.get(0).getAction());
 		assertEquals("Route here (GPS)", entries.get(0).getText());
 		assertEquals("3222, 3218, Floor 2", MapPainter.menuTitle(tile, Progress.NONE, FloorNumbers.GROUND_IS_FIRST));
 		assertEquals("3222, 3218, Floor 1", MapPainter.menuTitle(tile, Progress.NONE,
 			FloorNumbers.FIRST_ABOVE_GROUND));
 		List<MapPainter.MenuEntry> plain = MapPainter.menuEntries(tile, settings(RoutingPlugin.NONE));
-		assertEquals(3, plain.size());
+		assertEquals(2, plain.size());
 		assertEquals("Add marker here", plain.get(0).getText());
 		assertEquals("Report a problem here", plain.get(1).getText());
-		assertEquals("Copy this spot", plain.get(2).getText());
 	}
 
 	@Test
@@ -167,7 +166,7 @@ public class MapPainterTest
 		MapPins.Pin pin = new MapPins.Pin(new WorldPoint(3222, 3218, 0), null, new MapPins.Marker("m", new WorldPoint(
 			3222, 3218, 0), MarkerIcons.Design.values()[0], 0, "", ""), "", "", null, false);
 		assertTrue(MapPainter.menuEntries(tile, settings(RoutingPlugin.NONE), pin).stream()
-			.noneMatch(e -> e.getAction() == MapPainter.Action.REPORT || e.getAction() == MapPainter.Action.COPY_SPOT));
+			.noneMatch(e -> e.getAction() == MapPainter.Action.REPORT));
 	}
 
 	@Test

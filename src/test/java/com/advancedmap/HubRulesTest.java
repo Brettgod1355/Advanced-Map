@@ -50,7 +50,7 @@ public class HubRulesTest
 		{"awaitTermination\\(", "never block in shutDown; use shutdownNow (Hub AGENTS.md)"},
 		{"java\\.awt\\.Desktop", "use LinkBrowser, not Desktop (reviewer, plugin-hub#16712)"},
 		{"LinkBrowser\\.open\\(", "LinkBrowser.open is not allowed; only LinkBrowser.browse (Hub wiki, 2026-10-05)"},
-		// the system clipboard is no hook ("Copy this spot", owner 2026-11-06); any other use of the Toolkit still fails
+		// the system clipboard is no hook (the report's picture; owner 2026-11-06); any other use of the Toolkit still fails
 		{"\\bToolkit\\b(?!\\.getDefaultToolkit\\(\\)\\.getSystemClipboard\\(\\))",
 			"no JVM-wide hooks through the Toolkit (shared rules); only its system clipboard"},
 		{"java\\.awt\\.Robot|\\.dispatchEvent\\(", "no injected input (Jagex rules, Hub wiki)"},

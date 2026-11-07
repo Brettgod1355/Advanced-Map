@@ -1498,26 +1498,16 @@ public class AdvancedMapPlugin extends Plugin
 				route(on.getPoint());
 				break;
 			case REPORT:
-			case COPY_SPOT:
 				WorldPoint at = on.getSpot() != null ? new WorldPoint(on.getSpot().getX(), on.getSpot().getY(),
 					on.getSpot().getPlane()) : on.getPoint();
 				// "near" only a place that is near: with none within reach, or before the names have loaded, the tile alone
 				String spotText = MapPainter.spotText(on, progress, settings.getFloorNumbers(),
 					SearchSpots.placeName(at, labelsNow()));
-				if (action == MapPainter.Action.REPORT)
-				{
-					// a picture of the map, ringed where it was right-clicked, taken by the next paint (the menu is
-					// gone by then) and put on the clipboard: the issue says to paste it
-					pictureMark.set(new java.awt.Point(on.getX(), on.getY()));
-					touched();
-					LinkBrowser.browse(reportUrl(spotText));
-				}
-				else
-				{
-					// to paste where the player writes (Discord, a clan chat): copied, nothing sent
-					java.awt.Toolkit.getDefaultToolkit().getSystemClipboard()
-						.setContents(new java.awt.datatransfer.StringSelection(spotText), null);
-				}
+				// a picture of the map, ringed where it was right-clicked, taken by the next paint (the menu is gone by
+				// then) and put on the clipboard: the issue says to paste it
+				pictureMark.set(new java.awt.Point(on.getX(), on.getY()));
+				touched();
+				LinkBrowser.browse(reportUrl(spotText));
 				break;
 			case WIKI:
 				NamedIcons.Named named = on.getSpot() == null ? null

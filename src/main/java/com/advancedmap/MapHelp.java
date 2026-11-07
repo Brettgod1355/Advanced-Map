@@ -62,8 +62,8 @@ final class MapHelp
 			+ " which most teleports stop working."},
 		{"Something wrong?", "Right-click the spot, or the icon, and choose \"Report a problem here\": a new GitHub"
 			+ " issue opens in your browser with the place filled in, and a picture of the map with the spot ringed is"
-			+ " on your clipboard to paste in (Ctrl+V); say what is wrong or missing. Or choose \"Copy"
-			+ " this spot\" and paste it on Discord (the menu's \"Help improve the map\")."},
+			+ " on your clipboard to paste in (Ctrl+V); say what is wrong or missing. Or write on Discord (the menu's"
+			+ " \"Help improve the map\")."},
 		{"Over the game", "The map opens in a box over the game; the game goes on around it, and a click outside the"
 			+ " box is the game's. Drag the bar along its top or bottom (the dots) to move it, a corner or side to"
 			+ " size it. The square button at the top right fills the game view with it; press it again to go back."},
@@ -82,7 +82,7 @@ final class MapHelp
 			+ " almost instantly, on every character and RuneLite profile on this computer. Nothing is downloaded."},
 		{"How the map is built", "In the background from the moment the client starts, one region after another: the"
 			+ " ground near you first, then farther out, then the floors above. It uses spare processor time, so the"
-			+ " game comes first, and takes about 10 to 15 minutes for the whole world. You can play and use the map"
+			+ " game comes first, and takes about 5 to 10 minutes for the whole world. You can play and use the map"
 			+ " meanwhile: places not built yet are blank or blurry, and their icons are missing from the map and the"
 			+ " search. The sidebar tab shows how far along it is. With \"Build the whole map\" off, only what you"
 			+ " look at is built."},
