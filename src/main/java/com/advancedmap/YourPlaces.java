@@ -78,9 +78,16 @@ final class YourPlaces
 		HOUSES.put(value, new House(town, new WorldPoint(x, y, 0)));
 	}
 
+	/** Whether the plugin is running: a step still finishing after the stop keeps nothing here. */
+	private static volatile boolean running;
+
 	/** Keeps a region's Sailing icons, where a boat's dock is looked for. */
 	static void sawIcons(int region, List<MapSpot> spots)
 	{
+		if (!running)
+		{
+			return;
+		}
 		List<int[]> sailing = new ArrayList<>();
 		for (MapSpot spot : spots)
 		{
@@ -100,9 +107,17 @@ final class YourPlaces
 		}
 	}
 
+	/** The plugin starts: Sailing icons are kept from now on, none from an earlier run. */
+	static void start()
+	{
+		SAILING_ICONS.clear();
+		running = true;
+	}
+
 	/** Forgets the Sailing icons seen: the plugin stops, and its next start finds them again. */
 	static void forget()
 	{
+		running = false;
 		SAILING_ICONS.clear();
 	}
 

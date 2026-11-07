@@ -261,7 +261,8 @@ public class AdvancedMapPlugin extends Plugin
 		// RuneLite keeps the plugin object between a stop and a start: last run's failure and Sailing icons are not this
 		// run's (a preparer step still finishing at the stop may have put some back after it forgot them)
 		storeFailed = false;
-		YourPlaces.forget();
+		linksRead = false;
+		YourPlaces.start();
 		executor.execute(this::openStore);
 		markerFiles = Executors.newSingleThreadExecutor(task ->
 		{
@@ -3065,9 +3066,12 @@ public class AdvancedMapPlugin extends Plugin
 	}
 
 	/** Reads the place names in the background, once; again next time if the client had no world map data yet. */
+	/** Whether this run has the map links: until then each opening asks for them again. */
+	private volatile boolean linksRead;
+
 	private void loadLabels()
 	{
-		if (labelsLoading || !labels.all().isEmpty() && filters.hasCategories())
+		if (labelsLoading || !labels.all().isEmpty() && filters.hasCategories() && linksRead)
 		{
 			return;
 		}
@@ -3089,7 +3093,6 @@ public class AdvancedMapPlugin extends Plugin
 				var names = from.labels();
 				var maps = from.gameMaps();
 				var pieces = from.mapPieces();
-				var links = from.mapLinks();
 				into.set(names);
 				SailingDocks.place(into.all());
 				gameMaps = maps;
@@ -3097,7 +3100,21 @@ public class AdvancedMapPlugin extends Plugin
 				if (drawing != null)
 				{
 					drawing.setDungeonMaps(pieces);
-					drawing.setMapLinks(links);
+				}
+				// the links apart: a link script still downloading, or gone after a game update, must not cost the
+				// names; they are read again at a later opening
+				try
+				{
+					var links = from.mapLinks();
+					if (drawing != null)
+					{
+						drawing.setMapLinks(links);
+					}
+					linksRead = true;
+				}
+				catch (CacheNotReadyException e)
+				{
+					log.debug("the map links are not there yet");
 				}
 			}
 			catch (RuntimeException e)
