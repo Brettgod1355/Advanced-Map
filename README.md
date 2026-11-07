@@ -40,7 +40,7 @@ The map opens on your character, on the surface or the underground map, whicheve
 | Switch surface / underground | The button at the top |
 | See what an icon is | Rest the pointer on it; click it to keep its box open |
 | Add a marker, route somewhere, hide an icon | Right-click the spot or the icon |
-| Choose which icons show, and mark your Slayer task | The Filters button at the top left |
+| Choose which icons show, mark your Slayer task, tint multi-combat areas | The Filters button at the top left |
 | Open the menu: help, settings, what's new, where to write | The three lines at the top left |
 | Search | Click the search box at the top and type; Enter or a click on a result goes there |
 | Choose what the search looks in | The three lines beside the magnifying glass |
@@ -95,12 +95,16 @@ fishing spot's catch, a hunter area's creature and Hunter level, a rare tree's k
   Lovakengj blast mine's other chests ...). Bank chests you build yourself and banks a quest opens stay grayed out
   until you have built or opened them; click one for what it needs.
 - **Shops**: click one, general stores included, for what it sells and for how much.
-- **Transports**: point at a charter ship, a canoe, a spirit tree or another transport for lines to where it goes;
-  click it to keep them and list each place with the fare and what the trip needs. Fairy ring codes and spirit tree
-  destinations show beside them when zoomed in.
+- **Teleports** each show their own icon (a spell its spellbook's, jewellery and other items their item), including
+  the item and minigame teleports RuneLite's own list leaves out.
+- **Transports**: point at a charter ship, a canoe, a spirit tree, a Wilderness obelisk, a lever or another
+  transport for lines to where it goes; click it to keep them and list each place with the fare and what the trip
+  needs. Fairy ring codes and spirit tree destinations show beside them when zoomed in.
+- **Docking points and ports** name their place and the Sailing level docking there needs, green when you have it.
 - **Minigames the game's map leaves out** get an icon of their own, such as Tempoross at the Sea Spirit Dock.
 
 <img src="docs/images/transport-lines.webp" alt="Lumbridge's canoe station with lines to where its canoes go" width="480">
+
 - **Filters** at the top left lists every kind of icon, grouped (Banks, Quests, Shops ...) and searchable: tick or
   untick a whole group or a single kind. Right-click any one icon to hide just that one; "Show hidden icons" brings
   them back faded so they can be unhidden.
@@ -135,6 +139,8 @@ on this computer, two clients at once included; turn off "Share markers between 
   click one for its crop and when it is ready. Read from what RuneLite's Time Tracking plugin saved.
 - **Your Slayer task** (off by default): tick it at the top of the Filters list to mark every spawn of your task's
   monsters, with how many are left. The row names the task RuneLite's Slayer plugin keeps, or says there is none.
+- **Your house and boats**: a pin at your player-owned house's portal, and one at the dock where each of your boats
+  is moored.
 - **Other plugins' markers**: a clue scroll's spot, Quest Helper's next step and other plugins' world map markers
   show on this map as well.
 - **Arrow to you**: when you are out of view, an arrow at the map's edge points to you with how many tiles away.
@@ -160,11 +166,11 @@ Escape closes the page, then the menu.
   faded so you can right-click it and choose Unhide.
 - **Settings**: opens Advanced Map's page in RuneLite's own settings.
 - **What's new**: what this version brings, with the full release notes on GitHub a click away. It opens by itself
-  the first time you open the map after the Plugin Hub has updated the plugin.
+  the first time you open the map after the Plugin Hub has updated the plugin with something new.
 - **Help improve the map**: where to send ideas, suggestions and bug reports (Discord or GitHub, in your browser).
-  On the map, right-click a spot or an icon and choose **Report a problem here**: a new GitHub issue opens with
-  the place already filled in, and a picture of the map with the spot ringed is put on your clipboard to paste
-  into it (Ctrl+V). The picture is only the map: nothing of the game, its chat or names.
+  On the map, right-click a spot, an icon or another plugin's marker and choose **Report a problem here**: a new
+  GitHub issue opens with the place already filled in, and a picture of the map with the spot ringed is put on your
+  clipboard to paste into it (Ctrl+V). The picture is only the map: nothing of the game, its chat or names.
 - **Build the map again**: deletes the map saved on this computer and builds it again from the game's data.
 
 The GitHub and Discord buttons at the bottom of the menu open the project's pages in your browser.
@@ -189,12 +195,13 @@ choose with Filters on the map itself.
 | Other plugins' markers | On | Other plugins' world map markers |
 | Search finds shops by name | Off | Shops in the search results by their own names |
 | Share markers between accounts | On | Your markers on every account, or only on the one they were made on |
+| Your house and boats | On | The pins at your house's portal and your boats' docks |
 | Place names | On | Kingdom, town and place names |
 | Floor numbers | Ground, 2, 3, 4 | How floors above the ground are numbered (or Ground, 1, 2, 3) |
 | Route with | Shortest Path | The plugin "Route here" asks |
 
-The **Icons** section holds a switch per kind of icon (the same as Filters), "Hide completed quests", "Mark what
-you can't use yet", "Icon size" and "Transport names".
+The **Icons** section holds "Hide completed quests", "Mark what you can't use yet", "Icon size" and "Transport
+names". Which kinds of icon show, your Slayer task and the multi-combat areas are ticked in Filters on the map.
 
 ## Privacy and what it uses
 
@@ -206,7 +213,8 @@ you can't use yet", "Icon size" and "Transport names".
   marks and the finished quests), and, read only, what RuneLite's Time Tracking and Slayer plugins have saved. It
   changes nothing of theirs.
 - **What it keeps on your computer**, in RuneLite's plugin data folder: the built map (about 60 MB for the whole
-  world), so it opens at once, and one small file per marker.
+  world), so it opens at once, one small file per marker, and a small file of what it remembers about this computer
+  (the version last run, whether the Welcome page has opened).
 - **What opens your browser**, each only when you click it: the GitHub and Discord buttons on the sidebar tab and in
   the map's menu, "Help improve the map" (Discord, GitHub issues), "What's new" (the release notes on GitHub),
   "Report a problem here" (a new GitHub issue) and "Open its wiki page" on the few icons that have one.
