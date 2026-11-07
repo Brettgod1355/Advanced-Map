@@ -52,8 +52,8 @@ public class WhatsNewTest
 	public void aStartTellsAnUpdateFromAFreshInstallAndTheSameVersionAgain()
 	{
 		// an update from another version brings news when the note has any; a fresh install and a restart bring none
-		assertTrue(WhatsNew.start("1.0.0").isUpdated());
-		assertEquals(!WhatsNew.NOTE.isEmpty(), WhatsNew.start("1.0.0").isNews());
+		assertTrue(WhatsNew.start("0.9.0").isUpdated());
+		assertEquals(!WhatsNew.NOTE.isEmpty(), WhatsNew.start("0.9.0").isNews());
 		assertFalse("a fresh install", WhatsNew.start("").isUpdated() || WhatsNew.start("").isNews());
 		assertFalse("a fresh install", WhatsNew.start(null).isUpdated());
 		assertFalse("the same version again", WhatsNew.start(WhatsNew.VERSION).isUpdated()
