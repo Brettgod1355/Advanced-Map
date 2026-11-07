@@ -105,6 +105,9 @@ class ClientMapSource implements MapSource
 	/** Set once the shared tables, or an object, could not be decoded: every read after that throws it at once. */
 	private volatile MapDataException dataFailure;
 	private volatile Map<Integer, Integer> mapLinks;
+	/** When the link script was last found missing: it is asked for again only after {@link #LINKS_RETRY_NANOS}. */
+	private volatile long linksMissingAt;
+	private static final long LINKS_RETRY_NANOS = 5_000_000_000L;
 
 	ClientMapSource(CacheReader reader)
 	{
@@ -543,10 +546,22 @@ class ClientMapSource implements MapSource
 		Map<Integer, Integer> links = mapLinks;
 		if (links == null)
 		{
+			long missing = linksMissingAt;
+			if (missing != 0 && System.nanoTime() - missing < LINKS_RETRY_NANOS)
+			{
+				// asked again so soon, the client thread is not: a script gone after a game update would be asked for
+				// by every region on every paint
+				throw new CacheNotReadyException();
+			}
 			byte[] script = reader.read(client -> client.getIndexScripts().loadData(MapLinks.SCRIPT, 0));
+			if (script == null)
+			{
+				// not downloaded yet: a region's icons are found again later, with its links
+				linksMissingAt = System.nanoTime();
+				throw new CacheNotReadyException();
+			}
 			links = DungeonLinks.withExtra(Prifddinas.moveLinks(MapLinks.decode(script)));
-			// kept once read; a script the client has not got yet is asked for again
-			mapLinks = script == null ? null : links;
+			mapLinks = links;
 		}
 		return links;
 	}
@@ -565,7 +580,8 @@ class ClientMapSource implements MapSource
 	}
 
 	/** Every region the game has on either map, by region id. One wait for the client thread. */
-	List<Integer> regionIds()
+	@Override
+	public List<Integer> regionIds()
 	{
 		return reader.read(client ->
 		{
@@ -639,10 +655,24 @@ class ClientMapSource implements MapSource
 			update(crc, data, id);
 			update(crc, data, objectCrcs.getOrDefault(id, 0L));
 		}
+		return stamp() << 32 | crc.getValue();
+	}
+
+	/** One CRC32 of the tables' and the map scenery's: the top half of every region hash. */
+	private long stamp()
+	{
+		ByteBuffer data = ByteBuffer.allocate(8);
 		CRC32 tables = new CRC32();
 		update(tables, data, tablesCrc);
 		update(tables, data, spritesCrc);
-		return tables.getValue() << 32 | crc.getValue();
+		return tables.getValue();
+	}
+
+	@Override
+	public long tablesStamp()
+	{
+		loadTables();
+		return stamp();
 	}
 
 	private static void update(CRC32 crc, ByteBuffer data, long value)
@@ -798,7 +828,8 @@ class ClientMapSource implements MapSource
 
 	/**
 	 * The files of one group of the world map index, read in one wait for the client thread; empty while the client
-	 * has no world map data yet. Skips the surface (file 0) and the Last Man Standing maps when asked.
+	 * has no world map data yet, and not ready ({@link CacheNotReadyException}) while part of it is still downloading,
+	 * so a part is never kept as the whole. Skips the surface (file 0) and the Last Man Standing maps when asked.
 	 */
 	private List<byte[]> worldMapFiles(int group, boolean skipSurface, boolean skipLastManStanding)
 	{
@@ -817,10 +848,11 @@ class ClientMapSource implements MapSource
 						continue;
 					}
 					byte[] data = index.loadData(group, file);
-					if (data != null)
+					if (data == null)
 					{
-						out.add(data);
+						throw new CacheNotReadyException();
 					}
+					out.add(data);
 				}
 			}
 			return out;

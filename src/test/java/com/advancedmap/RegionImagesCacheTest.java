@@ -44,6 +44,32 @@ public class RegionImagesCacheTest
 		volatile RuntimeException failWith;
 		/** What the game data hashes to, as if a game update changed it. */
 		volatile long hash = 1;
+		/** The regions the game has, for a preparer. */
+		volatile java.util.List<Integer> regionIds = java.util.Collections.emptyList();
+		/** The map-link script is missing (still downloading, or gone after a game update). */
+		volatile boolean linksMissing;
+
+		@Override
+		public java.util.List<Integer> regionIds()
+		{
+			return regionIds;
+		}
+
+		@Override
+		public java.util.Map<Integer, Integer> mapLinks()
+		{
+			if (linksMissing)
+			{
+				throw new CacheNotReadyException();
+			}
+			return java.util.Collections.emptyMap();
+		}
+
+		@Override
+		public long tablesStamp()
+		{
+			return hash >>> 32;
+		}
 
 		private static final byte[] TERRAIN = flatTerrain();
 		private final UnderlayDefinition grass = new UnderlayLoader().load(0, new byte[]{1, 0x4C, 0x7A, 0x2B, 0});

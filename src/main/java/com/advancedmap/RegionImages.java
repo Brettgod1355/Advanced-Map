@@ -28,8 +28,9 @@ import net.runelite.api.coords.WorldPoint;
 
 /**
  * The drawn pictures of map regions, one per floor, made on background threads as the map needs them and kept at
- * three sizes: 4, 2 and 1 pixels per tile. The biggest are made first and shrunk for the others; only the smallest are
- * kept in memory for the whole world, the bigger ones for the regions seen last. With a {@link MapStore}, pictures are
+ * three sizes: 4, 2 and 1 pixels per tile. The biggest are made first and shrunk for the others; the smallest are
+ * kept in memory for a whole map, the bigger ones for the regions seen last, and closing the map lets the bigger ones
+ * go. With a {@link MapStore}, pictures are
  * read from disk when the game data they were drawn from has not changed, and saved once drawn. The game's map icons
  * are left out of the pictures: each region's are handed to {@link MapIcons}, which draws them so they can be clicked.
  * <p>
@@ -44,7 +45,8 @@ class RegionImages
 	{
 		FULL(MapImageRenderer.MAP_SCALE, 128),
 		HALF(2, 512),
-		SMALL(1, Integer.MAX_VALUE);
+		/** About 32 MB at most: enough for the whole of one map at the farthest zoom, with room to spare. */
+		SMALL(1, 2048);
 
 		final int pixelsPerTile;
 		final int kept;
@@ -351,7 +353,9 @@ class RegionImages
 	/** Lets the biggest pictures go when the map closes; the smaller ones stay, so it opens again at once. */
 	void trim()
 	{
+		// the smallest (32 MB at most) stay for a quick reopening; the bigger two are read back from the store as needed
 		images.get(Level.FULL).clear();
+		images.get(Level.HALF).clear();
 	}
 
 	private void make(int key, Level level, long job)
@@ -401,21 +405,32 @@ class RegionImages
 	 * Draws a region's floor ahead of time, for the disk only: nothing is kept in memory. Does nothing when it is
 	 * saved already. Render threads.
 	 */
-	/** Draws and saves a floor of a region. Throws {@link CacheNotReadyException} when it must be tried again later. */
-	void prepare(int key)
+	/**
+	 * Draws and saves a floor of a region. Throws {@link CacheNotReadyException} when it must be tried again later, and
+	 * {@link MapDataException} when the game's data cannot be read at all (a game update changed its format): nothing
+	 * can be built until the plugin is updated, and the preparer stops rather than run through its list saving nothing.
+	 * False when the floor could not be drawn for another reason (logged): it is left out rather than tried forever.
+	 */
+	boolean prepare(int key)
 	{
 		MapStore saved = store;
-		if (saved == null || saved.has(key))
+		// saved from the current tables: a floor saved before a game update changed them is built again
+		if (saved == null || saved.isCurrent(key, source.tablesStamp()))
 		{
-			return;
+			return true;
 		}
 		try
 		{
-			draw(key, Level.SMALL);
+			// from the game's data, never the saved picture: a floor saved before a game update changed the tables
+			// would otherwise be read back and only queued for a check, and counted as built meanwhile
+			checked.add(key);
+			drawChecked(key, Level.SMALL);
+			return true;
 		}
 		catch (CancellationException e)
 		{
 			// the plugin is stopping
+			return true;
 		}
 		catch (CacheNotReadyException e)
 		{
@@ -425,10 +440,12 @@ class RegionImages
 		catch (MapDataException e)
 		{
 			warnOnce(e);
+			throw e;
 		}
 		catch (RuntimeException e)
 		{
-			log.debug("could not prepare region {} floor {}", region(key), plane(key), e);
+			log.warn("could not build region {} floor {}", region(key), plane(key), e);
+			return false;
 		}
 	}
 
@@ -477,8 +494,17 @@ class RegionImages
 	}
 
 	/** Puts a floor's pictures in memory, replacing what was there. */
+	/** Counts the pictures that arrived, for the painters to know a paint is due. */
+	private final java.util.concurrent.atomic.AtomicInteger changes = new java.util.concurrent.atomic.AtomicInteger();
+
+	int changes()
+	{
+		return changes.get();
+	}
+
 	private void keep(int key, Level level, Drawn drawn)
 	{
+		changes.incrementAndGet();
 		if (drawn.full != null && level == Level.FULL)
 		{
 			images.get(Level.FULL).put(key, drawn.full);
@@ -660,6 +686,10 @@ class RegionImages
 		}
 		long hash = source.regionHash(id >> 8, id & 0xFF);
 		MapStore saved = store;
+		if (plane == 0 && saved != null)
+		{
+			markEmptyFloors(saved, id, region, hash);
+		}
 		if (saved != null && saved.isEmpty(key, hash))
 		{
 			absent.add(key);
@@ -694,6 +724,26 @@ class RegionImages
 			saved.save(key, hash, full, small);
 		}
 		return new Drawn(full, small);
+	}
+
+	/**
+	 * Saves a region's floors above the ground that have nothing on them as empty, while the region's data is in hand
+	 * from drawing its ground: half of all floors are such, and the preparer's later passes, floor by floor, found each
+	 * by reading the region again after it had left memory, more than half of a first-time prepare's reads of the
+	 * game's cache. A floor already saved from this game data is left as it is.
+	 */
+	private void markEmptyFloors(MapStore saved, int id, Region region, long hash)
+	{
+		for (int up = 1; up < PLANES; up++)
+		{
+			int above = key(up, id);
+			Long known = saved.savedHash(above);
+			if ((known == null || known != hash) && !hasFloor(region, up))
+			{
+				saved.saveEmpty(above, hash);
+				absent.add(above);
+			}
+		}
 	}
 
 	/** True when a region has ground or anything placed on a floor above the ground. */
@@ -779,23 +829,34 @@ class RegionImages
 		{
 			icons.addSprite(all.get(i).getAreaId(), source.areaIcon(all.get(i).getAreaId()));
 		}
-		addLinkIcons(region, all);
+		boolean linked = addLinkIcons(region, all);
 		addTransportIcons(region, all);
+		YourPlaces.sawIcons(region.getRegionID(), all);
 		icons.addRegion(region.getRegionID(), all);
-		return complete;
+		return complete && linked;
 	}
 
 	/**
 	 * The game's map link icon on each link spot in a region that has no icon of its own within {@link #LINK_REACH}
 	 * tiles: mostly the ways out of dungeons. A dungeon's entrance usually has its dungeon icon already.
 	 */
-	private void addLinkIcons(Region region, List<MapSpot> all)
+	private boolean addLinkIcons(Region region, List<MapSpot> all)
 	{
-		Map<Integer, Integer> links = source.mapLinks();
+		Map<Integer, Integer> links;
+		try
+		{
+			links = source.mapLinks();
+		}
+		catch (CacheNotReadyException e)
+		{
+			// the link script not there (still downloading, or gone after a game update): the region is drawn all the
+			// same, without its link icons, and its icons are found again later
+			return false;
+		}
 		int linkArea = source.categoryArea(IconGroup.MAP_LINK);
 		if (linkArea < 0)
 		{
-			return;
+			return true;
 		}
 		for (int from : links.keySet())
 		{
@@ -817,6 +878,7 @@ class RegionImages
 				all.add(MapSpot.icon(x, y, MapLinks.plane(from), linkArea, IconGroup.MAP_LINK));
 			}
 		}
+		return true;
 	}
 
 	/**

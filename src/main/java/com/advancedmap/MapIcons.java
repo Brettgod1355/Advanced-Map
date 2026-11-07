@@ -89,6 +89,10 @@ final class MapIcons
 	private final Map<Integer, List<MapSpot>> byRegion = new ConcurrentHashMap<>();
 	private final Map<Integer, BufferedImage> images = new ConcurrentHashMap<>();
 	private final Map<Integer, BufferedImage> grayImages = new ConcurrentHashMap<>();
+	/** The teleports' pictures grayed, by file. */
+	private final Map<String, BufferedImage> grayTeleports = new ConcurrentHashMap<>();
+	private volatile java.util.function.IntFunction<BufferedImage> itemPictures = id -> null;
+	private volatile int minigameArea = -1;
 	/** The variables of the unlocks found so far, for {@link Progress} to read. */
 	private final Set<Integer> watchedVars = ConcurrentHashMap.newKeySet();
 
@@ -103,6 +107,12 @@ final class MapIcons
 			}
 		}
 		byRegion.put(regionId, Collections.unmodifiableList(new ArrayList<>(spots)));
+	}
+
+	/** Every teleport's icon. */
+	static List<MapSpot> teleports()
+	{
+		return TELEPORTS;
 	}
 
 	/** Every icon found so far, on every map and floor (not the teleports). */
@@ -140,6 +150,110 @@ final class MapIcons
 			return image;
 		}
 		return grayImages.computeIfAbsent(areaId, k -> grayed(image));
+	}
+
+	/**
+	 * Hands over the game's item pictures already on a disc ({@link #onDisc}), by item id; null while one is loading.
+	 * The plugin's, which reads them from the client.
+	 */
+	void setItemPictures(java.util.function.IntFunction<BufferedImage> pictures)
+	{
+		itemPictures = pictures;
+	}
+
+	/** The map area whose icon is the game's minigame icon, once the game's tables are read. */
+	void setMinigameArea(int areaId)
+	{
+		minigameArea = areaId;
+	}
+
+	/**
+	 * A teleport's picture, gray when {@code gray} (a locked spell or item): RuneLite's, the item's from the game, or the
+	 * game's minigame icon; null when it has none, or while it is loading.
+	 */
+	BufferedImage teleportPicture(Teleport teleport, boolean gray)
+	{
+		BufferedImage picture = teleport.picture();
+		if (picture == null && teleport.iconItem() >= 0)
+		{
+			picture = itemPictures.apply(teleport.iconItem());
+		}
+		else if (picture == null && Teleport.MINIGAME_ICON.equals(teleport.getIcon()) && minigameArea >= 0)
+		{
+			picture = images.get(minigameArea);
+		}
+		if (picture == null || !gray)
+		{
+			return picture;
+		}
+		BufferedImage shown = picture;
+		return grayTeleports.computeIfAbsent(teleport.getIcon(), k -> grayed(shown));
+	}
+
+	/** RuneLite's teleport icon's size: an item's picture is put on a disc of it. */
+	static final int DISC = 15;
+	/** How big the item stands on the disc, at most. */
+	private static final int DISC_ITEM = 10;
+
+	/**
+	 * An item's picture on a gray disc with a dark rim, as RuneLite's world map draws its teleport items: the
+	 * picture's empty margin cut off and the item shrunk, evenly, to fit the middle.
+	 */
+	static BufferedImage onDisc(BufferedImage item)
+	{
+		BufferedImage disc = new BufferedImage(DISC, DISC, BufferedImage.TYPE_INT_ARGB);
+		double r = DISC / 2.0;
+		for (int y = 0; y < DISC; y++)
+		{
+			for (int x = 0; x < DISC; x++)
+			{
+				if (inDisc(x, y))
+				{
+					boolean rim = !inDisc(x - 1, y) || !inDisc(x + 1, y) || !inDisc(x, y - 1) || !inDisc(x, y + 1);
+					disc.setRGB(x, y, rim ? 0xFF000001 : 0xFFBFBFBF);
+				}
+			}
+		}
+		int minX = item.getWidth();
+		int minY = item.getHeight();
+		int maxX = -1;
+		int maxY = -1;
+		for (int y = 0; y < item.getHeight(); y++)
+		{
+			for (int x = 0; x < item.getWidth(); x++)
+			{
+				if ((item.getRGB(x, y) >>> 24) != 0)
+				{
+					minX = Math.min(minX, x);
+					minY = Math.min(minY, y);
+					maxX = Math.max(maxX, x);
+					maxY = Math.max(maxY, y);
+				}
+			}
+		}
+		if (maxX < 0)
+		{
+			return disc;
+		}
+		int w = maxX - minX + 1;
+		int h = maxY - minY + 1;
+		double scale = Math.min(1.0, (double) DISC_ITEM / Math.max(w, h));
+		int sw = Math.max(1, (int) Math.round(w * scale));
+		int sh = Math.max(1, (int) Math.round(h * scale));
+		// averaged, not sampled: a 36 pixel picture shrunk to 10 keeps its shape
+		java.awt.Image small = item.getSubimage(minX, minY, w, h).getScaledInstance(sw, sh, java.awt.Image.SCALE_AREA_AVERAGING);
+		java.awt.Graphics2D g = disc.createGraphics();
+		g.drawImage(small, (int) Math.round(r - sw / 2.0), (int) Math.round(r - sh / 2.0), null);
+		g.dispose();
+		return disc;
+	}
+
+	/** True for a pixel of the disc: within its circle, half a pixel past its edge. */
+	private static boolean inDisc(int x, int y)
+	{
+		double dx = x - (DISC - 1) / 2.0;
+		double dy = y - (DISC - 1) / 2.0;
+		return x >= 0 && y >= 0 && x < DISC && y < DISC && dx * dx + dy * dy <= (DISC / 2.0) * (DISC / 2.0);
 	}
 
 	/**
@@ -203,7 +317,13 @@ final class MapIcons
 		}
 		int width = TELEPORT_SIZE;
 		int height = TELEPORT_SIZE;
-		if (spot.getTeleport() == null)
+		BufferedImage picture = spot.getTeleport() == null ? null : teleportPicture(spot.getTeleport(), false);
+		if (picture != null)
+		{
+			width = picture.getWidth();
+			height = picture.getHeight();
+		}
+		else if (spot.getTeleport() == null)
 		{
 			BufferedImage image = images.get(spot.getAreaId());
 			if (image == null)
@@ -380,6 +500,13 @@ final class MapIcons
 		{
 			return transport;
 		}
+		// one Advanced Map names itself: the game's map gives only its kind ("Furnace" for the Ancient Furnace)
+		NamedIcons.Named named = spot.getTeleport() == null ? NamedIcons.at(spot.getX(), spot.getY(), spot.getPlane())
+			: null;
+		if (named != null)
+		{
+			return named.getName();
+		}
 		// which minigame: the game's map calls them all "Minigame"
 		String minigame = spot.getGroup() == IconGroup.MINIGAMES
 			? MapSearch.minigameNear(spot.getX(), spot.getY()) : null;
@@ -400,6 +527,10 @@ final class MapIcons
 	static final String HUNTER = "Hunter training";
 
 	/** The lines of an icon's info box, after its name. */
+
+	/** The game's names for its Sailing icons where a boat docks. */
+	static final String DOCKING_POINT = "Docking point";
+	static final String PORT = "Port";
 
 	static List<Line> info(MapSpot spot, Progress progress, boolean hidden, FloorNumbers floors)
 	{
@@ -464,11 +595,29 @@ final class MapIcons
 				}
 			}
 		}
+		if (DOCKING_POINT.equalsIgnoreCase(category) || PORT.equalsIgnoreCase(category))
+		{
+			// where a boat docks here and what that needs, which the game's map leaves out
+			SailingDocks.Dock dock = SailingDocks.near(spot.getX(), spot.getY());
+			if (dock != null)
+			{
+				lines.add(new Line(dock.getName(), PLAIN));
+				levelLine(lines, Skill.SAILING, dock.getLevel(), progress);
+				if (dock.getQuest() != null)
+				{
+					QuestState state = progress.state(dock.getQuest());
+					lines.add(new Line("Needs " + dock.getQuest().getName(),
+						!progress.isLoggedIn() ? PLAIN : state == QuestState.FINISHED ? GOOD : BAD));
+				}
+			}
+		}
 		// the game's own tile, in Prifddinas the city's
 		WorldPoint tile = Prifddinas.toCity(new WorldPoint(spot.getX(), spot.getY(), spot.getPlane()));
 		lines.add(new Line(tile.getPlane() > 0 ? tile.getX() + ", " + tile.getY() + ", " + floors.name(tile.getPlane())
 			: tile.getX() + ", " + tile.getY(), QUIET));
-		lines.add(new Line(hidden ? "Hidden: right-click to unhide" : "Right-click to hide this icon", QUIET));
+		boolean wiki = spot.getTeleport() == null && NamedIcons.at(spot.getX(), spot.getY(), spot.getPlane()) != null;
+		lines.add(new Line(hidden ? "Hidden: right-click to unhide" : wiki ? "Right-click to hide it or open its wiki page"
+			: "Right-click to hide this icon", QUIET));
 		return lines;
 	}
 

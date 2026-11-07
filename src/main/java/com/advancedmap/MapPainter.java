@@ -44,6 +44,8 @@ final class MapPainter
 {
 	enum Button
 	{
+		/** Opens the menu: the help, the settings, what's new, where to write, building the map again. */
+		MENU,
 		CLOSE,
 		/** Over the game only: the map's box fills the game view, or goes back to its size. */
 		MAXIMIZE,
@@ -81,7 +83,9 @@ final class MapPainter
 		CLEAR_ROUTE,
 		ADD_MARKER,
 		EDIT_MARKER,
-		REMOVE_MARKER
+		REMOVE_MARKER,
+		WIKI,
+		REPORT
 	}
 
 	@Value
@@ -137,6 +141,8 @@ final class MapPainter
 
 	/** How long the mouse must rest on an icon before its info box shows, without a click. */
 	static final long HOVER_NANOS = 300_000_000L;
+	/** Further than this off the screen, a place name cannot reach onto it: half the widest name, with room. */
+	private static final int LABEL_REACH = 400;
 	private static final int NOTICE_WIDTH = 280;
 
 	/** For measuring text outside a frame (where the menu's entry is, for a click). */
@@ -149,6 +155,8 @@ final class MapPainter
 	private final MapFilters filters;
 	private final SideList sideList;
 	private final MapSearch search;
+	/** The map's menu, drawn while open; null in a painter without one (the harness). */
+	private volatile MapMenu menu;
 	private volatile MapPins pins = new MapPins();
 	private volatile MarkerEditor editor = new MarkerEditor();
 	private volatile boolean multiCombat;
@@ -177,6 +185,11 @@ final class MapPainter
 	/** The icon or pin the mouse rests on (a {@link MapSpot} or a {@link MapPins.Pin}), and since when. */
 	private Object hovered;
 	private long hoveredSince;
+
+	void setMenu(MapMenu menu)
+	{
+		this.menu = menu;
+	}
 
 	MapPainter(RegionImages images, MapMessages messages, MapIcons icons, MapLabels labels, MapFilters filters,
 		SideList sideList, MapSearch search)
@@ -264,6 +277,10 @@ final class MapPainter
 	void setMultiCombat(boolean on)
 	{
 		multiCombat = on;
+		if (filters != null)
+		{
+			filters.setMultiCombat(on);
+		}
 	}
 
 	void setFarming(Map<Farming.Site, List<Farming.Reading>> readings)
@@ -293,7 +310,8 @@ final class MapPainter
 	private void drawButtonTip(Graphics2D g, MapViewport.View view, MapArea area, int plane, boolean window, Point mouse,
 		MapSettings settings)
 	{
-		Button button = mouse == null || dragging ? null
+		// a button under the open menu or its page (a narrow map) is covered: no tip over the page
+		Button button = mouse == null || dragging || onMenu(mouse, view, window) ? null
 			: buttonAt(mouse.x, mouse.y, view.width, view.height, window);
 		long now = System.nanoTime();
 		if (button != tipFor)
@@ -330,6 +348,8 @@ final class MapPainter
 	{
 		switch (button)
 		{
+			case MENU:
+				return "Menu";
 			case ICONS:
 				return settings.isIconsOff() ? "Show the map's icons" : "Hide the map's icons";
 			case FILTERS:
@@ -357,13 +377,15 @@ final class MapPainter
 		// a map too narrow for the search box between the top buttons at their full width gets the shorter ones, so the
 		// box stays on the top row
 		int squares = window ? 1 : 3;
-		int full = GAP * 3 + ICONS_WIDTH + FILTERS_WIDTH + squares * (BUTTON_HEIGHT + GAP) + AREA_WIDTH + GAP * 2;
+		int full = GAP * 4 + BUTTON_HEIGHT + ICONS_WIDTH + FILTERS_WIDTH + squares * (BUTTON_HEIGHT + GAP) + AREA_WIDTH
+			+ GAP * 2;
 		boolean compact = width - full < MapSearch.MIN_WIDTH;
 		int iconsWidth = compact ? ICONS_COMPACT : ICONS_WIDTH;
 		int filters = compact ? FILTERS_COMPACT : FILTERS_WIDTH;
 		int areaWidth = compact ? AREA_COMPACT : AREA_WIDTH;
-		out.put(Button.ICONS, new Rectangle(GAP, GAP, iconsWidth, BUTTON_HEIGHT));
-		out.put(Button.FILTERS, new Rectangle(GAP * 2 + iconsWidth, GAP, filters, BUTTON_HEIGHT));
+		out.put(Button.MENU, new Rectangle(GAP, GAP, BUTTON_HEIGHT, BUTTON_HEIGHT));
+		out.put(Button.ICONS, new Rectangle(GAP * 2 + BUTTON_HEIGHT, GAP, iconsWidth, BUTTON_HEIGHT));
+		out.put(Button.FILTERS, new Rectangle(GAP * 3 + BUTTON_HEIGHT + iconsWidth, GAP, filters, BUTTON_HEIGHT));
 		out.put(Button.LOCATE, new Rectangle(width - GAP - LOCATE_SIZE, height - GAP - LOCATE_SIZE, LOCATE_SIZE,
 			LOCATE_SIZE));
 		int down = height - GAP - LOCATE_SIZE - GAP - FLOOR_HEIGHT;
@@ -403,6 +425,43 @@ final class MapPainter
 	 * logged out), {@code mouse} where the pointer is (null when it is elsewhere), {@code selection} what a click
 	 * opened (or null).
 	 */
+	/**
+	 * The map as it is on screen, for a report: no menu, no box under the mouse, and the spot reported ({@code mark},
+	 * where it was right-clicked) ringed. Only what the map draws, so nothing of the game (chat, names) is in it. On
+	 * the thread that paints the map, as the map's own paint is.
+	 */
+	BufferedImage picture(Graphics2D like, MapViewport.View view, MapArea area, int plane, WorldPoint player,
+		boolean window, MapSettings settings, Progress progress, Point mark)
+	{
+		BufferedImage picture = new BufferedImage(Math.max(1, view.width), Math.max(1, view.height),
+			BufferedImage.TYPE_INT_RGB);
+		Graphics2D g = picture.createGraphics();
+		try
+		{
+			g.setRenderingHints(like.getRenderingHints());
+			g.setFont(like.getFont());
+			paint(g, view, area, plane, player, null, window, settings, progress, null);
+			if (mark != null)
+			{
+				g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+				g.setStroke(new BasicStroke(5));
+				g.setColor(new Color(0, 0, 0, 160));
+				g.drawOval(mark.x - MARK, mark.y - MARK, MARK * 2, MARK * 2);
+				g.setStroke(new BasicStroke(2.5f));
+				g.setColor(new Color(255, 70, 70));
+				g.drawOval(mark.x - MARK, mark.y - MARK, MARK * 2, MARK * 2);
+			}
+		}
+		finally
+		{
+			g.dispose();
+		}
+		return picture;
+	}
+
+	/** How far the ring round a reported spot is from it. */
+	private static final int MARK = 14;
+
 	void paint(Graphics2D g, MapViewport.View view, MapArea area, int plane, WorldPoint player, Point mouse,
 		boolean window, MapSettings settings, Progress progress, Selection selection)
 	{
@@ -475,12 +534,15 @@ final class MapPainter
 				drawInfo(g, view, selected, settings, progress, farmingLines(selected.getSpot(), farms));
 			}
 		}
-		if (!filters.isOpen())
+		MapMenu shownMenu = menu;
+		boolean menuOpen = shownMenu != null && shownMenu.isOpen();
+		if (!filters.isOpen() && !menuOpen)
 		{
-			// the Filters list takes the bar's room, so a small map shows more of the list
+			// the Filters list and the menu take the bar's room, so a small map shows more of them
 			drawBar(g, view, bar);
 		}
-		drawButtons(g, view, area, plane, window, settings, player != null, following, gameMaximized, filters.isOpen());
+		drawButtons(g, view, area, plane, window, settings, player != null, following, gameMaximized, filters.isOpen(),
+			menuOpen);
 		int left = toPrepare.getAsInt();
 		if (left > 0)
 		{
@@ -502,6 +564,13 @@ final class MapPainter
 			sideList.draw(g, sideList.layout(buttons(view.width, view.height, window)), mouse);
 		}
 		search.draw(g, search.layout(buttons(view.width, view.height, window), view.width), mouse);
+		if (menuOpen)
+		{
+			// over everything else: its page covers most of the map, wrapped as this graphics draws its text
+			shownMenu.measureWith(g);
+			shownMenu.draw(g, shownMenu.layout(buttons(view.width, view.height, window), view.width, view.height),
+				mouse);
+		}
 		previewShown = false;
 		drawHovered(g, view, area, window, mouse, settings, progress, selection, shown, pinsShown, farms);
 		drawButtonTip(g, view, area, plane, window, mouse, settings);
@@ -708,14 +777,19 @@ final class MapPainter
 				{
 					continue;
 				}
+				int cx = (int) Math.round(view.screenX(label.getX() + 0.5));
+				int cy = (int) Math.round(view.screenY(label.getY() + 0.5));
+				if (cx < -LABEL_REACH || cx > view.width + LABEL_REACH || cy < -LABEL_REACH || cy > view.height + LABEL_REACH)
+				{
+					// far off the screen: not worth measuring (the whole map's names are measured otherwise)
+					continue;
+				}
 				int width = 0;
 				for (String line : label.getLines())
 				{
 					width = Math.max(width, metrics.stringWidth(line));
 				}
 				int height = metrics.getHeight() * label.getLines().size();
-				int cx = (int) Math.round(view.screenX(label.getX() + 0.5));
-				int cy = (int) Math.round(view.screenY(label.getY() + 0.5));
 				Rectangle box = new Rectangle(cx - width / 2 - 2, cy - height / 2 - 2, width + 4, height + 4);
 				if (!box.intersects(0, 0, view.width, view.height) || overlaps(box, taken))
 				{
@@ -777,33 +851,17 @@ final class MapPainter
 				g.setComposite(java.awt.AlphaComposite.getInstance(java.awt.AlphaComposite.SRC_OVER, 0.4f));
 			}
 			Teleport teleport = icon.getSpot().getTeleport();
-			if (teleport != null)
+			boolean locked = look == MapIcons.Look.LOCKED;
+			BufferedImage image = teleport != null ? icons.teleportPicture(teleport, locked)
+				: icons.image(icon.getSpot().getAreaId(), locked);
+			if (image != null)
 			{
-				drawTeleportMark(g, at, teleport.getType(), look == MapIcons.Look.LOCKED);
+				drawPicture(g, image, at);
 			}
-			else
+			else if (teleport != null)
 			{
-				BufferedImage image = icons.image(icon.getSpot().getAreaId(), look == MapIcons.Look.LOCKED);
-				if (image != null)
-				{
-					if (at.width == image.getWidth() && at.height == image.getHeight())
-					{
-						g.drawImage(image, at.x, at.y, null);
-					}
-					else
-					{
-						// whole multiples keep the game's pixel look; other sizes are smoothed
-						Object interpolation = g.getRenderingHint(RenderingHints.KEY_INTERPOLATION);
-						g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, at.width % image.getWidth() == 0
-							? RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR
-							: RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-						g.drawImage(image, at.x, at.y, at.width, at.height, null);
-						if (interpolation != null)
-						{
-							g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, interpolation);
-						}
-					}
-				}
+				// a teleport without a picture of its own: Advanced Map's mark in the colors of its kind
+				drawTeleportMark(g, at, teleport.getType(), locked);
 			}
 			g.setComposite(composite);
 			drawBadge(g, at, look);
@@ -844,6 +902,26 @@ final class MapPainter
 			}
 			taken.add(box);
 			drawShadowed(g, name, box.x + 1, box.y + metrics.getAscent(), STOP_NAME);
+		}
+	}
+
+	/** An icon's picture in its box: as it is at its own size, else scaled. */
+	private static void drawPicture(Graphics2D g, BufferedImage image, Rectangle at)
+	{
+		if (at.width == image.getWidth() && at.height == image.getHeight())
+		{
+			g.drawImage(image, at.x, at.y, null);
+			return;
+		}
+		// whole multiples keep the game's pixel look; other sizes are smoothed
+		Object interpolation = g.getRenderingHint(RenderingHints.KEY_INTERPOLATION);
+		g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, at.width % image.getWidth() == 0
+			? RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR
+			: RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+		g.drawImage(image, at.x, at.y, at.width, at.height, null);
+		if (interpolation != null)
+		{
+			g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, interpolation);
 		}
 	}
 
@@ -1031,6 +1109,18 @@ final class MapPainter
 	}
 
 	/** True when a point is on one of the map's buttons, its open lists or boxes, or the search bar. */
+	/** True when the mouse is on the open menu or its page. */
+	private boolean onMenu(Point mouse, MapViewport.View view, boolean window)
+	{
+		MapMenu shownMenu = menu;
+		if (shownMenu == null || !shownMenu.isOpen())
+		{
+			return false;
+		}
+		MapMenu.Layout open = shownMenu.layout(buttons(view.width, view.height, window), view.width, view.height);
+		return open.getMenu().contains(mouse) || open.getContent() != null && open.getContent().contains(mouse);
+	}
+
 	private boolean onPanel(Point mouse, MapViewport.View view, boolean window, MapSettings settings)
 	{
 		if (buttonAt(mouse.x, mouse.y, view.width, view.height, window) != null)
@@ -1039,6 +1129,10 @@ final class MapPainter
 		}
 		Map<Button, Rectangle> buttons = buttons(view.width, view.height, window);
 		if (filters.isOpen() && MapFilters.layout(buttons.get(Button.FILTERS), view.height).getPanel().contains(mouse))
+		{
+			return true;
+		}
+		if (onMenu(mouse, view, window))
 		{
 			return true;
 		}
@@ -1359,6 +1453,10 @@ final class MapPainter
 		{
 			entries.add(settings.isHidden(spot) ? new MenuEntry(Action.UNHIDE, "Unhide this icon")
 				: new MenuEntry(Action.HIDE, "Hide this icon"));
+			if (spot.getTeleport() == null && NamedIcons.at(spot.getX(), spot.getY(), spot.getPlane()) != null)
+			{
+				entries.add(new MenuEntry(Action.WIKI, "Open its wiki page"));
+			}
 		}
 
 		RoutingPlugin routing = settings.getRouting();
@@ -1367,11 +1465,27 @@ final class MapPainter
 			entries.add(new MenuEntry(Action.ROUTE, "Route here (" + routing.getLabel() + ")"));
 			entries.add(new MenuEntry(Action.CLEAR_ROUTE, "Clear route"));
 		}
-		if (pin == null)
+		// not on the player's own marker, which has its own entries; on another plugin's pin (a Sailing charting spot)
+		// and the house and boat pins, as on any other spot
+		if (pin == null || pin.getMarker() == null)
 		{
 			entries.add(new MenuEntry(Action.ADD_MARKER, "Add marker here"));
+			entries.add(new MenuEntry(Action.REPORT, "Report a problem here"));
 		}
 		return entries;
+	}
+
+	/**
+	 * A right-clicked spot as a report says it: what is there (an icon's name), the game's own tile and
+	 * floor, and the place it is near ("Bank at 3208, 3220, Floor 3, near Lumbridge").
+	 */
+	static String spotText(Selection selection, Progress progress, FloorNumbers floors, String place)
+	{
+		MapSpot spot = selection.getSpot();
+		WorldPoint point = Prifddinas.toCity(spot != null ? new WorldPoint(spot.getX(), spot.getY(), spot.getPlane())
+			: selection.getPoint());
+		return (spot != null ? MapIcons.name(spot, progress) + " at " : "") + point.getX() + ", " + point.getY() + ", "
+			+ floors.name(point.getPlane()) + (place == null ? "" : ", near " + place);
 	}
 
 	/** The menu's name row: the icon's name, or the tile with no icon. */
@@ -1648,7 +1762,7 @@ final class MapPainter
 		g.setStroke(stroke);
 	}
 
-	/** What the bar along the bottom says: the tile under the mouse, how to use the map, and whether it is drawing. */
+	/** What the bar along the bottom says: the tile under the mouse, how to use the map, and whether places on screen are still loading. */
 	private static String barText(MapViewport.View view, Point mouse, boolean loading, boolean window, boolean icons,
 		boolean hover)
 	{
@@ -1666,24 +1780,44 @@ final class MapPainter
 		}
 		if (loading)
 		{
-			text.append("    Drawing the map...");
+			text.append("    Loading the map...");
 		}
 		return text.toString();
 	}
 
-	/** What the notice says while the view is drawing. */
-	static final List<String> NOTICE = java.util.Arrays.asList("The first time, the map is drawn from the game's data"
-		+ " and saved on this computer. Until it is done, places not drawn yet are blank or blurry, and their icons are"
-		+ " missing from the map and the search.", "Once it is done, the map opens at once every time. Advanced Map's"
-		+ " sidebar shows how far along it is.");
+	/** What the notice says while the map is first built. */
+	static final List<String> NOTICE = java.util.Arrays.asList("The first time, Advanced Map builds the map from the"
+		+ " game's data and saves it on this computer. Until it is done, places not built yet are blank or blurry, and"
+		+ " their icons are missing from the map and the search.", "This happens once: afterwards the map opens almost"
+		+ " instantly, on every character. The menu's Welcome page says more.");
 
-	/** The notice's title, with how many regions' floors are still to draw. */
+	/** The notice's title, with how many regions' floors are still to build. */
 	static String noticeTitle(int left)
 	{
-		return String.format(Locale.ROOT, "Drawing the map... %,d to go", left);
+		return String.format(Locale.ROOT, "Building the map... %,d to go", left);
 	}
 
-	/** A box at the top left, under the buttons, saying the map is being drawn and why. */
+	/** The notice's lines as last wrapped, with the width they were wrapped to: wrapped again only when that changes. */
+	private static volatile Map.Entry<Integer, List<String>> noticeWrapped;
+
+	private static List<String> noticeLines(int width, java.awt.Font font)
+	{
+		Map.Entry<Integer, List<String>> last = noticeWrapped;
+		if (last != null && last.getKey() == width)
+		{
+			return last.getValue();
+		}
+		List<String> lines = new java.util.ArrayList<>();
+		for (String paragraph : NOTICE)
+		{
+			// a little short of the edge: the frame's text can come out a few pixels wider than measured
+			lines.addAll(SideList.wrap(paragraph, width - PAD * 3, font));
+		}
+		noticeWrapped = new java.util.AbstractMap.SimpleImmutableEntry<>(width, lines);
+		return lines;
+	}
+
+	/** A box at the top left, under the buttons, saying the map is being built and why. */
 	private static void drawNotice(Graphics2D g, MapViewport.View view, Map<Button, Rectangle> buttons, String title)
 	{
 		java.awt.Font titleFont = FontManager.getRunescapeBoldFont();
@@ -1691,12 +1825,7 @@ final class MapPainter
 		FontMetrics titleMetrics = g.getFontMetrics(titleFont);
 		FontMetrics metrics = g.getFontMetrics(font);
 		int width = Math.min(NOTICE_WIDTH, view.width - GAP * 2);
-		List<String> lines = new java.util.ArrayList<>();
-		for (String paragraph : NOTICE)
-		{
-			// a little short of the edge: the frame's text can come out a few pixels wider than measured
-			lines.addAll(SideList.wrap(paragraph, width - PAD * 3, font));
-		}
+		List<String> lines = noticeLines(width, font);
 		Rectangle icons = buttons.get(Button.ICONS);
 		int height = PAD * 2 + titleMetrics.getHeight() + metrics.getHeight() * lines.size() + PAD / 2;
 		Rectangle box = new Rectangle(icons.x, icons.y + icons.height + GAP, width, height);
@@ -1734,7 +1863,8 @@ final class MapPainter
 	}
 
 	private static void drawButtons(Graphics2D g, MapViewport.View view, MapArea area, int plane, boolean window,
-		MapSettings settings, boolean located, boolean following, boolean maximized, boolean filtersOpen)
+		MapSettings settings, boolean located, boolean following, boolean maximized, boolean filtersOpen,
+		boolean menuOpen)
 	{
 		for (Map.Entry<Button, Rectangle> entry : buttons(view.width, view.height, window).entrySet())
 		{
@@ -1770,6 +1900,9 @@ final class MapPainter
 					// the short name on a narrow map; its tip says the rest
 					drawLabel(g, button, button.width < AREA_WIDTH ? area.other().label
 						: "Show " + area.other().label.toLowerCase(Locale.ROOT));
+					break;
+				case MENU:
+					drawMenuButton(g, button, menuOpen);
 					break;
 				case ICONS:
 					drawSwitch(g, button, "Icons", !settings.isIconsOff());
@@ -1907,6 +2040,23 @@ final class MapPainter
 		if (antialiasing != null)
 		{
 			g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, antialiasing);
+		}
+	}
+
+	/** Three lines, lit while the menu is open. */
+	private static void drawMenuButton(Graphics2D g, Rectangle button, boolean open)
+	{
+		if (open)
+		{
+			g.setColor(new Color(255, 255, 255, 40));
+			g.fillRoundRect(button.x, button.y, button.width, button.height, 8, 8);
+		}
+		g.setColor(TEXT);
+		int x = button.x + (button.width - 14) / 2;
+		int y = button.y + (button.height - 10) / 2;
+		for (int i = 0; i < 3; i++)
+		{
+			g.fillRect(x, y + i * 4, 14, 2);
 		}
 	}
 

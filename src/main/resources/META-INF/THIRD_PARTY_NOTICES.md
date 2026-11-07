@@ -87,8 +87,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 The teleport destinations in `src/main/resources/com/advancedmap/teleports.tsv` (read by `Teleport.java`) are
 transcribed from RuneLite's world map plugin,
-`runelite-client/src/main/java/net/runelite/client/plugins/worldmap/TeleportLocationData.java` at the same release (the published `client-1.13.4-sources.jar`): every destination, its kind, item, Magic level and tile, without
-the icon file names (Advanced Map draws its own teleport marks). The agility shortcuts' levels come from RuneLite's
+`runelite-client/src/main/java/net/runelite/client/plugins/worldmap/TeleportLocationData.java` at the same release (the published `client-1.13.4-sources.jar`): every destination, its kind, item, Magic level, tile and icon
+file name. The 92 icons themselves, in `src/main/resources/com/advancedmap/teleports/`, are copied unchanged from
+the same plugin's resources in the published `client-1.13.4.jar` (`net/runelite/client/plugins/worldmap/`). The agility shortcuts' levels come from RuneLite's
 `net.runelite.client.game.AgilityShortcut`, used through the client at runtime and not copied.
 
 The rocks at each mining site in `src/main/resources/com/advancedmap/mining-sites.tsv` (167 sites, as "2 Iron", "3
@@ -119,7 +120,7 @@ The test-only `logback-test.xml` comes from the example plugin (same license, Ad
 ## Shortest Path's transport lists (BSD 2-Clause)
 
 `src/main/resources/com/advancedmap/transports.tsv`, where spirit trees, gnome gliders, fairy rings, hot air balloons,
-magic carpets, magic mushtrees, quetzals, minecarts, canoes, boats, ships and charter ships go, is derived from
+magic carpets, magic mushtrees, quetzals, minecarts, canoes, boats, ships, charter ships and levers go, is derived from
 [Shortest Path](https://github.com/Skretzo/shortest-path)'s `src/main/resources/transports/` files of those names, at
 its Plugin Hub pin `50f30435f37d1d5c5e2af790925fa7aa70b7840d` (authors on the Plugin Hub: Skretzo, FIrgolitsch,
 wvanderp, mpickering). Kept: each origin and destination tile and its name; boarding tiles within 4 tiles of each other
@@ -130,7 +131,11 @@ tile; durations and varbits are left out. 28 rows of
 `src/main/resources/com/advancedmap/dungeon-links.tsv`, where surface dungeon entrances the game's own map does not
 link lead, are taken from its `transports.tsv` at the same pin (origin and destination tiles only), and so are the
 ways between two underground places (ladders, ropes, stairs, tunnels) in `src/main/resources/com/advancedmap/inner-links.tsv`,
-which a dungeon's preview follows to its lower floors (origin and destination tiles only). Shortest Path's license,
+which a dungeon's preview follows to its lower floors (origin and destination tiles only). The 25 teleports at the end
+of `src/main/resources/com/advancedmap/teleports.tsv` that RuneLite's list lacks (10 items, 15 minigame teleports) take
+their tile and item id from its `teleportation_items.tsv` and `teleportation_minigames.tsv` at the same pin, and the
+house portal of each house location in `YourPlaces.java` takes its tile from that pin's "Teleport to House" rows in
+`teleportation_spells.tsv` (the outside tile of each varbit 2187 value). Shortest Path's license,
 as published in that repository (its copyright line is the license template's, unfilled):
 
 ```
@@ -232,7 +237,9 @@ stock) and `src/main/resources/com/advancedmap/spawns.tsv` (where monsters, NPCs
 and monsters' combat levels) are adapted from the [Old School RuneScape Wiki](https://oldschool.runescape.wiki/)'s
 structured data (its Bucket tables `infobox_shop`, `storeline`, `map`, `locline`, `infobox_monster` and
 `infobox_npc`, read on 2026-10-27, and the item names of `infobox_item`, read on 2026-10-30, to tell items' spawns
-in `locline` from scenery's). The wiki's content is licensed under
+in `locline` from scenery's; and, read on 2026-11-01, the Slayer masters, skill masters, tutors and quest-starting
+NPCs of its categories and `quest` table, placed at the map in each one's page infobox). The wiki's content is
+licensed under
 [CC BY-NC-SA 3.0](https://creativecommons.org/licenses/by-nc-sa/3.0/); these two files are adaptations and are
 shared under the same license, credited to the Old School RuneScape Wiki's contributors. Changes: only names,
 tiles, prices and levels kept; each shop placed by its page's map, else its owner's spawn; tiles the wiki gives on
@@ -250,6 +257,15 @@ and Hunter level) is adapted from the same wiki under the same license: tiles fr
 on 2026-10-27), and the crab trapping levels from its "Red crab (Hunter)", "Blue crab (Hunter)" and "Rainbow crab
 (Hunter)" pages (read on 2026-10-30). Changes: each area's tiles reduced to their middle; areas within 25 tiles of
 one RuneLite's list has left out.
+
+`src/main/resources/com/advancedmap/sailing-docks.tsv` (where a boat can dock, the Sailing level and quest it needs) is
+adapted from the same wiki under the same license: the "Dock at" lines of its "Sailing/Level up table" page (read on
+2026-10-31). Changes: each place's name, level and quest only, one row per place. The last row of
+`src/main/resources/com/advancedmap/transport-points.tsv`, the group ironmen's portal from Lumbridge to the Node, takes
+the Node's place from the same wiki's "The Node" page (read on 2026-10-31). The two rows in
+`src/main/resources/com/advancedmap/transports.tsv` for fairy ring DLP at Grimstone take the ring from the same wiki's
+"Fairy ring" page (read on 2026-10-31). The rows for the Gemstone Crab's caves take the caves and the crab's three mines from the same
+wiki's "Cave (Gemstone Crab)" and "Gemstone Crab" pages (read on 2026-10-31).
 
 `src/main/resources/com/advancedmap/monsters.tsv` (each searchable monster's hitpoints, max hit, attack styles, whether
 it is aggressive or poisonous, Slayer level, the Slayer masters who assign it, what it is weak to, the drops it always

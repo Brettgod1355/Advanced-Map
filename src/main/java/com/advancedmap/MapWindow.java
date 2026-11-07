@@ -130,7 +130,21 @@ final class MapWindow extends JFrame
 			setSize(1100, 750);
 			setLocationByPlatform(true);
 		}
-		redraw = new Timer(REDRAW_MS, e -> panel.repaint());
+		// the timer asks; the clock answers (at once after input or an arrival, a steady rate while the pointer moves,
+		// else a slow heartbeat), so a map that sits still in its window is not repainted twenty times a second
+		redraw = new Timer(REDRAW_MS, e ->
+		{
+			// the paint is noted here, at the tick's own time: noted when Swing gets to painting, a little later, the
+			// next tick would fall just short of the clock's rate and every paint land a tick late
+			long now = System.nanoTime();
+			int touches = plugin.touches();
+			int changes = plugin.changes();
+			if (panel.clock.due(touches, changes, panel.mouse, now))
+			{
+				panel.clock.painted(touches, changes, now);
+				panel.repaint();
+			}
+		});
 		minimizing = new Minimizing(redraw);
 		addWindowListener(minimizing);
 		// saved a moment after the last move or resize too, in case RuneLite is quit with the window still open
@@ -170,6 +184,8 @@ final class MapWindow extends JFrame
 				if (plugin.selection() != null || plugin.typing() || plugin.sideListOpen())
 				{
 					plugin.escape();
+					// what closed goes at the next tick, as after a key on the map
+					plugin.touched();
 				}
 				else
 				{
@@ -240,6 +256,8 @@ final class MapWindow extends JFrame
 		private final AdvancedMapPlugin plugin;
 		private final MapPainter painter;
 		private Point mouse;
+		/** When the timer has the panel painted again. */
+		private final RedrawClock clock = new RedrawClock();
 		private Point dragFrom;
 		private Point pressedAt;
 
@@ -320,8 +338,9 @@ final class MapWindow extends JFrame
 				@Override
 				public void mouseMoved(MouseEvent e)
 				{
+					// noted for the next redraw: a moving pointer does not cost a whole map paint per event (hover
+					// boxes and tips take longer than a redraw to appear anyway), as over the game
 					mouse = point(e);
-					repaint();
 				}
 
 				@Override
@@ -378,6 +397,14 @@ final class MapWindow extends JFrame
 			paintScaled(g, getWidth(), getHeight(), plugin.windowScale(), scaled -> painter.paint(scaled,
 				plugin.viewport().view(width(), height()), plugin.area(), plugin.plane(), plugin.playerLocation(),
 				mouse, true, plugin.settings(), plugin.progress(), plugin.selection()));
+			Point mark = plugin.takePictureMark();
+			if (mark != null)
+			{
+				// in the map's own units, as the report's spot is, not Stretched Mode's bigger pixels
+				plugin.copyPicture(painter.picture((Graphics2D) g, plugin.viewport().view(width(), height()),
+					plugin.area(), plugin.plane(), plugin.playerLocation(), true, plugin.settings(), plugin.progress(),
+					mark));
+			}
 		}
 
 		/** The panel's size and the mouse, in the map's units: real pixels divided by the scale it is drawn at. */

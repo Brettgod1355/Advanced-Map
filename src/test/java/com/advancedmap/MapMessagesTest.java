@@ -131,4 +131,19 @@ public class MapMessagesTest
 		messages.clear();
 		assertFalse(messages.layers().iterator().hasNext());
 	}
+
+	@Test
+	public void anotherPluginsLayerWakesThePainters()
+	{
+		// the painters repaint on a change, else only on a slow heartbeat: a layer posted or removed by another plugin
+		// counts as one (the PR audit, 2026-11-07)
+		int before = messages.changes();
+		messages.handle("layer", map("id", "other:route", "markers", Collections.singletonList(map("point",
+			new WorldPoint(3222, 3218, 0)))));
+		assertTrue(messages.changes() > before);
+		int added = messages.changes();
+		messages.handle("removeLayer", map("id", "other:route"));
+		assertTrue(messages.changes() > added);
+		assertFalse(messages.layers().iterator().hasNext());
+	}
 }

@@ -39,7 +39,8 @@ final class MarkerIcons
 		SWORDS("Swords"),
 		CHEST("Chest"),
 		QUESTION("Question"),
-		EXCLAMATION("Alert");
+		EXCLAMATION("Alert"),
+		BOAT("Boat");
 
 		final String label;
 
@@ -82,12 +83,14 @@ final class MarkerIcons
 		Stroke stroke = g.getStroke();
 		Font font = g.getFont();
 		double s = size / 16.0;
-		Shape shape = shape(design, x, y, s);
+		Shaped kept = shaped(design, size);
+		g.translate(x, y);
 		g.setColor(color);
-		g.fill(shape);
-		g.setStroke(new BasicStroke((float) Math.max(1, s * 1.2), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+		g.fill(kept.shape);
+		g.setStroke(kept.outline);
 		g.setColor(OUTLINE);
-		g.draw(shape);
+		g.draw(kept.shape);
+		g.translate(-x, -y);
 		details(g, design, x, y, s);
 		g.setStroke(stroke);
 		g.setFont(font);
@@ -95,6 +98,33 @@ final class MarkerIcons
 		{
 			g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, antialiasing);
 		}
+	}
+
+	/** A design's outline and its stroke at one size, made once: fills and strokes are cheap, the unions are not. */
+	private static final class Shaped
+	{
+		final Shape shape;
+		final Stroke outline;
+
+		Shaped(Shape shape, Stroke outline)
+		{
+			this.shape = shape;
+			this.outline = outline;
+		}
+	}
+
+	private static final java.util.Map<Long, Shaped> SHAPED = new java.util.concurrent.ConcurrentHashMap<>();
+
+	/** A design's outline at the origin, at {@code size} pixels, kept: markers are drawn at a few sizes only. */
+	private static Shaped shaped(Design design, double size)
+	{
+		long key = (long) design.ordinal() << 32 | Math.round(size * 100);
+		return SHAPED.computeIfAbsent(key, k ->
+		{
+			double s = size / 16.0;
+			return new Shaped(shape(design, 0, 0, s), new BasicStroke((float) Math.max(1, s * 1.2),
+				BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+		});
 	}
 
 	/** A design's outline on a 16-unit grid scaled by {@code s}, at {@code x}, {@code y}. */
@@ -167,6 +197,25 @@ final class MarkerIcons
 			}
 			case CHEST:
 				return new RoundRectangle2D.Double(x + 1 * s, y + 3.5 * s, 14 * s, 11 * s, 3 * s, 3 * s);
+			case BOAT:
+			{
+				// a hull under a mast and its sail
+				Path2D hull = new Path2D.Double();
+				hull.moveTo(x + 0.5 * s, y + 10 * s);
+				hull.lineTo(x + 15.5 * s, y + 10 * s);
+				hull.lineTo(x + 12.5 * s, y + 15 * s);
+				hull.lineTo(x + 3.5 * s, y + 15 * s);
+				hull.closePath();
+				Area boat = new Area(hull);
+				boat.add(new Area(new Rectangle2D.Double(x + 6.6 * s, y + 1 * s, 1.4 * s, 9 * s)));
+				Path2D sail = new Path2D.Double();
+				sail.moveTo(x + 8 * s, y + 1.5 * s);
+				sail.lineTo(x + 14 * s, y + 8.5 * s);
+				sail.lineTo(x + 8 * s, y + 8.5 * s);
+				sail.closePath();
+				boat.add(new Area(sail));
+				return boat;
+			}
 			case QUESTION:
 			case EXCLAMATION:
 				return new Ellipse2D.Double(x + 0.5 * s, y + 0.5 * s, 15 * s, 15 * s);

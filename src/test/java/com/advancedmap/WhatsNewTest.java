@@ -13,7 +13,7 @@ import java.util.List;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class WhatsNewTest
@@ -26,20 +26,21 @@ public class WhatsNewTest
 			+ WhatsNew.VERSION));
 	}
 
-	@Test
-	public void anUpdateIsSaidOnceAndAFreshInstallHearsNothing()
-	{
-		assertEquals("Advanced Map updated to " + WhatsNew.VERSION + ": icons say more.",
-			WhatsNew.message("0.9.0", "icons say more"));
-		assertNull("the same version again", WhatsNew.message(WhatsNew.VERSION, "icons say more"));
-		assertNull("a fresh install", WhatsNew.message("", "icons say more"));
-		assertNull("a fresh install", WhatsNew.message(null, "icons say more"));
-		assertNull("nothing worth a line", WhatsNew.message("0.9.0", ""));
-	}
-
 	private static List<String> lines(String name) throws Exception
 	{
 		String text = new String(Files.readAllBytes(new File(name).toPath()), StandardCharsets.UTF_8);
 		return Arrays.asList(text.split("\\R"));
+	}
+
+	@Test
+	public void aStartTellsAnUpdateFromAFreshInstallAndTheSameVersionAgain()
+	{
+		// an update from another version brings news when the note has any; a fresh install and a restart bring none
+		assertTrue(WhatsNew.start("0.9.0").isUpdated());
+		assertEquals(!WhatsNew.NOTE.isEmpty(), WhatsNew.start("0.9.0").isNews());
+		assertFalse("a fresh install", WhatsNew.start("").isUpdated() || WhatsNew.start("").isNews());
+		assertFalse("a fresh install", WhatsNew.start(null).isUpdated());
+		assertFalse("the same version again", WhatsNew.start(WhatsNew.VERSION).isUpdated()
+			|| WhatsNew.start(WhatsNew.VERSION).isNews());
 	}
 }

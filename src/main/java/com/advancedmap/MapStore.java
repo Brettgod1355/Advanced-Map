@@ -171,6 +171,17 @@ final class MapStore
 		return saved.containsKey(key);
 	}
 
+	/**
+	 * True when a floor of a region is saved from game data whose tables hash to {@code stamp}
+	 * ({@link com.advancedmap.cache.MapSource#tablesStamp}): a game update that changed the tables leaves every floor
+	 * saved before it stale, to be built again.
+	 */
+	boolean isCurrent(int key, long stamp)
+	{
+		Long known = saved.get(key);
+		return known != null && known >>> 32 == stamp;
+	}
+
 	/** True when a floor of a region was saved as having nothing on it, from this game data. */
 	boolean isEmpty(int key, long hash)
 	{

@@ -107,6 +107,10 @@ public class MapFiltersTest
 		assertEquals(MapFilters.Part.SLAYER, filters.hitAt(slayer.x + 5, slayer.y + 5, layout, entries).getPart());
 		assertTrue(slayer.y + slayer.height <= showHidden.y);
 		assertTrue(slayer.y >= layout.getPanel().y);
+		// "Multi-combat areas" between them, ticked from the list while playing rather than in the settings
+		Rectangle multi = layout.getMultiCombat();
+		assertEquals(MapFilters.Part.MULTI_COMBAT, filters.hitAt(multi.x + 5, multi.y + 5, layout, entries).getPart());
+		assertTrue(slayer.y + slayer.height <= multi.y && multi.y + multi.height <= showHidden.y);
 	}
 
 	@Test

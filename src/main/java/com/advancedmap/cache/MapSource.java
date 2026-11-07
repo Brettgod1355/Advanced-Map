@@ -65,4 +65,19 @@ public interface MapSource
 	{
 		return java.util.Collections.emptyMap();
 	}
+
+	/** Every region the game has, by region id; empty while that is not known yet. */
+	default java.util.List<Integer> regionIds()
+	{
+		return java.util.Collections.emptyList();
+	}
+
+	/**
+	 * The top half of every {@link #regionHash}: what the tables every region is drawn from hash to. A game update that
+	 * changes them changes every saved floor's hash, so a saved floor whose hash has another top half is stale.
+	 */
+	default long tablesStamp()
+	{
+		return 0;
+	}
 }

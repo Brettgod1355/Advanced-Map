@@ -10,6 +10,7 @@ import com.google.inject.Provides;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
+import java.awt.image.BufferedImage;
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,12 +19,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import javax.inject.Inject;
 import javax.swing.SwingUtilities;
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.Menu;
@@ -40,16 +41,14 @@ import net.runelite.api.events.GameTick;
 import net.runelite.api.events.PostMenuSort;
 import net.runelite.api.gameval.InterfaceID;
 import net.runelite.client.callback.ClientThread;
-import net.runelite.client.chat.ChatColorType;
-import net.runelite.client.chat.ChatMessageBuilder;
-import net.runelite.client.chat.ChatMessageManager;
-import net.runelite.client.chat.QueuedMessage;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.events.PluginChanged;
 import net.runelite.client.events.PluginMessage;
+import net.runelite.client.events.RuneScapeProfileChanged;
+import net.runelite.client.game.ItemManager;
 import net.runelite.client.input.KeyManager;
 import net.runelite.client.input.MouseManager;
 import net.runelite.client.plugins.Plugin;
@@ -63,6 +62,8 @@ import net.runelite.client.ui.overlay.worldmap.WorldMapPoint;
 import net.runelite.client.ui.overlay.worldmap.WorldMapPointManager;
 import net.runelite.client.util.ColorUtil;
 import net.runelite.client.util.HotkeyListener;
+import net.runelite.client.events.OverlayMenuClicked;
+import net.runelite.client.ui.overlay.OverlayMenuEntry;
 import net.runelite.client.util.LinkBrowser;
 
 @Slf4j
@@ -126,10 +127,7 @@ public class AdvancedMapPlugin extends Plugin
 	private PluginManager pluginManager;
 
 	@Inject
-	private ChatMessageManager chatMessageManager;
-
-	/** What the update brought, to say on the first game tick; null when nothing is to be said. */
-	private volatile String updateLine;
+	private ItemManager itemManager;
 
 	@Inject
 	private WorldMapPointManager worldMapPointManager;
@@ -148,6 +146,13 @@ public class AdvancedMapPlugin extends Plugin
 	private final MapSearch search = new MapSearch();
 	private final MapPins pins = new MapPins();
 	private final MarkerEditor editor = new MarkerEditor();
+	private final MapMenu menu = new MapMenu(this::savedMapStatus, this::buildState);
+	/** Whether the Welcome page opened by itself since the plugin started. */
+	private volatile boolean welcomedThisRun;
+	/** Whether the whole map has been seen built ({@link StateFile#MAP_BUILT}). */
+	private volatile boolean mapBuilt;
+	/** What is remembered about this computer: versions, the Welcome, the map built. Set in startUp. */
+	private volatile StateFile state = new StateFile(null);
 	private final java.util.concurrent.atomic.AtomicInteger touches = new java.util.concurrent.atomic.AtomicInteger();
 	private volatile MarkerStore markerStore;
 	/** When the pins, farming patches and Slayer task were last read, in milliseconds. Client thread, reset elsewhere. */
@@ -178,6 +183,13 @@ public class AdvancedMapPlugin extends Plugin
 	private volatile boolean mapOpen;
 	/** Open in its own window; the window itself is touched on the Swing thread only. */
 	private volatile boolean windowOpen;
+	/** The orb's two settings, read once and again on a change: the menu is sorted every frame. */
+	private volatile boolean orbLeftClick;
+	private volatile boolean orbMenu;
+	/** Between startUp and shutDown: a task queued for the client thread before a stop finds nothing to work on. */
+	private volatile boolean started;
+	/** The saved map could not be opened this run: the sidebar and the Welcome page say so instead of "not ready". */
+	private volatile boolean storeFailed;
 	private MapWindow window;
 	/** Where the player stands, kept by the client thread for the window to draw. */
 	private volatile WorldPoint player;
@@ -231,16 +243,26 @@ public class AdvancedMapPlugin extends Plugin
 		shortestPathRoute = new ShortestPathRoute();
 		source = new ClientMapSource(reader);
 		icons = new MapIcons();
+		itemDiscs.clear();
+		itemDiscsAsked.clear();
+		icons.setItemPictures(this::itemDisc);
 		labels = new MapLabels();
 		labelsLoading = false;
 		regionsListing = false;
 		moveHiddenIcons();
 		settings = readSettings();
+		orbLeftClick = config.orbLeftClick();
+		orbMenu = config.orbMenu();
 		search.setSkipped(MapSearch.Scope.parse(config.searchSkipped()));
 		progress = Progress.NONE;
 		selection = null;
 		plane = 0;
 		images = new RegionImages(source, executor, icons);
+		// RuneLite keeps the plugin object between a stop and a start: last run's failure and Sailing icons are not this
+		// run's (a preparer step still finishing at the stop may have put some back after it forgot them)
+		storeFailed = false;
+		linksRead = false;
+		YourPlaces.start();
 		executor.execute(this::openStore);
 		markerFiles = Executors.newSingleThreadExecutor(task ->
 		{
@@ -250,11 +272,12 @@ public class AdvancedMapPlugin extends Plugin
 		});
 		markerFiles.execute(this::openMarkers);
 		lastSeen = null;
-		preparer = new MapPreparer(images, source, config::prepareMap,
+		preparer = new MapPreparer(images, source, () -> true,
 			() -> lastSeen != null ? lastSeen : LUMBRIDGE);
 		preparer.start();
 		messages = new MapMessages(this::openMap);
 		painter = new MapPainter(images, messages, icons, labels, filters, sideList, search);
+		painter.setMenu(menu);
 		painter.setPins(pins, editor);
 		painter.setExecutor(executor);
 		// a new painter does not follow: neither does the map, until the locate button is pressed again
@@ -295,12 +318,47 @@ public class AdvancedMapPlugin extends Plugin
 		{
 			clientToolbar.addNavigation(button);
 		}
-		updateLine = WhatsNew.message(config.lastVersion());
-		if (updateLine == null && !WhatsNew.VERSION.equals(config.lastVersion()))
+		welcomedThisRun = false;
+		StateFile remembered;
+		try
 		{
-			// nothing to say: the version is noted now; with a line, once it has been said (on the first game tick)
-			configManager.setConfiguration(AdvancedMapConfig.GROUP, AdvancedMapConfig.LAST_VERSION, WhatsNew.VERSION);
+			remembered = new StateFile(getPluginDirectory(), markerFiles);
 		}
+		catch (IOException e)
+		{
+			log.warn("Advanced Map cannot reach its data folder; what it remembers about this computer is kept for this"
+				+ " run only", e);
+			remembered = new StateFile(null);
+		}
+		state = remembered;
+		String lastVersion = remembered.get(StateFile.LAST_VERSION);
+		if (lastVersion.isEmpty() && !config.lastVersion().isEmpty())
+		{
+			// an earlier version kept it in the profile: moved here once, so this start counts as the update it is
+			lastVersion = config.lastVersion();
+			remembered.set(StateFile.LAST_VERSION, lastVersion);
+			configManager.unsetConfiguration(AdvancedMapConfig.GROUP, AdvancedMapConfig.LAST_VERSION);
+		}
+		WhatsNew.Start start = WhatsNew.start(lastVersion);
+		if (start.isUpdated())
+		{
+			// an update: the player has had the map before, so no Welcome, and their map counts as built (a game
+			// update's few new regions never open the Welcome page); What's new opens with the map next time
+			remembered.set(StateFile.WELCOMED, true);
+			remembered.set(StateFile.MAP_BUILT, true);
+			if (start.isNews())
+			{
+				remembered.set(StateFile.WHATS_NEW_FOR, WhatsNew.VERSION);
+			}
+		}
+		if (!WhatsNew.VERSION.equals(lastVersion))
+		{
+			// the version is noted at once: a client closed before the map was next opened does not take its next start
+			// for an update again (What's new waits in the file meanwhile)
+			remembered.set(StateFile.LAST_VERSION, WhatsNew.VERSION);
+		}
+		mapBuilt = remembered.is(StateFile.MAP_BUILT);
+		started = true;
 	}
 
 	/**
@@ -333,6 +391,7 @@ public class AdvancedMapPlugin extends Plugin
 	@Override
 	protected void shutDown()
 	{
+		started = false;
 		boolean wasOpen = mapOpen || windowOpen;
 		mapOpen = false;
 		windowOpen = false;
@@ -412,6 +471,12 @@ public class AdvancedMapPlugin extends Plugin
 		source = null;
 		icons = null;
 		labels = null;
+		YourPlaces.forget();
+		yourPlaces = Collections.emptyList();
+		// RuneLite keeps the plugin object while it is off: let go of pictures and other plugins' pins
+		itemDiscs.clear();
+		itemDiscsAsked.clear();
+		pins.setOthers(Collections.emptyList());
 		images = null;
 		preparer = null;
 		panel = null;
@@ -434,7 +499,13 @@ public class AdvancedMapPlugin extends Plugin
 		}
 		if (mapOpen || windowOpen)
 		{
+			WorldPoint before = player;
 			player = Prifddinas.toSurface(currentPlayerLocation());
+			if (!java.util.Objects.equals(before, player))
+			{
+				// the marker, and the view when following: a paint is due
+				touched();
+			}
 			follow();
 		}
 		if (windowOpen)
@@ -447,6 +518,38 @@ public class AdvancedMapPlugin extends Plugin
 			extrasRead = now;
 			readExtras(now);
 		}
+	}
+
+	/** The house and boat pins last read: kept through a scene load, which drops none of them. */
+	private volatile List<MapPins.Pin> yourPlaces = Collections.emptyList();
+
+	/**
+	 * The logged-in account's house and boat pins: read again while logged in, the last ones kept while a scene loads
+	 * (a region's edge, a teleport, often while sailing), none while out of the game. Client thread.
+	 */
+	private List<MapPins.Pin> yourPlaces()
+	{
+		GameState state = client.getGameState();
+		if (state == GameState.LOGGED_IN)
+		{
+			try
+			{
+				// the names read once: the plugin may be stopping on the Swing thread meanwhile
+				yourPlaces = YourPlaces.read(client, labelsNow(), progress.getCategoryNames());
+			}
+			catch (RuntimeException e)
+			{
+				// the game's own varbit table missing (seen on a fresh cache at the login screen, 2026-11-07): the last
+				// pins kept, asked again a second later, never an error out of the frame
+				log.debug("could not read the house and boats", e);
+			}
+		}
+		else if (state != GameState.LOADING && state != GameState.HOPPING)
+		{
+			// out of the game; a scene load or a world hop keeps the account and its pins
+			yourPlaces = Collections.emptyList();
+		}
+		return yourPlaces;
 	}
 
 	/**
@@ -469,8 +572,26 @@ public class AdvancedMapPlugin extends Plugin
 				return false;
 			});
 		}
+		if (config.yourPlaces())
+		{
+			others.addAll(yourPlaces());
+		}
 		pins.setOthers(others);
-		pins.setFilter(config.shareMarkers(), account());
+		String account = account();
+		pins.setFilter(config.shareMarkers(), account);
+		if (sideList.owner() == MARKERS_LIST && sideList.isOpen() && !java.util.Objects.equals(account, markersFor))
+		{
+			if (account == null && !config.shareMarkers())
+			{
+				// logged out with the window open and markers kept apart: no account's markers are "yours" now
+				sideList.close();
+			}
+			else
+			{
+				// another account logged in with the window open: its markers, not the last one's
+				showMarkers();
+			}
+		}
 		MapPainter drawing = painter;
 		if (drawing != null && now - farmingRead >= FARMING_MILLIS)
 		{
@@ -478,6 +599,8 @@ public class AdvancedMapPlugin extends Plugin
 			drawing.setFarming(config.farmingStatus() ? readFarming(now / 1000) : null);
 		}
 		showSlayerTask();
+		// other plugins' markers, the farming dots, the Slayer marks: read again, so a paint is due
+		touched();
 	}
 
 	/**
@@ -580,8 +703,8 @@ public class AdvancedMapPlugin extends Plugin
 	@Subscribe(priority = -1)
 	public void onPostMenuSort(PostMenuSort event)
 	{
-		boolean left = config.orbLeftClick();
-		if (reader == null || !left && !config.orbMenu() || client.isMenuOpen())
+		boolean left = orbLeftClick;
+		if (reader == null || !left && !orbMenu || client.isMenuOpen())
 		{
 			return;
 		}
@@ -674,6 +797,19 @@ public class AdvancedMapPlugin extends Plugin
 				drawn.forget();
 			}
 		}
+		if ((mapOpen || windowOpen) && state == GameState.LOGGED_IN)
+		{
+			// a load just ended, or a login or hop: the account's levels and quests are read on the next tick, when the
+			// game has them (after a login they arrive a tick after this event), not at the refresh up to 3 s later
+			progressDue = true;
+		}
+		if (windowOpen && state == GameState.LOGIN_SCREEN)
+		{
+			// the window stays open, and no game tick comes on the login screen to read the account again: read now, so
+			// it stops showing the last account's quests, levels and locks (client thread). A hop keeps the account, so
+			// it keeps them through the hop as through a scene load, read again on the tick after it
+			readProgress();
+		}
 		MapInput keys = input;
 		if (keys != null && state == GameState.LOGIN_SCREEN)
 		{
@@ -681,6 +817,19 @@ public class AdvancedMapPlugin extends Plugin
 			// the keys' owner is the Swing thread's
 			SwingUtilities.invokeLater(keys::forgetKeys);
 		}
+	}
+
+	/**
+	 * Another account's profile is in place: its farming patches and Slayer task read on the next frame, not up to
+	 * 10 s later with the last account's. Keyed on the profile, not on LOGGED_IN, which also follows every scene load.
+	 */
+	@Subscribe
+	public void onRuneScapeProfileChanged(RuneScapeProfileChanged event)
+	{
+		yourPlaces = Collections.emptyList();
+		extrasRead = 0;
+		farmingRead = 0;
+		slayerShown = slayerShown == null ? null : "";
 	}
 
 	@Subscribe
@@ -691,7 +840,9 @@ public class AdvancedMapPlugin extends Plugin
 		{
 			lastSeen = Prifddinas.toSurface(here);
 		}
-		if ((mapOpen || windowOpen) && ++ticks % PROGRESS_TICKS == 0)
+		boolean due = progressDue;
+		progressDue = false;
+		if ((mapOpen || windowOpen) && (++ticks % PROGRESS_TICKS == 0 || due))
 		{
 			readProgress();
 		}
@@ -700,35 +851,73 @@ public class AdvancedMapPlugin extends Plugin
 		{
 			askForRoute(layers);
 		}
-		sayWhatsNew();
+		noteMapBuilt();
 	}
 
-	/** The line on what an update brought, said once on the first game tick; "Say when updated" off keeps it quiet. */
-	private void sayWhatsNew()
+	/** Remembers, once, that the whole map has been built: the Welcome page then no longer opens by itself. */
+	private void noteMapBuilt()
 	{
-		String line = updateLine;
-		if (line == null)
+		MapPreparer currentPreparer = preparer;
+		RegionImages current = images;
+		if (mapBuilt || currentPreparer == null || current == null || current.store() == null
+			|| currentPreparer.remaining() != 0 || currentPreparer.isHalted() || current.store().count() == 0)
+		{
+			// never "built" on an empty store, or while the game's data cannot be read
+			return;
+		}
+		mapBuilt = true;
+		state.set(StateFile.MAP_BUILT, true);
+	}
+
+	/**
+	 * As the map opens: What's new once after an update, or the Welcome page the first time, and once a run while the
+	 * map is still first being built (see {@link MapMenu#popUp(boolean, boolean, boolean, boolean, int)}).
+	 */
+	private void popUp()
+	{
+		StateFile remembered = state;
+		boolean whatsNew = WhatsNew.VERSION.equals(remembered.get(StateFile.WHATS_NEW_FOR));
+		MapMenu.Page page = MapMenu.popUp(whatsNew, remembered.is(StateFile.WELCOMED), welcomedThisRun, mapBuilt,
+			leftToPrepare());
+		if (page == null)
 		{
 			return;
 		}
-		updateLine = null;
-		configManager.setConfiguration(AdvancedMapConfig.GROUP, AdvancedMapConfig.LAST_VERSION, WhatsNew.VERSION);
-		if (config.updateMessage())
+		if (whatsNew)
 		{
-			chatMessageManager.queue(QueuedMessage.builder()
-				.type(ChatMessageType.GAMEMESSAGE)
-				.runeLiteFormattedMessage(new ChatMessageBuilder().append(ChatColorType.HIGHLIGHT).append(line).build())
-				.build());
+			remembered.unset(StateFile.WHATS_NEW_FOR);
 		}
+		if (page == MapMenu.Page.WELCOME)
+		{
+			welcomedThisRun = true;
+			if (!remembered.is(StateFile.WELCOMED))
+			{
+				remembered.set(StateFile.WELCOMED, true);
+			}
+		}
+		filters.setOpen(false);
+		search.setFocused(false);
+		menu.popUp(page);
 	}
+
+	/** A login, a hop or the end of a scene load asks for the levels and quests on the next game tick. */
+	private volatile boolean progressDue;
 
 	/** Reads the player's levels and quests again, keeping the last copy if the game cannot answer now. */
 	private void readProgress()
 	{
+		GameState state = client.getGameState();
+		if (state == GameState.LOADING || state == GameState.HOPPING)
+		{
+			// the game reads as logged out while a scene loads or a hop is under way: the last levels and quests are kept,
+			// read again on the tick after (progressDue), not shown as an empty account meanwhile
+			return;
+		}
 		try
 		{
 			MapIcons current = icons;
 			progress = Progress.read(client, current == null ? Collections.emptySet() : current.watchedVars());
+			touched();
 		}
 		catch (RuntimeException e)
 		{
@@ -751,6 +940,13 @@ public class AdvancedMapPlugin extends Plugin
 		}
 		else if (ShortestPathRoute.NAMESPACE.equals(event.getNamespace()))
 		{
+			if (!client.isClientThread())
+			{
+				// another plugin may post to Shortest Path from the Swing thread (Quest Helper does as a step shuts down),
+				// and the player's place is read from the client: done there instead (seen 2026-11-03, Black Box)
+				clientThread.invokeLater(() -> onPluginMessage(event));
+				return;
+			}
 			Map<String, Object> query = route.onMessage(event.getName(), event.getData(), currentPlayerLocation(), layers);
 			if (query != null)
 			{
@@ -778,18 +974,40 @@ public class AdvancedMapPlugin extends Plugin
 		eventBus.post(new PluginMessage(ShortestPathRoute.NAMESPACE, "getTarget", ShortestPathRoute.getTarget()));
 	}
 
+	/** Another RuneLite profile: its own markers and hidden icons, so the lists made for the last one go. */
+	@Subscribe
+	public void onProfileChanged(net.runelite.client.events.ProfileChanged event)
+	{
+		closeMenuLists();
+	}
+
 	@Subscribe
 	public void onConfigChanged(ConfigChanged event)
 	{
 		if (!AdvancedMapConfig.GROUP.equals(event.getGroup())
 			|| AdvancedMapConfig.GAME_BOUNDS.equals(event.getKey())
-			|| AdvancedMapConfig.GAME_MAXIMIZED.equals(event.getKey()))
+			|| AdvancedMapConfig.GAME_MAXIMIZED.equals(event.getKey())
+			|| AdvancedMapConfig.WINDOW_BOUNDS.equals(event.getKey()))
 		{
-			// the box's own place and size, saved as it is moved: nothing else to read again
+			// the box's or the window's own place and size, saved as it is moved: nothing else to read again
 			return;
 		}
 		settings = readSettings();
+		orbLeftClick = config.orbLeftClick();
+		orbMenu = config.orbMenu();
 		search.setSkipped(MapSearch.Scope.parse(config.searchSkipped()));
+		if (sideList.owner() == HIDDEN_LIST && sideList.isOpen() && event.getKey() != null
+			&& event.getKey().startsWith(AdvancedMapConfig.HIDDEN_PREFIX))
+		{
+			// an icon hidden or shown again, here or by another client: only that changes the list
+			showHiddenIcons();
+		}
+		if (sideList.owner() == MARKERS_LIST && sideList.isOpen() && AdvancedMapConfig.SHARE_MARKERS.equals(event.getKey()))
+		{
+			// shared between accounts or kept apart: which markers are "yours" changed, so the filter first, then the list
+			pins.setFilter(config.shareMarkers(), account());
+			showMarkers();
+		}
 		MapPainter drawing = painter;
 		if (drawing != null)
 		{
@@ -827,7 +1045,19 @@ public class AdvancedMapPlugin extends Plugin
 	 */
 	boolean mapTakesInput()
 	{
+		// logged in, not merely in the game: during a scene load the box stays open but is not drawn, and must not take
+		// clicks the player cannot see land (the PR audit, 2026-11-07)
 		return mapOpen && client.getGameState() == GameState.LOGGED_IN;
+	}
+
+	/**
+	 * Logged in, or loading a scene (a region's edge, a teleport, often while sailing): the box over the game stays the
+	 * map's. Only the login screen and the like count as out of the game.
+	 */
+	private boolean inGame()
+	{
+		GameState state = client.getGameState();
+		return state == GameState.LOGGED_IN || state == GameState.LOADING;
 	}
 
 	/** True while the game's own right-click menu is open. */
@@ -870,6 +1100,7 @@ public class AdvancedMapPlugin extends Plugin
 	 */
 	void giveKeysBack()
 	{
+		menu.setOpen(false);
 		search.setFocused(false);
 		filters.setOpen(false);
 		editor.close();
@@ -912,6 +1143,14 @@ public class AdvancedMapPlugin extends Plugin
 	}
 
 	/** Counts the mouse and key events on the map over the game, for {@link MapOverlay} to draw again at once. */
+	/** Counts the pictures and layers that arrived, for the painters to know a paint is due ({@link RedrawClock}). */
+	int changes()
+	{
+		RegionImages current = images;
+		MapMessages layers = messages;
+		return (current == null ? 0 : current.changes()) + (layers == null ? 0 : layers.changes());
+	}
+
 	void touched()
 	{
 		touches.incrementAndGet();
@@ -969,6 +1208,7 @@ public class AdvancedMapPlugin extends Plugin
 		catch (IOException | RuntimeException e)
 		{
 			log.warn("Advanced Map could not open its saved map; it will be drawn each time", e);
+			storeFailed = true;
 		}
 	}
 
@@ -1068,21 +1308,35 @@ public class AdvancedMapPlugin extends Plugin
 		// the store seen here, not the one there when the task runs: the plugin may be restarted meanwhile
 		executor.execute(() ->
 		{
+			// said in the log: a whole map gone is otherwise a mystery when its owner did not see it go
+			log.debug("deleting the saved map ({} regions and floors) on \"Build the map again\"", store.count());
 			store.clear();
 			currentPreparer.restart();
 		});
 	}
 
-	/** How many regions' floors the background preparing still has to draw: 0 when done, off, or unable to save. */
+	/** How many regions' floors the background preparing still has to draw: 0 when done, or unable to save. */
 	private int leftToPrepare()
 	{
 		RegionImages current = images;
 		MapPreparer currentPreparer = preparer;
-		if (!config.prepareMap() || current == null || current.store() == null || currentPreparer == null)
+		if (current == null || current.store() == null || currentPreparer == null || currentPreparer.isHalted())
 		{
+			// halted: the notice would count floors that cannot be built now; the sidebar and Welcome say why
 			return 0;
 		}
 		return Math.max(0, currentPreparer.remaining());
+	}
+
+	/** For the menu's Welcome page: how far the building of the map is. */
+	MapMenu.Build buildState()
+	{
+		RegionImages current = images;
+		MapStore store = current == null ? null : current.store();
+		MapPreparer currentPreparer = preparer;
+		return new MapMenu.Build(store == null ? -1 : store.count(),
+			currentPreparer == null ? -1 : currentPreparer.remaining(), store == null && storeFailed,
+			currentPreparer != null && currentPreparer.isHalted(), currentPreparer == null ? 0 : currentPreparer.failed());
 	}
 
 	/** For the sidebar: how much of the map is saved on this computer. */
@@ -1092,16 +1346,24 @@ public class AdvancedMapPlugin extends Plugin
 		MapStore store = current == null ? null : current.store();
 		if (store == null)
 		{
-			return "Not ready yet.";
+			return storeFailed ? "The saved map could not be opened (the client's log says why): the map is drawn as you"
+				+ " look around and nothing is saved until a client restart puts it right." : "Not ready yet.";
 		}
-		int remaining = preparer == null ? -1 : preparer.remaining();
+		MapPreparer currentPreparer = preparer;
+		int remaining = currentPreparer == null ? -1 : currentPreparer.remaining();
 		String count = store.count() + " regions and floors saved on this computer, for every character and profile.";
-		if (!config.prepareMap() || remaining < 0)
+		if (currentPreparer != null && currentPreparer.isHalted())
+		{
+			return count + " Building stopped: the game's map data could not be read (a game update may have changed"
+				+ " it); a plugin update is needed.";
+		}
+		if (remaining < 0)
 		{
 			return count;
 		}
-		return remaining == 0 ? count + " The whole map is ready." : count + " Preparing the rest: " + remaining
-			+ " to go.";
+		int failed = currentPreparer.failed();
+		return remaining == 0 ? count + (failed == 0 ? " The whole map is ready." : " The whole map is ready but " + failed
+			+ " could not be built (the client's log says why).") : count + " Building the rest: " + remaining + " to go.";
 	}
 
 	/** True while the map is open, over the game or in its window. */
@@ -1135,6 +1397,28 @@ public class AdvancedMapPlugin extends Plugin
 	MapPainter.Selection selection()
 	{
 		return selection;
+	}
+
+	/** Where a reported spot was right-clicked, until the next paint takes the map's picture for the report. */
+	private final java.util.concurrent.atomic.AtomicReference<java.awt.Point> pictureMark =
+		new java.util.concurrent.atomic.AtomicReference<>();
+
+	/** For the painting thread: the spot to ring in a picture for a report, once; null when none is wanted. */
+	java.awt.Point takePictureMark()
+	{
+		return pictureMark.getAndSet(null);
+	}
+
+	/** Puts the map's picture on the clipboard, off the painting thread, for the report to paste. */
+	void copyPicture(java.awt.image.BufferedImage picture)
+	{
+		ExecutorService current = executor;
+		if (current == null)
+		{
+			return;
+		}
+		current.execute(() -> java.awt.Toolkit.getDefaultToolkit().getSystemClipboard()
+			.setContents(new MapPicture(picture), null));
 	}
 
 	/** Does what a map button does. {@code window} when pressed in the pop-out window. */
@@ -1174,6 +1458,21 @@ public class AdvancedMapPlugin extends Plugin
 			case FILTERS:
 				filters.setOpen(!filters.isOpen());
 				selection = null;
+				break;
+			case MENU:
+				if (editor.isOpen())
+				{
+					// a marker half made is not thrown away for the menu
+					break;
+				}
+				menu.setOpen(!menu.isOpen());
+				if (menu.isOpen())
+				{
+					filters.setOpen(false);
+					search.setFocused(false);
+					selection = null;
+					showTransport(null);
+				}
 				break;
 			case FLOOR_UP:
 				MapViewport.View under = viewports.get(MapArea.UNDERGROUND).view(1, 1);
@@ -1265,6 +1564,26 @@ public class AdvancedMapPlugin extends Plugin
 				break;
 			case ROUTE:
 				route(on.getPoint());
+				break;
+			case REPORT:
+				WorldPoint at = on.getSpot() != null ? new WorldPoint(on.getSpot().getX(), on.getSpot().getY(),
+					on.getSpot().getPlane()) : on.getPoint();
+				// "near" only a place that is near: with none within reach, or before the names have loaded, the tile alone
+				String spotText = MapPainter.spotText(on, progress, settings.getFloorNumbers(),
+					SearchSpots.placeName(at, labelsNow()));
+				// a picture of the map, ringed where it was right-clicked, taken by the next paint (the menu is gone by
+				// then) and put on the clipboard: the issue says to paste it
+				pictureMark.set(new java.awt.Point(on.getX(), on.getY()));
+				touched();
+				LinkBrowser.browse(reportUrl(spotText));
+				break;
+			case WIKI:
+				NamedIcons.Named named = on.getSpot() == null ? null
+					: NamedIcons.at(on.getSpot().getX(), on.getSpot().getY(), on.getSpot().getPlane());
+				if (named != null)
+				{
+					LinkBrowser.browse(MonsterInfo.WIKI + named.getWikiPage());
+				}
 				break;
 			default:
 				clearRoute();
@@ -1502,6 +1821,13 @@ public class AdvancedMapPlugin extends Plugin
 	 */
 	void rightClick(int x, int y, int width, int height)
 	{
+		if (MapPainter.buttonAt(x, y, width, height, windowOpen) != null || menu.isOpen()
+			&& menu.hitAt(x, y, menu.layout(MapPainter.buttons(width, height, windowOpen), width, height)).getPart()
+			!= MapMenu.Part.OUTSIDE)
+		{
+			// a button, the menu or its page is over the map there: no tile or icon menu opens underneath it
+			return;
+		}
 		pins.select(null);
 		MapPins.Pin pin = pinAt(x, y, width, height);
 		setMenuPin(pin);
@@ -1539,6 +1865,14 @@ public class AdvancedMapPlugin extends Plugin
 		{
 			search.setFocused(false);
 		}
+		else if (menu.page() != null && !menu.popped())
+		{
+			menu.setPage(null);
+		}
+		else if (menu.isOpen())
+		{
+			menu.setOpen(false);
+		}
 		else if (pins.selected() != null)
 		{
 			pins.select(null);
@@ -1561,7 +1895,7 @@ public class AdvancedMapPlugin extends Plugin
 	/** True while the list on the right is open, so Escape closes it before the map. */
 	boolean sideListOpen()
 	{
-		return sideList.isOpen() || editor.isOpen() || pins.selected() != null;
+		return sideList.isOpen() || editor.isOpen() || pins.selected() != null || menu.isOpen();
 	}
 
 	/** True while the Filters list is open, so keys go to its search box. */
@@ -1580,8 +1914,132 @@ public class AdvancedMapPlugin extends Plugin
 	{
 		// while the marker box is open it is drawn over the side list and takes the keys: neither the list nor the
 		// search box under it takes a press
-		return pressEditor(x, y, width, height, window) || !editor.isOpen() && (pressSearch(x, y, width, height, window)
-			|| pressSideList(x, y, width, height, window)) || pressFilters(x, y, width, height, window);
+		return pressEditor(x, y, width, height, window) || !editor.isOpen() && (pressMenu(x, y, width, height, window)
+			|| pressSearch(x, y, width, height, window) || pressSideList(x, y, width, height, window))
+			|| pressFilters(x, y, width, height, window);
+	}
+
+	/**
+	 * A left press on the menu or its page: an entry opens its page (Settings opens RuneLite's settings page), the
+	 * links and the page's buttons do their thing, a press elsewhere closes the menu. True when on the menu or page.
+	 */
+	private boolean pressMenu(int x, int y, int width, int height, boolean window)
+	{
+		if (!menu.isOpen())
+		{
+			return false;
+		}
+		Map<MapPainter.Button, java.awt.Rectangle> buttons = MapPainter.buttons(width, height, window);
+		MapMenu.Hit hit = menu.hitAt(x, y, menu.layout(buttons, width, height));
+		switch (hit.getPart())
+		{
+			case OUTSIDE:
+				if (!buttons.get(MapPainter.Button.MENU).contains(x, y))
+				{
+					menu.setOpen(false);
+				}
+				return false;
+			case ENTRY:
+				if (hit.getPage() == MapMenu.Page.SETTINGS)
+				{
+					menu.setOpen(false);
+					openSettings();
+				}
+				else if (!hit.getPage().isPage())
+				{
+					menu.setOpen(false);
+					selection = null;
+					showTransport(null);
+					if (hit.getPage() == MapMenu.Page.MARKERS)
+					{
+						showMarkers();
+					}
+					else
+					{
+						showHiddenIcons();
+					}
+				}
+				else
+				{
+					menu.setPage(hit.getPage());
+				}
+				return true;
+			case GITHUB:
+				LinkBrowser.browse(AdvancedMapPanel.GITHUB_URL);
+				return true;
+			case DISCORD:
+				LinkBrowser.browse(AdvancedMapPanel.DISCORD_URL);
+				return true;
+			case BUTTON1:
+			case BUTTON2:
+				pressMenuButton(hit.getPart() == MapMenu.Part.BUTTON1);
+				return true;
+			default:
+				return true;
+		}
+	}
+
+	/** A page's first or second button. */
+	private void pressMenuButton(boolean first)
+	{
+		MapMenu.Page page = menu.page();
+		if (page == null)
+		{
+			return;
+		}
+		switch (page)
+		{
+			case WELCOME:
+				if (first)
+				{
+					menu.setPage(MapMenu.Page.HELP);
+				}
+				else if (menu.popped())
+				{
+					menu.setOpen(false);
+				}
+				else
+				{
+					menu.setPage(null);
+				}
+				break;
+			case WHATS_NEW:
+				LinkBrowser.browse(AdvancedMapPanel.GITHUB_URL + "/releases");
+				break;
+			case IMPROVE:
+				LinkBrowser.browse(first ? AdvancedMapPanel.DISCORD_URL : AdvancedMapPanel.GITHUB_URL + "/issues");
+				break;
+			case REDRAW:
+				if (first)
+				{
+					clearSavedMap();
+				}
+				menu.setPage(null);
+				break;
+			default:
+				break;
+		}
+	}
+
+	/**
+	 * Opens RuneLite's settings page for this plugin: the event RuneLite's own "Configure" entry on an overlay's menu
+	 * sends, which RuneLite's configuration plugin answers by opening the page of the overlay's plugin.
+	 */
+	void openSettings()
+	{
+		EventBus bus = eventBus;
+		MapOverlay current = overlay;
+		if (bus != null && current != null && clientThread != null)
+		{
+			// on the client thread, where RuneLite posts it: its other listeners expect that thread
+			clientThread.invokeLater(() -> bus.post(new OverlayMenuClicked(new OverlayMenuEntry(
+				MenuAction.RUNELITE_OVERLAY_CONFIG, "Configure", "Advanced Map"), current)));
+		}
+	}
+
+	MapMenu menu()
+	{
+		return menu;
 	}
 
 	/** A left press on the marker box: a picture or color is chosen, Save, Remove or Cancel. True when on the box. */
@@ -1630,6 +2088,10 @@ public class AdvancedMapPlugin extends Plugin
 	private void saveMarkers(MapPins.Marker old, MapPins.Marker fresh)
 	{
 		pins.replace(old, fresh);
+		if (sideList.isOpen() && sideList.owner() == MARKERS_LIST)
+		{
+			showMarkers();
+		}
 		ExecutorService files = markerFiles;
 		if (files != null)
 		{
@@ -1794,7 +2256,7 @@ public class AdvancedMapPlugin extends Plugin
 		{
 			if (!placeNames.contains(MapSearch.normalize(name)))
 			{
-				out.add(new MapSearch.Entry(MapSearch.Kind.PLACE, name, "The game's " + name + " map",
+				out.add(new MapSearch.Entry(MapSearch.Kind.PLACE, name, "Place",
 					Collections.singletonList(at), Collections.emptyList(), null));
 			}
 		});
@@ -1948,6 +2410,140 @@ public class AdvancedMapPlugin extends Plugin
 		return best;
 	}
 
+	/** A new GitHub issue on the map, its title and the spot filled in; the player writes what is wrong. */
+	static String reportUrl(String spotText)
+	{
+		try
+		{
+			String enc = java.nio.charset.StandardCharsets.UTF_8.name();
+			return AdvancedMapPanel.GITHUB_URL + "/issues/new?title=" + java.net.URLEncoder.encode("Map: " + spotText,
+				enc) + "&body=" + java.net.URLEncoder.encode("Where: " + spotText + "\nAdvanced Map " + WhatsNew.VERSION
+				+ "\n\nWhat is wrong or missing:\n\n\nA picture of the map is on your clipboard: paste it here"
+				+ " (Ctrl+V).\n", enc);
+		}
+		catch (java.io.UnsupportedEncodingException e)
+		{
+			throw new IllegalStateException(e);
+		}
+	}
+
+	/** The side list of the menu's "Your markers", and of its "Hidden icons"; a hidden icon's rows too. */
+	static final Object MARKERS_LIST = new Object();
+	static final Object HIDDEN_LIST = new Object();
+	/** How far in a click on a hidden icon's row zooms, from further out: where icons are drawn, with room around. */
+	private static final double HIDDEN_ZOOM = 3;
+	/** The account "Your markers" was listed for. */
+	private volatile String markersFor;
+
+	/**
+	 * Closes "Your markers" and "Hidden icons" as the map closes: they were made for the account, the markers and the
+	 * settings of then, which a logout, another account or another client may change before the map opens again.
+	 */
+	void closeMenuLists()
+	{
+		Object owner = sideList.owner();
+		if (owner == MARKERS_LIST || owner == HIDDEN_LIST)
+		{
+			sideList.close();
+		}
+	}
+
+	/** A row that only informs: no place, nothing to open. */
+	private static SideList.Row note(String text)
+	{
+		return new SideList.Row(text, null, null, null, null, null);
+	}
+
+	/** How far a place is, as the lists say it. */
+	private static String tilesAway(WorldPoint point, WorldPoint from)
+	{
+		int tiles = SearchSpots.distance(point, from);
+		return tiles >= 1000 ? "far" : tiles + " tiles";
+	}
+
+	/** The menu's "Your markers": every marker that shows, nearest first, where it is; a click goes there. */
+	void showMarkers()
+	{
+		WorldPoint from = player != null ? player : center();
+		List<MapPins.Marker> markers = pins.shown();
+		markersFor = pins.filterAccount();
+		sideList.open("Your markers (" + markers.size() + "), nearest first", markerRows(markers, from, labelsNow()),
+			MARKERS_LIST);
+	}
+
+	/** The rows of "Your markers": each marker, nearest {@code from} first, how far and where; none, how to add one. */
+	static List<SideList.Row> markerRows(List<MapPins.Marker> shown, WorldPoint from, List<MapLabels.Label> labels)
+	{
+		List<MapPins.Marker> markers = new ArrayList<>(shown);
+		markers.sort(java.util.Comparator.comparingInt(marker -> SearchSpots.distance(marker.getPoint(), from)));
+		List<SideList.Row> rows = new ArrayList<>();
+		if (markers.isEmpty())
+		{
+			rows.add(note("None yet. Right-click anywhere on the map and choose \"Add marker here\"."));
+		}
+		for (MapPins.Marker marker : markers)
+		{
+			rows.add(new SideList.Row(marker.getName().isEmpty() ? "Marker" : marker.getName(),
+				tilesAway(marker.getPoint(), from), SearchSpots.name(marker.getPoint(), labels), null,
+				marker.getPoint(), null));
+		}
+		return rows;
+	}
+
+	/**
+	 * The menu's "Hidden icons": every icon hidden with a right-click, nearest first; a click goes there and shows the
+	 * hidden icons, faded, so it can be unhidden. Icons not found yet this run (found as the map shows or scans their
+	 * places) are only counted.
+	 */
+	void showHiddenIcons()
+	{
+		Set<String> hidden = settings.getHidden();
+		WorldPoint from = player != null ? player : center();
+		List<MapSpot> candidates = new ArrayList<>(icons.allSpots());
+		candidates.addAll(MapIcons.teleports());
+		sideList.open("Hidden icons (" + hidden.size() + "), nearest first", hiddenRows(hidden, candidates, from,
+			labelsNow(), progress), HIDDEN_LIST);
+	}
+
+	/**
+	 * The rows of "Hidden icons": a line on what a click does, then each hidden icon found among {@code candidates},
+	 * nearest {@code from} first, and how many hidden icons are not found yet (their places' icons not loaded).
+	 */
+	static List<SideList.Row> hiddenRows(Set<String> hidden, List<MapSpot> candidates, WorldPoint from,
+		List<MapLabels.Label> labels, Progress progress)
+	{
+		java.util.Map<String, MapSpot> found = new java.util.LinkedHashMap<>();
+		for (MapSpot spot : candidates)
+		{
+			if (hidden.contains(spot.getKey()))
+			{
+				found.putIfAbsent(spot.getKey(), spot);
+			}
+		}
+		List<MapSpot> spots = new ArrayList<>(found.values());
+		spots.sort(java.util.Comparator.comparingInt(spot -> SearchSpots.distance(point(spot), from)));
+		List<SideList.Row> rows = new ArrayList<>();
+		rows.add(note(hidden.isEmpty() ? "None. Right-click an icon and choose Hide to hide it."
+			: "Click one to go there: it shows faded (unless Icons is off or its kind is unticked in Filters)."
+				+ " Right-click it and choose Unhide."));
+		for (MapSpot spot : spots)
+		{
+			rows.add(new SideList.Row(MapIcons.name(spot, progress), tilesAway(point(spot), from),
+				SearchSpots.name(point(spot), labels), null, point(spot), HIDDEN_LIST));
+		}
+		int notFound = hidden.size() - spots.size();
+		if (notFound > 0)
+		{
+			rows.add(note(notFound + " more not found yet: they are listed as the map finds their places' icons."));
+		}
+		return rows;
+	}
+
+	private static WorldPoint point(MapSpot spot)
+	{
+		return new WorldPoint(spot.getX(), spot.getY(), spot.getPlane());
+	}
+
 	/** The tile at the middle of the map as it is shown now. */
 	private WorldPoint center()
 	{
@@ -2055,7 +2651,7 @@ public class AdvancedMapPlugin extends Plugin
 		}
 		else if (hit.getIndex() >= 0)
 		{
-			SideList.Row row = sideList.rows().get(hit.getIndex());
+			SideList.Row row = hit.getRow();
 			if (row.getPoint() != null)
 			{
 				selection = null;
@@ -2069,6 +2665,19 @@ public class AdvancedMapPlugin extends Plugin
 			else if (row.getTarget() instanceof MonsterInfo.WikiPage)
 			{
 				LinkBrowser.browse(((MonsterInfo.WikiPage) row.getTarget()).getUrl());
+			}
+			else if (row.getTarget() == HIDDEN_LIST)
+			{
+				// to unhide it, it must show: hidden icons shown, and close enough in for icons to be drawn
+				if (!settings.isShowHidden())
+				{
+					setSwitch(AdvancedMapConfig.SHOW_HIDDEN, true);
+				}
+				MapViewport viewport = viewports.get(area);
+				if (viewport.view(1, 1).zoom < MapIcons.ICON_ZOOM)
+				{
+					viewport.setZoom(HIDDEN_ZOOM);
+				}
 			}
 		}
 		return true;
@@ -2104,6 +2713,11 @@ public class AdvancedMapPlugin extends Plugin
 				{
 					configManager.setConfiguration(AdvancedMapConfig.GROUP, group.key, false);
 				}
+				break;
+			case MULTI_COMBAT:
+				// the painter follows the setting's change, as it did from the settings panel
+				configManager.setConfiguration(AdvancedMapConfig.GROUP, AdvancedMapConfig.MULTI_COMBAT,
+					!config.multiCombat());
 				break;
 			case SHOW_HIDDEN:
 				configManager.setConfiguration(AdvancedMapConfig.GROUP, AdvancedMapConfig.SHOW_HIDDEN,
@@ -2157,6 +2771,19 @@ public class AdvancedMapPlugin extends Plugin
 	/** The mouse wheel over the Filters list or a transport's places scrolls it. True when it did. */
 	boolean wheelPanels(int x, int y, double notches, int width, int height, boolean window)
 	{
+		if (menu.isOpen())
+		{
+			MapMenu.Layout open = menu.layout(MapPainter.buttons(width, height, window), width, height);
+			if (open.getContent() != null && open.getContent().contains(x, y))
+			{
+				menu.scroll(notches, open);
+				return true;
+			}
+			if (open.getMenu().contains(x, y))
+			{
+				return true;
+			}
+		}
 		if (search.isScopesOpen()
 			&& search.layout(MapPainter.buttons(width, height, window), width).getResults().contains(x, y))
 		{
@@ -2277,7 +2904,7 @@ public class AdvancedMapPlugin extends Plugin
 		{
 			configManager.unsetConfiguration(AdvancedMapConfig.GROUP, key);
 		}
-		settings = readSettings();
+		// the settings are read again, and the Hidden icons list made again, by onConfigChanged for the change
 	}
 
 	private void setSwitch(String key, boolean on)
@@ -2342,12 +2969,16 @@ public class AdvancedMapPlugin extends Plugin
 		}
 		clientThread.invokeLater(() ->
 		{
-			if (reader == null)
+			if (!started || reader == null)
 			{
+				// stopped since the key or the orb asked: what the map needs is gone
 				return;
 			}
 			player = Prifddinas.toSurface(currentPlayerLocation());
 			readProgress();
+			// and again on the next tick: a map opened in the tick right after a login read the account before its
+			// levels and quests had come
+			progressDue = true;
 			listRegions();
 			loadLabels();
 			WorldPoint center = at != null ? at : player != null ? player : LUMBRIDGE;
@@ -2365,7 +2996,7 @@ public class AdvancedMapPlugin extends Plugin
 				viewport.setZoom(zoom);
 			}
 			boolean wasOpen = mapOpen || windowOpen;
-			boolean inWindow = opensInWindow(windowOpen, config.popOut(), client.getGameState() == GameState.LOGGED_IN);
+			boolean inWindow = opensInWindow(windowOpen, config.popOut(), inGame());
 			showIn(inWindow);
 			if (inWindow)
 			{
@@ -2374,6 +3005,7 @@ public class AdvancedMapPlugin extends Plugin
 			if (!wasOpen)
 			{
 				postState(true);
+				popUp();
 			}
 		});
 	}
@@ -2435,10 +3067,36 @@ public class AdvancedMapPlugin extends Plugin
 		});
 	}
 
+	/** The game's item pictures on a disc, for the teleports whose icon is an item's: by item id, once loaded. */
+	private final Map<Integer, BufferedImage> itemDiscs = new ConcurrentHashMap<>();
+	private final Set<Integer> itemDiscsAsked = ConcurrentHashMap.newKeySet();
+
+	/** An item's picture on a disc, or null while the client loads it (asked once; drawn on a later paint). */
+	private BufferedImage itemDisc(int itemId)
+	{
+		BufferedImage disc = itemDiscs.get(itemId);
+		if (disc == null && itemDiscsAsked.add(itemId))
+		{
+			net.runelite.client.util.AsyncBufferedImage item = itemManager.getImage(itemId);
+			item.onLoaded(() ->
+			{
+				// a picture that arrives after the plugin stopped is not kept
+				if (started)
+				{
+					itemDiscs.put(itemId, MapIcons.onDisc(item));
+				}
+			});
+		}
+		return disc;
+	}
+
 	/** Reads the place names in the background, once; again next time if the client had no world map data yet. */
+	/** Whether this run has the map links: until then each opening asks for them again. */
+	private volatile boolean linksRead;
+
 	private void loadLabels()
 	{
-		if (labelsLoading || !labels.all().isEmpty() && filters.hasCategories())
+		if (labelsLoading || !labels.all().isEmpty() && filters.hasCategories() && linksRead)
 		{
 			return;
 		}
@@ -2453,14 +3111,35 @@ public class AdvancedMapPlugin extends Plugin
 			{
 				Map<Integer, Integer> categories = from.categoryIcons();
 				categories.values().forEach(areaId -> pictures.addSprite(areaId, from.areaIcon(areaId)));
+				// the minigame teleports' icon
+				pictures.setMinigameArea(categories.getOrDefault(IconGroup.MINIGAME, -1));
 				list.setCategoryIcons(categories);
-				into.set(from.labels());
-				gameMaps = from.gameMaps();
+				// all read before any is kept: a part still downloading throws, and the next opening reads it all again
+				var names = from.labels();
+				var maps = from.gameMaps();
+				var pieces = from.mapPieces();
+				into.set(names);
+				SailingDocks.place(into.all());
+				gameMaps = maps;
 				MapPainter drawing = painter;
 				if (drawing != null)
 				{
-					drawing.setDungeonMaps(from.mapPieces());
-					drawing.setMapLinks(from.mapLinks());
+					drawing.setDungeonMaps(pieces);
+				}
+				// the links apart: a link script still downloading, or gone after a game update, must not cost the
+				// names; they are read again at a later opening
+				try
+				{
+					var links = from.mapLinks();
+					if (drawing != null)
+					{
+						drawing.setMapLinks(links);
+					}
+					linksRead = true;
+				}
+				catch (CacheNotReadyException e)
+				{
+					log.debug("the map links are not there yet");
 				}
 			}
 			catch (RuntimeException e)
@@ -2560,6 +3239,7 @@ public class AdvancedMapPlugin extends Plugin
 
 	private void closed()
 	{
+		closeMenuLists();
 		giveKeysBack();
 		// a window closed with the button down never sees the release: hover boxes and tips would stay off
 		setDragging(false);

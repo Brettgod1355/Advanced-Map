@@ -136,6 +136,20 @@ final class SideList
 		static final int PANEL = -1;
 
 		int index;
+		/** The row hit, from the same reading of the list as its index: the list may be made again meanwhile. */
+		@lombok.EqualsAndHashCode.Exclude
+		Row row;
+
+		Hit(int index)
+		{
+			this(index, null);
+		}
+
+		Hit(int index, Row row)
+		{
+			this.index = index;
+			this.row = row;
+		}
 	}
 
 	/** A row's lines, wrapped when the list opened (they are the same every paint), and its height. */
@@ -171,9 +185,13 @@ final class SideList
 		return !content.rows.isEmpty();
 	}
 
-	/** Opens a list of rows, named {@code title}, for {@code owner}: the rows' text is wrapped here, once. */
+	/**
+	 * Opens a list of rows, named {@code title}, for {@code owner}: the rows' text is wrapped here, once. The same
+	 * owner's list made again (its rows changed) keeps its place; another starts at the top.
+	 */
 	void open(String title, List<Row> rows, Object owner)
 	{
+		boolean again = owner != null && owner == content.owner;
 		List<Laid> laid = new ArrayList<>(rows.size());
 		int height = 0;
 		for (Row row : rows)
@@ -187,7 +205,10 @@ final class SideList
 		List<String> titleLines = wrap(title, WIDTH - PAD * 3 - CLOSE, FontManager.getRunescapeBoldFont());
 		content = new Content(title, titleLines.isEmpty() ? Collections.singletonList("") : titleLines,
 			Collections.unmodifiableList(new ArrayList<>(rows)), Collections.unmodifiableList(laid), height, owner);
-		scroll = 0;
+		if (!again)
+		{
+			scroll = 0;
+		}
 	}
 
 	void close()
@@ -269,14 +290,16 @@ final class SideList
 		Rectangle list = layout.getList();
 		if (list.contains(x, y))
 		{
-			int top = list.y - scroll;
-			List<Laid> shown = content.laid;
+			// one reading of the list for the rows and their heights: another thread may put a shorter one in
+			Content open = content;
+			int top = list.y - Math.min(scroll, Math.max(0, open.height - list.height));
+			List<Laid> shown = open.laid;
 			for (int i = 0; i < shown.size(); i++)
 			{
 				int bottom = top + shown.get(i).height;
 				if (y >= top && y < bottom)
 				{
-					return new Hit(i);
+					return new Hit(i, open.rows.get(i));
 				}
 				top = bottom;
 			}
@@ -285,6 +308,12 @@ final class SideList
 	}
 
 	/** Scrolls the rows by mouse wheel notches. */
+	/** How far the list is scrolled, no further than its end: rows made again may be fewer than before. */
+	private int offset(Layout layout)
+	{
+		return Math.min(scroll, Math.max(0, contentHeight() - layout.getList().height));
+	}
+
 	void scroll(double notches, Layout layout)
 	{
 		int max = Math.max(0, contentHeight() - layout.getList().height);
@@ -323,7 +352,7 @@ final class SideList
 		Rectangle list = layout.getList();
 		Shape clip = g.getClip();
 		g.clip(list);
-		int y = list.y - scroll;
+		int y = list.y - offset(layout);
 		for (int i = 0; i < shown.rows.size(); i++)
 		{
 			Row row = shown.rows.get(i);
@@ -373,7 +402,7 @@ final class SideList
 		if (all > list.height)
 		{
 			int thumb = Math.max(20, list.height * list.height / all);
-			int top = list.y + (list.height - thumb) * scroll / Math.max(1, all - list.height);
+			int top = list.y + (list.height - thumb) * offset(layout) / Math.max(1, all - list.height);
 			g.setColor(new Color(255, 255, 255, 60));
 			g.fillRoundRect(list.x + list.width - 5, top, 3, thumb, 3, 3);
 		}
@@ -408,11 +437,22 @@ final class SideList
 	static List<String> wrap(String text, int width, java.awt.Font font)
 	{
 		FontMetrics metrics = MEASURE.getFontMetrics(font);
+		return wrap(text, width, metrics::stringWidth);
+	}
+
+	/** As {@link #wrap(String, int, java.awt.Font)}, measured as a painter with {@code measure} draws the text. */
+	static List<String> wrap(String text, int width, java.awt.Font font, java.awt.font.FontRenderContext measure)
+	{
+		return wrap(text, width, line -> (int) Math.ceil(font.getStringBounds(line, measure).getWidth()));
+	}
+
+	private static List<String> wrap(String text, int width, java.util.function.ToIntFunction<String> widthOf)
+	{
 		List<String> lines = new ArrayList<>();
 		StringBuilder line = new StringBuilder();
 		for (String word : text.split(" "))
 		{
-			if (line.length() > 0 && metrics.stringWidth(line + " " + word) > width)
+			if (line.length() > 0 && widthOf.applyAsInt(line + " " + word) > width)
 			{
 				lines.add(line.toString());
 				line.setLength(0);

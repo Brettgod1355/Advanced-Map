@@ -40,6 +40,14 @@ final class Transports
 	static final Color LINE = new Color(0xFFD23F);
 	/** A spirit tree a player plants shows the game's farming patch icon, not a transport one. */
 	static final String SPIRIT_TREE = "Spirit tree";
+	/**
+	 * The Wilderness obelisks: each sends whoever stands in it to one of the others (at random, or the one set once the
+	 * Hard Wilderness Diary is done). Their icons are teleports of RuneLite's list, whose item is {@link #OBELISK_ITEM}.
+	 */
+	static final String OBELISK = "Wilderness obelisk";
+	private static final String OBELISK_ITEM = "Obelisk";
+	/** The Gemstone Crab's caves, dungeon icons on the game's map: each leads to the crab's mine of the moment. */
+	static final String CRAB_CAVE = "Gemstone Crab cave";
 
 	/** RuneLite's list names the Keldagrim carts but not where they go: the minecart station in Keldagrim. */
 	private static final String TO_KELDAGRIM = "Minecart to Keldagrim";
@@ -314,23 +322,29 @@ final class Transports
 		return CODE_SPACE.matcher(out).replaceAll("").replace(" - ", ", ");
 	}
 
-	/** Every stop of a network ("Fairy ring", "Spirit tree"), or none. */
-	/** Every place to board a transport: a network's spots, a boat's or ship's, a named transport icon that leads somewhere. */
 	static boolean isLoaded()
 	{
 		return loaded;
 	}
 
+	/**
+	 * Every place to board a transport: a network's spots, a boat's or ship's, a named transport icon that leads
+	 * somewhere. Not the Gemstone Crab's caves: the game's map marks each with a dungeon icon already.
+	 */
 	static List<WorldPoint> boardingSpots()
 	{
 		List<WorldPoint> out = new ArrayList<>();
 		for (Station station : data.stations)
 		{
-			out.add(station.point);
+			if (!CRAB_CAVE.equals(station.kind))
+			{
+				out.add(station.point);
+			}
 		}
 		return out;
 	}
 
+	/** Every stop of a network ("Fairy ring", "Spirit tree"), or none. */
 	static List<Destination> network(String kind)
 	{
 		return data.networks.getOrDefault(kind, Collections.emptyList());
@@ -424,30 +438,66 @@ final class Transports
 		return best == null ? null : best.name;
 	}
 
-	/** The kind of transport an icon may be: any for a transport icon, a spirit tree for a farming patch, else none. */
+	/**
+	 * The kind of transport an icon may be: any for a transport icon, a spirit tree for a farming patch, the other
+	 * obelisks for a Wilderness obelisk's, the crab's other mines for a Gemstone Crab cave's, else none.
+	 */
 	static boolean mayBeTransport(MapSpot spot)
 	{
-		return spot.getGroup() == IconGroup.TRANSPORTATION || spot.getGroup() == IconGroup.FARMING;
+		return spot.getGroup() == IconGroup.TRANSPORTATION || spot.getGroup() == IconGroup.FARMING || isObelisk(spot)
+			|| spot.getGroup() == IconGroup.DUNGEONS
+			&& !from(spot.getX(), spot.getY(), spot.getPlane(), CRAB_CAVE).isEmpty();
+	}
+
+	/** The only kind of transport an icon of its group may be: a farming patch a spirit tree, a dungeon a crab cave. */
+	private static String onlyKind(MapSpot spot)
+	{
+		return spot.getGroup() == IconGroup.FARMING ? SPIRIT_TREE
+			: spot.getGroup() == IconGroup.DUNGEONS ? CRAB_CAVE : null;
+	}
+
+	private static boolean isObelisk(MapSpot spot)
+	{
+		Teleport teleport = spot.getTeleport();
+		return teleport != null && OBELISK_ITEM.equals(teleport.getItem());
 	}
 
 	/** Where a transport icon leads; a farming patch only as a spirit tree's, never a nearby boat's. */
 	static List<Destination> from(MapSpot spot)
 	{
+		if (isObelisk(spot))
+		{
+			return obelisksFrom(spot);
+		}
 		if (!mayBeTransport(spot))
 		{
 			return Collections.emptyList();
 		}
-		return from(spot.getX(), spot.getY(), spot.getPlane(),
-			spot.getGroup() == IconGroup.FARMING ? SPIRIT_TREE : null);
+		return from(spot.getX(), spot.getY(), spot.getPlane(), onlyKind(spot));
+	}
+
+	/** The other Wilderness obelisks, by their Wilderness level ("Level 13"). */
+	private static List<Destination> obelisksFrom(MapSpot spot)
+	{
+		List<Destination> out = new ArrayList<>();
+		for (Teleport teleport : Teleport.values())
+		{
+			if (OBELISK_ITEM.equals(teleport.getItem())
+				&& distance(teleport.getLocation(), spot.getX(), spot.getY(), spot.getPlane()) > NAME_REACH)
+			{
+				out.add(new Destination(teleport.getLocation(), OBELISK, "Level " + teleport.getDestination()));
+			}
+		}
+		return out;
 	}
 
 	private static Destination stopAt(MapSpot spot)
 	{
-		if (!mayBeTransport(spot))
+		if (!mayBeTransport(spot) || isObelisk(spot))
 		{
 			return null;
 		}
-		String onlyKind = spot.getGroup() == IconGroup.FARMING ? SPIRIT_TREE : null;
+		String onlyKind = onlyKind(spot);
 		Destination best = null;
 		int bestDistance = NAME_REACH + 1;
 		for (List<Destination> network : data.networks.values())
@@ -474,17 +524,23 @@ final class Transports
 
 	/**
 	 * Where a transport icon leads when that is one place on the other map (the Grand Exchange's cart to Keldagrim,
-	 * underground): the map opens there instead of drawing a line. Null otherwise.
+	 * underground), or one place far off on the same one (the King Black Dragon's lever, whose lair lies thousands of
+	 * tiles away on the underground map): the map opens there instead of drawing a line. Null otherwise.
 	 */
 	static WorldPoint elsewhere(MapSpot spot)
 	{
 		List<Destination> to = from(spot);
-		if (to.size() != 1 || MapArea.of(to.get(0).point.getY()) == MapArea.of(spot.getY()))
+		if (to.size() != 1)
 		{
 			return null;
 		}
-		return to.get(0).point;
+		WorldPoint there = to.get(0).point;
+		boolean farOff = Math.abs(there.getX() - spot.getX()) + Math.abs(there.getY() - spot.getY()) > FAR_OFF;
+		return MapArea.of(there.getY()) != MapArea.of(spot.getY()) || farOff ? there : null;
 	}
+
+	/** Tiles apart (across and up) past which a transport's one place is gone to, not drawn: a line would leave the map. */
+	static final int FAR_OFF = 2000;
 
 	/**
 	 * Lines from a transport to each place it goes on the same map, each place marked with its name. A place on the

@@ -29,11 +29,11 @@ public class MapPainterTest
 	{
 		assertTrue(MapPainter.buttons(1200, 800, false).containsKey(MapPainter.Button.CLOSE));
 		assertFalse(MapPainter.buttons(1200, 800, true).containsKey(MapPainter.Button.CLOSE));
-		assertEquals(9, MapPainter.buttons(1200, 800, false).size());
+		assertEquals(10, MapPainter.buttons(1200, 800, false).size());
 		// maximize, over the game only
 		assertTrue(MapPainter.buttons(1200, 800, false).containsKey(MapPainter.Button.MAXIMIZE));
 		assertFalse(MapPainter.buttons(1200, 800, true).containsKey(MapPainter.Button.MAXIMIZE));
-		assertEquals(7, MapPainter.buttons(1200, 800, true).size());
+		assertEquals(8, MapPainter.buttons(1200, 800, true).size());
 	}
 
 	@Test
@@ -94,7 +94,7 @@ public class MapPainterTest
 		MapSpot varrock = MapSpot.teleport(Teleport.named("VARROCK"));
 		MapPainter.Selection near = new MapPainter.Selection(varrock, true, 790, 590, Teleport.named("VARROCK").getLocation());
 		List<MapPainter.MenuEntry> entries = MapPainter.menuEntries(near, settings(RoutingPlugin.SHORTEST_PATH));
-		assertEquals(4, entries.size());
+		assertEquals(5, entries.size());
 		assertEquals(MapPainter.Action.HIDE, entries.get(0).getAction());
 		assertEquals("Route here (Shortest Path)", entries.get(1).getText());
 		assertEquals(MapPainter.Action.ADD_MARKER, entries.get(3).getAction());
@@ -109,19 +109,71 @@ public class MapPainterTest
 	}
 
 	@Test
+	public void theAncientFurnaceIsNamedAndLinksItsWikiPage()
+	{
+		// the game's furnace icon at Grimstone, which its map calls only "Furnace"
+		NamedIcons.Named named = NamedIcons.at(2929, 10461, 0);
+		assertEquals("Ancient Furnace", named.getName());
+		assertEquals("Ancient_Furnace", named.getWikiPage());
+		MapSpot furnace = MapSpot.icon(2929, 10461, 0, 0, 1059);
+		MapPainter.Selection on = new MapPainter.Selection(furnace, true, 100, 100, new WorldPoint(2929, 10461, 0));
+		List<MapPainter.MenuEntry> entries = MapPainter.menuEntries(on, settings(RoutingPlugin.NONE));
+		assertEquals(MapPainter.Action.HIDE, entries.get(0).getAction());
+		assertEquals(MapPainter.Action.WIKI, entries.get(1).getAction());
+		assertEquals("Open its wiki page", entries.get(1).getText());
+		// any other icon has no such entry
+		MapSpot elsewhere = MapSpot.icon(3222, 3218, 0, 0, 1059);
+		assertTrue(MapPainter.menuEntries(new MapPainter.Selection(elsewhere, true, 100, 100, new WorldPoint(3222, 3218, 0)),
+			settings(RoutingPlugin.NONE)).stream().noneMatch(e -> e.getAction() == MapPainter.Action.WIKI));
+	}
+
+	@Test
 	public void aTileWithNoIconRoutesAndTakesAMarker()
 	{
 		MapPainter.Selection tile = new MapPainter.Selection(null, true, 10, 10, new WorldPoint(3222, 3218, 1));
 		List<MapPainter.MenuEntry> entries = MapPainter.menuEntries(tile, settings(RoutingPlugin.GPS));
-		assertEquals(3, entries.size());
+		assertEquals(4, entries.size());
 		assertEquals(MapPainter.Action.ROUTE, entries.get(0).getAction());
 		assertEquals("Route here (GPS)", entries.get(0).getText());
 		assertEquals("3222, 3218, Floor 2", MapPainter.menuTitle(tile, Progress.NONE, FloorNumbers.GROUND_IS_FIRST));
 		assertEquals("3222, 3218, Floor 1", MapPainter.menuTitle(tile, Progress.NONE,
 			FloorNumbers.FIRST_ABOVE_GROUND));
 		List<MapPainter.MenuEntry> plain = MapPainter.menuEntries(tile, settings(RoutingPlugin.NONE));
-		assertEquals(1, plain.size());
+		assertEquals(2, plain.size());
 		assertEquals("Add marker here", plain.get(0).getText());
+		assertEquals("Report a problem here", plain.get(1).getText());
+	}
+
+	@Test
+	public void aReportSaysWhatIsThereAndWhere()
+	{
+		MapPainter.Selection tile = new MapPainter.Selection(null, true, 10, 10, new WorldPoint(3222, 3218, 1));
+		assertEquals("3222, 3218, Floor 2, near Lumbridge", MapPainter.spotText(tile, Progress.NONE,
+			FloorNumbers.GROUND_IS_FIRST, "Lumbridge"));
+		MapSpot furnace = MapSpot.icon(2929, 10461, 0, 0, 1059);
+		MapPainter.Selection on = new MapPainter.Selection(furnace, true, 100, 100, new WorldPoint(2930, 10460, 0));
+		assertEquals("Ancient Furnace at 2929, 10461, Ground floor", MapPainter.spotText(on, Progress.NONE,
+			FloorNumbers.GROUND_IS_FIRST, null));
+		// no place name within reach (or none loaded yet): the tile alone, never "near" its own coordinates
+		assertNull(SearchSpots.placeName(new WorldPoint(3100, 3900, 0), java.util.Collections.emptyList()));
+		assertEquals("3100, 3900, Ground floor", MapPainter.spotText(new MapPainter.Selection(null, true, 10, 10,
+			new WorldPoint(3100, 3900, 0)), Progress.NONE, FloorNumbers.GROUND_IS_FIRST,
+			SearchSpots.placeName(new WorldPoint(3100, 3900, 0), java.util.Collections.emptyList())));
+		String url = AdvancedMapPlugin.reportUrl("3222, 3218, Floor 2, near Lumbridge");
+		assertTrue(url, url.startsWith(AdvancedMapPanel.GITHUB_URL + "/issues/new?title=Map%3A+3222%2C+3218%2C+Floor+2"));
+		assertTrue(url, url.contains("&body=Where%3A+3222") && url.contains("Advanced+Map+" + WhatsNew.VERSION));
+		// a marker's own menu has none: it is the player's
+		MapPins.Pin pin = new MapPins.Pin(new WorldPoint(3222, 3218, 0), null, new MapPins.Marker("m", new WorldPoint(
+			3222, 3218, 0), MarkerIcons.Design.values()[0], 0, "", ""), "", "", null, false);
+		assertTrue(MapPainter.menuEntries(tile, settings(RoutingPlugin.NONE), pin).stream()
+			.noneMatch(e -> e.getAction() == MapPainter.Action.REPORT));
+		// another plugin's pin (Sailing's charting spot) is a spot like any other: the owner found it offered only the
+		// route (2026-11-07)
+		MapPins.Pin other = new MapPins.Pin(new WorldPoint(3222, 3218, 0), new BufferedImage(8, 8,
+			BufferedImage.TYPE_INT_ARGB), null, "Charting spot", "Current duck", null, false);
+		List<MapPainter.MenuEntry> onOther = MapPainter.menuEntries(tile, settings(RoutingPlugin.SHORTEST_PATH), other);
+		assertTrue(onOther.stream().anyMatch(e -> e.getAction() == MapPainter.Action.REPORT));
+		assertTrue(onOther.stream().anyMatch(e -> e.getAction() == MapPainter.Action.ADD_MARKER));
 	}
 
 	@Test
@@ -466,9 +518,9 @@ public class MapPainterTest
 	}
 
 	@Test
-	public void theDrawingNoticeCountsWhatIsLeftToDraw()
+	public void theBuildingNoticeCountsWhatIsLeftToBuild()
 	{
-		assertEquals("Drawing the map... 1,234 to go", MapPainter.noticeTitle(1234));	}
+		assertEquals("Building the map... 1,234 to go", MapPainter.noticeTitle(1234));	}
 
 	@Test
 	public void noPlaceNameIsDrawnUnderTheBottomBarOrASpaceAlreadyTaken()
@@ -523,5 +575,55 @@ public class MapPainterTest
 		assertEquals(small.y, box.y);
 		assertTrue(box.x - (small.x + small.width) < MapPainter.BUTTON_HEIGHT);
 		assertTrue(filters.x + filters.width < MapSearch.layout(buttons, 1280, 0).getBox().x);
+	}
+
+	@Test
+	public void aPaintWithTheMenuOpenDrawsItsPageAndLeavesOutTheBar() throws InterruptedException
+	{
+		MapIcons icons = new MapIcons();
+		MapPainter plain = blankPainter(icons);
+		MapPainter withMenu = blankPainter(icons);
+		MapMenu menu = new MapMenu(() -> "saved", () -> new MapMenu.Build(1, 0, false, false, 0));
+		menu.setOpen(true);
+		menu.setPage(MapMenu.Page.HELP);
+		withMenu.setMenu(menu);
+		MapViewport.View view = new MapViewport.View(3222, 3218, 4, 800, 400);
+		// the pointer rests on a floor button, under the page that runs to the map's bottom on a map this short
+		Rectangle up = MapPainter.buttons(800, 400, true).get(MapPainter.Button.FLOOR_UP);
+		java.awt.Point onButton = new java.awt.Point(up.x + 2, up.y + 2);
+		BufferedImage without = restOn(plain, view, onButton);
+		BufferedImage with = restOn(withMenu, view, onButton);
+		MapMenu.Layout layout = menu.layout(MapPainter.buttons(800, 400, true), 800, 400);
+		Rectangle page = layout.getContent();
+		assertTrue("the page covers the button", page.contains(onButton));
+		assertTrue("the page is drawn", differences(with, without, page) > 0);
+		// the bar along the bottom is left out while the menu is open: the map shows there instead
+		Rectangle barLeft = new Rectangle(0, view.height - 18, Math.max(8, page.x - 2), 14);
+		assertTrue("the bar is gone", differences(with, without, barLeft) > 0);
+		// and the painter is none the worse for it: with the menu closed and the pointer off the map (no tip timers
+		// to differ by), it paints what the plain one paints
+		menu.setOpen(false);
+		assertEquals(0, differences(restOn(withMenu, view, null), restOn(plain, view, null),
+			new Rectangle(0, 0, view.width, view.height)));
+	}
+
+	@Test
+	public void aReportsPictureIsTheMapWithTheSpotRingedAndNothingUnderTheMouse()
+	{
+		// what a report puts on the clipboard: the view's size, a red ring where the spot was right-clicked
+		MapPainter painter = blankPainter(new MapIcons());
+		MapViewport.View view = new MapViewport.View(3222, 3218, 4, 400, 300);
+		Graphics2D like = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB).createGraphics();
+		BufferedImage picture = painter.picture(like, view, MapArea.SURFACE, 0, null, false, settings(RoutingPlugin.NONE),
+			Progress.NONE, new java.awt.Point(200, 150));
+		like.dispose();
+		assertEquals(400, picture.getWidth());
+		assertEquals(300, picture.getHeight());
+		// the ring's right-hand side, 14 pixels out from the spot: red
+		java.awt.Color ring = new java.awt.Color(picture.getRGB(214, 150));
+		assertTrue(ring.toString(), ring.getRed() > 200 && ring.getGreen() < 120 && ring.getBlue() < 120);
+		// and the spot itself is left as the map has it
+		java.awt.Color spot = new java.awt.Color(picture.getRGB(200, 150));
+		assertTrue(spot.toString(), !(spot.getRed() > 200 && spot.getGreen() < 120));
 	}
 }

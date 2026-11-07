@@ -5,6 +5,7 @@
  */
 package com.advancedmap;
 
+import com.advancedmap.cache.MapSource;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -23,8 +24,9 @@ import net.runelite.api.coords.WorldPoint;
  * the client launched), so the map is ready when it is first opened. Nearest the player first (Lumbridge before
  * logging in), the ground of the player's map, then the other map's, then the floors above; the order follows the
  * player as they move. One region after another on a thread of its own at the lowest priority, so the game and the
- * map's own drawing come first, and paused while the map is drawing what is on screen. After a game update only the
- * changed regions are drawn again, when they are next looked at.
+ * map's own drawing come first, and paused while the map is drawing what is on screen. After a game update that
+ * changed a region, it is drawn again when next looked at; one that changed the tables every region is drawn from
+ * leaves every saved floor stale, and they are all built again here in the background.
  */
 @Slf4j
 final class MapPreparer
@@ -44,19 +46,23 @@ final class MapPreparer
 	private static final boolean MANY_CORES = ForkJoinPool.getCommonPoolParallelism() >= 3;
 
 	private final RegionImages images;
-	private final ClientMapSource source;
+	private final MapSource source;
 	private final BooleanSupplier enabled;
 	private final Supplier<WorldPoint> focus;
 	private final ScheduledExecutorService worker;
 	/** Floors of regions still to prepare, in order; ticker thread, and {@link #restart} and {@link #remaining}. */
 	private final List<Integer> todo = new ArrayList<>();
+	/** The floor taken from the list and being built now, or null. */
+	private Integer building;
 	/** Regions whose icons are still to be found, nearest the player first; null until listed. */
 	private volatile List<Integer> iconTodo;
 	private volatile boolean listed;
 	/** The region the list was last sorted around. */
 	private int sortedFor = -1;
+	/** What the tables every region is drawn from hashed to when the list was made: a saved floor with another is stale. */
+	private long stamp;
 
-	MapPreparer(RegionImages images, ClientMapSource source, BooleanSupplier enabled, Supplier<WorldPoint> focus)
+	MapPreparer(RegionImages images, MapSource source, BooleanSupplier enabled, Supplier<WorldPoint> focus)
 	{
 		this.images = images;
 		this.source = source;
@@ -85,26 +91,118 @@ final class MapPreparer
 	synchronized void restart()
 	{
 		todo.clear();
+		building = null;
+		halted = false;
+		failed = 0;
+		restUntil = 0;
 		listed = false;
 		iconTodo = null;
+		notReady = 0;
+		counted();
 	}
 
 	/** When a floor of a region the client had not downloaded was put back: the next steps rest a while after it. */
 	private volatile long restUntil;
 	/** How long the preparer rests after a region the client has not got, so the client thread is not asked 40 times a second. */
 	static final long REST_NANOS = 1_000_000_000L;
+	/**
+	 * How many floors in a row may be put back for want of their data before the preparer rests. Resting after each
+	 * one cost a fresh install 266 seconds of its 603 (owner's PC, 2026-11-07) while the regions next in the list were
+	 * downloaded already; a run this long means the download is behind everything left, and then it rests.
+	 */
+	static final int NOT_READY_RUN = 20;
+	/** Floors put back for want of their data since the last one drawn; preparer thread. */
+	private int notReady;
+	/**
+	 * The game's map data could not be read (a game update changed its format): nothing can be built until the plugin
+	 * is updated. The list is kept, so the count says what is left, and a step is tried again now and then in case.
+	 */
+	private volatile boolean halted;
+	static final long HALT_NANOS = 60_000_000_000L;
 
-	private synchronized void requeue(int key)
+	/** True while the game's map data cannot be read: the building has stopped, nothing was lost. */
+	boolean isHalted()
 	{
+		return halted;
+	}
+
+	/** Floors left out because they could not be drawn (the log says why); counted so "ready" can say so. */
+	private volatile int failed;
+
+	int failed()
+	{
+		return failed;
+	}
+
+	private synchronized void halt(int key)
+	{
+		requeue(key, true);
+		halted = true;
+		restUntil = System.nanoTime() + HALT_NANOS;
+	}
+
+	/** Puts a floor back last in the list, and rests a while after it when {@code rest}. */
+	synchronized void requeue(int key, boolean rest)
+	{
+		// back in the list and no longer being built, in one step: never counted twice
+		if (building != null && building == key)
+		{
+			building = null;
+		}
 		todo.add(key);
-		restUntil = System.nanoTime() + REST_NANOS;
+		if (rest)
+		{
+			restUntil = System.nanoTime() + REST_NANOS;
+		}
+		counted();
 	}
 
-	/** How many regions' floors are still to prepare; -1 before the list is made. */
-	synchronized int remaining()
+	/**
+	 * A floor taken from the list is done (drawn, or put back): it no longer counts as being built. A region's ground
+	 * saves its empty floors above with it (RegionImages.markEmptyFloors), so they leave the list now rather than
+	 * when their turn comes, and the count says what is really left.
+	 */
+	synchronized void finished(int key)
 	{
-		return listed ? todo.size() : -1;
+		if (building != null && building == key)
+		{
+			building = null;
+		}
+		MapStore store = images.store();
+		if (RegionImages.plane(key) == 0 && store != null)
+		{
+			for (int up = 1; up < RegionImages.PLANES; up++)
+			{
+				Integer floor = RegionImages.key(up, RegionImages.region(key));
+				if (store.isCurrent(floor, stamp))
+				{
+					todo.remove(floor);
+				}
+			}
+		}
+		counted();
 	}
+
+	/**
+	 * How many regions' floors are still to prepare, the one being built included; -1 before the list is made. Never
+	 * 0 while the last floor is still being built, or about to be put back for want of its data.
+	 */
+	int remaining()
+	{
+		return left;
+	}
+
+	/**
+	 * The count, kept apart from the list: the client thread asks for it every tick, and must not wait for the
+	 * preparer's monitor while the preparer sorts tens of thousands of floors under it. Under the monitor.
+	 */
+	private void counted()
+	{
+		left = listed ? todo.size() + (building != null ? 1 : 0) : -1;
+	}
+
+	/** What {@link #remaining} says, set by {@link #counted} after every change to the list. */
+	private volatile int left = -1;
 
 	private void step()
 	{
@@ -116,7 +214,7 @@ final class MapPreparer
 	}
 
 	/** Draws and saves one region's floor, or finds one region's icons: true if it did. */
-	private boolean stepOnce()
+	boolean stepOnce()
 	{
 		try
 		{
@@ -130,14 +228,34 @@ final class MapPreparer
 			{
 				try
 				{
-					images.prepare(key);
+					if (!images.prepare(key))
+					{
+						// left out, not tried again: the log says what went wrong with it
+						failed++;
+					}
+					notReady = 0;
 					return true;
 				}
 				catch (CacheNotReadyException e)
 				{
-					// the client has not downloaded this part of the cache yet: last in the queue, not forgotten
-					requeue(key);
+					// the client has not downloaded this part of the cache yet: last in the queue, not forgotten, and
+					// the next floor tried at once; a rest only after a run of them, the download behind all that is left
+					requeue(key, ++notReady >= NOT_READY_RUN);
+					if (notReady >= NOT_READY_RUN)
+					{
+						notReady = 0;
+					}
 					return false;
+				}
+				catch (MapDataException e)
+				{
+					// nothing of the map can be read: stopped, with the floor and the rest of the list kept
+					halt(key);
+					return false;
+				}
+				finally
+				{
+					finished(key);
 				}
 			}
 			// with nothing (more) to draw, the icons of the regions not drawn in this session, for search
@@ -205,18 +323,53 @@ final class MapPreparer
 	{
 		// the listing waits for the client thread: outside the monitor, which the sidebar's refresh takes each second
 		List<Integer> regions = listed ? null : source.regionIds();
+		long tables = 0;
 		if (regions != null)
 		{
 			images.setRegionsInGame(regions);
+			if (!regions.isEmpty())
+			{
+				try
+				{
+					tables = source.tablesStamp();
+				}
+				catch (CacheNotReadyException e)
+				{
+					// the tables are not downloaded yet: listed on a later step
+					restUntil = System.nanoTime() + REST_NANOS;
+					return null;
+				}
+				catch (MapDataException e)
+				{
+					synchronized (this)
+					{
+						halted = true;
+						restUntil = System.nanoTime() + HALT_NANOS;
+					}
+					return null;
+				}
+			}
 		}
-		synchronized (this)
-		{
-			return next(store, regions);
-		}
+		return next(store, regions, tables);
 	}
 
-	private Integer next(MapStore store, List<Integer> regions)
+	/** For a test: lists {@code regions} (null: listed already) and takes the next floor. */
+	Integer next(MapStore store, List<Integer> regions)
 	{
+		return next(store, regions, regions == null ? 0 : source.tablesStamp());
+	}
+
+	/**
+	 * Lists the floors still to build from {@code regions} (null: listed already), with {@code tables} what the game's
+	 * tables hash to now, read by the caller: nothing here waits for the client thread, which takes this monitor every
+	 * tick for the count.
+	 */
+	private synchronized Integer next(MapStore store, List<Integer> regions, long tables)
+	{
+		if (regions != null && !listed)
+		{
+			stamp = tables;
+		}
 		if (!listed)
 		{
 			if (regions == null || regions.isEmpty())
@@ -229,7 +382,8 @@ final class MapPreparer
 				for (int region : regions)
 				{
 					int key = RegionImages.key(plane, region);
-					if (!store.has(key))
+					// not saved, or saved before a game update changed the tables every region is drawn from
+					if (!store.isCurrent(key, stamp))
 					{
 						todo.add(key);
 					}
@@ -245,7 +399,9 @@ final class MapPreparer
 			todo.sort(Comparator.comparingLong(key -> order(key, around)));
 			sortedFor = aroundRegion;
 		}
-		return todo.isEmpty() ? null : todo.remove(0);
+		building = todo.isEmpty() ? null : todo.remove(0);
+		counted();
+		return building;
 	}
 
 	/**

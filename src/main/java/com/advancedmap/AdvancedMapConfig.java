@@ -37,7 +37,7 @@ public interface AdvancedMapConfig extends Config
 	/** What the search does not look in, as the "Search in" list by its box left it: "MONSTERS;NPCS". */
 	String SEARCH_SKIPPED = "searchSkipped";
 	String INFO_ON_HOVER = "infoOnHover";
-	String UPDATE_MESSAGE = "updateMessage";
+	/** An earlier version's "version last run", moved to the plugin's state file on this computer ({@link StateFile}). */
 	String LAST_VERSION = "lastVersion";
 	/** Before each hidden icon's own setting: "hidden.a1234@3222,3218" = true. */
 	String HIDDEN_PREFIX = "hidden.";
@@ -66,7 +66,8 @@ public interface AdvancedMapConfig extends Config
 		keyName = "orbMenu",
 		name = "World map orb menu entry",
 		description = "Add \"Open Advanced Map\" to the right-click menu of the world map orb by the minimap, right"
-			+ " under the game's own world map.",
+			+ " under the game's own world map. Only matters with \"World map orb opens Advanced Map\" off: with that"
+			+ " on, the entry is the orb's left click.",
 		position = -2
 	)
 	default boolean orbMenu()
@@ -78,12 +79,12 @@ public interface AdvancedMapConfig extends Config
 		keyName = "orbLeftClick",
 		name = "World map orb opens Advanced Map",
 		description = "Left-click the world map orb to open Advanced Map. The game's own world map stays in the orb's"
-			+ " right-click menu.",
+			+ " right-click menu. Turn this off to have the orb open the game's map again.",
 		position = -1
 	)
 	default boolean orbLeftClick()
 	{
-		return false;
+		return true;
 	}
 
 	@ConfigItem(
@@ -156,12 +157,15 @@ public interface AdvancedMapConfig extends Config
 		return true;
 	}
 
+	/**
+	 * "Multi-combat areas" at the top of the Filters list: when zoomed in, the areas where combat is multi-way are tinted
+	 * with a red edge. Off until ticked; turned on and off there while playing, so not among the settings.
+	 */
 	@ConfigItem(
 		keyName = MULTI_COMBAT,
-		name = "Multi-combat areas",
-		description = "When zoomed in, tint the areas where combat is multi-way (several can attack one), in the Wilderness"
-			+ " and everywhere else, with a red edge.",
-		position = 7
+		name = "",
+		description = "",
+		hidden = true
 	)
 	default boolean multiCombat()
 	{
@@ -218,6 +222,17 @@ public interface AdvancedMapConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "yourPlaces",
+		name = "Your house and boats",
+		description = "Mark the portal of your player-owned house and the docks where your boats are moored.",
+		position = 12
+	)
+	default boolean yourPlaces()
+	{
+		return true;
+	}
+
+	@ConfigItem(
 		keyName = "showBanks",
 		name = "Banks",
 		description = "Banks, the Grand Exchange and its pricing experts.",
@@ -259,7 +274,7 @@ public interface AdvancedMapConfig extends Config
 	@ConfigItem(
 		keyName = "showTeleports",
 		name = "Teleports",
-		description = "Where spells, jewellery, scrolls and other items teleport you.",
+		description = "Where spells, jewelry, scrolls and other items teleport you.",
 		section = ICONS,
 		hidden = true,
 		position = 3
@@ -525,19 +540,10 @@ public interface AdvancedMapConfig extends Config
 		return RoutingPlugin.SHORTEST_PATH;
 	}
 
-	@ConfigItem(
-		keyName = UPDATE_MESSAGE,
-		name = "Say when updated",
-		description = "One line in chat, once, the first time you log in after the Plugin Hub has updated the plugin,"
-			+ " saying what the new version brings.",
-		position = 16
-	)
-	default boolean updateMessage()
-	{
-		return true;
-	}
-
-	/** The version the plugin last ran as, to tell an update from a restart; empty before the first. */
+	/**
+	 * The version an earlier version of the plugin last ran as, in the profile; read once and moved to the state file
+	 * on this computer, where RuneLite's switching between profiles cannot reach it. Empty afterwards.
+	 */
 	@ConfigItem(
 		keyName = LAST_VERSION,
 		name = "",
@@ -547,19 +553,6 @@ public interface AdvancedMapConfig extends Config
 	default String lastVersion()
 	{
 		return "";
-	}
-
-	@ConfigItem(
-		keyName = "prepareMap",
-		name = "Prepare the whole map",
-		description = "From the moment the client starts, draw the regions not saved yet in the background, nearest you"
-			+ " first, so the map is ready when you open it. Uses spare processor time for about 15 minutes the first"
-			+ " time, and briefly after game updates.",
-		position = 17
-	)
-	default boolean prepareMap()
-	{
-		return true;
 	}
 
 	/** Where the pop-out window was last, and its size: "x,y,width,height" on the desktop, or empty. */

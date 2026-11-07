@@ -305,6 +305,8 @@ G	TzHaar Fight Pit	2398	5177	0
 G	TzHaar-Ket-Rak's Challenges	2544	5111	0
 G	Volcanic Mine	3812	3810	0
 # Not in RuneLite's list, added by Advanced Map: Tempoross's boat at the Sea Spirit Dock (its tile read on the game's
-# own map). A sixth field "icon" gives a minigame the game's map leaves out an icon of Advanced Map's.
+# own map) and Wintertodt's doors (the tile the owner pointed at in game). A sixth field "icon" gives a minigame the
+# game's map leaves out an icon of Advanced Map's.
 # Changed from RuneLite's list: the Hallowed Sepulchre on the ground floor, where the game's own icon is (it gives floor 1).
 G	Tempoross	3137	2840	0	icon
+G	Wintertodt	1630	3963	0	icon

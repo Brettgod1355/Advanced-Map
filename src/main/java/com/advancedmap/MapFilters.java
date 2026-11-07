@@ -41,11 +41,11 @@ final class MapFilters
 	/** The line under "Show hidden icons" that says how to hide one. */
 	private static final int HINT = 14;
 
-	private static final Color PANEL = new Color(0x10, 0x18, 0x22, 240);
-	private static final Color EDGE = new Color(0x5A5040);
-	private static final Color TEXT = new Color(0xE8E2D0);
-	private static final Color QUIET = new Color(0x8C8676);
-	private static final Color FIELD = new Color(0x1E2833);
+	static final Color PANEL = new Color(0x10, 0x18, 0x22, 240);
+	static final Color EDGE = new Color(0x5A5040);
+	static final Color TEXT = new Color(0xE8E2D0);
+	static final Color QUIET = new Color(0x8C8676);
+	static final Color FIELD = new Color(0x1E2833);
 	private static final Color ON = new Color(0x3FA34D);
 
 	/** One row of the list: a group, or a kind of icon in it. */
@@ -74,6 +74,8 @@ final class MapFilters
 		Rectangle panel;
 		/** "Your Slayer task", at the top. */
 		Rectangle slayer;
+		/** "Multi-combat areas", under it. */
+		Rectangle multiCombat;
 		Rectangle showHidden;
 		Rectangle search;
 		Rectangle allOn;
@@ -86,6 +88,7 @@ final class MapFilters
 		OUTSIDE,
 		PANEL,
 		SLAYER,
+		MULTI_COMBAT,
 		SHOW_HIDDEN,
 		SEARCH,
 		ALL_ON,
@@ -106,12 +109,19 @@ final class MapFilters
 	private volatile boolean open;
 	/** The Slayer task RuneLite's Slayer plugin has saved, "Kalphite workers (34 left)"; null when there is none. */
 	private volatile String slayerTask;
+	/** Whether the map tints the multi-combat areas, for the row's tick. */
+	private volatile boolean multiCombat;
 	private volatile String search = "";
 	private volatile int scroll;
 
 	void setSlayerTask(String task)
 	{
 		slayerTask = task;
+	}
+
+	void setMultiCombat(boolean on)
+	{
+		multiCombat = on;
 	}
 
 	/** The map area whose picture stands for an icon category, or null while not read or for no such category. */
@@ -196,9 +206,23 @@ final class MapFilters
 	}
 
 	/** The rows to show: every group with its kinds, sorted by name; while searching, only what matches. */
+	/** The entries as last made, with what they were made from: made again only when that changes (paints are many). */
+	private volatile Object[] made;
+
 	List<Entry> entries(Progress progress)
 	{
-		return entries(categoryIcons, progress, search);
+		Map<Integer, Integer> icons = categoryIcons;
+		String wanted = search;
+		Object[] last = made;
+		if (last != null && last[0] == icons && last[1] == progress && last[2].equals(wanted))
+		{
+			@SuppressWarnings("unchecked")
+			List<Entry> entries = (List<Entry>) last[3];
+			return entries;
+		}
+		List<Entry> entries = entries(icons, progress, wanted);
+		made = new Object[]{icons, progress, wanted, entries};
+		return entries;
 	}
 
 	static List<Entry> entries(Map<Integer, Integer> categoryIcons, Progress progress, String search)
@@ -252,7 +276,8 @@ final class MapFilters
 		int panelHeight = Math.max(ROW * 8, Math.min(MAX_HEIGHT, height - y - BOTTOM_ROOM));
 		Rectangle panel = new Rectangle(x, y, WIDTH, panelHeight);
 		Rectangle slayer = new Rectangle(x + PAD, y + PAD / 2, WIDTH - PAD * 2, ROW);
-		Rectangle showHidden = new Rectangle(x + PAD, slayer.y + slayer.height, WIDTH - PAD * 2, ROW);
+		Rectangle multiCombat = new Rectangle(x + PAD, slayer.y + slayer.height, WIDTH - PAD * 2, ROW);
+		Rectangle showHidden = new Rectangle(x + PAD, multiCombat.y + multiCombat.height, WIDTH - PAD * 2, ROW);
 		int searchY = showHidden.y + showHidden.height + HINT + PAD;
 		Rectangle search = new Rectangle(x + PAD, searchY, WIDTH - PAD * 2, SEARCH_HEIGHT);
 		int half = (WIDTH - PAD * 3) / 2;
@@ -261,7 +286,7 @@ final class MapFilters
 		Rectangle allOff = new Rectangle(x + PAD * 2 + half, buttonsY, half, ROW);
 		int listY = buttonsY + ROW + 6;
 		Rectangle list = new Rectangle(x, listY, WIDTH, y + panelHeight - PAD / 2 - listY);
-		return new Layout(panel, slayer, showHidden, search, allOn, allOff, list);
+		return new Layout(panel, slayer, multiCombat, showHidden, search, allOn, allOff, list);
 	}
 
 	/** What a press at a point is on. */
@@ -274,6 +299,10 @@ final class MapFilters
 		if (layout.getSlayer().contains(x, y))
 		{
 			return new Hit(Part.SLAYER, null);
+		}
+		if (layout.getMultiCombat().contains(x, y))
+		{
+			return new Hit(Part.MULTI_COMBAT, null);
 		}
 		if (layout.getShowHidden().contains(x, y))
 		{
@@ -324,6 +353,7 @@ final class MapFilters
 		g.setFont(FontManager.getRunescapeSmallFont());
 		FontMetrics metrics = g.getFontMetrics();
 		drawSlayer(g, layout.getSlayer(), settings, icons, metrics);
+		drawMultiCombat(g, layout.getMultiCombat(), multiCombat, metrics);
 		drawShowHidden(g, layout.getShowHidden(), settings, metrics);
 		Rectangle search = layout.getSearch();
 		g.setColor(FIELD);
@@ -435,6 +465,17 @@ final class MapFilters
 		g.drawString(note, row.x + row.width - metrics.stringWidth(note), textY);
 	}
 
+	/** "Multi-combat areas", ticked while the map tints them; they show only when zoomed in, which it says. */
+	private static void drawMultiCombat(Graphics2D g, Rectangle row, boolean on, FontMetrics metrics)
+	{
+		drawBox(g, row.x, row.y + (ROW - BOX) / 2, on);
+		int textY = row.y + (ROW + metrics.getAscent() - metrics.getDescent()) / 2;
+		g.setColor(TEXT);
+		g.drawString("Multi-combat areas", row.x + BOX + 8, textY);
+		g.setColor(QUIET);
+		g.drawString("zoomed in", row.x + row.width - metrics.stringWidth("zoomed in"), textY);
+	}
+
 	private static void drawShowHidden(Graphics2D g, Rectangle row, MapSettings settings, FontMetrics metrics)
 	{
 		drawBox(g, row.x, row.y + (ROW - BOX) / 2, settings.isShowHidden());
@@ -466,7 +507,7 @@ final class MapFilters
 		}
 	}
 
-	private static void drawButton(Graphics2D g, Rectangle button, String text, FontMetrics metrics)
+	static void drawButton(Graphics2D g, Rectangle button, String text, FontMetrics metrics)
 	{
 		g.setColor(FIELD);
 		g.fillRoundRect(button.x, button.y, button.width, button.height, 6, 6);

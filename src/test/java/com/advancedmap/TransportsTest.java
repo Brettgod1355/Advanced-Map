@@ -6,6 +6,7 @@
 package com.advancedmap;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import net.runelite.api.coords.WorldPoint;
@@ -207,5 +208,82 @@ public class TransportsTest
 		assertEquals("200 gp", to.get(0).fareText());
 		assertTrue(to.get(0).getNeeds().contains("Karamja elite diary"));
 		assertEquals("200 gp", Transports.from(2833, 2958, 0).get(0).fareText());
+	}
+
+	@Test
+	public void grimstonesFairyRingIsDlp()
+	{
+		// the game's icon a tile off the ring
+		MapSpot ring = MapSpot.icon(2924, 10455, 0, 0, 1104);
+		assertEquals("DLP", Transports.stopName(ring));
+		assertTrue(Transports.from(ring).size() > 50);
+		assertTrue(Transports.network("Fairy ring").stream().anyMatch(d -> d.getName().equals("DLP")));
+	}
+
+	@Test
+	public void eachGemstoneCrabCaveLeadsToTheCrabsOtherMines()
+	{
+		// the game's dungeon icons by the three mines, a tile or two off the caves
+		MapSpot north = MapSpot.icon(1279, 3168, 0, 0, IconGroup.DUNGEON);
+		assertTrue(Transports.mayBeTransport(north));
+		assertEquals(Arrays.asList("East mine", "South mine"), labels(Transports.from(north)));
+		assertEquals(Arrays.asList("North mine", "South mine"),
+			labels(Transports.from(MapSpot.icon(1352, 3124, 0, 0, IconGroup.DUNGEON))));
+		assertEquals(Arrays.asList("North mine", "East mine"),
+			labels(Transports.from(MapSpot.icon(1247, 3036, 0, 0, IconGroup.DUNGEON))));
+		// two places: lines are drawn, the map is not moved
+		assertNull(Transports.elsewhere(north));
+		assertEquals("Gemstone Crab cave", MapIcons.name(north, Progress.NONE));
+		// the game's dungeon icon marks each cave: no transport icon of our own beside it
+		assertTrue(Collections.disjoint(Transports.boardingSpots(), Arrays.asList(new WorldPoint(1278, 3167, 0),
+			new WorldPoint(1350, 3123, 0), new WorldPoint(1245, 3035, 0))));
+		// any other dungeon icon is no transport
+		assertFalse(Transports.mayBeTransport(MapSpot.icon(3097, 9867, 0, 0, IconGroup.DUNGEON)));
+	}
+
+	@Test
+	public void lumbridgesGroupIronmanPortalLeadsToTheNode()
+	{
+		MapSpot portal = MapSpot.icon(3217, 3235, 0, 0, 1104);
+		assertEquals("Portal to The Node (group ironmen)", Transports.iconName(portal));
+		List<Transports.Destination> to = Transports.from(portal);
+		assertEquals(1, to.size());
+		assertEquals("The Node (group ironmen)", to.get(0).getName());
+		assertEquals(new WorldPoint(3106, 3028, 0), to.get(0).getPoint());
+	}
+
+	@Test
+	public void theKingBlackDragonsLeverLeadsToItsLair()
+	{
+		List<Transports.Destination> to = Transports.from(3067, 10253, 0);
+		assertEquals(1, to.size());
+		assertEquals("King Black Dragon's lair", to.get(0).getName());
+		assertEquals(new WorldPoint(2271, 4680, 0), to.get(0).getPoint());
+		// and back, and the Deserted Keep's lever to either town
+		assertEquals("Lava Maze Dungeon", Transports.from(2271, 4680, 0).get(0).getName());
+		assertEquals(Arrays.asList("Ardougne", "Edgeville"), Transports.from(3153, 3923, 0).stream()
+			.map(Transports.Destination::getName).collect(Collectors.toList()));
+		assertTrue(Transports.boardingSpots().contains(new WorldPoint(3067, 10253, 0)));
+		// a click goes to the lair, thousands of tiles off on the same map, and back; the Deserted Keep's levers, some
+		// 1,200 tiles (across and up) from the towns, keep their lines
+		assertEquals(new WorldPoint(2271, 4680, 0), Transports.elsewhere(MapSpot.icon(3067, 10253, 0, 0, 1104)));
+		assertEquals(new WorldPoint(3067, 10254, 0), Transports.elsewhere(MapSpot.icon(2271, 4680, 0, 0, 1104)));
+		assertNull(Transports.elsewhere(MapSpot.icon(2561, 3311, 0, 0, 1104)));
+	}
+
+	@Test
+	public void aWildernessObeliskLeadsToTheOtherFive()
+	{
+		MapSpot level13 = MapSpot.teleport(Teleport.named("OBELISK_13"));
+		assertTrue(Transports.mayBeTransport(level13));
+		List<Transports.Destination> to = Transports.from(level13);
+		assertEquals(Arrays.asList("Level 19", "Level 27", "Level 35", "Level 44", "Level 50"),
+			to.stream().map(Transports.Destination::getName).collect(Collectors.toList()));
+		assertEquals(new WorldPoint(3307, 3916, 0), to.get(4).getPoint());
+		// its own name stays the teleport's, no stop label beside it
+		assertNull(Transports.stopName(level13));
+		// any other teleport is no transport
+		assertFalse(Transports.mayBeTransport(MapSpot.teleport(Teleport.named("VARROCK"))));
+		assertTrue(Transports.from(MapSpot.teleport(Teleport.named("VARROCK"))).isEmpty());
 	}
 }

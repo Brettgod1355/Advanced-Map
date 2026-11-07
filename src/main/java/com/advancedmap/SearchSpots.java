@@ -176,8 +176,15 @@ final class SearchSpots
 	/** The game's nearest place name on the same map, or the tile when none is near. */
 	static String name(WorldPoint at, List<MapLabels.Label> labels)
 	{
+		String place = placeName(at, labels);
+		return place != null ? place : at.getX() + ", " + at.getY();
+	}
+
+	/** The game's nearest place name on the same map, or null when none is within {@link #NAME_REACH}. */
+	static String placeName(WorldPoint at, List<MapLabels.Label> labels)
+	{
 		MapLabels.Label label = nearestLabel(at, labels);
-		return label != null ? String.join(" ", label.getLines()) : at.getX() + ", " + at.getY();
+		return label == null ? null : String.join(" ", label.getLines());
 	}
 
 	/** The game's place name nearest a tile on the same map, within {@link #NAME_REACH}; null when none is. */

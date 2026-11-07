@@ -17,23 +17,25 @@ import net.runelite.client.ui.overlay.OverlayPosition;
 /**
  * The map over the game view, in its box ({@link GameBox}: moved and sized by its frame, or maximized over the whole
  * view), while it is open there rather than in its own window. The map is drawn into a picture that each of the
- * game's frames copies: drawn again at once when the mouse or keys do something, else every {@link #REDRAW_NANOS}
+ * game's frames copies: drawn again when {@link RedrawClock} says (at once after input or an arrival, a steady rate
+ * while the pointer moves, else a slow heartbeat)
  * (as the pop-out window is), not for every one of the game's hundreds of frames a second.
  */
 class MapOverlay extends Overlay
 {
 	/** How often the map is drawn again while nothing is done to it: regions drawn meanwhile, the player moving. */
-	private static final long REDRAW_NANOS = 50_000_000L;
+	private final RedrawClock clock = new RedrawClock();
 
 	private final Client client;
 	private final AdvancedMapPlugin plugin;
 	private final MapPainter painter;
 	private BufferedImage frame;
-	private long drawnAt;
-	private int drawnTouches = -1;
+
 
 	MapOverlay(Client client, AdvancedMapPlugin plugin, MapPainter painter)
 	{
+		// the plugin this overlay is: RuneLite opens the plugin's settings page for it (the menu's Settings entry)
+		super(plugin);
 		this.client = client;
 		this.plugin = plugin;
 		this.painter = painter;
@@ -100,11 +102,9 @@ class MapOverlay extends Overlay
 			: new java.awt.Point(canvasMouse.x - map.x, canvasMouse.y - map.y);
 		long now = System.nanoTime();
 		int touches = plugin.touches();
+		int changes = plugin.changes();
 		Dimension bigger = frameSize(frame, map.width, map.height);
-		// drawn again at once after a press, a drag, the wheel or a key on the map; a moved pointer waits for the next
-		// redraw (hover boxes and tips take longer than that to appear), so a moving mouse does not cost the game a
-		// whole map paint every frame
-		if (bigger != null || touches != drawnTouches || now - drawnAt >= REDRAW_NANOS)
+		if (bigger != null || clock.due(touches, changes, mouse, now))
 		{
 			if (bigger != null)
 			{
@@ -125,8 +125,13 @@ class MapOverlay extends Overlay
 			{
 				into.dispose();
 			}
-			drawnAt = now;
-			drawnTouches = touches;
+			clock.painted(touches, changes, now);
+		}
+		java.awt.Point mark = plugin.takePictureMark();
+		if (mark != null)
+		{
+			plugin.copyPicture(painter.picture(g, plugin.viewport().view(map.width, map.height), plugin.area(),
+				plugin.plane(), plugin.playerLocation(), false, plugin.settings(), plugin.progress(), mark));
 		}
 		g.drawImage(frame, map.x, map.y, map.x + map.width, map.y + map.height, 0, 0, map.width, map.height, null);
 		box.draw(g, width, height);

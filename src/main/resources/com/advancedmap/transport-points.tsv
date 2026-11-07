@@ -208,3 +208,6 @@ Quetzal	1436	3169	0
 Quetzal	1225	3089	0
 Quetzal to Varrock	1699	3142	0	3279	3413	0
 Quetzal to Varlamore	3279	3413	0	1699	3142	0
+# Not in RuneLite's list, added by Advanced Map: the group ironmen's portal to the Node on Lumbridge Castle's north wall
+# (the OSRS Wiki's Lumbridge and The Node pages; its tile from the game's own icon, the Node's from the wiki's map).
+Portal to The Node (group ironmen)	3217	3235	0	3106	3028	0

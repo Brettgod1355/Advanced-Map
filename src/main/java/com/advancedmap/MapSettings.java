@@ -81,13 +81,13 @@ class MapSettings
 	/** True when a spot's group is on and its own kind is not turned off. */
 	boolean shows(MapSpot spot)
 	{
-		return groups.contains(spot.getGroup()) && !hiddenTypes.contains(typeKey(spot));
+		return groups.contains(spot.getGroup()) && !hiddenTypes.contains(spot.getTypeKey());
 	}
 
 	/** A kind of icon, as the Filters list turns it off: {@code c1055} for a game category, {@code tJEWELLERY}. */
 	static String typeKey(MapSpot spot)
 	{
-		return spot.getTeleport() != null ? typeKey(spot.getTeleport().getType()) : typeKey(spot.getCategory());
+		return spot.getTypeKey();
 	}
 
 	/** The group a kind of icon ({@link #typeKey}) belongs to. */

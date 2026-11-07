@@ -281,30 +281,38 @@ final class GameBox
 		g.drawRect(outer.x, outer.y, outer.width - 1, outer.height - 1);
 		g.drawRect(map.x - 1, map.y - 1, map.width + 1, map.height + 1);
 		g.setColor(GRIP);
-		for (int bar : new int[]{outer.y + BAR / 2, outer.y + outer.height - BAR / 2})
+		// drawn every frame over the game: nothing made anew here that can be kept
+		int middle = outer.x + outer.width / 2;
+		for (int i = -3; i <= 3; i++)
 		{
-			int middle = outer.x + outer.width / 2;
-			for (int i = -3; i <= 3; i++)
-			{
-				g.fillOval(middle + i * 7 - 2, bar - 2, 4, 4);
-			}
+			g.fillOval(middle + i * 7 - 2, outer.y + BAR / 2 - 2, 4, 4);
+			g.fillOval(middle + i * 7 - 2, outer.y + outer.height - BAR / 2 - 2, 4, 4);
 		}
 		Stroke stroke = g.getStroke();
-		g.setStroke(new BasicStroke(2f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+		g.setStroke(CORNER_STROKE);
 		int in = 3;
 		int arm = CORNER - 6;
 		int x0 = outer.x + in;
 		int y0 = outer.y + in;
 		int x1 = outer.x + outer.width - 1 - in;
 		int y1 = outer.y + outer.height - 1 - in;
-		g.drawPolyline(new int[]{x0, x0, x0 + arm}, new int[]{y0 + arm, y0, y0}, 3);
-		g.drawPolyline(new int[]{x1 - arm, x1, x1}, new int[]{y0, y0, y0 + arm}, 3);
-		g.drawPolyline(new int[]{x0, x0, x0 + arm}, new int[]{y1 - arm, y1, y1}, 3);
-		g.drawPolyline(new int[]{x1 - arm, x1, x1}, new int[]{y1, y1, y1 - arm}, 3);
+		corner(g, x0, y0, arm, arm);
+		corner(g, x1, y0, -arm, arm);
+		corner(g, x0, y1, arm, -arm);
+		corner(g, x1, y1, -arm, -arm);
 		g.setStroke(stroke);
 		if (antialiasing != null)
 		{
 			g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, antialiasing);
 		}
+	}
+
+	private static final BasicStroke CORNER_STROKE = new BasicStroke(2f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+
+	/** A corner's two arms from its point, {@code dx} across and {@code dy} down (negative: the other way). */
+	private static void corner(Graphics2D g, int x, int y, int dx, int dy)
+	{
+		g.drawLine(x, y, x + dx, y);
+		g.drawLine(x, y, x, y + dy);
 	}
 }
