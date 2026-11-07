@@ -1198,7 +1198,7 @@ final class MapPainter
 		String title = name != null ? name : MapIcons.name(spot, progress);
 		if (toArea == MapArea.SURFACE && MapArea.of(spot.getY()) != MapArea.SURFACE)
 		{
-			title = name != null ? "Up to " + name : "Way out";
+			title = DungeonPreview.wayOutTitle(name, search.places());
 		}
 		boolean inside = toArea == MapArea.UNDERGROUND;
 		DungeonPreview.Look look = inside ? preview.look(to) : null;

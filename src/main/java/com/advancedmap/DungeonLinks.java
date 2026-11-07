@@ -25,6 +25,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 final class DungeonLinks
 {
+	/** A row's own name for where it leads, when the nearest place name is wrong there; filled before {@link #EXTRA}. */
+	private static final Map<Integer, String> NAMES = new HashMap<>();
 	private static final Map<Integer, Integer> EXTRA = read();
 
 	private DungeonLinks()
@@ -37,6 +39,12 @@ final class DungeonLinks
 		Map<Integer, Integer> out = new HashMap<>(EXTRA);
 		out.putAll(links);
 		return Collections.unmodifiableMap(out);
+	}
+
+	/** The name the list gives where a link from this exact tile leads, or null. */
+	static String name(int x, int y, int plane)
+	{
+		return NAMES.get(MapLinks.pack(x, y, plane));
 	}
 
 	/** The links the list adds. */
@@ -63,8 +71,12 @@ final class DungeonLinks
 					continue;
 				}
 				String[] f = line.split("\t");
-				out.put(MapLinks.pack(Integer.parseInt(f[0]), Integer.parseInt(f[1]), Integer.parseInt(f[2])),
-					MapLinks.pack(Integer.parseInt(f[3]), Integer.parseInt(f[4]), Integer.parseInt(f[5])));
+				int from = MapLinks.pack(Integer.parseInt(f[0]), Integer.parseInt(f[1]), Integer.parseInt(f[2]));
+				out.put(from, MapLinks.pack(Integer.parseInt(f[3]), Integer.parseInt(f[4]), Integer.parseInt(f[5])));
+				if (f.length > 7 && !f[7].isEmpty())
+				{
+					NAMES.put(from, f[7]);
+				}
 			}
 		}
 		catch (IOException | RuntimeException e)

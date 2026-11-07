@@ -596,12 +596,34 @@ final class DungeonPreview
 	}
 
 	/**
+	 * A way out's title: up to the place it leads, or up to the surface when there is no name or the name is a
+	 * dungeon's own (the Kalphite Lair's label beside its entrance: owner, 2026-11-07, "change this to say to Surface").
+	 */
+	static String wayOutTitle(String name, List<MapSearch.Entry> places)
+	{
+		for (MapSearch.Entry place : places)
+		{
+			if (place.getKind() == MapSearch.Kind.DUNGEON && place.getName().equalsIgnoreCase(name))
+			{
+				return "Up to the surface";
+			}
+		}
+		return name == null ? "Up to the surface" : "Up to " + name;
+	}
+
+	/**
 	 * The dungeon's name: the named entrance nearest the icon ({@code places.tsv}, "Edgeville Dungeon"), else the
 	 * game's place name nearest where it leads, else null.
 	 */
 	static String name(MapSpot spot, WorldPoint to, List<MapSearch.Entry> places, List<MapLabels.Label> labels)
 	{
-		String best = null;
+		// a link's own name in dungeon-links.tsv first: the game's labels have no floor, so the Queen's Chamber's
+		// named the rope up out of it (owner, 2026-11-07: "change this to see kalphite lair")
+		String best = DungeonLinks.name(spot.getX(), spot.getY(), spot.getPlane());
+		if (best != null)
+		{
+			return best;
+		}
 		int bestDistance = NAME_REACH + 1;
 		for (MapSearch.Entry place : places)
 		{

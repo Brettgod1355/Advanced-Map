@@ -4,8 +4,9 @@
 # 50f30435f37d1d5c5e2af790925fa7aa70b7840d (BSD 2-Clause), destination as it gives; "OSRS Wiki" rows are the map
 # coordinates on the wiki page of that name (checked 2026-10-27). See THIRD_PARTY_NOTICES.md. "In game" rows are ways
 # between a dungeon's floors that the owner marked in game, where the game's map shows no icon: the map draws its link
-# icon on the from tile.
-# from_x	from_y	from_plane	to_x	to_y	to_plane	source
+# icon on the from tile. An optional name after the source titles the icon's preview, where the nearest place name is
+# wrong (the game's labels have no floor).
+# from_x	from_y	from_plane	to_x	to_y	to_plane	source	name
 2316	3894	0	2420	10279	1	Shortest Path: Jatizso
 2485	3043	0	2477	9437	2	Shortest Path: Jiggig
 2437	3163	0	2335	9350	0	Shortest Path: Observatory Tower & Dungeon
@@ -48,6 +49,6 @@
 2562	3025	0	2529	9437	0	OSRS Wiki: Skavid caves
 2575	3028	0	2529	9437	0	OSRS Wiki: Skavid caves
 3509	9497	2	3508	9493	0	In game, 2026-11-07: Kalphite Lair, the tunnel down to the Kalphite Queen's chamber
-3508	9493	0	3508	9497	2	In game, 2026-11-07: Kalphite Queen's chamber, the rope up to the Kalphite Lair
+3508	9493	0	3508	9497	2	In game, 2026-11-07: Kalphite Queen's chamber, the rope up to the Kalphite Lair	Kalphite Lair
 3227	3108	0	3483	9510	2	In game, 2026-11-07: Kalphite Lair's entrance, where the climb down lands
 3483	9510	2	3227	3108	0	In game, 2026-11-07: Kalphite Lair, the rope up to its entrance in the desert

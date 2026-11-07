@@ -224,4 +224,23 @@ public class DungeonPreviewTest
 		assertEquals("Misthalin Underground", DungeonPreview.name(icon, to, Collections.emptyList(), labels));
 		assertNull(DungeonPreview.name(icon, to, Collections.emptyList(), Collections.emptyList()));
 	}
+
+	@Test
+	public void aLinksOwnNameWinsAndAWayOutNamedForItsDungeonGoesUpToTheSurface()
+	{
+		// the Queen's chamber's rope up: the label nearest where it lands is the chamber's own, a floor below
+		MapSpot rope = MapSpot.icon(3508, 9493, 0, 1, IconGroup.MAP_LINK);
+		List<MapLabels.Label> chamber = Collections.singletonList(new MapLabels.Label(
+			Arrays.asList("Queen's", "Chamber"), 3496, 9497, 1, Color.WHITE));
+		assertEquals("Kalphite Lair", DungeonPreview.name(rope, new WorldPoint(3508, 9497, 2), Collections.emptyList(),
+			chamber));
+
+		// the lair's way out: the label beside its entrance is the lair's own name, not where it leads
+		List<MapSearch.Entry> places = Collections.singletonList(new MapSearch.Entry(MapSearch.Kind.DUNGEON,
+			"Kalphite Lair", "Dungeon", Collections.singletonList(new WorldPoint(3226, 3108, 0)),
+			Collections.emptyList(), null));
+		assertEquals("Up to the surface", DungeonPreview.wayOutTitle("Kalphite Lair", places));
+		assertEquals("Up to Lumbridge", DungeonPreview.wayOutTitle("Lumbridge", places));
+		assertEquals("Up to the surface", DungeonPreview.wayOutTitle(null, places));
+	}
 }
