@@ -1812,11 +1812,12 @@ final class MapPainter
 		return text.toString();
 	}
 
-	/** What the notice says while the map is first built. */
-	static final List<String> NOTICE = java.util.Arrays.asList("The first time, Advanced Map builds the map from the"
-		+ " game's data and saves it on this computer. Until it is done, places not built yet are blank or blurry, and"
-		+ " their icons are missing from the map and the search.", "This happens once: afterwards the map opens almost"
-		+ " instantly, on every character. The menu's Welcome page says more.");
+	/**
+	 * What the notice says under its count while the map is first built: one line, as a glance takes it (owner,
+	 * 2026-11-07: "This might be too much text for people who don't read"); the Welcome page says the rest.
+	 */
+	static final List<String> NOTICE = java.util.Collections.singletonList("This is a one-time build: afterwards the"
+		+ " map opens almost instantly.");
 
 	/** The notice's title, with how many regions' floors are still to build. */
 	static String noticeTitle(int left)
