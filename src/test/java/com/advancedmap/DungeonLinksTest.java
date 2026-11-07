@@ -18,7 +18,7 @@ public class DungeonLinksTest
 	public void theEntrancesTheGameLeavesOutLeadIntoTheirDungeons()
 	{
 		Map<Integer, Integer> extra = DungeonLinks.extra();
-		assertEquals(45, extra.size());
+		assertEquals(47, extra.size());
 		// Tonali Cavern's two entrances, from the wiki
 		int cavern = MapLinks.pack(1311, 9382, 0);
 		assertEquals(cavern, MapLinks.destinationNear(extra, 1306, 3035, 0, RegionImages.LINK_REACH));
@@ -62,6 +62,13 @@ public class DungeonLinksTest
 		assertEquals(null, DungeonLinks.needs(3508, 9493, 0));
 		assertEquals(null, DungeonLinks.needs(3483, 9510, 2));
 		assertTrue(DungeonLinks.needVars().contains(hardDiary));
+
+		// the Dwarven Mine's dungeon icon into the Motherlode Mine, where the owner came in, and back out
+		assertEquals(MapLinks.pack(3728, 5692, 0), MapLinks.destinationNear(extra, 3060, 9764, 0,
+			RegionImages.LINK_REACH));
+		assertEquals(MapLinks.pack(3060, 9764, 0), MapLinks.destinationNear(extra, 3728, 5692, 0,
+			RegionImages.LINK_REACH));
+		assertEquals("Dwarven Mine", DungeonLinks.name(3728, 5692, 0));
 	}
 
 	@Test

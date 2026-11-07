@@ -161,10 +161,14 @@ public class MapIconsTest
 		{
 			Shortcuts.Need need = Shortcuts.needs(each.getKey());
 			assertEquals(each.getKey().name(), new Shortcuts.Need(each.getValue(), diaries.get(each.getValue())), need);
-			// at RuneLite's own place, which these keep
-			assertEquals(each.getKey().getWorldMapLocation(), Shortcuts.place(each.getKey()));
 		}
 		assertTrue(Shortcuts.needVars().containsAll(diaries.values()));
+		// the Motherlode Mine's wall is where the map draws the mine (the owner's hover, 2026-11-07), 641 tiles east
+		// and 4,032 south of RuneLite's world-map place, as the Kalphite crevice is
+		assertEquals(net.runelite.client.game.AgilityShortcut.MOTHERLODE_MINE_WALL_EAST,
+			MapSpot.icon(3765, 5671, 0, 0, IconGroup.AGILITY_SHORTCUT).getShortcut());
+		assertEquals(net.runelite.client.game.AgilityShortcut.MOTHERLODE_MINE_WALL_WEST,
+			MapSpot.icon(3759, 5670, 0, 0, IconGroup.AGILITY_SHORTCUT).getShortcut());
 	}
 
 	private static Progress diary(int varbit, int value)
