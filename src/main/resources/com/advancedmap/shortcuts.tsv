@@ -1,0 +1,5 @@
+# What Advanced Map adds to RuneLite's agility shortcuts (net.runelite.client.game.AgilityShortcut): where the map's icon
+# is, when RuneLite places it where the game's own world map draws the dungeon elsewhere, and what else it needs.
+# Places are the icon's tile on Advanced Map's map, as the owner saw it in game; needs are from the OSRS Wiki.
+# shortcut (RuneLite's name), x, y (empty: RuneLite's place), needs (empty: nothing more)
+KALPHITE_WALL	3503	9508	Needs the Elite Desert Diary

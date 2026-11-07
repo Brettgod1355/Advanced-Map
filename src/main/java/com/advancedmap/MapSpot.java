@@ -111,12 +111,12 @@ final class MapSpot
 		int bestDistance = Integer.MAX_VALUE;
 		for (AgilityShortcut shortcut : AgilityShortcut.values())
 		{
-			if (shortcut.getWorldMapLocation() == null)
+			WorldPoint at = Shortcuts.place(shortcut);
+			if (at == null)
 			{
 				continue;
 			}
-			int distance = Math.max(Math.abs(shortcut.getWorldMapLocation().getX() - x),
-				Math.abs(shortcut.getWorldMapLocation().getY() - y));
+			int distance = Math.max(Math.abs(at.getX() - x), Math.abs(at.getY() - y));
 			if (distance > SHORTCUT_REACH)
 			{
 				continue;

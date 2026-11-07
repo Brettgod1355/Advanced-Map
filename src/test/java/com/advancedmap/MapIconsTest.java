@@ -115,6 +115,21 @@ public class MapIconsTest
 	}
 
 	@Test
+	public void theKalphiteLairsCreviceIsFoundWhereTheMapDrawsItAndNeedsTheEliteDiary()
+	{
+		// RuneLite places it where the game's own world map draws the lair (3214, 9508); Advanced Map draws the lair on
+		// its own tiles, and the owner saw the icon at 3503, 9508, Floor 3 (2026-11-07)
+		MapSpot crevice = MapSpot.icon(3503, 9508, 2, 0, IconGroup.AGILITY_SHORTCUT);
+		assertEquals(net.runelite.client.game.AgilityShortcut.KALPHITE_WALL, crevice.getShortcut());
+		List<String> lines = new java.util.ArrayList<>();
+		for (MapIcons.Line line : MapIcons.info(crevice, Progress.NONE, false, FloorNumbers.GROUND_IS_FIRST))
+		{
+			lines.add(line.getText());
+		}
+		assertTrue(lines.toString(), lines.contains("Needs the Elite Desert Diary"));
+	}
+
+	@Test
 	public void aShortcutIconFarFromAnyKnownShortcutHasNoLevel()
 	{
 		assertNull(MapSpot.nearestShortcut(10, 10));

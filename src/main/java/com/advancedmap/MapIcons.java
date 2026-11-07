@@ -546,6 +546,10 @@ final class MapIcons
 			lines.add(new Line(spot.getCategory() == IconGroup.AGILITY_SHORTCUT_ONE_WAY ? "Agility shortcut, one way"
 				: "Agility shortcut", QUIET));
 			levelLine(lines, Skill.AGILITY, shortcut.getLevel(), progress);
+			if (Shortcuts.needs(shortcut) != null)
+			{
+				lines.add(new Line(Shortcuts.needs(shortcut), PLAIN));
+			}
 		}
 		else if (spot.getTeleport() != null)
 		{
