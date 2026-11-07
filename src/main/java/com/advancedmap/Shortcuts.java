@@ -5,11 +5,8 @@
  */
 package com.advancedmap;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -45,15 +42,8 @@ final class Shortcuts
 	{
 		try (InputStream in = Shortcuts.class.getResourceAsStream("shortcuts.tsv"))
 		{
-			BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
-			String line;
-			while ((line = reader.readLine()) != null)
+			for (String[] f : DataFiles.rows(in))
 			{
-				if (line.isEmpty() || line.startsWith("#"))
-				{
-					continue;
-				}
-				String[] f = line.split("\t", -1);
 				AgilityShortcut shortcut = AgilityShortcut.valueOf(f[0]);
 				if (!f[1].isEmpty())
 				{

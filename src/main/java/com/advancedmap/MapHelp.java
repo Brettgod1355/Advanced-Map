@@ -5,11 +5,8 @@
  */
 package com.advancedmap;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -56,15 +53,9 @@ final class MapHelp
 		Map<String, List<String[]>> out = new HashMap<>();
 		try (InputStream in = MapHelp.class.getResourceAsStream("menu-pages.txt"))
 		{
-			BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
 			List<String[]> page = new ArrayList<>();
-			String line;
-			while ((line = reader.readLine()) != null)
+			for (String line : DataFiles.lines(in, "# "))
 			{
-				if (line.isEmpty() || line.startsWith("# "))
-				{
-					continue;
-				}
 				if (line.startsWith("= "))
 				{
 					page = new ArrayList<>();

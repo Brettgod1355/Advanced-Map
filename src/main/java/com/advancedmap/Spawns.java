@@ -5,11 +5,8 @@
  */
 package com.advancedmap;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -89,15 +86,8 @@ final class Spawns
 	static List<Creature> parse(InputStream in) throws IOException
 	{
 		List<Creature> out = new ArrayList<>();
-		BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
-		String line;
-		while ((line = reader.readLine()) != null)
+		for (String[] f : DataFiles.rows(in))
 		{
-			if (line.isEmpty() || line.startsWith("#"))
-			{
-				continue;
-			}
-			String[] f = line.split("\t", -1);
 			List<WorldPoint> tiles = new ArrayList<>();
 			Map<WorldPoint, Integer> floors = new HashMap<>();
 			for (String tile : f[3].split(";"))

@@ -6,11 +6,8 @@
 package com.advancedmap;
 
 import java.awt.Color;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -141,15 +138,8 @@ final class Farming
 		List<Patch> patches = new ArrayList<>();
 		Map<String, List<Values>> values = new HashMap<>();
 		List<String[]> sites = new ArrayList<>();
-		BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
-		String line;
-		while ((line = reader.readLine()) != null)
+		for (String[] f : DataFiles.rows(in))
 		{
-			if (line.isEmpty() || line.startsWith("#"))
-			{
-				continue;
-			}
-			String[] f = line.split("\t", -1);
 			switch (f[0])
 			{
 				case "P":

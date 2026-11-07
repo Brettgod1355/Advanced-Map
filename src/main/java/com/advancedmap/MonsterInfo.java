@@ -6,10 +6,8 @@
 package com.advancedmap;
 
 import java.awt.Color;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -87,15 +85,9 @@ final class MonsterInfo
 	static Map<String, Monster> parse(InputStream in) throws IOException
 	{
 		Map<String, Monster> out = new HashMap<>();
-		BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
-		String line;
-		while ((line = reader.readLine()) != null)
+		for (String[] row : DataFiles.rows(in))
 		{
-			if (line.isEmpty() || line.startsWith("#"))
-			{
-				continue;
-			}
-			String[] f = Arrays.copyOf(line.split("\t", -1), 10);
+			String[] f = Arrays.copyOf(row, 10);
 			for (int i = 0; i < f.length; i++)
 			{
 				f[i] = f[i] == null ? "" : f[i];

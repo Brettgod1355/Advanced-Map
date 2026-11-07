@@ -6,11 +6,6 @@
 package com.advancedmap;
 
 import java.awt.Color;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -52,7 +47,7 @@ final class MapLabels
 	 * The game's labels Advanced Map names otherwise, from {@code label-names.tsv}: x, y, the game's text, the name
 	 * instead ("Lower level" over the Motherlode Mine; owner, 2026-11-07). In a data file, so a rename costs no tokens.
 	 */
-	private static final List<String[]> RENAMES = readRenames();
+	private static final List<String[]> RENAMES = DataFiles.rows("label-names.tsv");
 
 	private volatile List<Label> labels = Collections.emptyList();
 
@@ -85,28 +80,6 @@ final class MapLabels
 			}
 		}
 		return label;
-	}
-
-	private static List<String[]> readRenames()
-	{
-		List<String[]> out = new ArrayList<>();
-		try (InputStream in = MapLabels.class.getResourceAsStream("label-names.tsv"))
-		{
-			BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
-			String line;
-			while ((line = reader.readLine()) != null)
-			{
-				if (!line.isEmpty() && !line.startsWith("#"))
-				{
-					out.add(line.split("\t"));
-				}
-			}
-		}
-		catch (IOException | RuntimeException e)
-		{
-			// the game's own names then
-		}
-		return out;
 	}
 
 	/** True when labels of a size show at a zoom. */

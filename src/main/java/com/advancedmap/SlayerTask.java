@@ -6,11 +6,8 @@
 package com.advancedmap;
 
 import java.awt.Color;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -62,15 +59,8 @@ final class SlayerTask
 	static Map<String, List<String>> parse(InputStream in) throws IOException
 	{
 		Map<String, List<String>> out = new HashMap<>();
-		BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
-		String line;
-		while ((line = reader.readLine()) != null)
+		for (String[] f : DataFiles.rows(in))
 		{
-			if (line.isEmpty() || line.startsWith("#"))
-			{
-				continue;
-			}
-			String[] f = line.split("\t", -1);
 			out.put(f[0].toLowerCase(Locale.ROOT), f.length > 1 && !f[1].isEmpty() ? Arrays.asList(f[1].split(";"))
 				: Collections.emptyList());
 		}

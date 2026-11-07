@@ -14,11 +14,8 @@ import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.RenderingHints;
 import java.awt.Stroke;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -342,15 +339,8 @@ final class MapSearch
 	static Map<String, java.util.Set<String>> parseNicknames(InputStream in) throws IOException
 	{
 		Map<String, java.util.Set<String>> out = new java.util.HashMap<>();
-		BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
-		String line;
-		while ((line = reader.readLine()) != null)
+		for (String[] f : DataFiles.rows(in))
 		{
-			if (line.isEmpty() || line.startsWith("#"))
-			{
-				continue;
-			}
-			String[] f = line.split("\t");
 			java.util.Set<String> places = new java.util.HashSet<>();
 			for (String place : f[1].split(";"))
 			{
@@ -410,15 +400,8 @@ final class MapSearch
 		Map<String, List<WorldPoint>> fishing = new java.util.TreeMap<>();
 		Map<String, List<WorldPoint>> hunting = new java.util.TreeMap<>();
 		Map<String, String> levels = new LinkedHashMap<>();
-		BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
-		String line;
-		while ((line = reader.readLine()) != null)
+		for (String[] f : DataFiles.rows(in))
 		{
-			if (line.isEmpty() || line.startsWith("#"))
-			{
-				continue;
-			}
-			String[] f = line.split("\t");
 			if ("F".equals(f[0]))
 			{
 				List<WorldPoint> tiles = new ArrayList<>();
@@ -496,15 +479,8 @@ final class MapSearch
 	static List<Entry> parsePlaces(InputStream in, List<Entry> icons) throws IOException
 	{
 		Map<String, Entry> out = new LinkedHashMap<>();
-		BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
-		String line;
-		while ((line = reader.readLine()) != null)
+		for (String[] f : DataFiles.rows(in))
 		{
-			if (line.isEmpty() || line.startsWith("#"))
-			{
-				continue;
-			}
-			String[] f = line.split("\t");
 			Kind kind = "G".equals(f[0]) ? Kind.MINIGAME : Kind.DUNGEON;
 			WorldPoint at = Prifddinas.toSurface(new WorldPoint(Integer.parseInt(f[2]), Integer.parseInt(f[3]),
 				Integer.parseInt(f[4])));

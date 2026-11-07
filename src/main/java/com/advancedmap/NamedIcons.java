@@ -5,11 +5,8 @@
  */
 package com.advancedmap;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -75,15 +72,8 @@ final class NamedIcons
 	static List<Named> parse(InputStream in) throws IOException
 	{
 		List<Named> out = new ArrayList<>();
-		BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
-		String line;
-		while ((line = reader.readLine()) != null)
+		for (String[] f : DataFiles.rows(in))
 		{
-			if (line.isEmpty() || line.startsWith("#"))
-			{
-				continue;
-			}
-			String[] f = line.split("\t", -1);
 			out.add(new Named(f[0], Integer.parseInt(f[1]), Integer.parseInt(f[2]), Integer.parseInt(f[3]), f[4]));
 		}
 		return Collections.unmodifiableList(out);

@@ -6,11 +6,6 @@
 package com.advancedmap;
 
 import com.advancedmap.cache.MapLinks;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -82,21 +77,10 @@ final class DungeonLinks
 	private static Map<Integer, Integer> read()
 	{
 		Map<Integer, Integer> out = new HashMap<>();
-		try (InputStream in = DungeonLinks.class.getResourceAsStream("dungeon-links.tsv"))
+		try
 		{
-			if (in == null)
+			for (String[] f : DataFiles.rows("dungeon-links.tsv"))
 			{
-				return Collections.emptyMap();
-			}
-			BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
-			String line;
-			while ((line = reader.readLine()) != null)
-			{
-				if (line.isEmpty() || line.startsWith("#"))
-				{
-					continue;
-				}
-				String[] f = line.split("\t");
 				int from = MapLinks.pack(Integer.parseInt(f[0]), Integer.parseInt(f[1]), Integer.parseInt(f[2]));
 				out.put(from, MapLinks.pack(Integer.parseInt(f[3]), Integer.parseInt(f[4]), Integer.parseInt(f[5])));
 				if (f.length > 7 && !f[7].isEmpty())
@@ -110,7 +94,7 @@ final class DungeonLinks
 				}
 			}
 		}
-		catch (IOException | RuntimeException e)
+		catch (RuntimeException e)
 		{
 			log.debug("could not read the dungeon links", e);
 			return Collections.emptyMap();

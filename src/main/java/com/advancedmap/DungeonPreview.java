@@ -215,16 +215,8 @@ final class DungeonPreview
 	static List<Way> parseWays(java.io.InputStream in) throws java.io.IOException
 	{
 		List<Way> out = new ArrayList<>();
-		java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.InputStreamReader(in,
-			java.nio.charset.StandardCharsets.UTF_8));
-		String line;
-		while ((line = reader.readLine()) != null)
+		for (String[] f : DataFiles.rows(in))
 		{
-			if (line.isEmpty() || line.startsWith("#"))
-			{
-				continue;
-			}
-			String[] f = line.split("\t");
 			out.add(new Way(new WorldPoint(Integer.parseInt(f[0]), Integer.parseInt(f[1]), Integer.parseInt(f[2])),
 				new WorldPoint(Integer.parseInt(f[3]), Integer.parseInt(f[4]), Integer.parseInt(f[5]))));
 		}
