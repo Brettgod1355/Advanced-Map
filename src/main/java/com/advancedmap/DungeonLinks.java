@@ -27,6 +27,8 @@ final class DungeonLinks
 {
 	/** A row's own name for where it leads, when the nearest place name is wrong there; filled before {@link #EXTRA}. */
 	private static final Map<Integer, String> NAMES = new HashMap<>();
+	/** What going through needs ("Needs a rope..."), shown in the preview; filled before {@link #EXTRA} too. */
+	private static final Map<Integer, String> NEEDS = new HashMap<>();
 	private static final Map<Integer, Integer> EXTRA = read();
 
 	private DungeonLinks()
@@ -45,6 +47,21 @@ final class DungeonLinks
 	static String name(int x, int y, int plane)
 	{
 		return NAMES.get(MapLinks.pack(x, y, plane));
+	}
+
+	/** What a link from within {@link RegionImages#LINK_REACH} of a tile needs, or null: an icon may sit beside it. */
+	static String needs(int x, int y, int plane)
+	{
+		for (Map.Entry<Integer, String> need : NEEDS.entrySet())
+		{
+			int at = need.getKey();
+			if (MapLinks.plane(at) == plane && Math.abs(MapLinks.x(at) - x) <= RegionImages.LINK_REACH
+				&& Math.abs(MapLinks.y(at) - y) <= RegionImages.LINK_REACH)
+			{
+				return need.getValue();
+			}
+		}
+		return null;
 	}
 
 	/** The links the list adds. */
@@ -76,6 +93,10 @@ final class DungeonLinks
 				if (f.length > 7 && !f[7].isEmpty())
 				{
 					NAMES.put(from, f[7]);
+				}
+				if (f.length > 8 && !f[8].isEmpty())
+				{
+					NEEDS.put(from, f[8]);
 				}
 			}
 		}
