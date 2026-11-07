@@ -98,6 +98,7 @@ final class MapPreparer
 		listed = false;
 		iconTodo = null;
 		notReady = 0;
+		counted();
 	}
 
 	/** When a floor of a region the client had not downloaded was put back: the next steps rest a while after it. */
@@ -153,6 +154,7 @@ final class MapPreparer
 		{
 			restUntil = System.nanoTime() + REST_NANOS;
 		}
+		counted();
 	}
 
 	/**
@@ -167,28 +169,40 @@ final class MapPreparer
 			building = null;
 		}
 		MapStore store = images.store();
-		if (RegionImages.plane(key) != 0 || store == null)
+		if (RegionImages.plane(key) == 0 && store != null)
 		{
-			return;
-		}
-		for (int up = 1; up < RegionImages.PLANES; up++)
-		{
-			Integer floor = RegionImages.key(up, RegionImages.region(key));
-			if (store.isCurrent(floor, stamp))
+			for (int up = 1; up < RegionImages.PLANES; up++)
 			{
-				todo.remove(floor);
+				Integer floor = RegionImages.key(up, RegionImages.region(key));
+				if (store.isCurrent(floor, stamp))
+				{
+					todo.remove(floor);
+				}
 			}
 		}
+		counted();
 	}
 
 	/**
 	 * How many regions' floors are still to prepare, the one being built included; -1 before the list is made. Never
 	 * 0 while the last floor is still being built, or about to be put back for want of its data.
 	 */
-	synchronized int remaining()
+	int remaining()
 	{
-		return listed ? todo.size() + (building != null ? 1 : 0) : -1;
+		return left;
 	}
+
+	/**
+	 * The count, kept apart from the list: the client thread asks for it every tick, and must not wait for the
+	 * preparer's monitor while the preparer sorts tens of thousands of floors under it. Under the monitor.
+	 */
+	private void counted()
+	{
+		left = listed ? todo.size() + (building != null ? 1 : 0) : -1;
+	}
+
+	/** What {@link #remaining} says, set by {@link #counted} after every change to the list. */
+	private volatile int left = -1;
 
 	private void step()
 	{
@@ -386,6 +400,7 @@ final class MapPreparer
 			sortedFor = aroundRegion;
 		}
 		building = todo.isEmpty() ? null : todo.remove(0);
+		counted();
 		return building;
 	}
 

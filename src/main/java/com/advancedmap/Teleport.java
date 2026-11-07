@@ -71,6 +71,9 @@ final class Teleport
 	 * id, for the game's picture of that item on a disc; {@link #MINIGAME_ICON}, the game's minigame icon; or null.
 	 */
 	private final String icon;
+	/** The item whose picture is its icon, or -1: read from {@link #icon} once, as it is asked for on every paint. */
+	@Getter(lombok.AccessLevel.NONE)
+	private final int iconItem;
 
 	static final String ITEM_ICON = "item:";
 	static final String MINIGAME_ICON = "minigame";
@@ -82,6 +85,7 @@ final class Teleport
 		String icon)
 	{
 		this.icon = icon;
+		this.iconItem = itemOf(icon);
 		this.name = name;
 		this.type = type;
 		this.item = item;
@@ -179,6 +183,11 @@ final class Teleport
 
 	/** The item whose picture is its icon, or -1 when its icon is not an item's. */
 	int iconItem()
+	{
+		return iconItem;
+	}
+
+	private static int itemOf(String icon)
 	{
 		if (icon == null || !icon.startsWith(ITEM_ICON))
 		{

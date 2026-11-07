@@ -47,6 +47,7 @@ import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.events.PluginChanged;
 import net.runelite.client.events.PluginMessage;
+import net.runelite.client.events.RuneScapeProfileChanged;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.input.KeyManager;
 import net.runelite.client.input.MouseManager;
@@ -760,13 +761,6 @@ public class AdvancedMapPlugin extends Plugin
 				drawn.forget();
 			}
 		}
-		if (state == GameState.LOGGED_IN || state == GameState.LOGIN_SCREEN)
-		{
-			// another account may be next: its farming patches and Slayer task read on the next frame, not 10 s later
-			extrasRead = 0;
-			farmingRead = 0;
-			slayerShown = slayerShown == null ? null : "";
-		}
 		if (windowOpen && (state == GameState.LOGIN_SCREEN || state == GameState.HOPPING))
 		{
 			// the window stays open, and no game tick comes on the login screen to read the account again: read now, so
@@ -780,6 +774,18 @@ public class AdvancedMapPlugin extends Plugin
 			// the keys' owner is the Swing thread's
 			SwingUtilities.invokeLater(keys::forgetKeys);
 		}
+	}
+
+	/**
+	 * Another account's profile is in place: its farming patches and Slayer task read on the next frame, not up to
+	 * 10 s later with the last account's. Keyed on the profile, not on LOGGED_IN, which also follows every scene load.
+	 */
+	@Subscribe
+	public void onRuneScapeProfileChanged(RuneScapeProfileChanged event)
+	{
+		extrasRead = 0;
+		farmingRead = 0;
+		slayerShown = slayerShown == null ? null : "";
 	}
 
 	@Subscribe
