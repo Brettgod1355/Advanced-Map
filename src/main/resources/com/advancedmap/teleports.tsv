@@ -47,7 +47,8 @@ BARROWS	ARCEUUS_MAGIC		Barrows	83	3565	3315	0	barrows_teleport_icon.png
 APE_ATOLL_ARCEUUS	ARCEUUS_MAGIC		Ape Atoll	90	2770	2703	0	ape_atoll_teleport_icon_arceuus.png
 BARBARIAN_ASSAULT	JEWELLERY	Games Necklace	Barbarian Assault	0	2520	3571	0	games_necklace_teleport_icon.png
 BURTHORPE_GAMES_ROOM	JEWELLERY	Games Necklace	Burthorpe Games Room	0	2898	3554	0	games_necklace_teleport_icon.png
-TEARS_OF_GUTHIX	JEWELLERY	Games Necklace	Tears of Guthix	0	3245	9500	0	games_necklace_teleport_icon.png
+# RuneLite's list has floor 0; the cave it lands in is on floor 2 (owner in game, 2026-11-07: "needs to be on u3")
+TEARS_OF_GUTHIX	JEWELLERY	Games Necklace	Tears of Guthix	0	3245	9500	2	games_necklace_teleport_icon.png
 CORPOREAL_BEAST	JEWELLERY	Games Necklace	Corporeal Beast	0	2967	4384	0	games_necklace_teleport_icon.png
 WINTERTODT_CAMP	JEWELLERY	Games Necklace	Wintertodt Camp	0	1624	3938	0	games_necklace_teleport_icon.png
 EMIRS_ARENA	JEWELLERY	Ring of Dueling	Emir's Arena	0	3315	3235	0	ring_of_dueling_teleport_icon.png

@@ -32,6 +32,13 @@ public class TeleportTest
 	}
 
 	@Test
+	public void theGamesNecklaceLandsInTheTearsOfGuthixCaveOnItsFloor()
+	{
+		// RuneLite's list says floor 0; the cave is on floor 2, U3 on the map (owner, 2026-11-07)
+		assertEquals(new WorldPoint(3245, 9500, 2), Teleport.named("TEARS_OF_GUTHIX").getLocation());
+	}
+
+	@Test
 	public void everyTeleportHasRuneLitesPictureForIt()
 	{
 		int pictured = 0;
