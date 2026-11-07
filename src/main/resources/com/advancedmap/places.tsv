@@ -311,3 +311,5 @@ G	Volcanic Mine	3812	3810	0
 # Changed from RuneLite's list: the Hallowed Sepulchre on the ground floor, where the game's own icon is (it gives floor 1).
 G	Tempoross	3137	2840	0	icon
 G	Wintertodt	1630	3963	0	icon
+# Not in RuneLite's list: the game's minigame icon in the Temple of the Eye (owner's hover, 2026-11-07)
+G	Guardians of the Rift	3615	9483	0

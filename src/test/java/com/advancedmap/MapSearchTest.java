@@ -425,6 +425,9 @@ public class MapSearchTest
 			.collect(Collectors.toList());
 		assertTrue(ardy.indexOf("East Ardougne") < 2 && ardy.indexOf("West Ardougne") < 2);
 		assertEquals("Falador", MapSearch.search(entries, "Fally", null).get(0).getName());
+		// in the bundled lists: "gotr" (owner, 2026-11-07) and the name itself both find the minigame first
+		assertEquals("Guardians of the Rift", names("gotr").get(0));
+		assertEquals("Guardians of the Rift", names("guardians of the rift").get(0));
 	}
 
 	@Test

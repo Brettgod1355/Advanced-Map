@@ -115,6 +115,10 @@ public class MapPainterTest
 		NamedIcons.Named named = NamedIcons.at(2929, 10461, 0);
 		assertEquals("Ancient Furnace", named.getName());
 		assertEquals("Ancient_Furnace", named.getWikiPage());
+		// and the Ferox Enclave Dungeon's minigame icon, the portal to Soul Wars (owner, 2026-11-07)
+		assertEquals("Soul Wars Portal", NamedIcons.at(3157, 10027, 0).getName());
+		assertEquals("Guardians of the Rift", NamedIcons.at(3615, 9483, 0).getName());
+		assertEquals("Hallowed Sepulchre", NamedIcons.at(2400, 5982, 0).getName());
 		MapSpot furnace = MapSpot.icon(2929, 10461, 0, 0, 1059);
 		MapPainter.Selection on = new MapPainter.Selection(furnace, true, 100, 100, new WorldPoint(2929, 10461, 0));
 		List<MapPainter.MenuEntry> entries = MapPainter.menuEntries(on, settings(RoutingPlugin.NONE));
