@@ -127,6 +127,20 @@ public class MapIconsTest
 			lines.add(line.getText());
 		}
 		assertTrue(lines.toString(), lines.contains("Needs the Elite Desert Diary"));
+
+		// green once the diary is done, red until, plain while logged out (owner: "red (not done) or green")
+		int elite = net.runelite.api.gameval.VarbitID.DESERT_DIARY_ELITE_COMPLETE;
+		assertTrue(Shortcuts.needVars().contains(elite));
+		Shortcuts.Need need = Shortcuts.needs(crevice.getShortcut());
+		assertEquals(MapIcons.GOOD, MapIcons.needLine(need, diary(elite, 1)).getColor());
+		assertEquals(MapIcons.BAD, MapIcons.needLine(need, diary(elite, 0)).getColor());
+		assertEquals(MapIcons.PLAIN, MapIcons.needLine(need, Progress.NONE).getColor());
+	}
+
+	private static Progress diary(int varbit, int value)
+	{
+		return new Progress(true, new int[Skill.values().length], new EnumMap<>(Quest.class), Collections.emptyMap(),
+			Collections.emptyMap(), Collections.singletonMap(varbit, value));
 	}
 
 	@Test

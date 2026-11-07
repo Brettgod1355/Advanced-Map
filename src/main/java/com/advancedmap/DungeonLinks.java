@@ -13,7 +13,9 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -28,7 +30,8 @@ final class DungeonLinks
 	/** A row's own name for where it leads, when the nearest place name is wrong there; filled before {@link #EXTRA}. */
 	private static final Map<Integer, String> NAMES = new HashMap<>();
 	/** What going through needs ("Needs a rope..."), shown in the preview; filled before {@link #EXTRA} too. */
-	private static final Map<Integer, String> NEEDS = new HashMap<>();
+	private static final Map<Integer, Shortcuts.Need> NEEDS = new HashMap<>();
+	private static final Set<Integer> VARS = new HashSet<>();
 	private static final Map<Integer, Integer> EXTRA = read();
 
 	private DungeonLinks()
@@ -50,9 +53,9 @@ final class DungeonLinks
 	}
 
 	/** What a link from within {@link RegionImages#LINK_REACH} of a tile needs, or null: an icon may sit beside it. */
-	static String needs(int x, int y, int plane)
+	static Shortcuts.Need needs(int x, int y, int plane)
 	{
-		for (Map.Entry<Integer, String> need : NEEDS.entrySet())
+		for (Map.Entry<Integer, Shortcuts.Need> need : NEEDS.entrySet())
 		{
 			int at = need.getKey();
 			if (MapLinks.plane(at) == plane && Math.abs(MapLinks.x(at) - x) <= RegionImages.LINK_REACH
@@ -62,6 +65,12 @@ final class DungeonLinks
 			}
 		}
 		return null;
+	}
+
+	/** The varbits the links' needs are told by, for the player's progress to read. */
+	static Set<Integer> needVars()
+	{
+		return VARS;
 	}
 
 	/** The links the list adds. */
@@ -94,9 +103,10 @@ final class DungeonLinks
 				{
 					NAMES.put(from, f[7]);
 				}
-				if (f.length > 8 && !f[8].isEmpty())
+				Shortcuts.Need need = f.length > 8 ? Shortcuts.need(f[8], f.length > 9 ? f[9] : "", VARS) : null;
+				if (need != null)
 				{
-					NEEDS.put(from, f[8]);
+					NEEDS.put(from, need);
 				}
 			}
 		}

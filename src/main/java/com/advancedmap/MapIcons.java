@@ -530,6 +530,16 @@ final class MapIcons
 	static final String DOCKING_POINT = "Docking point";
 	static final String PORT = "Port";
 
+	/**
+	 * A need's line: green once the player has it (a diary done), red until then, plain while logged out or when it is
+	 * only told (owner, 2026-11-07: "have the diary step be red (not done) or green (completed)").
+	 */
+	static Line needLine(Shortcuts.Need need, Progress progress)
+	{
+		int has = need.getVarbit() < 0 || !progress.isLoggedIn() ? -1 : progress.value(need.getVarbit());
+		return new Line(need.getText(), has < 0 ? PLAIN : has > 0 ? GOOD : BAD);
+	}
+
 	/** The lines of an icon's info box, after its name. */
 	static List<Line> info(MapSpot spot, Progress progress, boolean hidden, FloorNumbers floors)
 	{
@@ -548,7 +558,7 @@ final class MapIcons
 			levelLine(lines, Skill.AGILITY, shortcut.getLevel(), progress);
 			if (Shortcuts.needs(shortcut) != null)
 			{
-				lines.add(new Line(Shortcuts.needs(shortcut), PLAIN));
+				lines.add(needLine(Shortcuts.needs(shortcut), progress));
 			}
 		}
 		else if (spot.getTeleport() != null)

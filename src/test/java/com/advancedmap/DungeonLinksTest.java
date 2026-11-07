@@ -53,12 +53,15 @@ public class DungeonLinksTest
 		assertEquals(landing, MapLinks.destinationNear(extra, 3227, 3108, 0, RegionImages.LINK_REACH));
 		// a rope into the lair and down to the Queen (OSRS Wiki), none for the ropes back up; the game's icon may sit
 		// beside the listed tile
-		String rope = "Needs a rope, unless the Hard Desert Diary is done";
-		assertEquals("Needs a rope (a 2nd for the Queen's chamber), unless the Hard Desert Diary is done",
-			DungeonLinks.needs(3226, 3108, 0));
-		assertEquals(rope, DungeonLinks.needs(3509, 9497, 2));
+		// beside the listed tile; both are told by the Hard Desert Diary's "complete" varbit, which the progress reads
+		int hardDiary = net.runelite.api.gameval.VarbitID.DESERT_DIARY_HARD_COMPLETE;
+		assertEquals(new Shortcuts.Need("Needs a rope (a 2nd for the Queen's chamber), unless the Hard Desert Diary is"
+			+ " done", hardDiary), DungeonLinks.needs(3226, 3108, 0));
+		assertEquals(new Shortcuts.Need("Needs a rope, unless the Hard Desert Diary is done", hardDiary),
+			DungeonLinks.needs(3509, 9497, 2));
 		assertEquals(null, DungeonLinks.needs(3508, 9493, 0));
 		assertEquals(null, DungeonLinks.needs(3483, 9510, 2));
+		assertTrue(DungeonLinks.needVars().contains(hardDiary));
 	}
 
 	@Test

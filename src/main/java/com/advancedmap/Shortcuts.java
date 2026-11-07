@@ -11,7 +11,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.EnumMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.client.game.AgilityShortcut;
@@ -23,8 +26,20 @@ import net.runelite.client.game.AgilityShortcut;
 @Slf4j
 final class Shortcuts
 {
+	/**
+	 * A line of what something needs ("Needs the Elite Desert Diary"), and the game's varbit that is 1 once the player
+	 * has it (a diary's "complete" varbit), or -1 when the line is only told.
+	 */
+	@Value
+	static class Need
+	{
+		String text;
+		int varbit;
+	}
+
 	private static final Map<AgilityShortcut, WorldPoint> PLACES = new EnumMap<>(AgilityShortcut.class);
-	private static final Map<AgilityShortcut, String> NEEDS = new EnumMap<>(AgilityShortcut.class);
+	private static final Map<AgilityShortcut, Need> NEEDS = new EnumMap<>(AgilityShortcut.class);
+	private static final Set<Integer> VARS = new HashSet<>();
 
 	static
 	{
@@ -44,9 +59,10 @@ final class Shortcuts
 				{
 					PLACES.put(shortcut, new WorldPoint(Integer.parseInt(f[1]), Integer.parseInt(f[2]), 0));
 				}
-				if (!f[3].isEmpty())
+				Need need = need(f[3], f.length > 4 ? f[4] : "", VARS);
+				if (need != null)
 				{
-					NEEDS.put(shortcut, f[3]);
+					NEEDS.put(shortcut, need);
 				}
 			}
 		}
@@ -60,15 +76,36 @@ final class Shortcuts
 	{
 	}
 
+	/** A need from a list's two columns, its varbit added to {@code vars}; null for no text. */
+	static Need need(String text, String varbit, Set<Integer> vars)
+	{
+		if (text.isEmpty())
+		{
+			return null;
+		}
+		int var = varbit.isEmpty() ? -1 : Integer.parseInt(varbit);
+		if (var >= 0)
+		{
+			vars.add(var);
+		}
+		return new Need(text, var);
+	}
+
 	/** Where a shortcut's icon is on the map: the list's place, else RuneLite's; null when neither knows. */
 	static WorldPoint place(AgilityShortcut shortcut)
 	{
 		return PLACES.getOrDefault(shortcut, shortcut.getWorldMapLocation());
 	}
 
-	/** What else a shortcut needs ("Needs the Elite Desert Diary"), or null. */
-	static String needs(AgilityShortcut shortcut)
+	/** What else a shortcut needs, or null. */
+	static Need needs(AgilityShortcut shortcut)
 	{
 		return NEEDS.get(shortcut);
+	}
+
+	/** The varbits the shortcuts' needs are told by, for the player's progress to read. */
+	static Set<Integer> needVars()
+	{
+		return VARS;
 	}
 }

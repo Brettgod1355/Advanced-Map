@@ -1252,11 +1252,13 @@ final class MapPainter
 		}
 		String hint = "Click to go there";
 		// what going through needs (a rope into the Kalphite Lair), from dungeon-links.tsv, above the hint
-		String needs = DungeonLinks.needs(spot.getX(), spot.getY(), spot.getPlane());
+		Shortcuts.Need need = DungeonLinks.needs(spot.getX(), spot.getY(), spot.getPlane());
+		MapIcons.Line needs = need == null ? null : MapIcons.needLine(need, progress);
 		int contentHeight = Math.max(DungeonPreview.MAP_HEIGHT,
 			inside ? titleMetrics.getHeight() + metrics.getHeight() * list.size() : 0);
 		int width = PAD * 2 + Math.max(Math.max(titleMetrics.stringWidth(title),
-			needs == null ? 0 : metrics.stringWidth(needs)), DungeonPreview.MAP_WIDTH + (inside ? PAD + listWidth : 0));
+			needs == null ? 0 : metrics.stringWidth(needs.getText())),
+			DungeonPreview.MAP_WIDTH + (inside ? PAD + listWidth : 0));
 		int height = PAD * 2 + titleMetrics.getHeight() + 4 + contentHeight + 4
 			+ metrics.getHeight() * (needs == null ? 1 : 2);
 		int x = at.x + at.width + 8;
@@ -1315,8 +1317,8 @@ final class MapPainter
 		g.setFont(font);
 		if (needs != null)
 		{
-			g.setColor(MapIcons.PLAIN);
-			g.drawString(needs, x + PAD, y + height - PAD - metrics.getDescent() - metrics.getHeight());
+			g.setColor(needs.getColor());
+			g.drawString(needs.getText(), x + PAD, y + height - PAD - metrics.getDescent() - metrics.getHeight());
 		}
 		g.setColor(MapIcons.QUIET);
 		g.drawString(hint, x + PAD, y + height - PAD - metrics.getDescent());

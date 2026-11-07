@@ -916,7 +916,11 @@ public class AdvancedMapPlugin extends Plugin
 		try
 		{
 			MapIcons current = icons;
-			progress = Progress.read(client, current == null ? Collections.emptySet() : current.watchedVars());
+			// the unlocks' variables, and the diaries the lists' needs are told by
+			Set<Integer> vars = new HashSet<>(current == null ? Collections.emptySet() : current.watchedVars());
+			vars.addAll(Shortcuts.needVars());
+			vars.addAll(DungeonLinks.needVars());
+			progress = Progress.read(client, vars);
 			touched();
 		}
 		catch (RuntimeException e)
