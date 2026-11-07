@@ -127,6 +127,12 @@ class MapOverlay extends Overlay
 			}
 			clock.painted(touches, changes, now);
 		}
+		java.awt.Point mark = plugin.takePictureMark();
+		if (mark != null)
+		{
+			plugin.copyPicture(painter.picture(g, plugin.viewport().view(map.width, map.height), plugin.area(),
+				plugin.plane(), plugin.playerLocation(), false, plugin.settings(), plugin.progress(), mark));
+		}
 		g.drawImage(frame, map.x, map.y, map.x + map.width, map.y + map.height, 0, 0, map.width, map.height, null);
 		box.draw(g, width, height);
 		// no size claimed: RuneLite would make the whole view this overlay's, and Shift+right-click on the game beside

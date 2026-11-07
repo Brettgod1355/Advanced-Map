@@ -397,6 +397,14 @@ final class MapWindow extends JFrame
 			paintScaled(g, getWidth(), getHeight(), plugin.windowScale(), scaled -> painter.paint(scaled,
 				plugin.viewport().view(width(), height()), plugin.area(), plugin.plane(), plugin.playerLocation(),
 				mouse, true, plugin.settings(), plugin.progress(), plugin.selection()));
+			Point mark = plugin.takePictureMark();
+			if (mark != null)
+			{
+				// in the map's own units, as the report's spot is, not Stretched Mode's bigger pixels
+				plugin.copyPicture(painter.picture((Graphics2D) g, plugin.viewport().view(width(), height()),
+					plugin.area(), plugin.plane(), plugin.playerLocation(), true, plugin.settings(), plugin.progress(),
+					mark));
+			}
 		}
 
 		/** The panel's size and the mouse, in the map's units: real pixels divided by the scale it is drawn at. */

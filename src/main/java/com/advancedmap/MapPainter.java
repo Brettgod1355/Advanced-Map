@@ -422,6 +422,43 @@ final class MapPainter
 	 * logged out), {@code mouse} where the pointer is (null when it is elsewhere), {@code selection} what a click
 	 * opened (or null).
 	 */
+	/**
+	 * The map as it is on screen, for a report: no menu, no box under the mouse, and the spot reported ({@code mark},
+	 * where it was right-clicked) ringed. Only what the map draws, so nothing of the game (chat, names) is in it. On
+	 * the thread that paints the map, as the map's own paint is.
+	 */
+	BufferedImage picture(Graphics2D like, MapViewport.View view, MapArea area, int plane, WorldPoint player,
+		boolean window, MapSettings settings, Progress progress, Point mark)
+	{
+		BufferedImage picture = new BufferedImage(Math.max(1, view.width), Math.max(1, view.height),
+			BufferedImage.TYPE_INT_RGB);
+		Graphics2D g = picture.createGraphics();
+		try
+		{
+			g.setRenderingHints(like.getRenderingHints());
+			g.setFont(like.getFont());
+			paint(g, view, area, plane, player, null, window, settings, progress, null);
+			if (mark != null)
+			{
+				g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+				g.setStroke(new BasicStroke(5));
+				g.setColor(new Color(0, 0, 0, 160));
+				g.drawOval(mark.x - MARK, mark.y - MARK, MARK * 2, MARK * 2);
+				g.setStroke(new BasicStroke(2.5f));
+				g.setColor(new Color(255, 70, 70));
+				g.drawOval(mark.x - MARK, mark.y - MARK, MARK * 2, MARK * 2);
+			}
+		}
+		finally
+		{
+			g.dispose();
+		}
+		return picture;
+	}
+
+	/** How far the ring round a reported spot is from it. */
+	private static final int MARK = 14;
+
 	void paint(Graphics2D g, MapViewport.View view, MapArea area, int plane, WorldPoint player, Point mouse,
 		boolean window, MapSettings settings, Progress progress, Selection selection)
 	{

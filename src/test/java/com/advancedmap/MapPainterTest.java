@@ -600,4 +600,24 @@ public class MapPainterTest
 		assertEquals(0, differences(restOn(withMenu, view, null), restOn(plain, view, null),
 			new Rectangle(0, 0, view.width, view.height)));
 	}
+
+	@Test
+	public void aReportsPictureIsTheMapWithTheSpotRingedAndNothingUnderTheMouse()
+	{
+		// what a report puts on the clipboard: the view's size, a red ring where the spot was right-clicked
+		MapPainter painter = blankPainter(new MapIcons());
+		MapViewport.View view = new MapViewport.View(3222, 3218, 4, 400, 300);
+		Graphics2D like = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB).createGraphics();
+		BufferedImage picture = painter.picture(like, view, MapArea.SURFACE, 0, null, false, settings(RoutingPlugin.NONE),
+			Progress.NONE, new java.awt.Point(200, 150));
+		like.dispose();
+		assertEquals(400, picture.getWidth());
+		assertEquals(300, picture.getHeight());
+		// the ring's right-hand side, 14 pixels out from the spot: red
+		java.awt.Color ring = new java.awt.Color(picture.getRGB(214, 150));
+		assertTrue(ring.toString(), ring.getRed() > 200 && ring.getGreen() < 120 && ring.getBlue() < 120);
+		// and the spot itself is left as the map has it
+		java.awt.Color spot = new java.awt.Color(picture.getRGB(200, 150));
+		assertTrue(spot.toString(), !(spot.getRed() > 200 && spot.getGreen() < 120));
+	}
 }

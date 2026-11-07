@@ -1331,6 +1331,28 @@ public class AdvancedMapPlugin extends Plugin
 		return selection;
 	}
 
+	/** Where a reported spot was right-clicked, until the next paint takes the map's picture for the report. */
+	private final java.util.concurrent.atomic.AtomicReference<java.awt.Point> pictureMark =
+		new java.util.concurrent.atomic.AtomicReference<>();
+
+	/** For the painting thread: the spot to ring in a picture for a report, once; null when none is wanted. */
+	java.awt.Point takePictureMark()
+	{
+		return pictureMark.getAndSet(null);
+	}
+
+	/** Puts the map's picture on the clipboard, off the painting thread, for the report to paste. */
+	void copyPicture(java.awt.image.BufferedImage picture)
+	{
+		ExecutorService current = executor;
+		if (current == null)
+		{
+			return;
+		}
+		current.execute(() -> java.awt.Toolkit.getDefaultToolkit().getSystemClipboard()
+			.setContents(new MapPicture(picture), null));
+	}
+
 	/** Does what a map button does. {@code window} when pressed in the pop-out window. */
 	void pressButton(MapPainter.Button button, boolean window)
 	{
@@ -1484,6 +1506,10 @@ public class AdvancedMapPlugin extends Plugin
 					SearchSpots.placeName(at, labelsNow()));
 				if (action == MapPainter.Action.REPORT)
 				{
+					// a picture of the map, ringed where it was right-clicked, taken by the next paint (the menu is
+					// gone by then) and put on the clipboard: the issue says to paste it
+					pictureMark.set(new java.awt.Point(on.getX(), on.getY()));
+					touched();
 					LinkBrowser.browse(reportUrl(spotText));
 				}
 				else
@@ -2334,7 +2360,8 @@ public class AdvancedMapPlugin extends Plugin
 			String enc = java.nio.charset.StandardCharsets.UTF_8.name();
 			return AdvancedMapPanel.GITHUB_URL + "/issues/new?title=" + java.net.URLEncoder.encode("Map: " + spotText,
 				enc) + "&body=" + java.net.URLEncoder.encode("Where: " + spotText + "\nAdvanced Map " + WhatsNew.VERSION
-				+ "\n\nWhat is wrong or missing:\n", enc);
+				+ "\n\nWhat is wrong or missing:\n\n\nA picture of the map is on your clipboard: paste it here"
+				+ " (Ctrl+V).\n", enc);
 		}
 		catch (java.io.UnsupportedEncodingException e)
 		{
