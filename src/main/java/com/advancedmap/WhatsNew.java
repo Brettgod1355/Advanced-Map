@@ -9,7 +9,8 @@ package com.advancedmap;
  * What a version brings, shown on the map menu's What's new page, which opens by itself once after the Plugin Hub
  * updates the plugin. The Hub swaps the jar and restarts the plugin, and the plugin also restarts with the client, so
  * the only way to tell an update from a restart is to remember the last version seen. Bump {@link #VERSION} and
- * rewrite {@link #CHANGES} with every release; a test keeps the version in step with the build.
+ * rewrite the WHATS_NEW page of {@code menu-pages.txt} with every release; a test keeps the version in step with the
+ * build.
  */
 final class WhatsNew
 {
@@ -17,17 +18,12 @@ final class WhatsNew
 	static final String VERSION = "1.1";
 
 	/**
-	 * What this version brings, one short change a line, each shown on its own line after a dash (owner, 2026-11-07:
-	 * "each change to be its own bullet point ... not jammed up into a paragraph"); no links, no full stops. Empty for
-	 * a release not worth a line (a fix, a wording change): then the page does not open by itself.
+	 * What this version brings: the WHATS_NEW page's list in {@code menu-pages.txt}, one short change each, drawn on
+	 * its own line after a dash (owner, 2026-11-07: "each change to be its own bullet point ... not jammed up into a
+	 * paragraph"). Empty for a release not worth a line (a fix, a wording change): then the page does not open by
+	 * itself.
 	 */
-	static final java.util.List<String> CHANGES = java.util.Arrays.asList(
-		"Hover over a shop to see what it sells",
-		"Hover over a transport to see where it goes and the fares",
-		"After clicking into a dungeon, your mouse's back button takes you back out, and forward goes in again",
-		"A dungeon opens at the zoom you were at",
-		"The Kalphite Lair, the Kalphite Queen's chamber and the Motherlode Mine can be clicked into and back out of",
-		"Shortcuts and ropes that need an achievement diary say which: green once it is done, red until");
+	static final java.util.List<String> CHANGES = MapHelp.items("WHATS_NEW");
 
 	/** What a start of the plugin does about the version last run: see {@link #start}. */
 	@lombok.Value

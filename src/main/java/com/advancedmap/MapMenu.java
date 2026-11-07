@@ -451,47 +451,26 @@ final class MapMenu
 		{
 			case WELCOME:
 				status(out, (Build) state, column);
-				for (String[] section : MapHelp.BUILDING)
-				{
-					heading(out, section[0], column);
-					paragraph(out, section[1], column);
-				}
+				text(out, "BUILDING", column);
 				break;
 			case HELP:
-				for (String[] section : MapHelp.ALL)
-				{
-					heading(out, section[0], column);
-					paragraph(out, section[1], column);
-				}
+				text(out, "HELP", column);
+				text(out, "BUILDING", column);
 				break;
 			case WHATS_NEW:
 				heading(out, "Advanced Map " + WhatsNew.VERSION, column);
-				// empty for a release of fixes only
 				if (WhatsNew.CHANGES.isEmpty())
 				{
 					paragraph(out, "Nothing new to tell of in this version: fixes only.", column);
 				}
-				else
-				{
-					bullets(out, WhatsNew.CHANGES, column);
-				}
-				paragraph(out, "The full release notes are on GitHub.", column);
+				text(out, "WHATS_NEW", column);
 				break;
 			case IMPROVE:
-				paragraph(out, "Ideas, suggestions and bug reports are welcome, on Discord or on GitHub, whichever you"
-					+ " prefer. Both open in your browser.", column);
-				paragraph(out, "If something on the map is wrong or missing, say where. The map itself comes from the"
-					+ " game's own data and keeps up with it; shops, prices, monsters and items on the ground come from"
-					+ " the OSRS Wiki and are updated with the plugin.", column);
-				// owner, 2026-11-07: "right click a spot or icon on the map and hit report to get a pre filled github issue"
-				paragraph(out, "Right-click a spot or an icon on the map and choose Report a problem here: a GitHub issue"
-					+ " opens with the place already filled in.", column);
+				text(out, "IMPROVE", column);
 				break;
 			case REDRAW:
 				paragraph(out, (String) state, column);
-				paragraph(out, "Building the map again deletes the map saved on this computer and builds every region"
-					+ " again from the game's data. What this client has already shown stays on the map until it"
-					+ " restarts; everything else is built again as you look around.", column);
+				text(out, "REDRAW", column);
 				break;
 			default:
 				break;
@@ -557,20 +536,37 @@ final class MapMenu
 		}
 	}
 
-	/** Short items, each on its own line after a dash, a long one's further lines lined up under its first word. */
-	private static void bullets(List<Line> out, List<String> items, Column column)
+	/** A page's fixed text from {@code menu-pages.txt}: its headings, paragraphs and list items in order. */
+	private static void text(List<Line> out, String page, Column column)
+	{
+		for (String[] block : MapHelp.page(page))
+		{
+			if (block[0].equals("#"))
+			{
+				heading(out, block[1], column);
+			}
+			else if (block[0].equals("-"))
+			{
+				item(out, block[1], column);
+			}
+			else
+			{
+				paragraph(out, block[1], column);
+			}
+		}
+	}
+
+	/** A list item on its own line after a dash, a long one's further lines lined up under its first word. */
+	private static void item(List<Line> out, String item, Column column)
 	{
 		java.awt.Font font = FontManager.getRunescapeSmallFont();
 		double dash = font.getStringBounds("- ", column.getMeasure()).getWidth();
 		String indent = " ".repeat((int) Math.round(dash / font.getStringBounds(" ", column.getMeasure()).getWidth()));
-		for (String item : items)
+		String start = "- ";
+		for (String line : SideList.wrap(item, column.getWidth() - (int) Math.ceil(dash), font, column.getMeasure()))
 		{
-			String start = "- ";
-			for (String line : SideList.wrap(item, column.getWidth() - (int) Math.ceil(dash), font, column.getMeasure()))
-			{
-				out.add(new Line(start + line, false, -1));
-				start = indent;
-			}
+			out.add(new Line(start + line, false, -1));
+			start = indent;
 		}
 	}
 
