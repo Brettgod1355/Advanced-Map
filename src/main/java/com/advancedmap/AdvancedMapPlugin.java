@@ -134,6 +134,10 @@ public class AdvancedMapPlugin extends Plugin
 	/** One view per map, each remembering where it was left. */
 	private final Map<MapArea, MapViewport> viewports = new EnumMap<>(MapArea.class);
 	private volatile MapArea area = MapArea.SURFACE;
+	/** The mouse's side buttons, as Java numbers them: back and forward. */
+	static final int BACK_BUTTON = 4;
+	static final int FORWARD_BUTTON = 5;
+	private final JumpHistory jumps = new JumpHistory();
 	private ExecutorService executor;
 	/** The markers' file work, one task after another, so a read never runs ahead of a save made before it. */
 	private ExecutorService markerFiles;
@@ -1788,13 +1792,49 @@ public class AdvancedMapPlugin extends Plugin
 		return 0;
 	}
 
-	/** Moves the map to a tile: onto its map and floor, centered there. */
+	/** Moves the map to a tile: onto its map and floor, centered there. The mouse's back button returns. */
 	private void goTo(WorldPoint to)
 	{
+		jumps.jumped(lookingAt());
 		setFollowing(false);
 		area = MapArea.of(to.getY());
 		plane = to.getPlane();
 		viewports.get(area).centerOn(to.getX(), to.getY());
+	}
+
+	/** Where the map looks now, for the jump history. */
+	private JumpHistory.Place lookingAt()
+	{
+		MapArea now = area;
+		MapViewport.View view = viewports.get(now).view(1, 1);
+		return new JumpHistory.Place(now, plane, view.centerX, view.centerY, view.zoom);
+	}
+
+	/**
+	 * The mouse's back (4) and forward (5) buttons return to where the map was before a jump (a dungeon's way in, a
+	 * search, a pin) and on again, as a browser's (owner, 2026-11-07). True when the button is one of them.
+	 */
+	boolean historyButton(int button)
+	{
+		if (button != BACK_BUTTON && button != FORWARD_BUTTON)
+		{
+			return false;
+		}
+		if (viewports.get(area) == null)
+		{
+			// not started: nowhere to go
+			return true;
+		}
+		JumpHistory.Place to = button == BACK_BUTTON ? jumps.back(lookingAt()) : jumps.forward(lookingAt());
+		if (to != null)
+		{
+			setFollowing(false);
+			area = to.area;
+			plane = to.plane;
+			viewports.get(to.area).restore(to.centerX, to.centerY, to.zoom);
+			touched();
+		}
+		return true;
 	}
 
 	/**

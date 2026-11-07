@@ -272,6 +272,11 @@ final class MapWindow extends JFrame
 				public void mousePressed(MouseEvent e)
 				{
 					requestFocusInWindow();
+					if (plugin.historyButton(e.getButton()))
+					{
+						repaint();
+						return;
+					}
 					if (SwingUtilities.isLeftMouseButton(e)
 						&& plugin.pressPanels(x(e), y(e), width(), height(), true))
 					{
