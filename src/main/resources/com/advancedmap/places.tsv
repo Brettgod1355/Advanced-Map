@@ -69,7 +69,7 @@ D	Fortis Colosseum	1794	3107	0
 D	Fremennik Slayer Dungeon	2796	3615	0
 D	The Gauntlet	3227	6116	0
 D	Giants' Den	1419	3588	0
-D	Giants' Foundry	3360	3150	0
+G	Giants' Foundry	3360	3150	0
 D	Goblin Cave	2622	3393	0
 D	God Wars Dungeon	2917	3747	0
 D	Grand Tree Tunnels	2462	3496	0
@@ -313,3 +313,38 @@ G	Tempoross	3137	2840	0	icon
 G	Wintertodt	1630	3963	0	icon
 # Not in RuneLite's list: the game's minigame icon in the Temple of the Eye (owner's hover, 2026-11-07)
 G	Guardians of the Rift	3615	9483	0
+# From the OSRS Wiki's Minigames page and each minigame's own page (map spots, 2026-11-07; cached in the notes): a
+# minigame or minigame-like activity RuneLite's list leaves out, or a second spot for one whose entry is elsewhere (the
+# wiki marks the arena, RuneLite the way in). A minigame icon within 12 tiles of any spot takes its name.
+G	Castle Wars	2407	3105	0
+G	Emir's Arena	3360	3233	0
+G	Fortis Colosseum	1824	3107	0
+G	Soul Wars	2206	2900	0
+G	TzHaar Fight Pit	2398	5151	0
+G	Trouble Brewing	3813	2973	0
+G	Tempoross	3035	2850	0
+G	Wintertodt	1630	3981	0
+G	The Gauntlet	3228	6116	0
+G	Sorceress's Garden	2912	5472	0
+G	Blast Furnace	2930	10197	0
+G	Barrows	3567	3291	0
+G	Moons of Peril	1485	9632	0
+G	Moons of Peril	1439	9675	0
+G	Moons of Peril	1393	9632	0
+G	Zalcano	3281	6058	0
+G	Aldarin Vineyard	1370	2915	0
+G	Arceuus Library	1606	3823	0
+G	Blast Mine	1489	3864	0
+G	Camdozaal Vault	2970	5820	0
+G	Chompy bird hunting	2337	3061	0
+G	Chompy bird hunting	2395	3048	0
+G	Chompy bird hunting	2549	2985	0
+G	Chompy bird hunting	2527	2978	0
+G	Chompy bird hunting	2598	2966	0
+G	Creature Creation	3039	4384	0
+G	Dorgesh-Kaan market trading	2717	5310	0
+G	Golem crafting	2596	2255	0
+G	Knight Waves Training Ground	2758	3507	2
+G	Shayzien Combat Ring	1544	3624	0
+G	Underwater Agility and Thieving	3765	10290	0
+G	Werewolf Skullball	3544	3462	0

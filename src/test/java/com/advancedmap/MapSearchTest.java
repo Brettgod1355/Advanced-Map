@@ -180,6 +180,21 @@ public class MapSearchTest
 	}
 
 	@Test
+	public void theWikisMinigamesNameTheMinigameIconsNearThem()
+	{
+		// the wiki's minigame pages' map spots (2026-11-07): a minigame icon within reach takes the name
+		assertEquals("Barrows", MapSearch.minigameNear(3565, 3289));
+		// in Prifddinas, which the map (icons and all) draws on the surface
+		WorldPoint zalcano = Prifddinas.toSurface(new WorldPoint(3281, 6060, 0));
+		assertEquals("Zalcano", MapSearch.minigameNear(zalcano.getX(), zalcano.getY()));
+		assertEquals("Moons of Peril", MapSearch.minigameNear(1439, 9670));
+		assertEquals("Giants' Foundry", MapSearch.minigameNear(3361, 3152));
+		assertEquals("TzHaar Fight Pit", MapSearch.minigameNear(2400, 5150));
+		assertEquals("Shayzien Combat Ring", MapSearch.minigameNear(1544, 3624));
+		assertNull("nothing far from every minigame", MapSearch.minigameNear(3222, 3218));
+	}
+
+	@Test
 	public void theTearsOfGuthixOpensOnTheCavesFloor() throws IOException
 	{
 		// RuneLite's list says floor 0; the cave is on floor 2, U3 (owner, 2026-11-07: search should show U3)
