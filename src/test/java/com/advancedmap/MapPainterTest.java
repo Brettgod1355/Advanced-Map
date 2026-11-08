@@ -198,6 +198,23 @@ public class MapPainterTest
 	}
 
 	@Test
+	public void aMistypedNamedIconRowSkipsOnlyItself() throws java.io.IOException
+	{
+		// deep scan, 2026-11-08: one bad cell used to empty the whole table, every named icon with it
+		String rows = "Good Course\t1\t2\t0\tGood_Course\tAgility 10\n"
+			+ "Level First\t3\t4\t0\tLevel_First\t75 Agility\n"
+			+ "Double Space\t5\t6\t0\tDouble_Space\tAgility  75\n"
+			+ "No Level\t7\t8\t0\tNo_Level\tAgility\n"
+			+ "Bad Tile\tx\t9\t0\tBad_Tile\n"
+			+ "Also Good\t10\t11\t0\tAlso_Good\n";
+		List<NamedIcons.Named> read = NamedIcons.parse(new java.io.ByteArrayInputStream(
+			rows.getBytes(java.nio.charset.StandardCharsets.UTF_8)));
+		assertEquals(2, read.size());
+		assertEquals("Good Course", read.get(0).getName());
+		assertEquals("Also Good", read.get(1).getName());
+	}
+
+	@Test
 	public void aTileWithNoIconRoutesAndTakesAMarker()
 	{
 		MapPainter.Selection tile = new MapPainter.Selection(null, true, 10, 10, new WorldPoint(3222, 3218, 1));

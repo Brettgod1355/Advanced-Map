@@ -97,8 +97,16 @@ final class NamedIcons
 		List<Named> out = new ArrayList<>();
 		for (String[] f : DataFiles.rows(in))
 		{
-			out.add(new Named(f[0], Integer.parseInt(f[1]), Integer.parseInt(f[2]), Integer.parseInt(f[3]), f[4],
-				f.length > 5 ? needs(f[5]) : Collections.emptyList()));
+			try
+			{
+				out.add(new Named(f[0], Integer.parseInt(f[1]), Integer.parseInt(f[2]), Integer.parseInt(f[3]), f[4],
+					f.length > 5 ? needs(f[5]) : Collections.emptyList()));
+			}
+			catch (RuntimeException e)
+			{
+				// a mistyped row costs only itself, not every named icon (deep scan, 2026-11-08)
+				log.debug("skipped a named icon row: {}", String.join("|", f), e);
+			}
 		}
 		return Collections.unmodifiableList(out);
 	}
