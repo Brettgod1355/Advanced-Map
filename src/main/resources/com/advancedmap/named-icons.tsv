@@ -11,3 +11,6 @@ Soul Wars Portal	3157	10027	0	Soul_Wars_Portal
 Guardians of the Rift	3615	9483	0	Guardians_of_the_Rift
 # the minigame icon in the Hallowed Sepulchre's lobby underground (owner, 2026-11-07); its way in is at 3653, 3386
 Hallowed Sepulchre	2400	5982	0	Hallowed_Sepulchre
+# the minigame icon by a copy of the Gnome Ball field on the underground map, far from the field's own spot (owner's
+# hover, 2026-11-07: "gnome ball not lower level")
+Gnome Ball	1934	5536	0	Gnome_Ball
