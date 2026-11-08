@@ -15,7 +15,7 @@ package com.advancedmap;
 final class WhatsNew
 {
 	/** The version being run. Must match {@code version} in build.gradle and runelite-plugin.properties. */
-	static final String VERSION = "1.1";
+	static final String VERSION = "1.2";
 
 	/**
 	 * What this version brings: the WHATS_NEW page's list in {@code menu-pages.txt}, one short change each, drawn on

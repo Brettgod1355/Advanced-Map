@@ -71,13 +71,11 @@ In the background from the moment the client starts, one region after another: t
 Game updates need nothing from you. The map, its place names and the game's own map icons come from your client, so when an update changes the world (a new island, a moved wall), the regions it changed are built again the first time you look at them, and new ones in the background. Shops and what they sell, prices, monsters with their stats and drops, items on the ground, and teleport and transport details come from the OSRS Wiki with the plugin: they change when the Plugin Hub updates Advanced Map, which RuneLite does by itself when it starts.
 
 = WHATS_NEW
-# 1.1: one change a line, no full stops. Rewrite with every release; empty (no "- " lines) for fixes only.
-- Hover over a shop to see what it sells
-- Hover over a transport to see where it goes and the fares
-- After clicking into a dungeon, your mouse's back button takes you back out, and forward goes in again
-- A dungeon opens at the zoom you were at
-- The Kalphite Lair, the Kalphite Queen's chamber and the Motherlode Mine can be clicked into and back out of
-- Shortcuts and ropes that need an achievement diary say which: green once it is done, red until
+# 1.2: one change a line, no full stops. Rewrite with every release; empty (no "- " lines) for fixes only.
+- Agility course icons show the course's name instead of "Agility training"
+- Hover over an Agility course to see the Agility level it needs: green once you have it, red until
+- Search for an Agility course by name, like "seers rooftop" or "prifddinas agility"
+- Right-click an Agility course to open its wiki page
 The full release notes are on GitHub.
 
 = IMPROVE
