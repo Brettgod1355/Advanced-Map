@@ -9,7 +9,7 @@
 = HELP
 
 ## Moving around
-Drag to move, scroll to zoom around the pointer. The map opens on you, on the surface or the underground map, whichever you are on. The round button at the bottom right brings you back into view and keeps you there as you move (lit blue) until you drag the map. When you are out of view, an arrow at the edge points to you; click it to go back.
+Drag to move, scroll to zoom around the pointer. The map opens on you, on the surface or the underground map, whichever you are on. The round button at the bottom right brings you back into view and keeps you there as you move (lit blue) until you drag the map. When you are out of view, an arrow at the edge points to you; click it to go back. After a jump (into a dungeon, to a search result or a pin), your mouse's back button returns to where the map was, and its forward button goes on again.
 
 ## Search
 Click the box at the top and type: a place, a dungeon, anything a shop sells or a monster. Places come first, the bigger first ("var": Varlamore, Varrock); nicknames work ("ardy", "fally"); loose spelling too ("d scim", "kbd"). Up, Down and Enter pick a result, or click one. A place moves the map there; an item lists the shops that sell it, nearest first, and where it lies on the ground; a monster marks every spawn and lists them by area, under its hitpoints, Slayer level and masters, drops and a Wiki button. Fairy ring codes ("cks"), fishing spots ("lobster"), hunter areas and kinds of icon ("bank": every one, nearest first) are found too. The three lines beside the magnifying glass choose what the search looks in. Shops by name only with the setting.
