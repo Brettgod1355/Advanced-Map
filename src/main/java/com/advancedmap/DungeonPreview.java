@@ -294,6 +294,14 @@ final class DungeonPreview
 		return out;
 	}
 
+	/** The ways inside dungeons and the game's links between underground places, but those back to {@code from}. */
+	private List<Way> ways(WorldPoint from)
+	{
+		List<Way> all = new ArrayList<>(innerWays);
+		all.addAll(mapWays);
+		return notBackTo(all, from);
+	}
+
 	/**
 	 * The monsters inside the dungeon an entrance ({@code from}) leads to ({@code to}), from what is known of its floor
 	 * so far; while some of it is still being drawn, looked through again every so often, and the pictures asked for.
@@ -307,16 +315,13 @@ final class DungeonPreview
 		{
 			return known;
 		}
-		List<Way> innerAndMap = new ArrayList<>(innerWays);
-		innerAndMap.addAll(mapWays);
-		List<Way> ways = notBackTo(innerAndMap, from);
 		List<List<WorldMapElements.Piece>> mapsNow = maps;
 		java.util.concurrent.Executor run = executor;
 		if (run == null)
 		{
 			lastTry = key;
 			lastTryAt = now;
-			Look look = look(to, mapsNow, ways, this::floor, Spawns.all());
+			Look look = look(to, mapsNow, ways(from), this::floor, Spawns.all());
 			looked.put(key, look);
 			return look;
 		}
@@ -326,6 +331,8 @@ final class DungeonPreview
 			lastTry = key;
 			lastTryAt = now;
 			int asOf = generation.get();
+			// built only for a look that starts: a frame that waits on one already running makes nothing
+			List<Way> ways = ways(from);
 			try
 			{
 				run.execute(() ->
