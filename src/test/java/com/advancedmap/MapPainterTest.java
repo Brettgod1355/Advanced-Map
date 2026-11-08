@@ -138,6 +138,57 @@ public class MapPainterTest
 			settings(RoutingPlugin.NONE)).stream().noneMatch(e -> e.getAction() == MapPainter.Action.WIKI));
 	}
 
+	/** The text of an icon's info box lines, logged out. */
+	private static List<String> infoText(MapSpot spot)
+	{
+		List<String> out = new java.util.ArrayList<>();
+		for (MapIcons.Line line : MapIcons.info(spot, Progress.NONE, false, FloorNumbers.GROUND_IS_FIRST))
+		{
+			out.add(line.getText());
+		}
+		return out;
+	}
+
+	@Test
+	public void agilityCoursesAreNamedWithTheLevelTheyNeed()
+	{
+		// owner, 2026-11-08: "agility courses aren't showing the name of lvl req" (Prifddinas's, which the map draws in
+		// Tirannwn; the game's map calls each course only "Agility training")
+		MapSpot prifddinas = MapSpot.icon(2230, 3357, 0, 0, 1098);
+		assertEquals("Prifddinas Agility Course", MapIcons.name(prifddinas, Progress.NONE));
+		assertTrue(infoText(prifddinas).contains("Needs 75 Agility"));
+		assertEquals("Prifddinas_Agility_Course", NamedIcons.at(2230, 3357, 0).getWikiPage());
+
+		MapSpot draynor = MapSpot.icon(3104, 3279, 0, 0, 1098);
+		assertEquals("Draynor Village Rooftop Course", MapIcons.name(draynor, Progress.NONE));
+		assertTrue(infoText(draynor).contains("Needs 1 Agility"));
+		assertTrue(infoText(MapSpot.icon(2674, 3298, 0, 0, 1098)).contains("Needs 90 Agility"));
+
+		// a course with two routes: each part's name over its level
+		List<String> shayzien = infoText(MapSpot.icon(1552, 3632, 0, 0, 1098));
+		int basic = shayzien.indexOf("Basic course");
+		assertTrue(basic >= 0);
+		assertEquals("Needs 1 Agility", shayzien.get(basic + 1));
+		int advanced = shayzien.indexOf("Advanced course");
+		assertEquals("Needs 45 Agility", shayzien.get(advanced + 1));
+
+		// the arena needs no level to go in: named, with no level line
+		MapSpot arena = MapSpot.icon(2807, 3193, 0, 0, 1098);
+		assertEquals("Brimhaven Agility Arena", MapIcons.name(arena, Progress.NONE));
+		assertTrue(infoText(arena).stream().noneMatch(text -> text.startsWith("Needs")));
+	}
+
+	@Test
+	public void aNamedIconsNeedsColumnReadsAWholeLevelOrOnePerPart()
+	{
+		assertEquals(Collections.singletonList(new NamedIcons.Need("", net.runelite.api.Skill.AGILITY, 75)),
+			NamedIcons.needs("Agility 75"));
+		List<NamedIcons.Need> parts = NamedIcons.needs("Basic course: Agility 50;Advanced course: Agility 62");
+		assertEquals(2, parts.size());
+		assertEquals(new NamedIcons.Need("Advanced course", net.runelite.api.Skill.AGILITY, 62), parts.get(1));
+		assertTrue(NamedIcons.needs("").isEmpty());
+	}
+
 	@Test
 	public void aTileWithNoIconRoutesAndTakesAMarker()
 	{

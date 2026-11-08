@@ -644,6 +644,21 @@ final class MapIcons
 				}
 			}
 		}
+		NamedIcons.Named named = spot.getTeleport() == null ? NamedIcons.at(spot.getX(), spot.getY(), spot.getPlane())
+			: null;
+		if (named != null)
+		{
+			// what a place Advanced Map names needs: an Agility course's level, the game's map gives only "Agility
+			// training" (owner, 2026-11-08: "agility courses aren't showing the name of lvl req")
+			for (NamedIcons.Need need : named.getNeeds())
+			{
+				if (!need.getLabel().isEmpty())
+				{
+					lines.add(new Line(need.getLabel(), PLAIN));
+				}
+				levelLine(lines, need.getSkill(), need.getLevel(), progress);
+			}
+		}
 		if (DOCKING_POINT.equalsIgnoreCase(category) || PORT.equalsIgnoreCase(category))
 		{
 			// where a boat docks here and what that needs, which the game's map leaves out

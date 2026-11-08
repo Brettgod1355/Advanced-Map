@@ -1,6 +1,7 @@
 # Icons of the game's map that Advanced Map names, where the game's map gives only what kind they are ("Furnace"),
 # with the OSRS Wiki page about them (opened from the icon's right-click menu). Each tile is where the game's icon is.
-# name, x, y, plane, wiki page
+# name, x, y, plane, wiki page, and what it needs (optional): "Agility 75", or a part each,
+# "Basic course: Agility 1;Advanced course: Agility 45"
 Ancient Furnace	2929	10461	0	Ancient_Furnace
 Gemstone Crab cave	1279	3168	0	Gemstone_Crab
 Gemstone Crab cave	1247	3036	0	Gemstone_Crab
@@ -24,3 +25,31 @@ Rat Pits	3971	4872	0	Rat_Pits
 Gnome Restaurant	1989	5550	1	Gnome_Restaurant
 # the Games Zone's minigame icon (owner's hover, 2026-11-07: "this is games zone", with its wiki page)
 Games Zone	3847	4945	0	Games_Zone
+# The Agility courses: the game's map calls each only "Agility training" (owner, 2026-11-08: "agility courses aren't
+# showing the name of lvl req"). Tiles are the game's icons, read from the cache 2026-11-08; levels from the OSRS Wiki's
+# Agility, Agility training and Rooftop Agility Courses pages (cached in the notes, wiki-cache/2026-11-08). The game's
+# other Agility training icons are on copies of these places on the underground map (Varrock, Falador) and stay unnamed.
+Gnome Stronghold Agility Course	2475	3436	0	Gnome_Stronghold_Agility_Course	Agility 1
+Shayzien Agility Course	1552	3632	0	Shayzien_Agility_Course	Basic course: Agility 1;Advanced course: Agility 45
+Draynor Village Rooftop Course	3104	3279	0	Draynor_Village_Rooftop_Course	Agility 1
+Al Kharid Rooftop Course	3273	3195	0	Al_Kharid_Rooftop_Course	Agility 20
+Varrock Rooftop Course	3220	3414	0	Varrock_Rooftop_Course	Agility 30
+Penguin Agility Course	2639	4041	1	Penguin_Agility_Course	Agility 30
+Agility Pyramid	3348	2827	0	Agility_Pyramid	Agility 30
+Barbarian Outpost Agility Course	2545	3569	0	Barbarian_Outpost_Agility_Course	Agility 35
+Canifis Rooftop Course	3507	3490	0	Canifis_Rooftop_Course	Agility 40
+Ape Atoll Agility Course	2753	2742	0	Ape_Atoll_Agility_Course	Agility 48
+Falador Rooftop Course	3036	3342	0	Falador_Rooftop_Course	Agility 50
+Colossal Wyrm Agility Course	1650	2930	0	Colossal_Wyrm_Agility_Course	Basic course: Agility 50;Advanced course: Agility 62
+Wilderness Agility Course	2998	3916	0	Wilderness_Agility_Course	Agility 52
+Seers' Village Rooftop Course	2729	3488	0	Seers'_Village_Rooftop_Course	Agility 60
+# its icon on the surface, by the trapdoor north-east of Canifis that leads down to the course
+Werewolf Agility Course	3543	3463	0	Werewolf_Agility_Course	Agility 60
+Pollnivneach Rooftop Course	3351	2963	0	Pollnivneach_Rooftop_Course	Agility 70
+Dorgesh-Kaan Agility Course	2720	5241	3	Dorgesh-Kaan_Agility_Course	Agility 70
+# the tile Prifddinas is drawn at in Tirannwn; the game's own tile, shown in its box, is 3254, 6109
+Prifddinas Agility Course	2230	3357	0	Prifddinas_Agility_Course	Agility 75
+Rellekka Rooftop Course	2625	3677	0	Rellekka_Rooftop_Course	Agility 80
+Ardougne Rooftop Course	2674	3298	0	Ardougne_Rooftop_Course	Agility 90
+# no level to go in: each obstacle has its own
+Brimhaven Agility Arena	2807	3193	0	Brimhaven_Agility_Arena

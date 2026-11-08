@@ -12,10 +12,12 @@ import java.util.Collections;
 import java.util.List;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
+import net.runelite.api.Skill;
 
 /**
  * The game's map icons Advanced Map names itself ({@code named-icons.tsv}): the Ancient Furnace, which the game's map
- * calls only "Furnace", and the Gemstone Crab's caves, only "Dungeon". Each has the wiki page about it.
+ * calls only "Furnace", the Gemstone Crab's caves, only "Dungeon", and each Agility course, only "Agility training",
+ * with the level it needs. Each has the wiki page about it.
  */
 @Slf4j
 final class NamedIcons
@@ -32,6 +34,18 @@ final class NamedIcons
 		int plane;
 		/** The wiki page's title, with underscores ("Ancient_Furnace"). */
 		String wikiPage;
+		/** The skill levels the place needs, shown in its info box (an Agility course's); none for most. */
+		List<Need> needs;
+	}
+
+	/** A skill level a named place needs, for one part of it ("Advanced course") or the whole (no label). */
+	@Value
+	static class Need
+	{
+		/** The part it is for, or "" for the whole place. */
+		String label;
+		Skill skill;
+		int level;
 	}
 
 	private static final List<Named> ALL = load();
@@ -74,7 +88,30 @@ final class NamedIcons
 		List<Named> out = new ArrayList<>();
 		for (String[] f : DataFiles.rows(in))
 		{
-			out.add(new Named(f[0], Integer.parseInt(f[1]), Integer.parseInt(f[2]), Integer.parseInt(f[3]), f[4]));
+			out.add(new Named(f[0], Integer.parseInt(f[1]), Integer.parseInt(f[2]), Integer.parseInt(f[3]), f[4],
+				f.length > 5 ? needs(f[5]) : Collections.emptyList()));
+		}
+		return Collections.unmodifiableList(out);
+	}
+
+	/**
+	 * The needs column: "Agility 75" for the whole place, or parts with their own, "Basic course: Agility 1;Advanced
+	 * course: Agility 45". Empty for none.
+	 */
+	static List<Need> needs(String column)
+	{
+		List<Need> out = new ArrayList<>();
+		for (String part : column.split(";"))
+		{
+			part = part.trim();
+			if (part.isEmpty())
+			{
+				continue;
+			}
+			int colon = part.indexOf(':');
+			String label = colon < 0 ? "" : part.substring(0, colon).trim();
+			String[] skillLevel = part.substring(colon + 1).trim().split(" ");
+			out.add(new Need(label, Skill.valueOf(skillLevel[0].toUpperCase()), Integer.parseInt(skillLevel[1])));
 		}
 		return Collections.unmodifiableList(out);
 	}
