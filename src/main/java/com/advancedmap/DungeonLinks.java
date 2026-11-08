@@ -65,7 +65,7 @@ final class DungeonLinks
 	/** The varbits the links' needs are told by, for the player's progress to read. */
 	static Set<Integer> needVars()
 	{
-		return VARS;
+		return java.util.Collections.unmodifiableSet(VARS);
 	}
 
 	/** The links the list adds. */

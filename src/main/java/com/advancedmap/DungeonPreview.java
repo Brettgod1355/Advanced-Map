@@ -618,7 +618,8 @@ final class DungeonPreview
 	{
 		for (MapSearch.Entry place : places)
 		{
-			if (place.getKind() == MapSearch.Kind.DUNGEON && place.getName().equalsIgnoreCase(name))
+			if ((place.getKind() == MapSearch.Kind.DUNGEON || place.getKind() == MapSearch.Kind.MINIGAME)
+				&& place.getName().equalsIgnoreCase(name))
 			{
 				return "Up to the surface";
 			}
@@ -640,19 +641,25 @@ final class DungeonPreview
 			return best;
 		}
 		int bestDistance = NAME_REACH + 1;
+		// a dungeon's entrance before a minigame's spot: the wiki's minigame areas (Chompy bird hunting...) are no
+		// dungeon's name
+		boolean bestDungeon = false;
 		for (MapSearch.Entry place : places)
 		{
 			if (place.getKind() != MapSearch.Kind.DUNGEON && place.getKind() != MapSearch.Kind.MINIGAME)
 			{
 				continue;
 			}
+			boolean dungeon = place.getKind() == MapSearch.Kind.DUNGEON;
 			for (WorldPoint at : place.getPoints())
 			{
 				int d = Math.max(Math.abs(at.getX() - spot.getX()), Math.abs(at.getY() - spot.getY()));
-				if (at.getPlane() == spot.getPlane() && d < bestDistance)
+				if (at.getPlane() == spot.getPlane() && d <= NAME_REACH
+					&& (dungeon && !bestDungeon || dungeon == bestDungeon && d < bestDistance))
 				{
 					best = place.getName();
 					bestDistance = d;
+					bestDungeon = dungeon;
 				}
 			}
 		}

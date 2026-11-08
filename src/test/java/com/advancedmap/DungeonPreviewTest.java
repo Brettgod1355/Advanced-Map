@@ -268,5 +268,48 @@ public class DungeonPreviewTest
 		assertEquals("Up to the surface", DungeonPreview.wayOutTitle("Kalphite Lair", places));
 		assertEquals("Up to Lumbridge", DungeonPreview.wayOutTitle("Lumbridge", places));
 		assertEquals("Up to the surface", DungeonPreview.wayOutTitle(null, places));
+		// a minigame's name is a place's own name too (Giants' Foundry is listed as one)
+		List<MapSearch.Entry> foundry = Collections.singletonList(new MapSearch.Entry(MapSearch.Kind.MINIGAME,
+			"Giants' Foundry", "Minigame", Collections.singletonList(new WorldPoint(3360, 3150, 0)),
+			Collections.emptyList(), null));
+		assertEquals("Up to the surface", DungeonPreview.wayOutTitle("Giants' Foundry", foundry));
+	}
+
+	@Test
+	public void aLookIsKeptForTheIconItIsLookedFromToo()
+	{
+		// the lair's landing looked at from the Queen's chamber's rope up, then from the desert's entrance: two looks,
+		// as their ways differ (the way back to each icon is not followed)
+		java.util.concurrent.ExecutorService executor = java.util.concurrent.Executors.newSingleThreadExecutor();
+		try
+		{
+			DungeonPreview preview = new DungeonPreview(new RegionImages(new RegionImagesCacheTest.Flat(), executor,
+				new MapIcons()));
+			WorldPoint landing = new WorldPoint(3508, 9497, 2);
+			DungeonPreview.Look fromRope = preview.look(landing, new WorldPoint(3508, 9493, 0));
+			assertSame(fromRope, preview.look(landing, new WorldPoint(3508, 9493, 0)));
+			org.junit.Assert.assertNotSame(fromRope, preview.look(landing, new WorldPoint(3227, 3108, 0)));
+		}
+		finally
+		{
+			executor.shutdownNow();
+		}
+	}
+
+	@Test
+	public void aDungeonsEntranceNamesThePreviewBeforeAMinigameSpotNearer()
+	{
+		// a wiki minigame spot (Chompy bird hunting) two tiles from a dungeon icon, the dungeon's entrance five away
+		MapSpot icon = MapSpot.icon(2340, 3061, 0, 1, IconGroup.DUNGEON);
+		List<MapSearch.Entry> places = Arrays.asList(
+			new MapSearch.Entry(MapSearch.Kind.MINIGAME, "Chompy bird hunting", "Minigame",
+				Collections.singletonList(new WorldPoint(2337, 3061, 0)), Collections.emptyList(), null),
+			new MapSearch.Entry(MapSearch.Kind.DUNGEON, "Some Dungeon", "Dungeon",
+				Collections.singletonList(new WorldPoint(2345, 3061, 0)), Collections.emptyList(), null));
+		assertEquals("Some Dungeon", DungeonPreview.name(icon, new WorldPoint(2340, 9461, 0), places,
+			Collections.emptyList()));
+		// with no dungeon near, the minigame still names it
+		assertEquals("Chompy bird hunting", DungeonPreview.name(icon, new WorldPoint(2340, 9461, 0),
+			places.subList(0, 1), Collections.emptyList()));
 	}
 }

@@ -47,7 +47,35 @@ final class MapLabels
 	 * The game's labels Advanced Map names otherwise, from {@code label-names.tsv}: x, y, the game's text, the name
 	 * instead ("Lower level" over the Motherlode Mine; owner, 2026-11-07). In a data file, so a rename costs no tokens.
 	 */
-	private static final List<String[]> RENAMES = DataFiles.rows("label-names.tsv");
+	private static final List<Rename> RENAMES = renames();
+
+	/** A row of the list, read once: where, the game's text, the lines instead. */
+	@Value
+	private static class Rename
+	{
+		int x;
+		int y;
+		String text;
+		List<String> lines;
+	}
+
+	private static List<Rename> renames()
+	{
+		List<Rename> out = new ArrayList<>();
+		for (String[] row : DataFiles.rows("label-names.tsv"))
+		{
+			try
+			{
+				out.add(new Rename(Integer.parseInt(row[0].trim()), Integer.parseInt(row[1].trim()), row[2].trim(),
+					Arrays.asList(row[3].trim().split("\\|"))));
+			}
+			catch (RuntimeException e)
+			{
+				// a row that is no rename renames nothing: the other labels keep loading
+			}
+		}
+		return out;
+	}
 
 	private volatile List<Label> labels = Collections.emptyList();
 
@@ -70,21 +98,12 @@ final class MapLabels
 	static Label renamed(Label label)
 	{
 		String text = String.join(" ", label.getLines());
-		for (String[] row : RENAMES)
+		for (Rename rename : RENAMES)
 		{
-			try
+			if (rename.text.equalsIgnoreCase(text) && Math.abs(rename.x - label.getX()) <= RENAME_REACH
+				&& Math.abs(rename.y - label.getY()) <= RENAME_REACH)
 			{
-				if (row[2].trim().equalsIgnoreCase(text)
-					&& Math.abs(Integer.parseInt(row[0].trim()) - label.getX()) <= RENAME_REACH
-					&& Math.abs(Integer.parseInt(row[1].trim()) - label.getY()) <= RENAME_REACH)
-				{
-					return new Label(Arrays.asList(row[3].trim().split("\\|")), label.getX(), label.getY(),
-						label.getSize(), label.getColor());
-				}
-			}
-			catch (RuntimeException e)
-			{
-				// a row that is no rename renames nothing: the other labels keep loading
+				return new Label(rename.lines, label.getX(), label.getY(), label.getSize(), label.getColor());
 			}
 		}
 		return label;

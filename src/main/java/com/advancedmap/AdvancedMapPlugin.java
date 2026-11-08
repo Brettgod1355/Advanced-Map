@@ -1808,10 +1808,17 @@ public class AdvancedMapPlugin extends Plugin
 	 */
 	void goTo(WorldPoint to)
 	{
+		goTo(to, 0);
+	}
+
+	/** As {@link #goTo(WorldPoint)}, zoomed in to at least {@code minZoom} (a search result: {@link #SEARCH_ZOOM}). */
+	void goTo(WorldPoint to, double minZoom)
+	{
 		JumpHistory.Place from = lookingAt();
-		// a jump to where the map already looks (the same search result again) is none: Back would seem to do nothing
+		double zoom = Math.max(from.zoom, minZoom);
+		// a jump that changes nothing (the same search result again, as close) is none: Back would seem to do nothing
 		if (from.area != MapArea.of(to.getY()) || from.plane != to.getPlane() || (int) from.centerX != to.getX()
-			|| (int) from.centerY != to.getY())
+			|| (int) from.centerY != to.getY() || zoom != from.zoom)
 		{
 			jumps.jumped(from);
 		}
@@ -1819,7 +1826,7 @@ public class AdvancedMapPlugin extends Plugin
 		area = MapArea.of(to.getY());
 		plane = to.getPlane();
 		MapViewport there = viewports.get(area);
-		there.setZoom(from.zoom);
+		there.setZoom(zoom);
 		there.centerOn(to.getX(), to.getY());
 	}
 
@@ -2362,7 +2369,9 @@ public class AdvancedMapPlugin extends Plugin
 				break;
 			}
 			case ICON:
-				sideList.open("Nearest: " + entry.getName(), nearestRows(entry.getPoints(), from, entry.getName()), entry);
+				MapIcons current = icons;
+				sideList.open("Nearest: " + entry.getName(), nearestRows(entry.getPoints(), from, entry.getName(),
+					current == null ? Collections.emptyList() : current.allSpots(), progress, labelsNow()), entry);
 				break;
 			case MONSTER:
 			case NPC:
@@ -2395,24 +2404,19 @@ public class AdvancedMapPlugin extends Plugin
 				}
 				break;
 		}
-		goTo(nearest);
-		MapViewport viewport = viewports.get(area);
-		if (viewport.view(1, 1).zoom < SEARCH_ZOOM)
-		{
-			viewport.setZoom(SEARCH_ZOOM);
-		}
+		goTo(nearest, SEARCH_ZOOM);
 	}
 
 	/** Every place of a kind of map icon, nearest first: named by the game's nearest place name, with how far. */
-	private List<SideList.Row> nearestRows(List<WorldPoint> points, WorldPoint from, String kind)
+	static List<SideList.Row> nearestRows(List<WorldPoint> points, WorldPoint from, String kind, List<MapSpot> all,
+		Progress progress, List<MapLabels.Label> labels)
 	{
 		List<WorldPoint> sorted = new ArrayList<>(points);
 		sorted.sort(java.util.Comparator.comparingInt(point -> SearchSpots.distance(point, from)));
 		// each called as its box calls it (a minigame, a shortcut, a named icon), else by the nearest place's name
 		// (Guardians of the Rift read "Queen's Chamber", the Tears of Guthix "Giant frogs"; owner, 2026-11-07)
 		Map<WorldPoint, MapSpot> spots = new java.util.HashMap<>();
-		MapIcons current = icons;
-		for (MapSpot spot : current == null ? Collections.<MapSpot>emptyList() : current.allSpots())
+		for (MapSpot spot : all)
 		{
 			if (kind.equals(progress.categoryName(spot.getCategory())))
 			{
@@ -2425,7 +2429,7 @@ public class AdvancedMapPlugin extends Plugin
 			int tiles = SearchSpots.distance(point, from);
 			MapSpot spot = spots.get(point);
 			String own = spot == null ? null : MapIcons.name(spot, progress);
-			rows.add(new SideList.Row(own != null && !own.equals(kind) ? own : SearchSpots.name(point, labelsNow()),
+			rows.add(new SideList.Row(own != null && !own.equals(kind) ? own : SearchSpots.name(point, labels),
 				tiles >= 1000 ? "far" : tiles + " tiles", null, null, point, null));
 		}
 		return rows;

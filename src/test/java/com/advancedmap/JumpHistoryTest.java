@@ -128,6 +128,21 @@ public class JumpHistoryTest
 	}
 
 	@Test
+	public void theSameTileZoomedInAgainIsAStepBack()
+	{
+		// a search result, zoomed out without moving, then the same result again: Back returns to the zoomed-out view
+		AdvancedMapPlugin plugin = new AdvancedMapPlugin();
+		plugin.newViews();
+		WorldPoint varrock = new WorldPoint(3213, 3424, 0);
+		plugin.goTo(varrock, AdvancedMapPlugin.SEARCH_ZOOM);
+		plugin.viewport().setZoom(1);
+		plugin.goTo(varrock, AdvancedMapPlugin.SEARCH_ZOOM);
+		assertEquals(AdvancedMapPlugin.SEARCH_ZOOM, plugin.viewport().view(1, 1).zoom, 0);
+		assertTrue(plugin.historyButton(AdvancedMapPlugin.BACK_BUTTON));
+		assertEquals(1, plugin.viewport().view(1, 1).zoom, 0);
+	}
+
+	@Test
 	public void theSideButtonsAreTheMapsAndNoOtherButtonIs()
 	{
 		AdvancedMapPlugin plugin = new AdvancedMapPlugin();

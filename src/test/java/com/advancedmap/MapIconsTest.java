@@ -178,6 +178,33 @@ public class MapIconsTest
 	}
 
 	@Test
+	public void theNearestIconsListNamesEachAsItsBoxDoes()
+	{
+		// "minigames" and "agility shortcut" searched: each row as its box calls it, not the nearest place's name
+		// (Gnome Ball read "Lower level"; owner, 2026-11-07)
+		List<MapSpot> all = java.util.Arrays.asList(MapSpot.icon(1934, 5536, 0, 0, 7001),
+			MapSpot.icon(3503, 9508, 2, 0, IconGroup.AGILITY_SHORTCUT));
+		Map<Integer, String> names = new HashMap<>();
+		names.put(7001, "Minigame");
+		names.put(IconGroup.AGILITY_SHORTCUT, "Agility shortcut");
+		Progress progress = new Progress(false, new int[Skill.values().length], new EnumMap<>(Quest.class),
+			Collections.emptyMap(), names, Collections.emptyMap());
+		net.runelite.api.coords.WorldPoint from = new net.runelite.api.coords.WorldPoint(3222, 3218, 0);
+		List<MapLabels.Label> lowerLevel = Collections.singletonList(new MapLabels.Label(
+			Collections.singletonList("Lower level"), 1940, 5540, MapLabels.PLACE, java.awt.Color.YELLOW));
+		assertEquals("Gnome Ball", AdvancedMapPlugin.nearestRows(Collections.singletonList(
+			new net.runelite.api.coords.WorldPoint(1934, 5536, 0)), from, "Minigame", all, progress, lowerLevel)
+			.get(0).getText());
+		assertEquals("Crevice", AdvancedMapPlugin.nearestRows(Collections.singletonList(
+			new net.runelite.api.coords.WorldPoint(3503, 9508, 2)), from, "Agility shortcut", all, progress, lowerLevel)
+			.get(0).getText());
+		// an icon with nothing of its own is called by the nearest place
+		assertEquals("Lower level", AdvancedMapPlugin.nearestRows(Collections.singletonList(
+			new net.runelite.api.coords.WorldPoint(1941, 5541, 0)), from, "Minigame", all, progress, lowerLevel)
+			.get(0).getText());
+	}
+
+	@Test
 	public void aDuplicateIconTheListLeavesOutIsNeverKept()
 	{
 		// the Gnome Restaurant's minigame icon twice, the second on a copy of the Gnome Stronghold (owner, 2026-11-07)

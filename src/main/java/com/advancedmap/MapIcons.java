@@ -100,26 +100,30 @@ final class MapIcons
 	 * The game's icons Advanced Map leaves out, from {@code removed-icons.tsv} (x, y, plane): a second copy of a place
 	 * the game's map keeps on a map space of its own (the Gnome Restaurant's; owner, 2026-11-07).
 	 */
-	private static final List<String[]> REMOVED = DataFiles.rows("removed-icons.tsv");
+	private static final Set<WorldPoint> REMOVED = removedTiles();
 
-	static boolean removed(MapSpot spot)
+	/** The list's tiles, read once; a row that is no tile leaves nothing out. */
+	private static Set<WorldPoint> removedTiles()
 	{
-		for (String[] row : REMOVED)
+		Set<WorldPoint> out = new java.util.HashSet<>();
+		for (String[] row : DataFiles.rows("removed-icons.tsv"))
 		{
 			try
 			{
-				if (Integer.parseInt(row[0].trim()) == spot.getX() && Integer.parseInt(row[1].trim()) == spot.getY()
-					&& Integer.parseInt(row[2].trim()) == spot.getPlane())
-				{
-					return true;
-				}
+				out.add(new WorldPoint(Integer.parseInt(row[0].trim()), Integer.parseInt(row[1].trim()),
+					Integer.parseInt(row[2].trim())));
 			}
 			catch (RuntimeException e)
 			{
-				// a row that is no tile leaves nothing out
+				// skipped
 			}
 		}
-		return false;
+		return out;
+	}
+
+	static boolean removed(MapSpot spot)
+	{
+		return REMOVED.contains(new WorldPoint(spot.getX(), spot.getY(), spot.getPlane()));
 	}
 
 	/** Keeps a drawn region's icons, but those the list leaves out. Render threads. */

@@ -104,6 +104,6 @@ final class Shortcuts
 	/** The varbits the shortcuts' needs are told by, for the player's progress to read. */
 	static Set<Integer> needVars()
 	{
-		return VARS;
+		return java.util.Collections.unmodifiableSet(VARS);
 	}
 }
