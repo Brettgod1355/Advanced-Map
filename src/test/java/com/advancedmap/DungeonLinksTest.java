@@ -18,7 +18,7 @@ public class DungeonLinksTest
 	public void theEntrancesTheGameLeavesOutLeadIntoTheirDungeons()
 	{
 		Map<Integer, Integer> extra = DungeonLinks.extra();
-		assertEquals(49, extra.size());
+		assertEquals(51, extra.size());
 		// Tonali Cavern's two entrances, from the wiki
 		int cavern = MapLinks.pack(1311, 9382, 0);
 		assertEquals(cavern, MapLinks.destinationNear(extra, 1306, 3035, 0, RegionImages.LINK_REACH));
@@ -75,6 +75,13 @@ public class DungeonLinksTest
 		assertEquals(MapLinks.pack(3056, 9744, 0), MapLinks.destinationNear(extra, 3718, 5678, 0,
 			RegionImages.LINK_REACH));
 		assertEquals("Mining Guild", DungeonLinks.name(3718, 5678, 0));
+		// Keldagrim's ladder down into the Blast Furnace, and back up
+		assertEquals(MapLinks.pack(1940, 4956, 0), MapLinks.destinationNear(extra, 2931, 10196, 0,
+			RegionImages.LINK_REACH));
+		assertEquals(MapLinks.pack(2931, 10196, 0), MapLinks.destinationNear(extra, 1940, 4956, 0,
+			RegionImages.LINK_REACH));
+		assertEquals("Blast Furnace", DungeonLinks.name(2931, 10196, 0));
+		assertEquals("Keldagrim", DungeonLinks.name(1940, 4956, 0));
 	}
 
 	@Test
