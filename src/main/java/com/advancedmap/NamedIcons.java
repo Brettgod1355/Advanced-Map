@@ -22,8 +22,11 @@ import net.runelite.api.Skill;
 @Slf4j
 final class NamedIcons
 {
-	/** How far the game's icon may be from the listed tile. */
-	static final int REACH = 2;
+	/**
+	 * How far the game's icon may be from the listed tile: 1, as the Werewolf course's and Brimhaven Arena's icons each
+	 * have the game's Dungeon icon 2 tiles away, which keeps its own name (deep scan, 2026-11-08).
+	 */
+	static final int REACH = 1;
 
 	@Value
 	static class Named
@@ -117,7 +120,7 @@ final class NamedIcons
 			int colon = part.indexOf(':');
 			String label = colon < 0 ? "" : part.substring(0, colon).trim();
 			String[] skillLevel = part.substring(colon + 1).trim().split(" ");
-			out.add(new Need(label, Skill.valueOf(skillLevel[0].toUpperCase()), Integer.parseInt(skillLevel[1])));
+			out.add(new Need(label, Skill.valueOf(skillLevel[0].toUpperCase(java.util.Locale.ROOT)), Integer.parseInt(skillLevel[1])));
 		}
 		return Collections.unmodifiableList(out);
 	}

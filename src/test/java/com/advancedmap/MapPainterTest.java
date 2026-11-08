@@ -176,6 +176,14 @@ public class MapPainterTest
 		MapSpot arena = MapSpot.icon(2807, 3193, 0, 0, 1098);
 		assertEquals("Brimhaven Agility Arena", MapIcons.name(arena, Progress.NONE));
 		assertTrue(infoText(arena).stream().noneMatch(text -> text.startsWith("Needs")));
+
+		// the game's Dungeon icons 2 tiles from the Werewolf course's and the arena's keep their own name, with no
+		// level line (deep scan, 2026-11-08: with a reach of 2 they took the course's)
+		MapSpot trapdoor = MapSpot.icon(3543, 3461, 0, 0, 1062);
+		assertNull(NamedIcons.at(3543, 3461, 0));
+		assertTrue(infoText(trapdoor).stream().noneMatch(text -> text.startsWith("Needs")));
+		assertNull(NamedIcons.at(2809, 3194, 0));
+		assertEquals("Werewolf Agility Course", NamedIcons.at(3543, 3463, 0).getName());
 	}
 
 	@Test
