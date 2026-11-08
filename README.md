@@ -9,8 +9,9 @@ places, shops, items and monsters, and icons you can point at for their details.
 
 - **Always current.** The map is drawn from the game data your client already has, so a game update that changes the
   world shows on the map at once. Nothing is downloaded and nothing is sent anywhere.
-- **Over the game, or beside it.** Open it in a box over the game that you can move and size, fill the game view
-  with it, or pop it out into a window of its own for a second screen.
+- **Out of the way while you play.** The game keeps going around the box: a click beside it walks, banks or fights
+  as usual. The box and the pop-out window each open where you left them, at the size you left them, from the world
+  map orb, Ctrl+M or the sidebar.
 - **Find anything.** "d scim", "kbd", "ardy", "lobster", "cks", "bank": places, dungeon entrances, what shops
   sell, monsters, fishing and hunter spots, fairy ring codes and kinds of icon, nearest to you first.
 - **Know before you go.** Point at a dungeon's entrance for a small map of where you come out and every monster
