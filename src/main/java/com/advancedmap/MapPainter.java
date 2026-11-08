@@ -1132,13 +1132,15 @@ final class MapPainter
 	/**
 	 * The list a click opens on the right (a shop's wares, a transport's places and fares), while the mouse rests on
 	 * its icon (owner, 2026-11-07: "I wanted the hover to show the box at the top right"; "hovering on a transport or
-	 * any icon needs to show the same details as a click"). Not while a list is open there: it would cover it (search
-	 * results, a shop clicked, or this one already). Made once per icon.
+	 * any icon needs to show the same details as a click"). Over another shop's or transport's list a click opened,
+	 * as pointing at the next one does; never over this one's, nor over search results or the other lists, which it
+	 * would hide. Made once per icon.
 	 */
 	private void drawClickPreview(Graphics2D g, MapViewport.View view, boolean window, Object owner,
 		java.util.function.Supplier<String> title, java.util.function.Supplier<List<SideList.Row>> rows)
 	{
-		if (sideList.isOpen())
+		Object open = sideList.isOpen() ? sideList.owner() : null;
+		if (open != null && (owner.equals(open) || !(open instanceof Shops.Shop || open instanceof MapSpot)))
 		{
 			return;
 		}

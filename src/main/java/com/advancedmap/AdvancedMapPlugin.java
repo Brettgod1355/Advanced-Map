@@ -1792,9 +1792,10 @@ public class AdvancedMapPlugin extends Plugin
 		return 0;
 	}
 
-	/** Both maps' views as at the start: the surface at Lumbridge, underground at Edgeville's dungeon. */
+	/** Both maps' views as at the start: the surface at Lumbridge, underground at Edgeville's dungeon; no jumps back. */
 	void newViews()
 	{
+		jumps.clear();
 		viewports.put(MapArea.SURFACE, MapArea.SURFACE.newViewport());
 		viewports.put(MapArea.UNDERGROUND, MapArea.UNDERGROUND.newViewport());
 		viewports.get(MapArea.SURFACE).centerOn(LUMBRIDGE.getX(), LUMBRIDGE.getY());
@@ -2715,7 +2716,9 @@ public class AdvancedMapPlugin extends Plugin
 			if (row.getPoint() != null)
 			{
 				selection = null;
-				goTo(row.getPoint());
+				// a hidden icon is to be unhidden: close enough in for icons to be drawn, as part of the jump
+				goTo(row.getPoint(), row.getTarget() == HIDDEN_LIST
+					&& viewports.get(area).view(1, 1).zoom < MapIcons.ICON_ZOOM ? HIDDEN_ZOOM : 0);
 			}
 			if (row.getTarget() instanceof Shops.Shop)
 			{
@@ -2728,15 +2731,10 @@ public class AdvancedMapPlugin extends Plugin
 			}
 			else if (row.getTarget() == HIDDEN_LIST)
 			{
-				// to unhide it, it must show: hidden icons shown, and close enough in for icons to be drawn
+				// to unhide it, it must show: hidden icons shown (and close enough in, above)
 				if (!settings.isShowHidden())
 				{
 					setSwitch(AdvancedMapConfig.SHOW_HIDDEN, true);
-				}
-				MapViewport viewport = viewports.get(area);
-				if (viewport.view(1, 1).zoom < MapIcons.ICON_ZOOM)
-				{
-					viewport.setZoom(HIDDEN_ZOOM);
 				}
 			}
 		}

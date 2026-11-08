@@ -143,6 +143,20 @@ public class JumpHistoryTest
 	}
 
 	@Test
+	public void aRestartForgetsTheJumps()
+	{
+		// the plugin turned off and on: Back has nowhere to go, not a place from before
+		AdvancedMapPlugin plugin = new AdvancedMapPlugin();
+		plugin.newViews();
+		plugin.goTo(new WorldPoint(3097, 9868, 0));
+		plugin.newViews();
+		MapViewport.View start = plugin.viewport().view(1, 1);
+		assertTrue(plugin.historyButton(AdvancedMapPlugin.BACK_BUTTON));
+		assertEquals(start.centerX, plugin.viewport().view(1, 1).centerX, 0);
+		assertEquals(MapArea.SURFACE, plugin.area());
+	}
+
+	@Test
 	public void theSideButtonsAreTheMapsAndNoOtherButtonIs()
 	{
 		AdvancedMapPlugin plugin = new AdvancedMapPlugin();

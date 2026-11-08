@@ -50,6 +50,13 @@ final class JumpHistory
 		forward.clear();
 	}
 
+	/** Forgets every jump: a start of the plugin begins with none. */
+	synchronized void clear()
+	{
+		back.clear();
+		forward.clear();
+	}
+
 	/** Where back goes from {@code here}, which forward then returns to; null when there is nowhere back. */
 	synchronized Place back(Place here)
 	{
