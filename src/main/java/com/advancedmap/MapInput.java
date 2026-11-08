@@ -105,8 +105,13 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 		// whatever the mouse or keys do on the map, it is drawn again at once; what happens on the game beside it
 		// is the game's and draws nothing
 		plugin.touched();
+		// held even for the side buttons: their release is the map's too
 		heldButtons |= 1 << e.getButton();
 		e.consume();
+		if (plugin.historyButton(e.getButton()))
+		{
+			return e;
+		}
 		if (part != GameBox.Part.MAP)
 		{
 			if (SwingUtilities.isLeftMouseButton(e))

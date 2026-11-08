@@ -78,4 +78,16 @@ public class ShopsTest
 		assertTrue(Shops.all().stream().anyMatch(shop -> shop.getName().equals("Brother Jered") && shop.getFloor() == 1
 			&& shop.getPoint().getPlane() == 0));
 	}
+
+	@Test
+	public void pointingAtAShopListsWhatAClickLists()
+	{
+		// the hover shows the click's list on the right, not lines in the small box (owner, 2026-11-07)
+		Shops.load();
+		Shops.Shop daga = Shops.near(2759, 2774, 0);
+		List<SideList.Row> rows = SideList.shopRows(daga);
+		assertEquals("Bronze scimitar", rows.get(0).getText());
+		assertEquals(daga.getItems().get(0).priceText(), rows.get(0).getNote());
+		assertTrue(rows.size() >= daga.getItems().size());
+	}
 }

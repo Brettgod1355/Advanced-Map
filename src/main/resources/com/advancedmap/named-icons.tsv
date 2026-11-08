@@ -5,3 +5,22 @@ Ancient Furnace	2929	10461	0	Ancient_Furnace
 Gemstone Crab cave	1279	3168	0	Gemstone_Crab
 Gemstone Crab cave	1247	3036	0	Gemstone_Crab
 Gemstone Crab cave	1352	3124	0	Gemstone_Crab
+# the minigame icon in the Ferox Enclave Dungeon, where the wiki puts its portal to Soul Wars (owner's hover, 2026-11-07)
+Soul Wars Portal	3157	10027	0	Soul_Wars_Portal
+# the minigame icon in the Temple of the Eye (owner's hover, 2026-11-07)
+Guardians of the Rift	3615	9483	0	Guardians_of_the_Rift
+# the minigame icon in the Hallowed Sepulchre's lobby underground (owner, 2026-11-07); its way in is at 3653, 3386
+Hallowed Sepulchre	2400	5982	0	Hallowed_Sepulchre
+# the minigame icon by a copy of the Gnome Ball field on the underground map, far from the field's own spot (owner's
+# hover, 2026-11-07: "gnome ball not lower level")
+Gnome Ball	1934	5536	0	Gnome_Ball
+# the minigame icon in a town on the underground map, far from any Mahogany Homes office (owner's hover, 2026-11-07)
+Mahogany Homes	3945	4943	0	Mahogany_Homes
+# the minigame icon by the Soul Wars arena itself, with its two teams' bases (owner's hover, 2026-11-07)
+Soul Wars	2018	5927	0	Soul_Wars
+# the minigame icon in a town on the underground map (owner's hover, 2026-11-07)
+Rat Pits	3971	4872	0	Rat_Pits
+# the minigame icon on a copy of the Gnome Stronghold on the underground map, Floor 2 (owner's hover, 2026-11-07)
+Gnome Restaurant	1989	5550	1	Gnome_Restaurant
+# the Games Zone's minigame icon (owner's hover, 2026-11-07: "this is games zone", with its wiki page)
+Games Zone	3847	4945	0	Games_Zone

@@ -96,17 +96,53 @@ final class MapIcons
 	/** The variables of the unlocks found so far, for {@link Progress} to read. */
 	private final Set<Integer> watchedVars = ConcurrentHashMap.newKeySet();
 
-	/** Keeps a drawn region's icons. Render threads. */
+	/**
+	 * The game's icons Advanced Map leaves out, from {@code removed-icons.tsv} (x, y, plane): a second copy of a place
+	 * the game's map keeps on a map space of its own (the Gnome Restaurant's; owner, 2026-11-07).
+	 */
+	private static final Set<WorldPoint> REMOVED = removedTiles();
+
+	/** The list's tiles, read once; a row that is no tile leaves nothing out. */
+	private static Set<WorldPoint> removedTiles()
+	{
+		Set<WorldPoint> out = new java.util.HashSet<>();
+		for (String[] row : DataFiles.rows("removed-icons.tsv"))
+		{
+			try
+			{
+				out.add(new WorldPoint(Integer.parseInt(row[0].trim()), Integer.parseInt(row[1].trim()),
+					Integer.parseInt(row[2].trim())));
+			}
+			catch (RuntimeException e)
+			{
+				// skipped
+			}
+		}
+		return out;
+	}
+
+	static boolean removed(MapSpot spot)
+	{
+		return REMOVED.contains(new WorldPoint(spot.getX(), spot.getY(), spot.getPlane()));
+	}
+
+	/** Keeps a drawn region's icons, but those the list leaves out. Render threads. */
 	void addRegion(int regionId, List<MapSpot> spots)
 	{
+		List<MapSpot> kept = new ArrayList<>();
 		for (MapSpot spot : spots)
 		{
+			if (removed(spot))
+			{
+				continue;
+			}
+			kept.add(spot);
 			if (spot.getUnlock() != null)
 			{
 				watchedVars.add(spot.getUnlock().getVariable());
 			}
 		}
-		byRegion.put(regionId, Collections.unmodifiableList(new ArrayList<>(spots)));
+		byRegion.put(regionId, Collections.unmodifiableList(kept));
 	}
 
 	/** Every teleport's icon. */
@@ -526,12 +562,21 @@ final class MapIcons
 	static final String FISHING_SPOT = "Fishing spot";
 	static final String HUNTER = "Hunter training";
 
-	/** The lines of an icon's info box, after its name. */
-
 	/** The game's names for its Sailing icons where a boat docks. */
 	static final String DOCKING_POINT = "Docking point";
 	static final String PORT = "Port";
 
+	/**
+	 * A need's line: green once the player has it (a diary done), red until then, plain while logged out or when it is
+	 * only told (owner, 2026-11-07: "have the diary step be red (not done) or green (completed)").
+	 */
+	static Line needLine(Shortcuts.Need need, Progress progress)
+	{
+		int has = need.getVarbit() < 0 || !progress.isLoggedIn() ? -1 : progress.value(need.getVarbit());
+		return new Line(need.getText(), has < 0 ? PLAIN : has > 0 ? GOOD : BAD);
+	}
+
+	/** The lines of an icon's info box, after its name. */
 	static List<Line> info(MapSpot spot, Progress progress, boolean hidden, FloorNumbers floors)
 	{
 		List<Line> lines = new ArrayList<>();
@@ -547,6 +592,10 @@ final class MapIcons
 			lines.add(new Line(spot.getCategory() == IconGroup.AGILITY_SHORTCUT_ONE_WAY ? "Agility shortcut, one way"
 				: "Agility shortcut", QUIET));
 			levelLine(lines, Skill.AGILITY, shortcut.getLevel(), progress);
+			if (Shortcuts.needs(shortcut) != null)
+			{
+				lines.add(needLine(Shortcuts.needs(shortcut), progress));
+			}
 		}
 		else if (spot.getTeleport() != null)
 		{

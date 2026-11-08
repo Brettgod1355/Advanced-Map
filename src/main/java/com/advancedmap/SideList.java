@@ -39,6 +39,7 @@ final class SideList
 	private static final Color PANEL = new Color(0x10, 0x18, 0x22, 240);
 	private static final Color EDGE = new Color(0x5A5040);
 	private static final Color TEXT = new Color(0xE8E2D0);
+	private static final Color THUMB = new Color(255, 255, 255, 60);
 	private static final Color QUIET = new Color(0x8C8676);
 	private static final Color HOVER = new Color(255, 255, 255, 28);
 	/** For measuring text outside a frame, to wrap a row's lines before the list is drawn. */
@@ -179,6 +180,33 @@ final class SideList
 	private volatile Content content = NOTHING;
 	/** Scrolled by the wheel on the Swing thread, read when the list is drawn on the client thread. */
 	private volatile int scroll;
+
+	/**
+	 * A shop's rows, as a click on it lists them and pointing at it shows them: what it sells and for how much, and
+	 * the other shops beside it.
+	 */
+	static List<Row> shopRows(Shops.Shop shop)
+	{
+		List<Row> rows = new ArrayList<>();
+		if (shop.getFloor() > shop.getPoint().getPlane())
+		{
+			// shown on the floor below, where the map has ground
+			rows.add(Row.heading("Upstairs, floor up " + shop.getFloor()));
+		}
+		for (Shops.Item item : shop.getItems())
+		{
+			rows.add(new Row(item.getName(), item.priceText(), null, null, null, null));
+		}
+		net.runelite.api.coords.WorldPoint at = shop.getPoint();
+		for (Shops.Shop other : Shops.within(at.getX(), at.getY(), at.getPlane()))
+		{
+			if (other != shop)
+			{
+				rows.add(new Row("Also here: " + other.getName(), "", null, null, other.getPoint(), other));
+			}
+		}
+		return rows;
+	}
 
 	boolean isOpen()
 	{
@@ -403,7 +431,7 @@ final class SideList
 		{
 			int thumb = Math.max(20, list.height * list.height / all);
 			int top = list.y + (list.height - thumb) * offset(layout) / Math.max(1, all - list.height);
-			g.setColor(new Color(255, 255, 255, 60));
+			g.setColor(THUMB);
 			g.fillRoundRect(list.x + list.width - 5, top, 3, thumb, 3, 3);
 		}
 	}

@@ -180,6 +180,39 @@ public class MapSearchTest
 	}
 
 	@Test
+	public void theWikisMinigamesNameTheMinigameIconsNearThem()
+	{
+		// the wiki's minigame pages' map spots (2026-11-07): a minigame icon within reach takes the name
+		assertEquals("Barrows", MapSearch.minigameNear(3565, 3289));
+		// in Prifddinas, which the map (icons and all) draws on the surface
+		WorldPoint zalcano = Prifddinas.toSurface(new WorldPoint(3281, 6060, 0));
+		assertEquals("Zalcano", MapSearch.minigameNear(zalcano.getX(), zalcano.getY()));
+		assertEquals("Moons of Peril", MapSearch.minigameNear(1439, 9670));
+		assertEquals("Giants' Foundry", MapSearch.minigameNear(3361, 3152));
+		assertEquals("TzHaar Fight Pit", MapSearch.minigameNear(2400, 5150));
+		assertEquals("Shayzien Combat Ring", MapSearch.minigameNear(1544, 3624));
+		assertNull("nothing far from every minigame", MapSearch.minigameNear(3222, 3218));
+	}
+
+	@Test
+	public void theTearsOfGuthixOpensOnTheCavesFloor() throws IOException
+	{
+		// RuneLite's list says floor 0; the cave is on floor 2, U3 (owner, 2026-11-07: search should show U3)
+		try (java.io.InputStream in = MapSearch.class.getResourceAsStream("places.tsv"))
+		{
+			for (MapSearch.Entry place : MapSearch.parsePlaces(in))
+			{
+				if (place.getName().equals("Tears of Guthix"))
+				{
+					assertEquals(Collections.singletonList(new WorldPoint(3257, 9517, 2)), place.getPoints());
+					return;
+				}
+			}
+		}
+		throw new AssertionError("no Tears of Guthix in places.tsv");
+	}
+
+	@Test
 	public void entrancesWithTheSameNameAreOneEntry() throws IOException
 	{
 		String tsv = "D\tSmoke Dungeon\t3309\t2962\t0\nD\tSmoke Dungeon\t3206\t9379\t0\nG\tCastle Wars\t2440\t3090\t0\n";
@@ -407,6 +440,21 @@ public class MapSearchTest
 			.collect(Collectors.toList());
 		assertTrue(ardy.indexOf("East Ardougne") < 2 && ardy.indexOf("West Ardougne") < 2);
 		assertEquals("Falador", MapSearch.search(entries, "Fally", null).get(0).getName());
+		// in the bundled lists: "gotr" (owner, 2026-11-07) and the name itself both find the minigame first
+		assertEquals("Guardians of the Rift", names("gotr").get(0));
+		assertEquals("Guardians of the Rift", names("guardians of the rift").get(0));
+		assertEquals("Games Zone", names("games zone").get(0));
+		// raid 4, released 2026-10-20: its lobby at the bottom of the Chasm of Tears, also by "tfa" (owner, 2026-11-07)
+		assertEquals("The Fractured Archive", names("tfa").get(0));
+		assertEquals("The Fractured Archive", names("fractured archive").get(0));
+		assertEquals("The Fractured Archive", names("fred").get(0));
+		// "raid" finds all four raids first
+		List<String> raids = names("raid");
+		for (String raid : Arrays.asList("Chambers of Xeric", "Theatre of Blood", "Tombs of Amascut",
+			"The Fractured Archive"))
+		{
+			assertTrue(raid, raids.indexOf(raid) >= 0 && raids.indexOf(raid) < 4);
+		}
 	}
 
 	@Test

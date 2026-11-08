@@ -95,6 +95,13 @@ enum IconGroup
 	 * True if an icon of this category may stand for a way into a dungeon (or out of one) a few tiles away. Places used
 	 * where they stand do not: a mining site by a trapdoor keeps its own details, and the trapdoor gets a link icon.
 	 */
+	static boolean mayBeEntrance(MapSpot spot)
+	{
+		// a teleport's mark is where it lands, never a way in: the Skull Sceptre's, by the Stronghold of Security's
+		// hole, showed the Stronghold's preview instead of its own box (owner, 2026-11-07)
+		return spot.getTeleport() == null && mayBeEntrance(spot.getCategory());
+	}
+
 	static boolean mayBeEntrance(int category)
 	{
 		switch (of(category))

@@ -5,11 +5,8 @@
  */
 package com.advancedmap;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -99,16 +96,9 @@ final class Shops
 	static List<Shop> parse(InputStream in) throws IOException
 	{
 		List<Shop> out = new ArrayList<>();
-		BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
-		String line;
 		List<Item> items = null;
-		while ((line = reader.readLine()) != null)
+		for (String[] f : DataFiles.rows(in))
 		{
-			if (line.isEmpty() || line.startsWith("#"))
-			{
-				continue;
-			}
-			String[] f = line.split("\t", -1);
 			if ("S".equals(f[0]))
 			{
 				items = new ArrayList<>();

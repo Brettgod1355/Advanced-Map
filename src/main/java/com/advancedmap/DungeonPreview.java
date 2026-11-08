@@ -28,7 +28,7 @@ import net.runelite.api.coords.WorldPoint;
  * without leaving the game's own map of that part of the underground ("Taverley Underground" ends where the Dwarven
  * Mines begin, though their floors touch). From there it follows the ladders, ropes and stairs that stay on that map
  * ({@code inner-links.tsv}, and the game's own map links), so the floors below count too: the Kalphite Queen is a
- * rope below the lair's tunnels.
+ * rope below the lair's tunnels. A way back to the icon pointed at is not followed.
  */
 final class DungeonPreview
 {
@@ -139,11 +139,12 @@ final class DungeonPreview
 	private static volatile List<Way> innerWays = Collections.emptyList();
 
 	private final RegionImages images;
-	private final Map<WorldPoint, Look> looked = Collections.synchronizedMap(
-		new LinkedHashMap<WorldPoint, Look>(16, 0.75f, true)
+	/** Each look by where it leads and the icon it is looked from (the way back to that is not followed). */
+	private final Map<List<WorldPoint>, Look> looked = Collections.synchronizedMap(
+		new LinkedHashMap<List<WorldPoint>, Look>(16, 0.75f, true)
 		{
 			@Override
-			protected boolean removeEldestEntry(Map.Entry<WorldPoint, Look> eldest)
+			protected boolean removeEldestEntry(Map.Entry<List<WorldPoint>, Look> eldest)
 			{
 				return size() > KEPT;
 			}
@@ -151,7 +152,7 @@ final class DungeonPreview
 	private volatile List<List<WorldMapElements.Piece>> maps = Collections.emptyList();
 	/** The game's own map links that join two underground places. */
 	private volatile List<Way> mapWays = Collections.emptyList();
-	private volatile WorldPoint lastTry;
+	private volatile List<WorldPoint> lastTry;
 	private volatile long lastTryAt;
 	/** Where looks run, off the client thread (one can take tens of milliseconds); null runs them in place. */
 	private volatile java.util.concurrent.Executor executor;
@@ -215,16 +216,8 @@ final class DungeonPreview
 	static List<Way> parseWays(java.io.InputStream in) throws java.io.IOException
 	{
 		List<Way> out = new ArrayList<>();
-		java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.InputStreamReader(in,
-			java.nio.charset.StandardCharsets.UTF_8));
-		String line;
-		while ((line = reader.readLine()) != null)
+		for (String[] f : DataFiles.rows(in))
 		{
-			if (line.isEmpty() || line.startsWith("#"))
-			{
-				continue;
-			}
-			String[] f = line.split("\t");
 			out.add(new Way(new WorldPoint(Integer.parseInt(f[0]), Integer.parseInt(f[1]), Integer.parseInt(f[2])),
 				new WorldPoint(Integer.parseInt(f[3]), Integer.parseInt(f[4]), Integer.parseInt(f[5]))));
 		}
@@ -282,35 +275,64 @@ final class DungeonPreview
 	}
 
 	/**
-	 * The monsters inside the dungeon an entrance leads to ({@code to}), from what is known of its floor so far; while
-	 * some of it is still being drawn, looked through again every so often, and the pictures asked for.
+	 * The ways a preview follows: all but those back to the icon pointed at, whose own floor is not "inside". The
+	 * Kalphite Queen's chamber counts from the desert's entrance, not from the chamber's rope up to the lair (owner,
+	 * 2026-11-07: "KQ is not in the lair, only the chamber"; "KQ should be on the list from the surface level").
 	 */
-	Look look(WorldPoint to)
+	static List<Way> notBackTo(List<Way> ways, WorldPoint from)
 	{
-		Look known = looked.get(to);
+		List<Way> out = new ArrayList<>();
+		for (Way way : ways)
+		{
+			WorldPoint to = way.getTo();
+			if (to.getPlane() != from.getPlane() || Math.abs(to.getX() - from.getX()) > RegionImages.LINK_REACH
+				|| Math.abs(to.getY() - from.getY()) > RegionImages.LINK_REACH)
+			{
+				out.add(way);
+			}
+		}
+		return out;
+	}
+
+	/** The ways inside dungeons and the game's links between underground places, but those back to {@code from}. */
+	private List<Way> ways(WorldPoint from)
+	{
+		List<Way> all = new ArrayList<>(innerWays);
+		all.addAll(mapWays);
+		return notBackTo(all, from);
+	}
+
+	/**
+	 * The monsters inside the dungeon an entrance ({@code from}) leads to ({@code to}), from what is known of its floor
+	 * so far; while some of it is still being drawn, looked through again every so often, and the pictures asked for.
+	 */
+	Look look(WorldPoint to, WorldPoint from)
+	{
+		List<WorldPoint> key = java.util.Arrays.asList(to, from);
+		Look known = looked.get(key);
 		long now = System.nanoTime();
-		if (known != null && (known.isComplete() || to.equals(lastTry) && now - lastTryAt < RETRY_NANOS))
+		if (known != null && (known.isComplete() || key.equals(lastTry) && now - lastTryAt < RETRY_NANOS))
 		{
 			return known;
 		}
-		List<Way> ways = new ArrayList<>(innerWays);
-		ways.addAll(mapWays);
 		List<List<WorldMapElements.Piece>> mapsNow = maps;
 		java.util.concurrent.Executor run = executor;
 		if (run == null)
 		{
-			lastTry = to;
+			lastTry = key;
 			lastTryAt = now;
-			Look look = look(to, mapsNow, ways, this::floor, Spawns.all());
-			looked.put(to, look);
+			Look look = look(to, mapsNow, ways(from), this::floor, Spawns.all());
+			looked.put(key, look);
 			return look;
 		}
 		// the flood runs off the client thread; meanwhile what was known (or nothing yet) shows
 		if (looking.compareAndSet(false, true))
 		{
-			lastTry = to;
+			lastTry = key;
 			lastTryAt = now;
 			int asOf = generation.get();
+			// built only for a look that starts: a frame that waits on one already running makes nothing
+			List<Way> ways = ways(from);
 			try
 			{
 				run.execute(() ->
@@ -320,7 +342,7 @@ final class DungeonPreview
 						Look look = look(to, mapsNow, ways, this::floor, Spawns.all());
 						if (generation.get() == asOf)
 						{
-							looked.put(to, look);
+							looked.put(key, look);
 						}
 					}
 					finally
@@ -596,26 +618,55 @@ final class DungeonPreview
 	}
 
 	/**
+	 * A way out's title: up to the place it leads, or up to the surface when there is no name or the name is a
+	 * dungeon's own (the Kalphite Lair's label beside its entrance: owner, 2026-11-07, "change this to say to Surface").
+	 */
+	static String wayOutTitle(String name, List<MapSearch.Entry> places)
+	{
+		for (MapSearch.Entry place : places)
+		{
+			if ((place.getKind() == MapSearch.Kind.DUNGEON || place.getKind() == MapSearch.Kind.MINIGAME)
+				&& place.getName().equalsIgnoreCase(name))
+			{
+				return "Up to the surface";
+			}
+		}
+		return name == null ? "Up to the surface" : "Up to " + name;
+	}
+
+	/**
 	 * The dungeon's name: the named entrance nearest the icon ({@code places.tsv}, "Edgeville Dungeon"), else the
 	 * game's place name nearest where it leads, else null.
 	 */
 	static String name(MapSpot spot, WorldPoint to, List<MapSearch.Entry> places, List<MapLabels.Label> labels)
 	{
-		String best = null;
+		// a link's own name in dungeon-links.tsv first: the game's labels have no floor, so the Queen's Chamber's
+		// named the rope up out of it (owner, 2026-11-07: "change this to see kalphite lair")
+		String best = DungeonLinks.name(spot.getX(), spot.getY(), spot.getPlane());
+		if (best != null)
+		{
+			return best;
+		}
 		int bestDistance = NAME_REACH + 1;
+		// a dungeon's entrance before a minigame's spot: the wiki's minigame areas (Chompy bird hunting...) are no
+		// dungeon's name
+		boolean bestDungeon = false;
 		for (MapSearch.Entry place : places)
 		{
 			if (place.getKind() != MapSearch.Kind.DUNGEON && place.getKind() != MapSearch.Kind.MINIGAME)
 			{
 				continue;
 			}
+			boolean dungeon = place.getKind() == MapSearch.Kind.DUNGEON;
 			for (WorldPoint at : place.getPoints())
 			{
 				int d = Math.max(Math.abs(at.getX() - spot.getX()), Math.abs(at.getY() - spot.getY()));
-				if (at.getPlane() == spot.getPlane() && d < bestDistance)
+				if (at.getPlane() == spot.getPlane() && d <= NAME_REACH
+					&& (dungeon && !bestDungeon || dungeon == bestDungeon && d < bestDistance))
 				{
 					best = place.getName();
 					bestDistance = d;
+					bestDungeon = dungeon;
 				}
 			}
 		}

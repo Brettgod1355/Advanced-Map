@@ -1,0 +1,5 @@
+# Icons of the game's own map that Advanced Map leaves out, read by MapIcons: a second copy of a place that the game's
+# map keeps on a map space of its own, which Advanced Map draws beside the first. The tile is the icon's exact tile
+# (as its box shows it). Text here costs no Plugin Hub tokens.
+# x, y, plane, what it is
+2309	5422	1	A second Gnome Restaurant minigame icon, on a copy of the Gnome Stronghold (owner's hover, 2026-11-07); the one kept is at 1989, 5550

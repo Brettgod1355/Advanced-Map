@@ -13,11 +13,8 @@ import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -86,15 +83,8 @@ final class MultiCombat
 	static List<Zone> parse(InputStream in) throws IOException
 	{
 		Map<String, Area> byName = new LinkedHashMap<>();
-		BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
-		String line;
-		while ((line = reader.readLine()) != null)
+		for (String[] f : DataFiles.rows(in))
 		{
-			if (line.isEmpty() || line.startsWith("#"))
-			{
-				continue;
-			}
-			String[] f = line.split("\t");
 			byName.computeIfAbsent(f[0], k -> new Area()).add(new Area(new Rectangle(Integer.parseInt(f[1]),
 				Integer.parseInt(f[2]), Integer.parseInt(f[3]), Integer.parseInt(f[4]))));
 		}

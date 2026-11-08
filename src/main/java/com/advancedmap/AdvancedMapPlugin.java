@@ -134,6 +134,10 @@ public class AdvancedMapPlugin extends Plugin
 	/** One view per map, each remembering where it was left. */
 	private final Map<MapArea, MapViewport> viewports = new EnumMap<>(MapArea.class);
 	private volatile MapArea area = MapArea.SURFACE;
+	/** The mouse's side buttons, as Java numbers them: back and forward. */
+	static final int BACK_BUTTON = 4;
+	static final int FORWARD_BUTTON = 5;
+	private final JumpHistory jumps = new JumpHistory();
 	private ExecutorService executor;
 	/** The markers' file work, one task after another, so a read never runs ahead of a save made before it. */
 	private ExecutorService markerFiles;
@@ -224,11 +228,7 @@ public class AdvancedMapPlugin extends Plugin
 			thread.setDaemon(true);
 			return thread;
 		});
-		viewports.put(MapArea.SURFACE, MapArea.SURFACE.newViewport());
-		viewports.put(MapArea.UNDERGROUND, MapArea.UNDERGROUND.newViewport());
-		viewports.get(MapArea.SURFACE).centerOn(LUMBRIDGE.getX(), LUMBRIDGE.getY());
-		viewports.get(MapArea.UNDERGROUND).centerOn(EDGEVILLE_DUNGEON.getX(), EDGEVILLE_DUNGEON.getY());
-		area = MapArea.SURFACE;
+		newViews();
 		mapOpen = false;
 		windowOpen = false;
 		// what was read and drawn before the plugin was last stopped is gone with it: read and drawn again
@@ -916,7 +916,11 @@ public class AdvancedMapPlugin extends Plugin
 		try
 		{
 			MapIcons current = icons;
-			progress = Progress.read(client, current == null ? Collections.emptySet() : current.watchedVars());
+			// the unlocks' variables, and the diaries the lists' needs are told by
+			Set<Integer> vars = new HashSet<>(current == null ? Collections.emptySet() : current.watchedVars());
+			vars.addAll(Shortcuts.needVars());
+			vars.addAll(DungeonLinks.needVars());
+			progress = Progress.read(client, vars);
 			touched();
 		}
 		catch (RuntimeException e)
@@ -1671,25 +1675,7 @@ public class AdvancedMapPlugin extends Plugin
 	/** Lists what a shop sells and for how much, and any other shops beside it, which a click opens in turn. */
 	private void showShop(Shops.Shop shop)
 	{
-		List<SideList.Row> rows = new ArrayList<>();
-		if (shop.getFloor() > shop.getPoint().getPlane())
-		{
-			// shown on the floor below, where the map has ground
-			rows.add(SideList.Row.heading("Upstairs, floor up " + shop.getFloor()));
-		}
-		for (Shops.Item item : shop.getItems())
-		{
-			rows.add(new SideList.Row(item.getName(), item.priceText(), null, null, null, null));
-		}
-		WorldPoint at = shop.getPoint();
-		for (Shops.Shop other : Shops.within(at.getX(), at.getY(), at.getPlane()))
-		{
-			if (other != shop)
-			{
-				rows.add(new SideList.Row("Also here: " + other.getName(), "", null, null, other.getPoint(), other));
-			}
-		}
-		sideList.open(shop.getName(), rows, shop);
+		sideList.open(shop.getName(), SideList.shopRows(shop), shop);
 	}
 
 	/**
@@ -1752,7 +1738,7 @@ public class AdvancedMapPlugin extends Plugin
 	WorldPoint linkDestination(MapSpot spot)
 	{
 		ClientMapSource links = source;
-		if (links == null || !IconGroup.mayBeEntrance(spot.getCategory()))
+		if (links == null || !IconGroup.mayBeEntrance(spot))
 		{
 			return null;
 		}
@@ -1806,13 +1792,78 @@ public class AdvancedMapPlugin extends Plugin
 		return 0;
 	}
 
-	/** Moves the map to a tile: onto its map and floor, centered there. */
-	private void goTo(WorldPoint to)
+	/** Both maps' views as at the start: the surface at Lumbridge, underground at Edgeville's dungeon; no jumps back. */
+	void newViews()
 	{
+		jumps.clear();
+		viewports.put(MapArea.SURFACE, MapArea.SURFACE.newViewport());
+		viewports.put(MapArea.UNDERGROUND, MapArea.UNDERGROUND.newViewport());
+		viewports.get(MapArea.SURFACE).centerOn(LUMBRIDGE.getX(), LUMBRIDGE.getY());
+		viewports.get(MapArea.UNDERGROUND).centerOn(EDGEVILLE_DUNGEON.getX(), EDGEVILLE_DUNGEON.getY());
+		area = MapArea.SURFACE;
+	}
+
+	/**
+	 * Moves the map to a tile: onto its map and floor, centered there, as close as the map was (a dungeon's way in
+	 * keeps the zoom, not the other map's own from its last visit; owner, 2026-11-07). The mouse's back button returns.
+	 */
+	void goTo(WorldPoint to)
+	{
+		goTo(to, 0);
+	}
+
+	/** As {@link #goTo(WorldPoint)}, zoomed in to at least {@code minZoom} (a search result: {@link #SEARCH_ZOOM}). */
+	void goTo(WorldPoint to, double minZoom)
+	{
+		JumpHistory.Place from = lookingAt();
+		double zoom = Math.max(from.zoom, minZoom);
+		// a jump that changes nothing (the same search result again, as close) is none: Back would seem to do nothing
+		if (from.area != MapArea.of(to.getY()) || from.plane != to.getPlane() || (int) from.centerX != to.getX()
+			|| (int) from.centerY != to.getY() || zoom != from.zoom)
+		{
+			jumps.jumped(from);
+		}
 		setFollowing(false);
 		area = MapArea.of(to.getY());
 		plane = to.getPlane();
-		viewports.get(area).centerOn(to.getX(), to.getY());
+		MapViewport there = viewports.get(area);
+		there.setZoom(zoom);
+		there.centerOn(to.getX(), to.getY());
+	}
+
+	/** Where the map looks now, for the jump history. */
+	private JumpHistory.Place lookingAt()
+	{
+		MapArea now = area;
+		MapViewport.View view = viewports.get(now).view(1, 1);
+		return new JumpHistory.Place(now, plane, view.centerX, view.centerY, view.zoom);
+	}
+
+	/**
+	 * The mouse's back (4) and forward (5) buttons return to where the map was before a jump (a dungeon's way in, a
+	 * search, a pin) and on again, as a browser's (owner, 2026-11-07). True when the button is one of them.
+	 */
+	boolean historyButton(int button)
+	{
+		if (button != BACK_BUTTON && button != FORWARD_BUTTON)
+		{
+			return false;
+		}
+		if (viewports.get(area) == null)
+		{
+			// not started: nowhere to go
+			return true;
+		}
+		JumpHistory.Place to = button == BACK_BUTTON ? jumps.back(lookingAt()) : jumps.forward(lookingAt());
+		if (to != null)
+		{
+			setFollowing(false);
+			area = to.area;
+			plane = to.plane;
+			viewports.get(to.area).restore(to.centerX, to.centerY, to.zoom);
+			touched();
+		}
+		return true;
 	}
 
 	/**
@@ -2319,7 +2370,9 @@ public class AdvancedMapPlugin extends Plugin
 				break;
 			}
 			case ICON:
-				sideList.open("Nearest: " + entry.getName(), nearestRows(entry.getPoints(), from), entry);
+				MapIcons current = icons;
+				sideList.open("Nearest: " + entry.getName(), nearestRows(entry.getPoints(), from, entry.getName(),
+					current == null ? Collections.emptyList() : current.allSpots(), progress, labelsNow()), entry);
 				break;
 			case MONSTER:
 			case NPC:
@@ -2352,25 +2405,33 @@ public class AdvancedMapPlugin extends Plugin
 				}
 				break;
 		}
-		goTo(nearest);
-		MapViewport viewport = viewports.get(area);
-		if (viewport.view(1, 1).zoom < SEARCH_ZOOM)
-		{
-			viewport.setZoom(SEARCH_ZOOM);
-		}
+		goTo(nearest, SEARCH_ZOOM);
 	}
 
 	/** Every place of a kind of map icon, nearest first: named by the game's nearest place name, with how far. */
-	private List<SideList.Row> nearestRows(List<WorldPoint> points, WorldPoint from)
+	static List<SideList.Row> nearestRows(List<WorldPoint> points, WorldPoint from, String kind, List<MapSpot> all,
+		Progress progress, List<MapLabels.Label> labels)
 	{
 		List<WorldPoint> sorted = new ArrayList<>(points);
 		sorted.sort(java.util.Comparator.comparingInt(point -> SearchSpots.distance(point, from)));
+		// each called as its box calls it (a minigame, a shortcut, a named icon), else by the nearest place's name
+		// (Guardians of the Rift read "Queen's Chamber", the Tears of Guthix "Giant frogs"; owner, 2026-11-07)
+		Map<WorldPoint, MapSpot> spots = new java.util.HashMap<>();
+		for (MapSpot spot : all)
+		{
+			if (kind.equals(progress.categoryName(spot.getCategory())))
+			{
+				spots.put(new WorldPoint(spot.getX(), spot.getY(), spot.getPlane()), spot);
+			}
+		}
 		List<SideList.Row> rows = new ArrayList<>();
 		for (WorldPoint point : sorted)
 		{
 			int tiles = SearchSpots.distance(point, from);
-			rows.add(new SideList.Row(SearchSpots.name(point, labelsNow()), tiles >= 1000 ? "far" : tiles + " tiles",
-				null, null, point, null));
+			MapSpot spot = spots.get(point);
+			String own = spot == null ? null : MapIcons.name(spot, progress);
+			rows.add(new SideList.Row(own != null && !own.equals(kind) ? own : SearchSpots.name(point, labels),
+				tiles >= 1000 ? "far" : tiles + " tiles", null, null, point, null));
 		}
 		return rows;
 	}
@@ -2655,7 +2716,9 @@ public class AdvancedMapPlugin extends Plugin
 			if (row.getPoint() != null)
 			{
 				selection = null;
-				goTo(row.getPoint());
+				// a hidden icon is to be unhidden: close enough in for icons to be drawn, as part of the jump
+				goTo(row.getPoint(), row.getTarget() == HIDDEN_LIST
+					&& viewports.get(area).view(1, 1).zoom < MapIcons.ICON_ZOOM ? HIDDEN_ZOOM : 0);
 			}
 			if (row.getTarget() instanceof Shops.Shop)
 			{
@@ -2668,15 +2731,10 @@ public class AdvancedMapPlugin extends Plugin
 			}
 			else if (row.getTarget() == HIDDEN_LIST)
 			{
-				// to unhide it, it must show: hidden icons shown, and close enough in for icons to be drawn
+				// to unhide it, it must show: hidden icons shown (and close enough in, above)
 				if (!settings.isShowHidden())
 				{
 					setSwitch(AdvancedMapConfig.SHOW_HIDDEN, true);
-				}
-				MapViewport viewport = viewports.get(area);
-				if (viewport.view(1, 1).zoom < MapIcons.ICON_ZOOM)
-				{
-					viewport.setZoom(HIDDEN_ZOOM);
 				}
 			}
 		}

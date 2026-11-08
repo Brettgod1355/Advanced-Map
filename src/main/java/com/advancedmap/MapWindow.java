@@ -272,6 +272,11 @@ final class MapWindow extends JFrame
 				public void mousePressed(MouseEvent e)
 				{
 					requestFocusInWindow();
+					if (plugin.historyButton(e.getButton()))
+					{
+						repaint();
+						return;
+					}
 					if (SwingUtilities.isLeftMouseButton(e)
 						&& plugin.pressPanels(x(e), y(e), width(), height(), true))
 					{
@@ -321,6 +326,12 @@ final class MapWindow extends JFrame
 				@Override
 				public void mouseReleased(MouseEvent e)
 				{
+					if (!SwingUtilities.isLeftMouseButton(e))
+					{
+						// a side or right button let go while the left is held: the left's own release ends its
+						// click or drag, never this one (a Back pressed mid-click clicked in the view it restored)
+						return;
+					}
 					if (pressedAt != null && Math.abs(x(e) - pressedAt.x) <= AdvancedMapPlugin.CLICK_SLOP
 						&& Math.abs(y(e) - pressedAt.y) <= AdvancedMapPlugin.CLICK_SLOP)
 					{

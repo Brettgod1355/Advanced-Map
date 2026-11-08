@@ -5,11 +5,8 @@
  */
 package com.advancedmap;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -59,15 +56,8 @@ final class RareTrees
 	static List<Tree> parse(InputStream in) throws IOException
 	{
 		List<Tree> out = new ArrayList<>();
-		BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
-		String line;
-		while ((line = reader.readLine()) != null)
+		for (String[] parts : DataFiles.rows(in))
 		{
-			if (line.isEmpty() || line.startsWith("#"))
-			{
-				continue;
-			}
-			String[] parts = line.split("\t");
 			if (parts.length == 5)
 			{
 				out.add(new Tree(parts[0], Integer.parseInt(parts[1]), Integer.parseInt(parts[2]),

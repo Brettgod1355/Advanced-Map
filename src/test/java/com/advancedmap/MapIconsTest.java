@@ -115,6 +115,110 @@ public class MapIconsTest
 	}
 
 	@Test
+	public void theKalphiteLairsCreviceIsFoundWhereTheMapDrawsItAndNeedsTheEliteDiary()
+	{
+		// RuneLite places it where the game's own world map draws the lair (3214, 9508); Advanced Map draws the lair on
+		// its own tiles, and the owner saw the icon at 3503, 9508, Floor 3 (2026-11-07)
+		MapSpot crevice = MapSpot.icon(3503, 9508, 2, 0, IconGroup.AGILITY_SHORTCUT);
+		assertEquals(net.runelite.client.game.AgilityShortcut.KALPHITE_WALL, crevice.getShortcut());
+		List<String> lines = new java.util.ArrayList<>();
+		for (MapIcons.Line line : MapIcons.info(crevice, Progress.NONE, false, FloorNumbers.GROUND_IS_FIRST))
+		{
+			lines.add(line.getText());
+		}
+		assertTrue(lines.toString(), lines.contains("Needs the Elite Desert Diary"));
+
+		// green once the diary is done, red until, plain while logged out (owner: "red (not done) or green")
+		int elite = net.runelite.api.gameval.VarbitID.DESERT_DIARY_ELITE_COMPLETE;
+		assertTrue(Shortcuts.needVars().contains(elite));
+		Shortcuts.Need need = Shortcuts.needs(crevice.getShortcut());
+		assertEquals(MapIcons.GOOD, MapIcons.needLine(need, diary(elite, 1)).getColor());
+		assertEquals(MapIcons.BAD, MapIcons.needLine(need, diary(elite, 0)).getColor());
+		assertEquals(MapIcons.PLAIN, MapIcons.needLine(need, Progress.NONE).getColor());
+	}
+
+	@Test
+	public void theOtherShortcutsThatNeedADiarySayWhich()
+	{
+		// the wiki's Shortcuts page, 2026-11-07: every shortcut whose use needs a diary (both ends where RuneLite has two)
+		Map<String, Integer> diaries = new HashMap<>();
+		diaries.put("Needs the Easy Falador Diary", net.runelite.api.gameval.VarbitID.FALADOR_DIARY_EASY_COMPLETE);
+		diaries.put("Needs the Medium Wilderness Diary",
+			net.runelite.api.gameval.VarbitID.WILDERNESS_DIARY_MEDIUM_COMPLETE);
+		diaries.put("Needs the Medium Falador Diary", net.runelite.api.gameval.VarbitID.FALADOR_DIARY_MEDIUM_COMPLETE);
+		diaries.put("Needs the Hard Falador Diary", net.runelite.api.gameval.VarbitID.FALADOR_DIARY_HARD_COMPLETE);
+		Map<net.runelite.client.game.AgilityShortcut, String> wanted = new HashMap<>();
+		wanted.put(net.runelite.client.game.AgilityShortcut.GOBLIN_VILLAGE_WALL, "Needs the Easy Falador Diary");
+		wanted.put(net.runelite.client.game.AgilityShortcut.DEEP_WILDERNESS_DUNGEON_CREVICE_NORTH,
+			"Needs the Medium Wilderness Diary");
+		wanted.put(net.runelite.client.game.AgilityShortcut.DEEP_WILDERNESS_DUNGEON_CREVICE_SOUTH,
+			"Needs the Medium Wilderness Diary");
+		wanted.put(net.runelite.client.game.AgilityShortcut.MOTHERLODE_MINE_WALL_EAST, "Needs the Medium Falador Diary");
+		wanted.put(net.runelite.client.game.AgilityShortcut.MOTHERLODE_MINE_WALL_WEST, "Needs the Medium Falador Diary");
+		wanted.put(net.runelite.client.game.AgilityShortcut.HEROES_GUILD_TUNNEL_EAST, "Needs the Hard Falador Diary");
+		wanted.put(net.runelite.client.game.AgilityShortcut.HEROES_GUILD_TUNNEL_WEST, "Needs the Hard Falador Diary");
+		for (Map.Entry<net.runelite.client.game.AgilityShortcut, String> each : wanted.entrySet())
+		{
+			Shortcuts.Need need = Shortcuts.needs(each.getKey());
+			assertEquals(each.getKey().name(), new Shortcuts.Need(each.getValue(), diaries.get(each.getValue())), need);
+		}
+		assertTrue(Shortcuts.needVars().containsAll(diaries.values()));
+		// the Motherlode Mine's wall is where the map draws the mine (the owner's hover, 2026-11-07), 641 tiles east
+		// and 4,032 south of RuneLite's world-map place, as the Kalphite crevice is
+		assertEquals(net.runelite.client.game.AgilityShortcut.MOTHERLODE_MINE_WALL_EAST,
+			MapSpot.icon(3765, 5671, 0, 0, IconGroup.AGILITY_SHORTCUT).getShortcut());
+		assertEquals(net.runelite.client.game.AgilityShortcut.MOTHERLODE_MINE_WALL_WEST,
+			MapSpot.icon(3759, 5670, 0, 0, IconGroup.AGILITY_SHORTCUT).getShortcut());
+	}
+
+	private static Progress diary(int varbit, int value)
+	{
+		return new Progress(true, new int[Skill.values().length], new EnumMap<>(Quest.class), Collections.emptyMap(),
+			Collections.emptyMap(), Collections.singletonMap(varbit, value));
+	}
+
+	@Test
+	public void theNearestIconsListNamesEachAsItsBoxDoes()
+	{
+		// "minigames" and "agility shortcut" searched: each row as its box calls it, not the nearest place's name
+		// (Gnome Ball read "Lower level"; owner, 2026-11-07)
+		List<MapSpot> all = java.util.Arrays.asList(MapSpot.icon(1934, 5536, 0, 0, 7001),
+			MapSpot.icon(3503, 9508, 2, 0, IconGroup.AGILITY_SHORTCUT));
+		Map<Integer, String> names = new HashMap<>();
+		names.put(7001, "Minigame");
+		names.put(IconGroup.AGILITY_SHORTCUT, "Agility shortcut");
+		Progress progress = new Progress(false, new int[Skill.values().length], new EnumMap<>(Quest.class),
+			Collections.emptyMap(), names, Collections.emptyMap());
+		net.runelite.api.coords.WorldPoint from = new net.runelite.api.coords.WorldPoint(3222, 3218, 0);
+		List<MapLabels.Label> lowerLevel = Collections.singletonList(new MapLabels.Label(
+			Collections.singletonList("Lower level"), 1940, 5540, MapLabels.PLACE, java.awt.Color.YELLOW));
+		assertEquals("Gnome Ball", AdvancedMapPlugin.nearestRows(Collections.singletonList(
+			new net.runelite.api.coords.WorldPoint(1934, 5536, 0)), from, "Minigame", all, progress, lowerLevel)
+			.get(0).getText());
+		assertEquals("Crevice", AdvancedMapPlugin.nearestRows(Collections.singletonList(
+			new net.runelite.api.coords.WorldPoint(3503, 9508, 2)), from, "Agility shortcut", all, progress, lowerLevel)
+			.get(0).getText());
+		// an icon with nothing of its own is called by the nearest place
+		assertEquals("Lower level", AdvancedMapPlugin.nearestRows(Collections.singletonList(
+			new net.runelite.api.coords.WorldPoint(1941, 5541, 0)), from, "Minigame", all, progress, lowerLevel)
+			.get(0).getText());
+	}
+
+	@Test
+	public void aDuplicateIconTheListLeavesOutIsNeverKept()
+	{
+		// the Gnome Restaurant's minigame icon twice, the second on a copy of the Gnome Stronghold (owner, 2026-11-07)
+		MapIcons icons = new MapIcons();
+		MapSpot copy = MapSpot.icon(2309, 5422, 1, 0, 1);
+		MapSpot kept = MapSpot.icon(1989, 5550, 1, 0, 1);
+		assertTrue(MapIcons.removed(copy));
+		assertFalse(MapIcons.removed(kept));
+		assertFalse("another floor of the tile is another icon", MapIcons.removed(MapSpot.icon(2309, 5422, 0, 0, 1)));
+		icons.addRegion(1, java.util.Arrays.asList(copy, kept));
+		assertEquals(Collections.singletonList(kept), icons.allSpots());
+	}
+
+	@Test
 	public void aShortcutIconFarFromAnyKnownShortcutHasNoLevel()
 	{
 		assertNull(MapSpot.nearestShortcut(10, 10));

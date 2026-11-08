@@ -36,6 +36,7 @@ The map opens on your character, on the surface or the underground map, whicheve
 | Move the map | Drag it |
 | Zoom | Scroll, around the pointer |
 | Go back to your character | The round button at the bottom right (it keeps following you until you drag) |
+| Go back after a jump (into a dungeon, to a search result or a pin) | The mouse's back button; its forward button goes on again |
 | Change floor | The arrows above that button |
 | Switch surface / underground | The button at the top |
 | See what an icon is | Rest the pointer on it; click it to keep its box open |

@@ -113,6 +113,15 @@ final class MapViewport
 		this.zoom = clamp(zoom);
 	}
 
+	/** Looks exactly where an earlier view looked, at its zoom: the mouse's back and forward buttons. */
+	synchronized void restore(double centerX, double centerY, double zoom)
+	{
+		this.centerX = centerX;
+		this.centerY = centerY;
+		this.zoom = clamp(zoom);
+		keepInside();
+	}
+
 	/** Moves the map with the mouse: a drag of (dx, dy) screen pixels. */
 	synchronized void drag(int dx, int dy)
 	{

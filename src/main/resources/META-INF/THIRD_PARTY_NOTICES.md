@@ -53,7 +53,7 @@ original copyright notices and are in `src/main/java/com/advancedmap/cache/`:
 | `Region.java`, `Location.java`, `Position.java`, `HeightCalc.java` | `region/` | Package only; a method nothing here calls removed from `Region.java` and from `Position.java` |
 | `MapDefinition.java`, `LocationsDefinition.java`, `UnderlayDefinition.java`, `OverlayDefinition.java`, `ObjectDefinition.java`, `AreaDefinition.java` | `definitions/` | Package only |
 | `MapLoader.java`, `LocationsLoader.java`, `UnderlayLoader.java`, `OverlayLoader.java`, `ObjectLoader.java`, `AreaLoader.java`, `EntityOpsLoader.java` | `definitions/loaders/` | Package only; the object, area, underlay and overlay loaders end a record at an opcode they do not know (a game update's) instead of reading on; a method nothing here calls removed from `ObjectLoader.java` |
-| `EntityOpsDefinition.java` | `EntityOpsDefinition.java` | Package only |
+| `EntityOpsDefinition.java` | `EntityOpsDefinition.java` | Package only; `@EqualsAndHashCode(callSuper = false)` on its two subclasses, saying what Lombok already did (it warned at every build) |
 | `JagexColor.java` | `models/JagexColor.java` | Package only; methods nothing here calls removed |
 | `InputStream.java` | `io/InputStream.java` | Package only, no longer extends `java.io.InputStream`, and readers nothing here calls removed |
 | `WorldMapElements.java` | `definitions/loaders/WorldMapCompositeLoader.java`, `definitions/loaders/WorldMapDataLoader.java`, `definitions/loaders/WorldMapElementLoader.java`, `definitions/WorldMapCompositeDefinition.java` | Combined into one reader of a composite map file that returns its elements at their world positions; the current format only; the definition classes are left out |

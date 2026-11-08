@@ -154,6 +154,16 @@ final class MapPainter
 	private final MapLabels labels;
 	private final MapFilters filters;
 	private final SideList sideList;
+	/**
+	 * The list a click on a shop or transport opens, shown in the side list's place while the mouse rests on it (a
+	 * click keeps it open).
+	 */
+	private final SideList clickPreview = new SideList();
+	/** What {@link #clickPreview} lists, a shop or a transport's spot; painter thread. */
+	private Object previewed;
+	/** The shop icon last hovered and the shop it sells for, found once per icon, not every paint; painter thread. */
+	private MapSpot shopSpot;
+	private Shops.Shop shopAt;
 	private final MapSearch search;
 	/** The map's menu, drawn while open; null in a painter without one (the harness). */
 	private volatile MapMenu menu;
@@ -1086,11 +1096,12 @@ final class MapPainter
 		{
 			return;
 		}
-		// a transport's lines to where it goes, as a click shows them (without the list), under its box
+		// a transport's lines to where it goes, as a click shows them, under its box; its list is drawn last, below
 		List<Transports.Destination> destinations = Transports.from(spot);
+		WorldPoint from = new WorldPoint(spot.getX(), spot.getY(), spot.getPlane());
 		if (!destinations.isEmpty())
 		{
-			drawLayer(g, view, Transports.layer(new WorldPoint(spot.getX(), spot.getY(), spot.getPlane()), destinations));
+			drawLayer(g, view, Transports.layer(from, destinations));
 		}
 		WorldPoint to = links.apply(spot);
 		if (to != null)
@@ -1106,6 +1117,47 @@ final class MapPainter
 				drawInfo(g, view, icon, settings, progress, farmingLines(spot, farms));
 			}
 		}
+		if (!destinations.isEmpty())
+		{
+			drawClickPreview(g, view, window, spot, () -> MapIcons.name(spot, progress),
+				() -> AdvancedMapPlugin.transportRows(from, destinations));
+		}
+		else if (spot.getGroup() == IconGroup.SHOPS)
+		{
+			if (!spot.equals(shopSpot) || spot.getPlane() != shopSpot.getPlane())
+			{
+				shopSpot = spot;
+				shopAt = Shops.near(spot.getX(), spot.getY(), spot.getPlane());
+			}
+			Shops.Shop shop = shopAt;
+			if (shop != null)
+			{
+				drawClickPreview(g, view, window, shop, shop::getName, () -> SideList.shopRows(shop));
+			}
+		}
+	}
+
+	/**
+	 * The list a click opens on the right (a shop's wares, a transport's places and fares), while the mouse rests on
+	 * its icon (owner, 2026-11-07: "I wanted the hover to show the box at the top right"; "hovering on a transport or
+	 * any icon needs to show the same details as a click"). Over another shop's or transport's list a click opened,
+	 * as pointing at the next one does; never over this one's, nor over search results or the other lists, which it
+	 * would hide. Made once per icon.
+	 */
+	private void drawClickPreview(Graphics2D g, MapViewport.View view, boolean window, Object owner,
+		java.util.function.Supplier<String> title, java.util.function.Supplier<List<SideList.Row>> rows)
+	{
+		Object open = sideList.isOpen() ? sideList.owner() : null;
+		if (open != null && (owner.equals(open) || !(open instanceof Shops.Shop || open instanceof MapSpot)))
+		{
+			return;
+		}
+		if (!owner.equals(previewed))
+		{
+			clickPreview.open(title.get(), rows.get(), owner);
+			previewed = owner;
+		}
+		clickPreview.draw(g, clickPreview.layout(buttons(view.width, view.height, window)), null);
 	}
 
 	/** True when a point is on one of the map's buttons, its open lists or boxes, or the search bar. */
@@ -1157,10 +1209,11 @@ final class MapPainter
 		String title = name != null ? name : MapIcons.name(spot, progress);
 		if (toArea == MapArea.SURFACE && MapArea.of(spot.getY()) != MapArea.SURFACE)
 		{
-			title = name != null ? "Up to " + name : "Way out";
+			title = DungeonPreview.wayOutTitle(name, search.places());
 		}
 		boolean inside = toArea == MapArea.UNDERGROUND;
-		DungeonPreview.Look look = inside ? preview.look(to) : null;
+		DungeonPreview.Look look = inside ? preview.look(to, new WorldPoint(spot.getX(), spot.getY(), spot.getPlane()))
+			: null;
 		MapViewport.View small = DungeonPreview.framing(to, look == null ? null : look.getFirstFloor());
 		images.requestBesides(to.getPlane(), regionsOn(small, toArea), RegionImages.Level.forZoom(small.zoom),
 			inside ? DungeonPreview.regionsAround(look.getFloors()) : Collections.emptyList());
@@ -1189,9 +1242,14 @@ final class MapPainter
 				}
 				list.add(monsters.get(i).text());
 			}
-			if (list.isEmpty())
+			if (list.isEmpty() && look.isComplete())
 			{
-				list.add(look.isComplete() ? "No monsters" : "Looking...");
+				// nothing to fight there (the Motherlode Mine): no column, the small map alone (owner, 2026-11-07)
+				inside = false;
+			}
+			else if (list.isEmpty())
+			{
+				list.add("Looking...");
 			}
 			else if (!look.isComplete())
 			{
@@ -1209,11 +1267,16 @@ final class MapPainter
 			}
 		}
 		String hint = "Click to go there";
+		// what going through needs (a rope into the Kalphite Lair), from dungeon-links.tsv, above the hint
+		Shortcuts.Need need = DungeonLinks.needs(spot.getX(), spot.getY(), spot.getPlane());
+		MapIcons.Line needs = need == null ? null : MapIcons.needLine(need, progress);
 		int contentHeight = Math.max(DungeonPreview.MAP_HEIGHT,
 			inside ? titleMetrics.getHeight() + metrics.getHeight() * list.size() : 0);
-		int width = PAD * 2 + Math.max(titleMetrics.stringWidth(title),
+		int width = PAD * 2 + Math.max(Math.max(titleMetrics.stringWidth(title),
+			needs == null ? 0 : metrics.stringWidth(needs.getText())),
 			DungeonPreview.MAP_WIDTH + (inside ? PAD + listWidth : 0));
-		int height = PAD * 2 + titleMetrics.getHeight() + 4 + contentHeight + 4 + metrics.getHeight();
+		int height = PAD * 2 + titleMetrics.getHeight() + 4 + contentHeight + 4
+			+ metrics.getHeight() * (needs == null ? 1 : 2);
 		int x = at.x + at.width + 8;
 		if (x + width > view.width - GAP)
 		{
@@ -1268,6 +1331,11 @@ final class MapPainter
 			}
 		}
 		g.setFont(font);
+		if (needs != null)
+		{
+			g.setColor(needs.getColor());
+			g.drawString(needs.getText(), x + PAD, y + height - PAD - metrics.getDescent() - metrics.getHeight());
+		}
 		g.setColor(MapIcons.QUIET);
 		g.drawString(hint, x + PAD, y + height - PAD - metrics.getDescent());
 	}
@@ -1785,11 +1853,12 @@ final class MapPainter
 		return text.toString();
 	}
 
-	/** What the notice says while the map is first built. */
-	static final List<String> NOTICE = java.util.Arrays.asList("The first time, Advanced Map builds the map from the"
-		+ " game's data and saves it on this computer. Until it is done, places not built yet are blank or blurry, and"
-		+ " their icons are missing from the map and the search.", "This happens once: afterwards the map opens almost"
-		+ " instantly, on every character. The menu's Welcome page says more.");
+	/**
+	 * What the notice says under its count while the map is first built: one line, as a glance takes it (owner,
+	 * 2026-11-07: "This might be too much text for people who don't read"); the Welcome page says the rest.
+	 */
+	static final List<String> NOTICE = java.util.Collections.singletonList("This is a one-time build: afterwards the"
+		+ " map opens almost instantly.");
 
 	/** The notice's title, with how many regions' floors are still to build. */
 	static String noticeTitle(int left)

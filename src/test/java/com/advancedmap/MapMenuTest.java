@@ -336,4 +336,30 @@ public class MapMenuTest
 		}
 		g.dispose();
 	}
+
+	@Test
+	public void whatsNewListsEachChangeOnItsOwnLineAndHelpTellsOfTheReport()
+	{
+		// the owner, 2026-11-07: each change "its own bullet point ... not jammed up into a paragraph", and "right
+		// click a spot or icon on the map and hit report to get a pre filled github issue"
+		MapMenu menu = new MapMenu(() -> "", MapMenuTest::built);
+		menu.setOpen(true);
+		menu.setPage(MapMenu.Page.WHATS_NEW);
+		java.util.List<String> lines = new java.util.ArrayList<>();
+		for (MapMenu.Line line : menu.layout(MapPainter.buttons(1280, 800, false), 1280, 800).getLines())
+		{
+			lines.add(line.getText());
+		}
+		for (String change : WhatsNew.CHANGES)
+		{
+			assertTrue(change, lines.contains("- " + change));
+		}
+		menu.setPage(MapMenu.Page.IMPROVE);
+		StringBuilder improve = new StringBuilder();
+		for (MapMenu.Line line : menu.layout(MapPainter.buttons(1280, 800, false), 1280, 800).getLines())
+		{
+			improve.append(line.getText()).append(' ');
+		}
+		assertTrue(improve.toString(), improve.toString().contains("choose Report a problem here"));
+	}
 }

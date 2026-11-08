@@ -18,7 +18,7 @@ public class DungeonLinksTest
 	public void theEntrancesTheGameLeavesOutLeadIntoTheirDungeons()
 	{
 		Map<Integer, Integer> extra = DungeonLinks.extra();
-		assertEquals(41, extra.size());
+		assertEquals(51, extra.size());
 		// Tonali Cavern's two entrances, from the wiki
 		int cavern = MapLinks.pack(1311, 9382, 0);
 		assertEquals(cavern, MapLinks.destinationNear(extra, 1306, 3035, 0, RegionImages.LINK_REACH));
@@ -26,10 +26,62 @@ public class DungeonLinksTest
 		// the Smoke Dungeon's well, from Shortest Path
 		assertEquals(MapLinks.pack(3206, 9379, 0), MapLinks.destinationNear(extra, 3310, 2962, 0,
 			RegionImages.LINK_REACH));
-		for (int to : extra.values())
+		// a way in from the surface leads underground (a way out, from a dungeon, may lead up to it)
+		for (Map.Entry<Integer, Integer> link : extra.entrySet())
 		{
-			assertTrue(MapArea.of(MapLinks.y(to)) == MapArea.UNDERGROUND);
+			assertTrue(MapArea.of(MapLinks.y(link.getKey())) == MapArea.UNDERGROUND
+				|| MapArea.of(MapLinks.y(link.getValue())) == MapArea.UNDERGROUND);
 		}
+	}
+
+	@Test
+	public void theKalphiteLairAndTheQueensChamberLinkBothWays()
+	{
+		// the owner, 2026-11-07, in game: the lair's tunnel (floor 3) down to the chamber, and the rope back up; each
+		// lands on the tile the player stood on after the climb (Black Box), the chamber's icon on its own landing
+		Map<Integer, Integer> extra = DungeonLinks.extra();
+		int lair = MapLinks.pack(3508, 9497, 2);
+		int chamber = MapLinks.pack(3508, 9493, 0);
+		assertEquals(chamber, MapLinks.destinationNear(extra, 3509, 9497, 2, RegionImages.LINK_REACH));
+		assertEquals(lair, MapLinks.destinationNear(extra, 3508, 9493, 0, RegionImages.LINK_REACH));
+		// on top of each other but a floor apart: each icon leads only its own way
+		assertEquals(-1, MapLinks.destinationNear(extra, 3508, 9493, 1, RegionImages.LINK_REACH));
+		// and the lair's way out, to its entrance in the desert, and in again to where the climb down lands
+		int entrance = MapLinks.pack(3227, 3108, 0);
+		int landing = MapLinks.pack(3483, 9510, 2);
+		assertEquals(entrance, MapLinks.destinationNear(extra, 3483, 9510, 2, RegionImages.LINK_REACH));
+		assertEquals(landing, MapLinks.destinationNear(extra, 3227, 3108, 0, RegionImages.LINK_REACH));
+		// a rope into the lair and down to the Queen (OSRS Wiki), none for the ropes back up; the game's icon may sit
+		// beside the listed tile
+		// beside the listed tile; both are told by the Hard Desert Diary's "complete" varbit, which the progress reads
+		int hardDiary = net.runelite.api.gameval.VarbitID.DESERT_DIARY_HARD_COMPLETE;
+		assertEquals(new Shortcuts.Need("Needs a rope (a 2nd for the Queen's chamber), unless the Hard Desert Diary is"
+			+ " done", hardDiary), DungeonLinks.needs(3226, 3108, 0));
+		assertEquals(new Shortcuts.Need("Needs a rope, unless the Hard Desert Diary is done", hardDiary),
+			DungeonLinks.needs(3509, 9497, 2));
+		assertEquals(null, DungeonLinks.needs(3508, 9493, 0));
+		assertEquals(null, DungeonLinks.needs(3483, 9510, 2));
+		assertTrue(DungeonLinks.needVars().contains(hardDiary));
+
+		// the Dwarven Mine's dungeon icon into the Motherlode Mine, where the owner came in, and back out
+		assertEquals(MapLinks.pack(3728, 5692, 0), MapLinks.destinationNear(extra, 3060, 9764, 0,
+			RegionImages.LINK_REACH));
+		assertEquals(MapLinks.pack(3060, 9764, 0), MapLinks.destinationNear(extra, 3728, 5692, 0,
+			RegionImages.LINK_REACH));
+		assertEquals("Dwarven Mine", DungeonLinks.name(3728, 5692, 0));
+		// and its second way in, from the Mining Guild, to the mine's west ladder, and back
+		assertEquals(MapLinks.pack(3718, 5678, 0), MapLinks.destinationNear(extra, 3056, 9744, 0,
+			RegionImages.LINK_REACH));
+		assertEquals(MapLinks.pack(3056, 9744, 0), MapLinks.destinationNear(extra, 3718, 5678, 0,
+			RegionImages.LINK_REACH));
+		assertEquals("Mining Guild", DungeonLinks.name(3718, 5678, 0));
+		// Keldagrim's ladder down into the Blast Furnace, and back up
+		assertEquals(MapLinks.pack(1940, 4956, 0), MapLinks.destinationNear(extra, 2931, 10196, 0,
+			RegionImages.LINK_REACH));
+		assertEquals(MapLinks.pack(2931, 10196, 0), MapLinks.destinationNear(extra, 1940, 4956, 0,
+			RegionImages.LINK_REACH));
+		assertEquals("Blast Furnace", DungeonLinks.name(2931, 10196, 0));
+		assertEquals("Keldagrim", DungeonLinks.name(1940, 4956, 0));
 	}
 
 	@Test

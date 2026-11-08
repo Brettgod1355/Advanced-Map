@@ -6,11 +6,8 @@
 package com.advancedmap;
 
 import java.awt.Color;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -176,21 +173,6 @@ final class Transports
 		}
 	}
 
-	private static List<String[]> rows(InputStream in) throws IOException
-	{
-		List<String[]> rows = new ArrayList<>();
-		BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
-		String line;
-		while ((line = reader.readLine()) != null)
-		{
-			if (!line.isEmpty() && !line.startsWith("#"))
-			{
-				rows.add(line.split("\t", -1));
-			}
-		}
-		return rows;
-	}
-
 	/** A tile of the lists; one in Prifddinas on the surface, where the map draws the city. */
 	private static WorldPoint point(String[] f, int at)
 	{
@@ -211,7 +193,7 @@ final class Transports
 
 	private static void parseCosts(InputStream in, Data out) throws IOException
 	{
-		for (String[] f : rows(in))
+		for (String[] f : DataFiles.rows(in))
 		{
 			out.costs.add(new Cost(f[0], spacedPoint(f[1]), spacedPoint(f[2]), f.length > 3 ? f[3] : "",
 				f.length > 4 ? f[4] : ""));
@@ -249,7 +231,7 @@ final class Transports
 		// a boat's or ship's spot sails to each of its own places: one station per spot and kind
 		Map<String, List<Destination>> pairs = new LinkedHashMap<>();
 		Map<String, WorldPoint> pairSpots = new LinkedHashMap<>();
-		for (String[] f : rows(in))
+		for (String[] f : DataFiles.rows(in))
 		{
 			String kind = f[1];
 			WorldPoint first = point(f, 2);
@@ -278,7 +260,7 @@ final class Transports
 
 	private static void parsePoints(InputStream in, Data out) throws IOException
 	{
-		List<String[]> rows = rows(in);
+		List<String[]> rows = DataFiles.rows(in);
 		WorldPoint keldagrim = null;
 		for (String[] f : rows)
 		{

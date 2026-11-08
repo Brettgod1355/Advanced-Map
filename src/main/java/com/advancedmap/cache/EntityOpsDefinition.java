@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 @Accessors(chain = true)
@@ -100,6 +101,7 @@ public class EntityOpsDefinition
 	}
 
 	@Data
+	@EqualsAndHashCode(callSuper = false)
 	public static class ConditionalOp extends Op
 	{
 		public int varpID;
@@ -119,6 +121,7 @@ public class EntityOpsDefinition
 	}
 
 	@Data
+	@EqualsAndHashCode(callSuper = false)
 	public static class ConditionalSubOp extends ConditionalOp
 	{
 		public int subID;

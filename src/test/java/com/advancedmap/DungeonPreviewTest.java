@@ -224,4 +224,107 @@ public class DungeonPreviewTest
 		assertEquals("Misthalin Underground", DungeonPreview.name(icon, to, Collections.emptyList(), labels));
 		assertNull(DungeonPreview.name(icon, to, Collections.emptyList(), Collections.emptyList()));
 	}
+
+	@Test
+	public void theQueensChamberCountsFromTheDesertButNotFromItsOwnRopeUp() throws Exception
+	{
+		List<DungeonPreview.Way> all;
+		try (java.io.InputStream in = DungeonPreview.class.getResourceAsStream("inner-links.tsv"))
+		{
+			all = DungeonPreview.parseWays(in);
+		}
+		WorldPoint chamber = new WorldPoint(3508, 9493, 0);
+		// the desert's entrance: the lair's ways down to the chamber are followed, so its Queen is listed
+		assertTrue(downToChamber(DungeonPreview.notBackTo(all, new WorldPoint(3227, 3108, 0)), chamber) > 0);
+		// the chamber's rope up to the lair: the ways back down to where the player stands are not
+		assertEquals(0, downToChamber(DungeonPreview.notBackTo(all, chamber), chamber));
+	}
+
+	private static int downToChamber(List<DungeonPreview.Way> ways, WorldPoint chamber)
+	{
+		int count = 0;
+		for (DungeonPreview.Way way : ways)
+		{
+			count += way.getTo().getPlane() == chamber.getPlane() && Math.abs(way.getTo().getX() - chamber.getX()) <= 2
+				&& Math.abs(way.getTo().getY() - chamber.getY()) <= 2 ? 1 : 0;
+		}
+		return count;
+	}
+
+	@Test
+	public void aLinksOwnNameWinsAndAWayOutNamedForItsDungeonGoesUpToTheSurface()
+	{
+		// the Queen's chamber's rope up: the label nearest where it lands is the chamber's own, a floor below
+		MapSpot rope = MapSpot.icon(3508, 9493, 0, 1, IconGroup.MAP_LINK);
+		List<MapLabels.Label> chamber = Collections.singletonList(new MapLabels.Label(
+			Arrays.asList("Queen's", "Chamber"), 3496, 9497, 1, Color.WHITE));
+		assertEquals("Kalphite Lair", DungeonPreview.name(rope, new WorldPoint(3508, 9497, 2), Collections.emptyList(),
+			chamber));
+
+		// the lair's way out: the label beside its entrance is the lair's own name, not where it leads
+		List<MapSearch.Entry> places = Collections.singletonList(new MapSearch.Entry(MapSearch.Kind.DUNGEON,
+			"Kalphite Lair", "Dungeon", Collections.singletonList(new WorldPoint(3226, 3108, 0)),
+			Collections.emptyList(), null));
+		assertEquals("Up to the surface", DungeonPreview.wayOutTitle("Kalphite Lair", places));
+		assertEquals("Up to Lumbridge", DungeonPreview.wayOutTitle("Lumbridge", places));
+		assertEquals("Up to the surface", DungeonPreview.wayOutTitle(null, places));
+		// a minigame's name is a place's own name too (Giants' Foundry is listed as one)
+		List<MapSearch.Entry> foundry = Collections.singletonList(new MapSearch.Entry(MapSearch.Kind.MINIGAME,
+			"Giants' Foundry", "Minigame", Collections.singletonList(new WorldPoint(3360, 3150, 0)),
+			Collections.emptyList(), null));
+		assertEquals("Up to the surface", DungeonPreview.wayOutTitle("Giants' Foundry", foundry));
+	}
+
+	@Test
+	public void theGrandExchangesWayIntoKeldagrimIsNamedForKeldagrim() throws Exception
+	{
+		// its preview read "Brewery", the label nearest where it leads (owner, 2026-11-07)
+		List<MapSearch.Entry> places;
+		try (java.io.InputStream in = MapSearch.class.getResourceAsStream("places.tsv"))
+		{
+			places = MapSearch.parsePlaces(in);
+		}
+		List<MapLabels.Label> brewery = Collections.singletonList(new MapLabels.Label(
+			Collections.singletonList("Brewery"), 2915, 10195, 0, Color.WHITE));
+		assertEquals("Keldagrim", DungeonPreview.name(MapSpot.icon(3141, 3505, 0, 1, IconGroup.DUNGEON),
+			new WorldPoint(2911, 10190, 0), places, brewery));
+	}
+
+	@Test
+	public void aLookIsKeptForTheIconItIsLookedFromToo()
+	{
+		// the lair's landing looked at from the Queen's chamber's rope up, then from the desert's entrance: two looks,
+		// as their ways differ (the way back to each icon is not followed)
+		java.util.concurrent.ExecutorService executor = java.util.concurrent.Executors.newSingleThreadExecutor();
+		try
+		{
+			DungeonPreview preview = new DungeonPreview(new RegionImages(new RegionImagesCacheTest.Flat(), executor,
+				new MapIcons()));
+			WorldPoint landing = new WorldPoint(3508, 9497, 2);
+			DungeonPreview.Look fromRope = preview.look(landing, new WorldPoint(3508, 9493, 0));
+			assertSame(fromRope, preview.look(landing, new WorldPoint(3508, 9493, 0)));
+			org.junit.Assert.assertNotSame(fromRope, preview.look(landing, new WorldPoint(3227, 3108, 0)));
+		}
+		finally
+		{
+			executor.shutdownNow();
+		}
+	}
+
+	@Test
+	public void aDungeonsEntranceNamesThePreviewBeforeAMinigameSpotNearer()
+	{
+		// a wiki minigame spot (Chompy bird hunting) two tiles from a dungeon icon, the dungeon's entrance five away
+		MapSpot icon = MapSpot.icon(2340, 3061, 0, 1, IconGroup.DUNGEON);
+		List<MapSearch.Entry> places = Arrays.asList(
+			new MapSearch.Entry(MapSearch.Kind.MINIGAME, "Chompy bird hunting", "Minigame",
+				Collections.singletonList(new WorldPoint(2337, 3061, 0)), Collections.emptyList(), null),
+			new MapSearch.Entry(MapSearch.Kind.DUNGEON, "Some Dungeon", "Dungeon",
+				Collections.singletonList(new WorldPoint(2345, 3061, 0)), Collections.emptyList(), null));
+		assertEquals("Some Dungeon", DungeonPreview.name(icon, new WorldPoint(2340, 9461, 0), places,
+			Collections.emptyList()));
+		// with no dungeon near, the minigame still names it
+		assertEquals("Chompy bird hunting", DungeonPreview.name(icon, new WorldPoint(2340, 9461, 0),
+			places.subList(0, 1), Collections.emptyList()));
+	}
 }

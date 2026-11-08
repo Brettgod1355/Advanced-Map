@@ -115,6 +115,17 @@ public class MapPainterTest
 		NamedIcons.Named named = NamedIcons.at(2929, 10461, 0);
 		assertEquals("Ancient Furnace", named.getName());
 		assertEquals("Ancient_Furnace", named.getWikiPage());
+		// and the Ferox Enclave Dungeon's minigame icon, the portal to Soul Wars (owner, 2026-11-07)
+		assertEquals("Soul Wars Portal", NamedIcons.at(3157, 10027, 0).getName());
+		assertEquals("Guardians of the Rift", NamedIcons.at(3615, 9483, 0).getName());
+		assertEquals("Hallowed Sepulchre", NamedIcons.at(2400, 5982, 0).getName());
+		assertEquals("Gnome Ball", NamedIcons.at(1934, 5536, 0).getName());
+		assertEquals("Mahogany Homes", NamedIcons.at(3945, 4943, 0).getName());
+		assertEquals("Soul Wars", NamedIcons.at(2018, 5927, 0).getName());
+		assertEquals("Rat Pits", NamedIcons.at(3971, 4872, 0).getName());
+		assertEquals("Gnome Restaurant", NamedIcons.at(1989, 5550, 1).getName());
+		assertEquals("Games Zone", NamedIcons.at(3847, 4945, 0).getName());
+		assertEquals("Games_Zone", NamedIcons.at(3847, 4945, 0).getWikiPage());
 		MapSpot furnace = MapSpot.icon(2929, 10461, 0, 0, 1059);
 		MapPainter.Selection on = new MapPainter.Selection(furnace, true, 100, 100, new WorldPoint(2929, 10461, 0));
 		List<MapPainter.MenuEntry> entries = MapPainter.menuEntries(on, settings(RoutingPlugin.NONE));
@@ -358,6 +369,29 @@ public class MapPainterTest
 		BufferedImage away = restOn(off, view, new java.awt.Point(locate.x + 4, locate.y + 4));
 		assertEquals(0, differences(away, restOn(onButton, view, new java.awt.Point(locate.x + 4, locate.y + 4)),
 			new Rectangle(0, 50, 500, 250)));
+	}
+
+	@Test
+	public void restingOnATransportShowsTheListAClickOpensAtTheTopRight() throws InterruptedException
+	{
+		// the owner, 2026-11-07: "i want to see that box at the top right on hover, not just the lines"
+		Transports.load();
+		MapIcons icons = new MapIcons();
+		icons.addSprite(0, com.advancedmap.cache.MapSprite.of(15, 15, 0, 0, 1, 1, new int[]{0xFFFFFF}));
+		// the magic carpet by the Shantay Pass: to Bedabin Camp, Pollnivneach and Uzer
+		MapSpot carpet = MapSpot.icon(3312, 3107, 0, 0, 1104);
+		assertFalse(Transports.from(carpet).isEmpty());
+		icons.addRegion(3312 >> 6 << 8 | 3107 >> 6, Collections.singletonList(carpet));
+		// the carpet well left of the middle, so its own box stays clear of the list's corner
+		MapViewport.View view = new MapViewport.View(3312 + 60, 3107, 4, 800, 600);
+		java.awt.Point on = new java.awt.Point((int) Math.round(view.screenX(3312.5)),
+			(int) Math.round(view.screenY(3107.5)));
+		Rectangle corner = new Rectangle(560, 60, 230, 120);
+
+		MapPainter off = blankPainter(icons);
+		MapPainter hover = blankPainter(icons);
+		hover.setInfoOnHover(true);
+		assertTrue(differences(restOn(off, view, on), restOn(hover, view, on), corner) > 500);
 	}
 
 	@Test
