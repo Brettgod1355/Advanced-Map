@@ -139,6 +139,12 @@ public class MapMenuTest
 				assertTrue("the help is long, but ends on the map", content.height > 600
 					&& content.y + content.height <= 1080);
 			}
+			else if (page == MapMenu.Page.WHATS_NEW)
+			{
+				// every version's notes (owner, 2026-11-08): it grows, ends on the map, its buttons at its foot
+				assertTrue("what's new ends on the map", content.y + content.height <= 1080);
+				assertEquals(content.y + content.height - 8 - 24, fitted.getButton1().y);
+			}
 			else if (page == MapMenu.Page.WELCOME)
 			{
 				assertTrue("the welcome ends on the map, under its buttons", content.y + content.height <= 1080

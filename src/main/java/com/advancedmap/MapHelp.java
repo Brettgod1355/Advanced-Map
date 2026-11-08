@@ -34,12 +34,17 @@ final class MapHelp
 		return PAGES.getOrDefault(name, Collections.emptyList());
 	}
 
-	/** A page's list items, in order. */
+	/** The list items of a page's first section, in order: on What's new, the version being run's changes. */
 	static List<String> items(String name)
 	{
 		List<String> out = new ArrayList<>();
+		int headings = 0;
 		for (String[] block : page(name))
 		{
+			if (block[0].equals("#") && ++headings > 1)
+			{
+				break;
+			}
 			if (block[0].equals("-"))
 			{
 				out.add(block[1]);

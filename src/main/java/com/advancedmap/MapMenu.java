@@ -458,11 +458,7 @@ final class MapMenu
 				text(out, "BUILDING", column);
 				break;
 			case WHATS_NEW:
-				heading(out, "Advanced Map " + WhatsNew.VERSION, column);
-				if (WhatsNew.CHANGES.isEmpty())
-				{
-					paragraph(out, "Nothing new to tell of in this version: fixes only.", column);
-				}
+				// every version under its own heading, newest first (owner, 2026-11-08)
 				text(out, "WHATS_NEW", column);
 				break;
 			case IMPROVE:
