@@ -124,7 +124,8 @@ public class MapPainterTest
 		assertEquals("Soul Wars", NamedIcons.at(2018, 5927, 0).getName());
 		assertEquals("Rat Pits", NamedIcons.at(3971, 4872, 0).getName());
 		assertEquals("Gnome Restaurant", NamedIcons.at(1989, 5550, 1).getName());
-		assertEquals("Burthorpe Games Room", NamedIcons.at(3847, 4945, 0).getName());
+		assertEquals("Games Zone", NamedIcons.at(3847, 4945, 0).getName());
+		assertEquals("Games_Zone", NamedIcons.at(3847, 4945, 0).getWikiPage());
 		MapSpot furnace = MapSpot.icon(2929, 10461, 0, 0, 1059);
 		MapPainter.Selection on = new MapPainter.Selection(furnace, true, 100, 100, new WorldPoint(2929, 10461, 0));
 		List<MapPainter.MenuEntry> entries = MapPainter.menuEntries(on, settings(RoutingPlugin.NONE));
