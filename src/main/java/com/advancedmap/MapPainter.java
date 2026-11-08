@@ -161,6 +161,9 @@ final class MapPainter
 	private final SideList clickPreview = new SideList();
 	/** What {@link #clickPreview} lists, a shop or a transport's spot; painter thread. */
 	private Object previewed;
+	/** The shop icon last hovered and the shop it sells for, found once per icon, not every paint; painter thread. */
+	private MapSpot shopSpot;
+	private Shops.Shop shopAt;
 	private final MapSearch search;
 	/** The map's menu, drawn while open; null in a painter without one (the harness). */
 	private volatile MapMenu menu;
@@ -1121,7 +1124,12 @@ final class MapPainter
 		}
 		else if (spot.getGroup() == IconGroup.SHOPS)
 		{
-			Shops.Shop shop = Shops.near(spot.getX(), spot.getY(), spot.getPlane());
+			if (!spot.equals(shopSpot) || spot.getPlane() != shopSpot.getPlane())
+			{
+				shopSpot = spot;
+				shopAt = Shops.near(spot.getX(), spot.getY(), spot.getPlane());
+			}
+			Shops.Shop shop = shopAt;
 			if (shop != null)
 			{
 				drawClickPreview(g, view, window, shop, shop::getName, () -> SideList.shopRows(shop));
