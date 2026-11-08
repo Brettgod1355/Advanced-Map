@@ -220,7 +220,7 @@ names". Which kinds of icon show, your Slayer task and the multi-combat areas ar
   (the version last run, whether the Welcome page has opened).
 - **What opens your browser**, each only when you click it: the GitHub and Discord buttons on the sidebar tab and in
   the map's menu, "Help improve the map" (Discord, GitHub issues), "What's new" (the release notes on GitHub),
-  "Report a problem here" (a new GitHub issue) and "Open its wiki page" on the few icons that have one.
+  "Report a problem here" (a new GitHub issue) and "Open its wiki page" on any icon.
 
 ## Good to know
 

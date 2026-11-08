@@ -94,10 +94,12 @@ public class MapPainterTest
 		MapSpot varrock = MapSpot.teleport(Teleport.named("VARROCK"));
 		MapPainter.Selection near = new MapPainter.Selection(varrock, true, 790, 590, Teleport.named("VARROCK").getLocation());
 		List<MapPainter.MenuEntry> entries = MapPainter.menuEntries(near, settings(RoutingPlugin.SHORTEST_PATH));
-		assertEquals(5, entries.size());
+		assertEquals(6, entries.size());
 		assertEquals(MapPainter.Action.HIDE, entries.get(0).getAction());
-		assertEquals("Route here (Shortest Path)", entries.get(1).getText());
-		assertEquals(MapPainter.Action.ADD_MARKER, entries.get(3).getAction());
+		// every icon opens its wiki page, a teleport too (owner, 2026-11-08)
+		assertEquals(MapPainter.Action.WIKI, entries.get(1).getAction());
+		assertEquals("Route here (Shortest Path)", entries.get(2).getText());
+		assertEquals(MapPainter.Action.ADD_MARKER, entries.get(4).getAction());
 		Rectangle menu = MapPainter.menuBounds(near, "Varrock Teleport", entries, 800, 600);
 		assertTrue(menu.x + menu.width <= 800 && menu.y + menu.height <= 600);
 		for (int i = 0; i < entries.size(); i++)
@@ -132,10 +134,19 @@ public class MapPainterTest
 		assertEquals(MapPainter.Action.HIDE, entries.get(0).getAction());
 		assertEquals(MapPainter.Action.WIKI, entries.get(1).getAction());
 		assertEquals("Open its wiki page", entries.get(1).getText());
-		// any other icon has no such entry
+		assertEquals(MonsterInfo.WIKI + "Ancient_Furnace", MapIcons.wikiUrl(furnace, Progress.NONE));
+		// every other icon has it too (owner, 2026-11-08): a wiki search for the name its box shows, which opens the
+		// page of that name when there is one
 		MapSpot elsewhere = MapSpot.icon(3222, 3218, 0, 0, 1059);
 		assertTrue(MapPainter.menuEntries(new MapPainter.Selection(elsewhere, true, 100, 100, new WorldPoint(3222, 3218, 0)),
-			settings(RoutingPlugin.NONE)).stream().noneMatch(e -> e.getAction() == MapPainter.Action.WIKI));
+			settings(RoutingPlugin.NONE)).stream().anyMatch(e -> e.getAction() == MapPainter.Action.WIKI));
+		Progress kinds = new Progress(false, new int[net.runelite.api.Skill.values().length], Collections.emptyMap(),
+			Collections.emptyMap(), Collections.singletonMap(1059, "Furnace"), Collections.emptyMap());
+		assertTrue(MapIcons.wikiUrl(elsewhere, kinds).endsWith(".wiki/?search=Furnace"));
+		// a name with spaces, an apostrophe and an ampersand is encoded
+		Progress odd = new Progress(false, new int[net.runelite.api.Skill.values().length], Collections.emptyMap(),
+			Collections.emptyMap(), Collections.singletonMap(1059, "Farmer's shed & more"), Collections.emptyMap());
+		assertTrue(MapIcons.wikiUrl(elsewhere, odd).endsWith(".wiki/?search=Farmer%27s+shed+%26+more"));
 	}
 
 	/** The text of an icon's info box lines, logged out. */

@@ -1582,11 +1582,9 @@ public class AdvancedMapPlugin extends Plugin
 				LinkBrowser.browse(reportUrl(spotText));
 				break;
 			case WIKI:
-				NamedIcons.Named named = on.getSpot() == null ? null
-					: NamedIcons.at(on.getSpot().getX(), on.getSpot().getY(), on.getSpot().getPlane());
-				if (named != null)
+				if (on.getSpot() != null)
 				{
-					LinkBrowser.browse(MonsterInfo.WIKI + named.getWikiPage());
+					LinkBrowser.browse(MapIcons.wikiUrl(on.getSpot(), progress));
 				}
 				break;
 			default:

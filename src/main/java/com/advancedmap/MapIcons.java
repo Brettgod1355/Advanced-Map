@@ -679,10 +679,22 @@ final class MapIcons
 		WorldPoint tile = Prifddinas.toCity(new WorldPoint(spot.getX(), spot.getY(), spot.getPlane()));
 		lines.add(new Line(tile.getPlane() > 0 ? tile.getX() + ", " + tile.getY() + ", " + floors.name(tile.getPlane())
 			: tile.getX() + ", " + tile.getY(), QUIET));
-		boolean wiki = spot.getTeleport() == null && NamedIcons.at(spot.getX(), spot.getY(), spot.getPlane()) != null;
-		lines.add(new Line(hidden ? "Hidden: right-click to unhide" : wiki ? "Right-click to hide it or open its wiki page"
-			: "Right-click to hide this icon", QUIET));
+		lines.add(new Line(hidden ? "Hidden: right-click to unhide" : "Right-click to hide it or open its wiki page",
+			QUIET));
 		return lines;
+	}
+
+	/**
+	 * An icon's wiki page: the one {@code named-icons.tsv} gives it, else a wiki search for the name its box shows,
+	 * which opens the page of that name when there is one (a quest, a teleport, "Bank") and lists the nearest ones
+	 * otherwise (owner, 2026-11-08: a wiki link on every icon).
+	 */
+	static String wikiUrl(MapSpot spot, Progress progress)
+	{
+		NamedIcons.Named named = spot.getTeleport() == null ? NamedIcons.at(spot.getX(), spot.getY(), spot.getPlane())
+			: null;
+		return named != null ? MonsterInfo.WIKI + named.getWikiPage() : "https://oldschool.runescape.wiki/?search="
+			+ java.net.URLEncoder.encode(name(spot, progress), java.nio.charset.StandardCharsets.UTF_8);
 	}
 
 	private static void questInfo(List<Line> lines, Progress.QuestInfo quest, Progress progress)
