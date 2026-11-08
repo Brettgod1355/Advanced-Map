@@ -1,6 +1,7 @@
 # Advanced Map
 
-A full-screen world map for [RuneLite](https://runelite.net/), built on your computer from the game's own map data,
+A world map for [RuneLite](https://runelite.net/) that fits how you play: in a box over the game you can move and
+size, filling the game view, or in a window of its own. It's built on your computer from the game's own map data,
 with smooth pan and zoom, a fuzzy search over places, shops, items and monsters, and icons you can point at for
 their details.
 

@@ -70,7 +70,7 @@ import net.runelite.client.util.LinkBrowser;
 @PluginDescriptor(
 	name = "Advanced Map",
 	internalName = "advanced-map",
-	description = "A full-screen world map drawn from the game's own map data, with smooth pan and zoom",
+	description = "A resizable world map, full screen or in its own window, drawn from the game's own map data",
 	tags = {"map", "world map", "worldmap", "full screen", "fullscreen", "zoom", "atlas"}
 )
 public class AdvancedMapPlugin extends Plugin
