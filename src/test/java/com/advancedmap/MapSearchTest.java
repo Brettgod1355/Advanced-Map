@@ -444,6 +444,17 @@ public class MapSearchTest
 		assertEquals("Guardians of the Rift", names("gotr").get(0));
 		assertEquals("Guardians of the Rift", names("guardians of the rift").get(0));
 		assertEquals("Games Zone", names("games zone").get(0));
+		// raid 4, released 2026-10-20: its lobby at the bottom of the Chasm of Tears, also by "tfa" (owner, 2026-11-07)
+		assertEquals("The Fractured Archive", names("tfa").get(0));
+		assertEquals("The Fractured Archive", names("fractured archive").get(0));
+		assertEquals("The Fractured Archive", names("fred").get(0));
+		// "raid" finds all four raids first
+		List<String> raids = names("raid");
+		for (String raid : Arrays.asList("Chambers of Xeric", "Theatre of Blood", "Tombs of Amascut",
+			"The Fractured Archive"))
+		{
+			assertTrue(raid, raids.indexOf(raid) >= 0 && raids.indexOf(raid) < 4);
+		}
 	}
 
 	@Test
