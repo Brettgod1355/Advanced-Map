@@ -443,6 +443,7 @@ public class MapSearchTest
 		// in the bundled lists: "gotr" (owner, 2026-11-07) and the name itself both find the minigame first
 		assertEquals("Guardians of the Rift", names("gotr").get(0));
 		assertEquals("Guardians of the Rift", names("guardians of the rift").get(0));
+		assertEquals("Games Zone", names("games zone").get(0));
 	}
 
 	@Test
