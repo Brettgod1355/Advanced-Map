@@ -276,6 +276,21 @@ public class DungeonPreviewTest
 	}
 
 	@Test
+	public void theGrandExchangesWayIntoKeldagrimIsNamedForKeldagrim() throws Exception
+	{
+		// its preview read "Brewery", the label nearest where it leads (owner, 2026-11-07)
+		List<MapSearch.Entry> places;
+		try (java.io.InputStream in = MapSearch.class.getResourceAsStream("places.tsv"))
+		{
+			places = MapSearch.parsePlaces(in);
+		}
+		List<MapLabels.Label> brewery = Collections.singletonList(new MapLabels.Label(
+			Collections.singletonList("Brewery"), 2915, 10195, 0, Color.WHITE));
+		assertEquals("Keldagrim", DungeonPreview.name(MapSpot.icon(3141, 3505, 0, 1, IconGroup.DUNGEON),
+			new WorldPoint(2911, 10190, 0), places, brewery));
+	}
+
+	@Test
 	public void aLookIsKeptForTheIconItIsLookedFromToo()
 	{
 		// the lair's landing looked at from the Queen's chamber's rope up, then from the desert's entrance: two looks,

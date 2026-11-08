@@ -350,3 +350,6 @@ G	Underwater Agility and Thieving	3765	10290	0
 G	Werewolf Skullball	3544	3462	0
 # Not in either list: the Games Zone's minigame icon (owner's hover, 2026-11-07)
 G	Games Zone	3847	4945	0
+# Not in RuneLite's list: the way into Keldagrim by the Grand Exchange, whose preview read "Brewery" (the label
+# nearest where it leads; owner, 2026-11-07: "This should be called Keldagrim")
+D	Keldagrim	3140	3504	0
