@@ -178,6 +178,20 @@ public class MapIconsTest
 	}
 
 	@Test
+	public void aDuplicateIconTheListLeavesOutIsNeverKept()
+	{
+		// the Gnome Restaurant's minigame icon twice, the second on a copy of the Gnome Stronghold (owner, 2026-11-07)
+		MapIcons icons = new MapIcons();
+		MapSpot copy = MapSpot.icon(2309, 5422, 1, 0, 1);
+		MapSpot kept = MapSpot.icon(1989, 5550, 1, 0, 1);
+		assertTrue(MapIcons.removed(copy));
+		assertFalse(MapIcons.removed(kept));
+		assertFalse("another floor of the tile is another icon", MapIcons.removed(MapSpot.icon(2309, 5422, 0, 0, 1)));
+		icons.addRegion(1, java.util.Arrays.asList(copy, kept));
+		assertEquals(Collections.singletonList(kept), icons.allSpots());
+	}
+
+	@Test
 	public void aShortcutIconFarFromAnyKnownShortcutHasNoLevel()
 	{
 		assertNull(MapSpot.nearestShortcut(10, 10));

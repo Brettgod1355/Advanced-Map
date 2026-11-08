@@ -96,17 +96,42 @@ final class MapIcons
 	/** The variables of the unlocks found so far, for {@link Progress} to read. */
 	private final Set<Integer> watchedVars = ConcurrentHashMap.newKeySet();
 
-	/** Keeps a drawn region's icons. Render threads. */
+	/**
+	 * The game's icons Advanced Map leaves out, from {@code removed-icons.tsv} (x, y, plane): a second copy of a place
+	 * the game's map keeps on a map space of its own (the Gnome Restaurant's; owner, 2026-11-07).
+	 */
+	private static final List<String[]> REMOVED = DataFiles.rows("removed-icons.tsv");
+
+	static boolean removed(MapSpot spot)
+	{
+		for (String[] row : REMOVED)
+		{
+			if (row[0].equals(String.valueOf(spot.getX())) && row[1].equals(String.valueOf(spot.getY()))
+				&& row[2].equals(String.valueOf(spot.getPlane())))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/** Keeps a drawn region's icons, but those the list leaves out. Render threads. */
 	void addRegion(int regionId, List<MapSpot> spots)
 	{
+		List<MapSpot> kept = new ArrayList<>();
 		for (MapSpot spot : spots)
 		{
+			if (removed(spot))
+			{
+				continue;
+			}
+			kept.add(spot);
 			if (spot.getUnlock() != null)
 			{
 				watchedVars.add(spot.getUnlock().getVariable());
 			}
 		}
-		byRegion.put(regionId, Collections.unmodifiableList(new ArrayList<>(spots)));
+		byRegion.put(regionId, Collections.unmodifiableList(kept));
 	}
 
 	/** Every teleport's icon. */
