@@ -54,6 +54,12 @@ final class NamedIcons
 	{
 	}
 
+	/** Every icon Advanced Map names, for the search. */
+	static List<Named> all()
+	{
+		return ALL;
+	}
+
 	/** The name Advanced Map gives the icon on a tile, or null. */
 	static Named at(int x, int y, int plane)
 	{

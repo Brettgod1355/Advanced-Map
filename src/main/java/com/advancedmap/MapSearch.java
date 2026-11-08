@@ -88,6 +88,7 @@ final class MapSearch
 			case MARKER:
 			case ICON:
 			case FAIRY_RING:
+			case AGILITY:
 				return Group.PLACES;
 			case MONSTER:
 				return Group.MONSTERS;
@@ -169,7 +170,8 @@ final class MapSearch
 		MONSTER("Monster", Scope.MONSTERS),
 		NPC("NPC", Scope.NPCS),
 		FISHING("Fishing", Scope.SKILLING),
-		HUNTER("Hunter", Scope.SKILLING);
+		HUNTER("Hunter", Scope.SKILLING),
+		AGILITY("Agility course", Scope.PLACES);
 
 		final String label;
 		final Scope scope;
@@ -210,7 +212,7 @@ final class MapSearch
 			Spawns.Creature creature)
 		{
 			this(kind, name, note, points, shops, creature, kind == Kind.PLACE ? MapLabels.TOWN + 1
-				: kind == Kind.DUNGEON || kind == Kind.MINIGAME || kind == Kind.MARKER ? 1 : 0);
+				: kind == Kind.DUNGEON || kind == Kind.MINIGAME || kind == Kind.MARKER || kind == Kind.AGILITY ? 1 : 0);
 		}
 
 		Entry(Kind kind, String name, String note, List<WorldPoint> points, List<Shops.Shop> shops,
@@ -318,6 +320,9 @@ final class MapSearch
 		{
 			log.debug("could not read the fishing and hunter spots", e);
 		}
+		// the Agility courses by name (owner, 2026-11-08), which the game's map calls only "Agility training"
+		java.util.Set<String> listed = out.stream().map(Entry::getKey).collect(Collectors.toSet());
+		out.addAll(agilityCourses(NamedIcons.all(), listed));
 		places = Collections.unmodifiableList(out);
 		try (InputStream in = MapSearch.class.getResourceAsStream("nicknames.tsv"))
 		{
@@ -333,6 +338,34 @@ final class MapSearch
 		// an index built before or while this ran (a search typed as the plugin started) lacks the places, shops and
 		// monsters: the next index() builds again
 		loads++;
+	}
+
+	/**
+	 * The named icons that need an Agility level, as search entries with it ("Lvl 75 Agility", "Lvl 1/45 Agility" for
+	 * a course of two routes); none whose name is listed already (the Werewolf course is an entrance too).
+	 */
+	static List<Entry> agilityCourses(List<NamedIcons.Named> named, java.util.Set<String> listed)
+	{
+		List<Entry> out = new ArrayList<>();
+		for (NamedIcons.Named icon : named)
+		{
+			List<String> levels = new ArrayList<>();
+			for (NamedIcons.Need need : icon.getNeeds())
+			{
+				if (need.getSkill() == net.runelite.api.Skill.AGILITY)
+				{
+					levels.add(String.valueOf(need.getLevel()));
+				}
+			}
+			if (levels.isEmpty() || listed.contains(normalize(icon.getName())))
+			{
+				continue;
+			}
+			out.add(new Entry(Kind.AGILITY, icon.getName(), "Lvl " + String.join("/", levels) + " Agility",
+				Collections.singletonList(new WorldPoint(icon.getX(), icon.getY(), icon.getPlane())),
+				Collections.emptyList(), null));
+		}
+		return out;
 	}
 
 	/** Nicknames ("ardy") and the places they stand for, both {@link #normalize normalized}. */

@@ -46,6 +46,24 @@ public class MapSearchTest
 	}
 
 	@Test
+	public void agilityCoursesAreFoundByNameWithTheirLevel()
+	{
+		// owner, 2026-11-08: each course by its own name, not only the game's "Agility training" icons
+		assertEquals("Prifddinas Agility Course", names("prifddinas agility").get(0));
+		assertEquals("Seers' Village Rooftop Course", names("seers rooftop").get(0));
+		assertEquals("Ardougne Rooftop Course", names("ardougne rooftop").get(0));
+		MapSearch.Entry prif = MapSearch.search(index, "prifddinas agility course").get(0);
+		assertEquals(MapSearch.Kind.AGILITY, prif.getKind());
+		assertEquals("Lvl 75 Agility", prif.getNote());
+		assertEquals("Lvl 1/45 Agility", MapSearch.search(index, "shayzien agility course").get(0).getNote());
+		// "rooftop" finds all nine rooftop courses first
+		List<String> rooftops = names("rooftop");
+		assertTrue(rooftops.subList(0, 9).stream().allMatch(name -> name.endsWith("Rooftop Course")));
+		// the Werewolf course is listed once: it is an entrance already
+		assertEquals(1, index.stream().filter(e -> e.getName().equals("Werewolf Agility Course")).count());
+	}
+
+	@Test
 	public void shortcutsFindTheDragonScimitar()
 	{
 		assertEquals("Dragon scimitar", names("dragon sim").get(0));
