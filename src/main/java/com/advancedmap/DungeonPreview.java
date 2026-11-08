@@ -139,11 +139,12 @@ final class DungeonPreview
 	private static volatile List<Way> innerWays = Collections.emptyList();
 
 	private final RegionImages images;
-	private final Map<WorldPoint, Look> looked = Collections.synchronizedMap(
-		new LinkedHashMap<WorldPoint, Look>(16, 0.75f, true)
+	/** Each look by where it leads and the icon it is looked from (the way back to that is not followed). */
+	private final Map<List<WorldPoint>, Look> looked = Collections.synchronizedMap(
+		new LinkedHashMap<List<WorldPoint>, Look>(16, 0.75f, true)
 		{
 			@Override
-			protected boolean removeEldestEntry(Map.Entry<WorldPoint, Look> eldest)
+			protected boolean removeEldestEntry(Map.Entry<List<WorldPoint>, Look> eldest)
 			{
 				return size() > KEPT;
 			}
@@ -151,7 +152,7 @@ final class DungeonPreview
 	private volatile List<List<WorldMapElements.Piece>> maps = Collections.emptyList();
 	/** The game's own map links that join two underground places. */
 	private volatile List<Way> mapWays = Collections.emptyList();
-	private volatile WorldPoint lastTry;
+	private volatile List<WorldPoint> lastTry;
 	private volatile long lastTryAt;
 	/** Where looks run, off the client thread (one can take tens of milliseconds); null runs them in place. */
 	private volatile java.util.concurrent.Executor executor;
@@ -299,9 +300,10 @@ final class DungeonPreview
 	 */
 	Look look(WorldPoint to, WorldPoint from)
 	{
-		Look known = looked.get(to);
+		List<WorldPoint> key = java.util.Arrays.asList(to, from);
+		Look known = looked.get(key);
 		long now = System.nanoTime();
-		if (known != null && (known.isComplete() || to.equals(lastTry) && now - lastTryAt < RETRY_NANOS))
+		if (known != null && (known.isComplete() || key.equals(lastTry) && now - lastTryAt < RETRY_NANOS))
 		{
 			return known;
 		}
@@ -312,16 +314,16 @@ final class DungeonPreview
 		java.util.concurrent.Executor run = executor;
 		if (run == null)
 		{
-			lastTry = to;
+			lastTry = key;
 			lastTryAt = now;
 			Look look = look(to, mapsNow, ways, this::floor, Spawns.all());
-			looked.put(to, look);
+			looked.put(key, look);
 			return look;
 		}
 		// the flood runs off the client thread; meanwhile what was known (or nothing yet) shows
 		if (looking.compareAndSet(false, true))
 		{
-			lastTry = to;
+			lastTry = key;
 			lastTryAt = now;
 			int asOf = generation.get();
 			try
@@ -333,7 +335,7 @@ final class DungeonPreview
 						Look look = look(to, mapsNow, ways, this::floor, Spawns.all());
 						if (generation.get() == asOf)
 						{
-							looked.put(to, look);
+							looked.put(key, look);
 						}
 					}
 					finally

@@ -44,15 +44,23 @@ final class Shortcuts
 		{
 			for (String[] f : DataFiles.rows(in))
 			{
-				AgilityShortcut shortcut = AgilityShortcut.valueOf(f[0]);
-				if (!f[1].isEmpty())
+				// a row at a time: a shortcut a RuneLite update renames or drops loses only its own row
+				try
 				{
-					PLACES.put(shortcut, new WorldPoint(Integer.parseInt(f[1]), Integer.parseInt(f[2]), 0));
+					AgilityShortcut shortcut = AgilityShortcut.valueOf(f[0]);
+					if (!f[1].isEmpty())
+					{
+						PLACES.put(shortcut, new WorldPoint(Integer.parseInt(f[1]), Integer.parseInt(f[2]), 0));
+					}
+					Need need = need(f[3], f.length > 4 ? f[4] : "", VARS);
+					if (need != null)
+					{
+						NEEDS.put(shortcut, need);
+					}
 				}
-				Need need = need(f[3], f.length > 4 ? f[4] : "", VARS);
-				if (need != null)
+				catch (RuntimeException e)
 				{
-					NEEDS.put(shortcut, need);
+					log.warn("Advanced Map: skipped the shortcut {} in shortcuts.tsv", f[0], e);
 				}
 			}
 		}

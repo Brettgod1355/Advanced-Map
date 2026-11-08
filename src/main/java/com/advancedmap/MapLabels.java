@@ -72,11 +72,19 @@ final class MapLabels
 		String text = String.join(" ", label.getLines());
 		for (String[] row : RENAMES)
 		{
-			if (row[2].equalsIgnoreCase(text) && Math.abs(Integer.parseInt(row[0]) - label.getX()) <= RENAME_REACH
-				&& Math.abs(Integer.parseInt(row[1]) - label.getY()) <= RENAME_REACH)
+			try
 			{
-				return new Label(Arrays.asList(row[3].split("\\|")), label.getX(), label.getY(), label.getSize(),
-					label.getColor());
+				if (row[2].trim().equalsIgnoreCase(text)
+					&& Math.abs(Integer.parseInt(row[0].trim()) - label.getX()) <= RENAME_REACH
+					&& Math.abs(Integer.parseInt(row[1].trim()) - label.getY()) <= RENAME_REACH)
+				{
+					return new Label(Arrays.asList(row[3].trim().split("\\|")), label.getX(), label.getY(),
+						label.getSize(), label.getColor());
+				}
+			}
+			catch (RuntimeException e)
+			{
+				// a row that is no rename renames nothing: the other labels keep loading
 			}
 		}
 		return label;

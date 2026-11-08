@@ -106,10 +106,17 @@ final class MapIcons
 	{
 		for (String[] row : REMOVED)
 		{
-			if (row[0].equals(String.valueOf(spot.getX())) && row[1].equals(String.valueOf(spot.getY()))
-				&& row[2].equals(String.valueOf(spot.getPlane())))
+			try
 			{
-				return true;
+				if (Integer.parseInt(row[0].trim()) == spot.getX() && Integer.parseInt(row[1].trim()) == spot.getY()
+					&& Integer.parseInt(row[2].trim()) == spot.getPlane())
+				{
+					return true;
+				}
+			}
+			catch (RuntimeException e)
+			{
+				// a row that is no tile leaves nothing out
 			}
 		}
 		return false;

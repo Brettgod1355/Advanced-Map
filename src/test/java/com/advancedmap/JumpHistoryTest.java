@@ -5,6 +5,7 @@
  */
 package com.advancedmap;
 
+import net.runelite.api.coords.WorldPoint;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -109,6 +110,21 @@ public class JumpHistoryTest
 		assertEquals(8, back.zoom, 0);
 		assertTrue(plugin.historyButton(AdvancedMapPlugin.FORWARD_BUTTON));
 		assertEquals(MapArea.UNDERGROUND, plugin.area());
+	}
+
+	@Test
+	public void theSameJumpTwiceIsOneStepBack()
+	{
+		// the same search result clicked twice: one press of Back returns to where the map was before
+		AdvancedMapPlugin plugin = new AdvancedMapPlugin();
+		plugin.newViews();
+		MapViewport.View start = plugin.viewport().view(1, 1);
+		WorldPoint varrock = new WorldPoint(3213, 3424, 0);
+		plugin.goTo(varrock);
+		plugin.goTo(varrock);
+		assertTrue(plugin.historyButton(AdvancedMapPlugin.BACK_BUTTON));
+		assertEquals(start.centerX, plugin.viewport().view(1, 1).centerX, 0);
+		assertEquals(start.centerY, plugin.viewport().view(1, 1).centerY, 0);
 	}
 
 	@Test

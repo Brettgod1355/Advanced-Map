@@ -1809,7 +1809,12 @@ public class AdvancedMapPlugin extends Plugin
 	void goTo(WorldPoint to)
 	{
 		JumpHistory.Place from = lookingAt();
-		jumps.jumped(from);
+		// a jump to where the map already looks (the same search result again) is none: Back would seem to do nothing
+		if (from.area != MapArea.of(to.getY()) || from.plane != to.getPlane() || (int) from.centerX != to.getX()
+			|| (int) from.centerY != to.getY())
+		{
+			jumps.jumped(from);
+		}
 		setFollowing(false);
 		area = MapArea.of(to.getY());
 		plane = to.getPlane();
@@ -2403,17 +2408,25 @@ public class AdvancedMapPlugin extends Plugin
 	{
 		List<WorldPoint> sorted = new ArrayList<>(points);
 		sorted.sort(java.util.Comparator.comparingInt(point -> SearchSpots.distance(point, from)));
+		// each called as its box calls it (a minigame, a shortcut, a named icon), else by the nearest place's name
+		// (Guardians of the Rift read "Queen's Chamber", the Tears of Guthix "Giant frogs"; owner, 2026-11-07)
+		Map<WorldPoint, MapSpot> spots = new java.util.HashMap<>();
+		MapIcons current = icons;
+		for (MapSpot spot : current == null ? Collections.<MapSpot>emptyList() : current.allSpots())
+		{
+			if (kind.equals(progress.categoryName(spot.getCategory())))
+			{
+				spots.put(new WorldPoint(spot.getX(), spot.getY(), spot.getPlane()), spot);
+			}
+		}
 		List<SideList.Row> rows = new ArrayList<>();
 		for (WorldPoint point : sorted)
 		{
 			int tiles = SearchSpots.distance(point, from);
-			// each called as its box calls it: its own name, which minigame, else the nearest place's (Guardians of the
-			// Rift read "Queen's Chamber", the Tears of Guthix "Giant frogs"; owner, 2026-11-07)
-			NamedIcons.Named own = NamedIcons.at(point.getX(), point.getY(), point.getPlane());
-			String minigame = "Minigame".equals(kind) ? MapSearch.minigameNear(point.getX(), point.getY()) : null;
-			rows.add(new SideList.Row(own != null ? own.getName() : minigame != null ? minigame
-				: SearchSpots.name(point, labelsNow()), tiles >= 1000 ? "far" : tiles + " tiles", null, null, point,
-				null));
+			MapSpot spot = spots.get(point);
+			String own = spot == null ? null : MapIcons.name(spot, progress);
+			rows.add(new SideList.Row(own != null && !own.equals(kind) ? own : SearchSpots.name(point, labelsNow()),
+				tiles >= 1000 ? "far" : tiles + " tiles", null, null, point, null));
 		}
 		return rows;
 	}
