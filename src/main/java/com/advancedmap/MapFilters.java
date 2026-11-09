@@ -38,7 +38,7 @@ final class MapFilters
 	static final int BOTTOM_ROOM = 8;
 	private static final int INDENT = 18;
 	private static final int BOX = 12;
-	/** The line under "Show hidden icons" that says how to hide one. */
+	/** The line under the switches that says how to hide an icon. */
 	private static final int HINT = 14;
 
 	static final Color PANEL = new Color(0x10, 0x18, 0x22, 240);
@@ -72,12 +72,11 @@ final class MapFilters
 	static class Layout
 	{
 		Rectangle panel;
-		/** "Monsters" and "Ground items", their spawns when zoomed in, at the top. */
+		/** "Monsters" and "Ground items" side by side at the top, "Multi-combat areas" and "Show hidden icons" under them. */
 		Rectangle monsters;
 		Rectangle items;
-		/** "Your Slayer task", under them. */
+		/** "Your Slayer task", under the four, a row of its own. */
 		Rectangle slayer;
-		/** "Multi-combat areas", under it. */
 		Rectangle multiCombat;
 		Rectangle showHidden;
 		Rectangle search;
@@ -278,16 +277,18 @@ final class MapFilters
 	{
 		int x = button.x;
 		int y = button.y + button.height + 4;
-		int panelHeight = Math.max(ROW * 10, Math.min(MAX_HEIGHT, height - y - BOTTOM_ROOM));
+		int panelHeight = Math.max(ROW * 8, Math.min(MAX_HEIGHT, height - y - BOTTOM_ROOM));
 		Rectangle panel = new Rectangle(x, y, WIDTH, panelHeight);
-		Rectangle monsters = new Rectangle(x + PAD, y + PAD / 2, WIDTH - PAD * 2, ROW);
-		Rectangle items = new Rectangle(x + PAD, monsters.y + ROW, WIDTH - PAD * 2, ROW);
-		Rectangle slayer = new Rectangle(x + PAD, items.y + ROW, WIDTH - PAD * 2, ROW);
-		Rectangle multiCombat = new Rectangle(x + PAD, slayer.y + slayer.height, WIDTH - PAD * 2, ROW);
-		Rectangle showHidden = new Rectangle(x + PAD, multiCombat.y + multiCombat.height, WIDTH - PAD * 2, ROW);
-		int searchY = showHidden.y + showHidden.height + HINT + PAD;
-		Rectangle search = new Rectangle(x + PAD, searchY, WIDTH - PAD * 2, SEARCH_HEIGHT);
+		// the four switches two by two, the Slayer task under them on a row of its own for its task (owner, 2026-11-09:
+		// "beside each other to take up less vertical room")
 		int half = (WIDTH - PAD * 3) / 2;
+		Rectangle monsters = new Rectangle(x + PAD, y + PAD / 2, half, ROW);
+		Rectangle items = new Rectangle(x + PAD * 2 + half, monsters.y, half, ROW);
+		Rectangle multiCombat = new Rectangle(monsters.x, monsters.y + ROW, half, ROW);
+		Rectangle showHidden = new Rectangle(items.x, multiCombat.y, half, ROW);
+		Rectangle slayer = new Rectangle(x + PAD, multiCombat.y + ROW, WIDTH - PAD * 2, ROW);
+		int searchY = slayer.y + ROW + HINT + PAD;
+		Rectangle search = new Rectangle(x + PAD, searchY, WIDTH - PAD * 2, SEARCH_HEIGHT);
 		int buttonsY = search.y + search.height + 6;
 		Rectangle allOn = new Rectangle(x + PAD, buttonsY, half, ROW);
 		Rectangle allOff = new Rectangle(x + PAD * 2 + half, buttonsY, half, ROW);
@@ -371,7 +372,16 @@ final class MapFilters
 		drawSwitch(g, layout.getItems(), settings.isItemSpawns(), "Ground items", metrics);
 		drawSlayer(g, layout.getSlayer(), settings, icons, metrics);
 		drawSwitch(g, layout.getMultiCombat(), multiCombat, "Multi-combat areas", metrics);
-		drawShowHidden(g, layout.getShowHidden(), settings, metrics);
+		drawSwitch(g, layout.getShowHidden(), settings.isShowHidden(), "Show hidden icons", metrics);
+		// how to hide an icon, and how many are hidden, under the switches
+		Rectangle slayer = layout.getSlayer();
+		int count = settings.getHidden().size();
+		g.setColor(QUIET);
+		g.drawString("Right-click an icon to hide it (" + (count == 0 ? "none" : count) + " hidden)",
+			slayer.x + BOX + 8, slayer.y + slayer.height + metrics.getAscent() - 2);
+		int lineY = slayer.y + slayer.height + HINT + PAD / 2;
+		g.setColor(EDGE);
+		g.drawLine(slayer.x, lineY, slayer.x + slayer.width, lineY);
 		Rectangle search = layout.getSearch();
 		g.setColor(FIELD);
 		g.fillRect(search.x, search.y, search.width, search.height);
@@ -454,10 +464,6 @@ final class MapFilters
 		g.setFont(metrics.getFont());
 	}
 
-	/**
-	 * "Show hidden icons", with how many the player has hidden, and under it how to hide one. A line under it sets it
-	 * apart from the filters.
-	 */
 	/** "Your Slayer task", ticked while its spawns are marked, with a Slayer master's picture and the task. */
 	private void drawSlayer(Graphics2D g, Rectangle row, MapSettings settings, MapIcons icons, FontMetrics metrics)
 	{
@@ -482,32 +488,12 @@ final class MapFilters
 		g.drawString(note, row.x + row.width - metrics.stringWidth(note), textY);
 	}
 
-	/** A row ticked while the map shows something only when zoomed in, which it says: spawns, multi-combat areas. */
+	/** A ticked or unticked switch at the top of the list, its name beside the box. */
 	private static void drawSwitch(Graphics2D g, Rectangle row, boolean on, String label, FontMetrics metrics)
 	{
 		drawBox(g, row.x, row.y + (ROW - BOX) / 2, on);
-		int textY = row.y + (ROW + metrics.getAscent() - metrics.getDescent()) / 2;
 		g.setColor(TEXT);
-		g.drawString(label, row.x + BOX + 8, textY);
-		g.setColor(QUIET);
-		g.drawString("zoomed in", row.x + row.width - metrics.stringWidth("zoomed in"), textY);
-	}
-
-	private static void drawShowHidden(Graphics2D g, Rectangle row, MapSettings settings, FontMetrics metrics)
-	{
-		drawBox(g, row.x, row.y + (ROW - BOX) / 2, settings.isShowHidden());
-		int textY = row.y + (ROW + metrics.getAscent() - metrics.getDescent()) / 2;
-		g.setColor(TEXT);
-		g.drawString("Show hidden icons", row.x + BOX + 8, textY);
-		int count = settings.getHidden().size();
-		String hidden = count == 0 ? "none hidden" : count + " hidden";
-		g.setColor(QUIET);
-		g.drawString(hidden, row.x + row.width - metrics.stringWidth(hidden), textY);
-		g.drawString("Right-click an icon on the map to hide or unhide it", row.x + BOX + 8,
-			row.y + row.height + metrics.getAscent() - 2);
-		int lineY = row.y + row.height + HINT + PAD / 2;
-		g.setColor(EDGE);
-		g.drawLine(row.x, lineY, row.x + row.width, lineY);
+		g.drawString(label, row.x + BOX + 8, row.y + (ROW + metrics.getAscent() - metrics.getDescent()) / 2);
 	}
 
 	/** A tick box, green and ticked when on. */

@@ -102,22 +102,23 @@ public class MapFiltersTest
 		assertEquals(MapFilters.Part.SHOW_HIDDEN, filters.hitAt(showHidden.x + 5, showHidden.y + 5, layout, entries)
 			.getPart());
 		assertTrue(showHidden.y + showHidden.height < layout.getSearch().y);
-		// "Your Slayer task" above "Show hidden icons"
-		Rectangle slayer = layout.getSlayer();
-		assertEquals(MapFilters.Part.SLAYER, filters.hitAt(slayer.x + 5, slayer.y + 5, layout, entries).getPart());
-		assertTrue(slayer.y + slayer.height <= showHidden.y);
-		assertTrue(slayer.y >= layout.getPanel().y);
-		// "Multi-combat areas" between them, ticked from the list while playing rather than in the settings
-		Rectangle multi = layout.getMultiCombat();
-		assertEquals(MapFilters.Part.MULTI_COMBAT, filters.hitAt(multi.x + 5, multi.y + 5, layout, entries).getPart());
-		assertTrue(slayer.y + slayer.height <= multi.y && multi.y + multi.height <= showHidden.y);
-		// "Monsters" and "Ground items" pinned at the very top, above the Slayer task
+		// the four switches two by two (owner, 2026-11-09: "beside each other to take up less vertical room"):
+		// Monsters | Ground items at the very top, Multi-combat areas | Show hidden icons under them
 		Rectangle monsters = layout.getMonsters();
 		Rectangle items = layout.getItems();
+		Rectangle multi = layout.getMultiCombat();
 		assertEquals(MapFilters.Part.MONSTERS, filters.hitAt(monsters.x + 5, monsters.y + 5, layout, entries).getPart());
 		assertEquals(MapFilters.Part.ITEMS, filters.hitAt(items.x + 5, items.y + 5, layout, entries).getPart());
-		assertTrue(monsters.y >= layout.getPanel().y && monsters.y + monsters.height <= items.y
-			&& items.y + items.height <= slayer.y);
+		assertEquals(MapFilters.Part.MULTI_COMBAT, filters.hitAt(multi.x + 5, multi.y + 5, layout, entries).getPart());
+		assertTrue(monsters.y >= layout.getPanel().y && monsters.y == items.y && multi.y == showHidden.y
+			&& monsters.y + monsters.height <= multi.y);
+		assertTrue(monsters.x + monsters.width < items.x && multi.x == monsters.x && showHidden.x == items.x);
+		assertTrue(items.x + items.width <= layout.getPanel().x + layout.getPanel().width);
+		// "Your Slayer task" under them, the full width for its task
+		Rectangle slayer = layout.getSlayer();
+		assertEquals(MapFilters.Part.SLAYER, filters.hitAt(slayer.x + 5, slayer.y + 5, layout, entries).getPart());
+		assertTrue(showHidden.y + showHidden.height <= slayer.y && slayer.y + slayer.height < layout.getSearch().y);
+		assertTrue(slayer.width > items.x + items.width - monsters.x - 1);
 	}
 
 	@Test
