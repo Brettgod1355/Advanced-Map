@@ -35,9 +35,9 @@ final class SpawnMarks
 {
 	/** Shown from this zoom in (pixels a tile): near the closest, where a town fills the map. */
 	static final double ZOOM = 4;
-	/** A monster's icon and an item's picture, in pixels, at icon size 100%. */
-	private static final int MONSTER = 18;
-	private static final int ITEM = 16;
+	/** A monster's icon and an item's picture, in pixels, at icon size 100% (owner, 2026-11-09: both 24). */
+	private static final int MONSTER = 24;
+	private static final int ITEM = 24;
 	private static final Color MARKER = new Color(0xC8372D);
 
 	/** A monster's area (its icon, the spawns it stands for) or a ground item's tile. */
