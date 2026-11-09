@@ -26,6 +26,26 @@ public class MapMenuTest
 	}
 
 	@Test
+	public void aButtonUnderTheMouseIsLit()
+	{
+		// owner, 2026-11-09: hovering a button should show it is the one a click presses
+		MapMenu menu = new MapMenu(() -> "", MapMenuTest::built);
+		menu.setOpen(true);
+		MapMenu.Layout layout = menu.layout(MapPainter.buttons(1280, 800, false), 1280, 800);
+		java.awt.Rectangle github = layout.getGithub();
+		java.awt.Rectangle discord = layout.getDiscord();
+		java.awt.image.BufferedImage image = new java.awt.image.BufferedImage(1280, 800,
+			java.awt.image.BufferedImage.TYPE_INT_RGB);
+		java.awt.Graphics2D g = image.createGraphics();
+		menu.draw(g, layout, new java.awt.Point(github.x + 4, github.y + 4));
+		g.dispose();
+		// a corner of each button's fill, clear of its text
+		int lit = image.getRGB(github.x + 4, github.y + github.height / 2) & 0xFF;
+		int plain = image.getRGB(discord.x + 4, discord.y + discord.height / 2) & 0xFF;
+		assertTrue(lit + " vs " + plain, lit > plain + 15);
+	}
+
+	@Test
 	public void theMenuAndItsPageFitTheMapDownToTheSmallestBox()
 	{
 		for (int[] size : new int[][]{{1280, 800}, {GameBox.MIN_WIDTH, GameBox.MIN_HEIGHT}})

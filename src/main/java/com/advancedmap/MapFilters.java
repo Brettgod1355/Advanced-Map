@@ -8,6 +8,7 @@ package com.advancedmap;
 import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.image.BufferedImage;
@@ -46,6 +47,8 @@ final class MapFilters
 	static final Color TEXT = new Color(0xE8E2D0);
 	static final Color QUIET = new Color(0x8C8676);
 	static final Color FIELD = new Color(0x1E2833);
+	/** A button under the mouse, which a click would press (owner, 2026-11-09). */
+	private static final Color FIELD_LIT = new Color(0x3A4A5C);
 	private static final Color ON = new Color(0x3FA34D);
 
 	/** One row of the list: a group, or a kind of icon in it. */
@@ -358,7 +361,7 @@ final class MapFilters
 		return entry.isGroup() || !settings.getHiddenTypes().contains(entry.getKey());
 	}
 
-	void draw(Graphics2D g, Layout layout, List<Entry> entries, MapSettings settings, MapIcons icons)
+	void draw(Graphics2D g, Layout layout, List<Entry> entries, MapSettings settings, MapIcons icons, Point mouse)
 	{
 		Rectangle panel = layout.getPanel();
 		g.setColor(PANEL);
@@ -399,8 +402,8 @@ final class MapFilters
 			g.setColor(TEXT);
 			g.drawString(Caret.draw(typed + "|"), search.x + 6, textY);
 		}
-		drawButton(g, layout.getAllOn(), "All on", metrics);
-		drawButton(g, layout.getAllOff(), "All off", metrics);
+		drawButton(g, layout.getAllOn(), "All on", metrics, mouse);
+		drawButton(g, layout.getAllOff(), "All off", metrics, mouse);
 
 		Rectangle list = layout.getList();
 		Shape clip = g.getClip();
@@ -510,11 +513,12 @@ final class MapFilters
 		}
 	}
 
-	static void drawButton(Graphics2D g, Rectangle button, String text, FontMetrics metrics)
+	static void drawButton(Graphics2D g, Rectangle button, String text, FontMetrics metrics, Point mouse)
 	{
-		g.setColor(FIELD);
+		boolean lit = mouse != null && button.contains(mouse);
+		g.setColor(lit ? FIELD_LIT : FIELD);
 		g.fillRoundRect(button.x, button.y, button.width, button.height, 6, 6);
-		g.setColor(TEXT);
+		g.setColor(lit ? MapPainter.MENU_TEXT_LIT : TEXT);
 		g.drawString(text, button.x + (button.width - metrics.stringWidth(text)) / 2,
 			button.y + (button.height + metrics.getAscent() - metrics.getDescent()) / 2);
 	}
