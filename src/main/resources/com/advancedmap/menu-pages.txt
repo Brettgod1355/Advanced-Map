@@ -18,7 +18,7 @@ Click the box at the top and type: a place, a dungeon, anything a shop sells or 
 Right-click anywhere and choose "Add marker here": name it, pick a picture and a color, Save. Right-click a marker to edit or remove it. Markers show on all your accounts (a setting keeps them apart). Other plugins' markers (a clue scroll's spot, Quest Helper's next step) show too; click one for what it says. "Your markers" in the menu lists them all, nearest first.
 
 ## Monsters and ground items
-Zoomed in close, each area a monster lives in has one icon, and each item lying on the ground shows its own picture on its tile. Point at a monster's icon for its name and dots on its spawns in that area; click it to keep the dots and open its details (stats, Slayer, drops, its Wiki page). Point at an item for its name. Right-click either to hide it or open its wiki page. "Monsters" and "Ground items" at the top of the Filters list turn them off.
+Zoomed in close, each area a monster lives in has one icon, and so has each item lying on the ground, drawn as its own picture. Point at a monster's icon for its name and dots on its spawns in that area; click it to keep the dots and open its details (stats, Slayer, drops, its Wiki page). Point at an item for its name and dots on every spot it lies in that area. Right-click either to hide it or open its wiki page. "Monsters" and "Ground items" at the top of the Filters list turn them off.
 
 ## Farming, multi-combat, Slayer
 A dot on each farming patch icon says how it is doing (from RuneLite's Time Tracking plugin); click it for each crop and when it is ready. "Multi-combat areas" at the top of the Filters list tints them red when zoomed in. "Your Slayer task" there marks every spawn of your task's monsters, with how many are left.
