@@ -36,8 +36,8 @@ final class SpawnMarks
 	/** Shown from this zoom in (pixels a tile): near the closest, where a town fills the map. */
 	static final double ZOOM = 4;
 	/**
-	 * A monster's icon and an item's picture, in pixels, at icon size 100%: the game's own map icons' size (owner,
-	 * 2026-11-09: 24 looked "quite a bit larger than the default icons").
+	 * A monster's icon and an item's picture, in pixels, at Monster size and Ground item size 100%: the game's own map
+	 * icons' size (owner, 2026-11-09: 24 looked "quite a bit larger than the default icons").
 	 */
 	private static final int MONSTER = 16;
 	private static final int ITEM = 16;
@@ -152,7 +152,8 @@ final class SpawnMarks
 					{
 						continue;
 					}
-					int size = (mark.isMonster() ? MONSTER : ITEM) * settings.getIconScale() / 100;
+					int size = mark.isMonster() ? MONSTER * settings.getMonsterScale() / 100
+						: ITEM * settings.getItemScale() / 100;
 					int x = (int) Math.round(view.screenX(mark.getPoint().getX() + 0.5)) - size / 2;
 					int y = (int) Math.round(view.screenY(mark.getPoint().getY() + 0.5)) - size / 2;
 					if (x + size >= 0 && y + size >= 0 && x <= view.width && y <= view.height)

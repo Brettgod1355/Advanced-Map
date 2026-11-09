@@ -34,9 +34,33 @@ public class SpawnMarksTest
 
 	private static MapSettings settings(boolean monsters, boolean items)
 	{
+		return sized(100, 100, 100, monsters, items);
+	}
+
+	private static MapSettings sized(int icons, int monsterSize, int itemSize, boolean monsters, boolean items)
+	{
 		return new MapSettings(EnumSet.allOf(IconGroup.class), Collections.emptySet(), Collections.emptySet(), false,
-			true, false, false, true, true, RoutingPlugin.SHORTEST_PATH, FloorNumbers.GROUND_IS_FIRST, 100, true, true,
-			monsters, items);
+			true, false, false, true, true, RoutingPlugin.SHORTEST_PATH, FloorNumbers.GROUND_IS_FIRST, icons, true, true,
+			monsters, items, monsterSize, itemSize);
+	}
+
+	/** The size of the first monster's or item's mark shown round Lumbridge. */
+	private static int shownSize(MapSettings settings, boolean monster)
+	{
+		return SpawnMarks.visible(lumbridge(6), MapArea.SURFACE, 0, settings).stream()
+			.filter(s -> s.getMark().isMonster() == monster).findFirst().get().getBounds().width;
+	}
+
+	@Test
+	public void monsterAndGroundItemSizesAreTheirOwnSettings()
+	{
+		// owner, 2026-11-09: 16 px at 100%, the game's icons' size, each scaled on its own; Icon size leaves them be
+		assertEquals(16, shownSize(settings(true, true), true));
+		assertEquals(16, shownSize(settings(true, true), false));
+		assertEquals(32, shownSize(sized(100, 200, 100, true, true), true));
+		assertEquals(16, shownSize(sized(100, 200, 100, true, true), false));
+		assertEquals(8, shownSize(sized(100, 100, 50, true, true), false));
+		assertEquals(16, shownSize(sized(300, 100, 100, true, true), true));
 	}
 
 	private static MapViewport.View lumbridge(double zoom)

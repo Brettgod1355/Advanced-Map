@@ -47,6 +47,9 @@ class MapSettings
 	/** Monsters' and ground items' spawns are drawn when zoomed in (the two rows at the top of Filters). */
 	boolean monsterSpawns;
 	boolean itemSpawns;
+	/** How big monsters and ground items are drawn, in percent, apart from {@link #iconScale}. */
+	int monsterScale;
+	int itemScale;
 
 	static final int MIN_ICON_SCALE = 50;
 	static final int MAX_ICON_SCALE = 300;
@@ -72,8 +75,14 @@ class MapSettings
 			parseHidden(config.hiddenTypes()),
 			config.hideCompletedQuests(), config.markLocked(), config.iconsOff(), config.showHidden(),
 			config.placeNames(), config.wildernessLines(), routingRunning ? config.routing() : RoutingPlugin.NONE, config.floorNumbers(),
-			Math.max(MIN_ICON_SCALE, Math.min(MAX_ICON_SCALE, config.iconSize())), config.transportNames(),
-			config.slayerShown(), config.monsterSpawns(), config.itemSpawns());
+			scale(config.iconSize()), config.transportNames(),
+			config.slayerShown(), config.monsterSpawns(), config.itemSpawns(), scale(config.monsterSize()),
+			scale(config.itemSize()));
+	}
+
+	private static int scale(int percent)
+	{
+		return Math.max(MIN_ICON_SCALE, Math.min(MAX_ICON_SCALE, percent));
 	}
 
 	boolean shows(IconGroup group)

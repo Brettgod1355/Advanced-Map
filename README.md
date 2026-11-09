@@ -207,8 +207,8 @@ choose with Filters on the map itself.
 | Floor numbers | Ground, 2, 3, 4 | How floors above the ground are numbered (or Ground, 1, 2, 3) |
 | Route with | Shortest Path | The plugin "Route here" asks |
 
-The **Icons** section holds "Hide completed quests", "Mark what you can't use yet", "Icon size" and "Transport
-names". Which kinds of icon show, your Slayer task and the multi-combat areas are ticked in Filters on the map.
+The **Icons** section holds "Hide completed quests", "Mark what you can't use yet", "Icon size", "Monster size",
+"Ground item size" and "Transport names"; the two sizes scale monsters and ground items on their own. Which kinds of icon show, your Slayer task and the multi-combat areas are ticked in Filters on the map.
 
 ## Privacy and what it uses
 
