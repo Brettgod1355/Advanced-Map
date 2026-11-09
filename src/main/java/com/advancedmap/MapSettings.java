@@ -44,6 +44,9 @@ class MapSettings
 	boolean transportNames;
 	/** The Slayer task's spawns are shown ("Your Slayer task" ticked at the top of the Filters list). */
 	boolean slayerShown;
+	/** Monsters' and ground items' spawns are drawn when zoomed in (the two rows at the top of Filters). */
+	boolean monsterSpawns;
+	boolean itemSpawns;
 
 	static final int MIN_ICON_SCALE = 50;
 	static final int MAX_ICON_SCALE = 300;
@@ -70,7 +73,7 @@ class MapSettings
 			config.hideCompletedQuests(), config.markLocked(), config.iconsOff(), config.showHidden(),
 			config.placeNames(), config.wildernessLines(), routingRunning ? config.routing() : RoutingPlugin.NONE, config.floorNumbers(),
 			Math.max(MIN_ICON_SCALE, Math.min(MAX_ICON_SCALE, config.iconSize())), config.transportNames(),
-			config.slayerShown());
+			config.slayerShown(), config.monsterSpawns(), config.itemSpawns());
 	}
 
 	boolean shows(IconGroup group)

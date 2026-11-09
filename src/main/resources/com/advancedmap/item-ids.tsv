@@ -1,0 +1,390 @@
+# The game's item id of each ground item in spawns.tsv, for its picture on the map (SpawnMarks). Made from
+# the game cache (rev 2746) by the notes' research/gen/ItemIds.java: the item of that name with the
+# Wiki's "(...)" dropped, the lowest id that is not a noted or placeholder copy; else the name without a
+# plural "s", else its lowest dose. Edit a row to pick another picture; an item missing here is drawn as a dot.
+# name, item id
+Address form	11680
+Ahab's beer	6561
+Air rune	556
+Amulet mould	1595
+Ancestral key	6792
+Arcenia root	708
+Arctic pine logs	10810
+Asgarnian ale	1905
+Ashes	592
+Astronomy book	600
+Attack potion	121
+Auburn valley ecological reports	31079
+Ball	2407
+Ball of wool	1759
+Banana	1963
+Barrel	1841
+Bat bones	530
+Beer	1917
+Beer glass	1919
+Beer tankard	3803
+Big bones	532
+Big fishing net	305
+Bird snare	10006
+Black cog	21
+Black dagger	1217
+Black robe	581
+Black scimitar	1327
+Blood pint	24774
+Blood rune	565
+Bloody bracer	22430
+Bloody grimoire	22420
+Blue cog	22
+Blue dragon scale	243
+Blue hat (Legends' Quest)	660
+Body rune	559
+Bones	526
+Bones (Ape Atoll)	526
+Boots of lightness	88
+Bottle of 'tonic'	26965
+Bowl	1923
+Bowl of water	1921
+Box trap	10008
+Bracelet mould	11065
+Brass key	983
+Brass necklace	1009
+Bread	2309
+Brewin' guide	8989
+Brewin' guide (unobtainable item)	8989
+Broken arrow	687
+Broken fishing rod	6662
+Broken glass	690
+Broken hasta (tortugan)	31251
+Broken pole	4496
+Bronze arrow	882
+Bronze arrowtips	39
+Bronze axe	1351
+Bronze bar	2349
+Bronze bolts	877
+Bronze chainbody	1103
+Bronze dagger	1205
+Bronze dart	806
+Bronze mace	1422
+Bronze med helm	1139
+Bronze nails	4819
+Bronze pickaxe	1265
+Bronze scimitar	1321
+Bronze spear	1237
+Bronze sq shield	1173
+Bronze sword	1277
+Bucket	1925
+Bucket of milk	1927
+Bucket of sand	1783
+Bucket of water	1929
+Bullseye lantern	4548
+Burnt bones	528
+Burnt bread	2311
+Burnt chicken	2144
+Burnt fish (anchovies)	323
+Burnt fish (herring)	323
+Burnt fish (sardine)	323
+Burnt meat	2146
+Burnt shrimp	7954
+Cabbage	1965
+Cabbage (Draynor Manor)	1965
+Cabbages	1965
+Cake	1891
+Cake tin	1887
+Candle	36
+Candle lantern	4529
+Cattleprod	278
+Cave nightshade	2398
+Chaos rune	562
+Charcoal	973
+Cheese	1985
+Chichilihui rosé	29963
+Child's blanket	90
+Chisel	1755
+Chocolate bar	1973
+Chopped garlic	7074
+Chopped onion	1871
+Cider	5763
+Clay	434
+Cocktail glass	2026
+Cocktail shaker	2025
+Coins	617
+Coins (Shilo Village)	617
+Cooked chicken	2140
+Cooked meat	2142
+Cooked sweetcorn	5988
+Cooking apple	1955
+Cosmic rune	564
+Criminal's dagger	1813
+Crossbow	837
+Crumbling tome	4707
+Cup of tea	712
+Cup of tea (Zogre Flesh Eaters)	712
+Damaged armour	697
+Damp sticks	1467
+Dark fishing bait	11940
+Dead sea slug	9683
+Death rune	560
+Deed	22426
+Diary (Witch's House)	2408
+Doogle leaves	1573
+Door key (Witch's House)	2409
+Dragon bitter	1911
+Dragonstone (Mage Training Arena)	1615
+Druid pouch	2957
+Dusty key	1590
+Dwarf remains	0
+Dwarven stout	1913
+Dwellberries	2126
+Earth rune	557
+Eclipse red	29415
+Edible seaweed	403
+Egg	1944
+Embalming manual	4686
+Empty cup	1980
+Empty sack	5418
+Engine	7967
+Equa leaves	2128
+Explosive Discovery	22418
+Facemask	4164
+Feather	314
+Feathered journal	10179
+Fingernails	2384
+Fire rune	554
+Fish food	272
+Fishing bait	313
+Fishing rod	307
+Flash powder	5559
+Flax	1779
+Fly fishing rod	309
+Forlorn boot	6663
+Fossilised skull (tortugan)	31253
+Garlic	1550
+Glassblowing book	11656
+Glassblowing pipe	1785
+Gold bar	2357
+Gold necklace	1654
+Gold ore	444
+Gold ring	1635
+Grail bell	17
+Grain	1947
+Granite tablet	28817
+Grapes	1987
+Grey toy horsey	2526
+Grimy guam leaf	199
+Guide book	1856
+Haemalchemy volume 1	9652
+Hammer	2347
+Harpoon	311
+Headless arrow	53
+Herring	347
+Holy grail (item)	19
+Holy mould	1599
+Hourglass (Recruitment Drive)	5610
+Insect repellent	28
+Iron arrow	884
+Iron axe	1349
+Iron bar	2351
+Iron battleaxe	1363
+Iron dagger	1203
+Iron dart	807
+Iron full helm	1153
+Iron kiteshield	1191
+Iron knife	863
+Iron longsword	1293
+Iron mace	1420
+Iron med helm	1137
+Iron nails	4820
+Iron pickaxe	1267
+Iron platebody	1115
+Iron scimitar	1323
+Iron spit	7225
+Iron sword	1279
+Iron warhammer	1335
+Jangerberries	247
+Jug	1935
+Jug of water	1937
+Jug of wine	1993
+Kebab	1971
+Keg (The Great Brain Robbery)	10885
+Keg (dummy item)	10885
+Keg of beer (The Fremennik Trials)	3711
+Key (Waterfall Dungeon)	275
+King worm	2162
+Knife	946
+Lamp (Spirits of the Elid)	2528
+Leather	1741
+Leather body	1129
+Leather boots	1061
+Leather gloves	1059
+Left boot	5062
+Letter (Auburnvale)	4204
+Letter (Sunset Coast)	4204
+Letter (The Golem)	4204
+Lever (Temple of Ikov)	83
+Lift manual	7972
+Lobster pot	301
+Lockpick	1523
+Logs	1511
+Longbow	839
+Magic staff	1389
+Magic whistle	16
+Mahogany logs	6332
+Metal spade	5586
+Mind rune	558
+Mirror	2966
+Mithril arrow	888
+Mithril pickaxe	1273
+Monk's robe	542
+Monk's robe top	544
+Monkey skull	4034
+Muddy rock	4492
+Nature rune	561
+Necklace mould	1597
+Needle	1733
+Nettles	4241
+Noose wand	10150
+Oak shield	22251
+Oak shortbow	843
+Odd spectacles	26963
+Oil can	277
+Oil lamp	4522
+Oil lantern	4537
+Old journal	1493
+Old key	22428
+Old letter	31121
+Old note (Secluded Chapel)	24682
+On migration patterns	31077
+Onion	1957
+Orange	2108
+Orange dye	1769
+Orb of light	1481
+Panning tray	677
+Papyrus	970
+Pat of butter	6697
+Pat of not garlic butter	24788
+Pestle and mortar	233
+Phoenix crossbow	767
+Pickled brain	4199
+Picture	1510
+Pie dish	2313
+Pigeon cage	424
+Pineapple	2114
+Plank	960
+Poison (item)	273
+Pole	4494
+Pot	1931
+Pot of flour	1933
+Potato	1942
+Potato cactus	3138
+Premade blurb' sp.	2028
+Premade choc s'dy	2030
+Pungent pot	1812
+Purple dye	1773
+Queen help book	10562
+Rake	5341
+Rat poison	24
+Raw herring	345
+Raw rat meat	2134
+Raw shrimps	317
+Raw tuna	359
+Red cog	23
+Red dye	1763
+Red spiders' eggs	223
+Redberry pie	2325
+Right boot	5063
+Ring mould	1592
+Rock (elemental)	968
+Rope	954
+Rope (Olaf's Quest)	954
+Rotten apple	1984
+Rotten barrel	11044
+Rotten barrel (unobtainable item)	11044
+Rotten food	2959
+Rotten tomato	2518
+Rubber tube	276
+Ruby ring	1641
+Sapphire	1607
+Sapphire bolt tips	9189
+Saw	8794
+Sea shell	31395
+Seaweed	401
+Shale tablet	28819
+Shaman robe	2397
+Shears	1735
+Shiny key	85
+Shoes	6790
+Shortbow	841
+Silk	950
+Skull (item)	964
+Slate tablet	28818
+Sled	4083
+Sliced mushrooms	7080
+Small fishing net	303
+Smashed glass	733
+Smelly journal	20798
+Snape grass	231
+Soft clay	1761
+Spade	952
+Spirit angler headband (tortugan)	25592
+Staff	1379
+Staff of Armadyl	84
+Staff of earth	1385
+Steamforge brew	29412
+Steel arrow	886
+Steel arrowtips	41
+Steel bar	2353
+Steel dagger	1207
+Steel knife	865
+Steel longsword	1295
+Steel pickaxe	1269
+Steel platebody	1119
+Steel platelegs	1069
+Steel scimitar	1325
+Steel spear	1241
+Steel sword	1281
+Stick (item)	4179
+Stone ball	3109
+Stone tablet (The Curse of Arrav)	699
+Strange implement	4619
+Strawberry	5504
+Sun-shine	29421
+Sunbeam ale	29409
+Superantipoison	181
+Swamp tar	1939
+Swamp toad (item)	2150
+Sweetcorn	5986
+Sweetcorn (bowl)	5986
+Tankard	3805
+Tankard (tortugan)	3805
+Tarn's diary	10587
+Teak plank	8780
+Teasing stick	10029
+The Turncloak	22416
+Thread	1734
+Tiara mould	5523
+Tile	966
+Tiles (Rogues' Den)	5569
+Tinderbox	590
+Tinderbox (Cabin Fever)	590
+Toad batta	2255
+Tomato	1982
+Torch	595
+Tortugan scute	31393
+Trapper's tipple	29277
+Triangle sandwich	6962
+Uncut ruby	1619
+Uncut sapphire	1623
+Vial	229
+Vial of water	227
+Washing bowl	2964
+Water rune	555
+Waterskin	1823
+White apron	1005
+White apron (Gerrant's Fishy Business)	1005
+White berries	239
+White cog	20
+Wine of Zamorak	245
+Wine of Zamorak (unobtainable item)	245
+Wizard hat	1017
+Wolf bones	2859
+Wooden shield	1171

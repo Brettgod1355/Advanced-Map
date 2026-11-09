@@ -32,6 +32,9 @@ public interface AdvancedMapConfig extends Config
 	String PLUGIN_MARKERS = "pluginMarkers";
 	/** A new key: the earlier "slayerShown" was the map button's, under a setting that is gone. */
 	String SLAYER_SHOWN = "slayerTaskShown";
+	/** Monster and ground item spawns drawn on the map when zoomed in (pinned at the top of Filters). */
+	String MONSTER_SPAWNS = "monsterSpawns";
+	String ITEM_SPAWNS = "itemSpawns";
 	String SHARE_MARKERS = "shareMarkers";
 	String SEARCH_SHOPS = "searchShops";
 	/** What the search does not look in, as the "Search in" list by its box left it: "MONSTERS;NPCS". */
@@ -661,6 +664,18 @@ public interface AdvancedMapConfig extends Config
 	default boolean slayerShown()
 	{
 		return false;
+	}
+
+	@ConfigItem(keyName = MONSTER_SPAWNS, name = "", description = "", hidden = true)
+	default boolean monsterSpawns()
+	{
+		return true;
+	}
+
+	@ConfigItem(keyName = ITEM_SPAWNS, name = "", description = "", hidden = true)
+	default boolean itemSpawns()
+	{
+		return true;
 	}
 
 	@ConfigItem(

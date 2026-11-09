@@ -170,6 +170,11 @@ final class MapPainter
 	private volatile MapPins pins = new MapPins();
 	private volatile MarkerEditor editor = new MarkerEditor();
 	private volatile boolean multiCombat;
+	/** Ground items' pictures by item id, null while one loads. */
+	private volatile java.util.function.IntFunction<BufferedImage> itemPictures = id -> null;
+	/** The monster area last hovered and its spawns' dots, made once per area; painter thread. */
+	private SpawnMarks.Mark spawnHovered;
+	private MapLayer spawnDots;
 	/** Each farming site's patches as Time Tracking last saved them; null while farming status is off. */
 	private volatile Map<Farming.Site, List<Farming.Reading>> farming;
 	/** The pin a right-click menu is for, or null. */
@@ -282,6 +287,11 @@ final class MapPainter
 	{
 		this.pins = pins;
 		this.editor = editor;
+	}
+
+	void setItemPictures(java.util.function.IntFunction<BufferedImage> pictures)
+	{
+		itemPictures = pictures;
 	}
 
 	void setMultiCombat(boolean on)
@@ -499,6 +509,8 @@ final class MapPainter
 			}
 			drawLabels(g, view, area, labels.all(), taken);
 		}
+		List<SpawnMarks.Shown> spawns = SpawnMarks.visible(view, area, plane, settings);
+		SpawnMarks.draw(g, spawns, itemPictures);
 		drawIcons(g, shown, selection);
 		Map<Farming.Site, List<Farming.Reading>> farms = farming;
 		if (farms != null)
@@ -517,6 +529,17 @@ final class MapPainter
 			drawLayer(g, view, layer);
 		}
 		List<MapPins.Shown> pinsShown = pins.visible(view, area, plane, settings.getIconScale());
+		SpawnMarks.Shown spawn = spawnAt(view, window, mouse, settings, selection, shown, pinsShown, spawns);
+		if (spawn != null && spawn.getMark().isMonster())
+		{
+			// the dots of that area's spawns only, as a click keeps them
+			if (spawn.getMark() != spawnHovered)
+			{
+				spawnHovered = spawn.getMark();
+				spawnDots = SearchSpots.layer("spawns", spawnHovered.getTiles());
+			}
+			drawLayer(g, view, spawnDots);
+		}
 		MapPins.draw(g, pinsShown, view.zoom);
 		drawPlayer(g, view, area, player);
 		drawPlayerArrow(g, view, area, player, playerArrow);
@@ -583,6 +606,10 @@ final class MapPainter
 		}
 		previewShown = false;
 		drawHovered(g, view, area, window, mouse, settings, progress, selection, shown, pinsShown, farms);
+		if (spawn != null)
+		{
+			drawTag(g, view, spawn.getBounds(), SpawnMarks.label(spawn.getMark()));
+		}
 		drawButtonTip(g, view, area, plane, window, mouse, settings);
 		if (!previewShown)
 		{
@@ -1171,6 +1198,38 @@ final class MapPainter
 		}
 		MapMenu.Layout open = shownMenu.layout(buttons(view.width, view.height, window), view.width, view.height);
 		return open.getMenu().contains(mouse) || open.getContent() != null && open.getContent().contains(mouse);
+	}
+
+	/** The spawn mark the mouse is on, when no icon, pin, menu or panel is over it. */
+	private SpawnMarks.Shown spawnAt(MapViewport.View view, boolean window, Point mouse, MapSettings settings,
+		Selection selection, List<MapIcons.Shown> shown, List<MapPins.Shown> pinsShown, List<SpawnMarks.Shown> spawns)
+	{
+		if (spawns.isEmpty() || mouse == null || dragging || selection != null && selection.isMenu()
+			|| MapIcons.at(shown, mouse.x, mouse.y) != null || onPanel(mouse, view, window, settings))
+		{
+			return null;
+		}
+		for (MapPins.Shown pin : pinsShown)
+		{
+			if (pin.getBounds().contains(mouse))
+			{
+				return null;
+			}
+		}
+		return SpawnMarks.at(spawns, mouse.x, mouse.y);
+	}
+
+	/** A name in a small box over what it names, kept on the map. */
+	private static void drawTag(Graphics2D g, MapViewport.View view, Rectangle over, String text)
+	{
+		g.setFont(FontManager.getRunescapeSmallFont());
+		java.awt.FontMetrics metrics = g.getFontMetrics();
+		int w = metrics.stringWidth(text) + 10;
+		int h = metrics.getHeight() + 4;
+		int x = Math.max(2, Math.min(view.width - w - 2, over.x + over.width / 2 - w / 2));
+		int y = over.y - h - 3 < 2 ? over.y + over.height + 3 : over.y - h - 3;
+		drawPanel(g, new Rectangle(x, y, w, h));
+		drawShadowed(g, text, x + 5, y + 2 + metrics.getAscent(), TEXT);
 	}
 
 	private boolean onPanel(Point mouse, MapViewport.View view, boolean window, MapSettings settings)

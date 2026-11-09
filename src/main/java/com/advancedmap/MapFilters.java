@@ -72,7 +72,10 @@ final class MapFilters
 	static class Layout
 	{
 		Rectangle panel;
-		/** "Your Slayer task", at the top. */
+		/** "Monsters" and "Ground items", their spawns when zoomed in, at the top. */
+		Rectangle monsters;
+		Rectangle items;
+		/** "Your Slayer task", under them. */
 		Rectangle slayer;
 		/** "Multi-combat areas", under it. */
 		Rectangle multiCombat;
@@ -87,6 +90,8 @@ final class MapFilters
 	{
 		OUTSIDE,
 		PANEL,
+		MONSTERS,
+		ITEMS,
 		SLAYER,
 		MULTI_COMBAT,
 		SHOW_HIDDEN,
@@ -273,9 +278,11 @@ final class MapFilters
 	{
 		int x = button.x;
 		int y = button.y + button.height + 4;
-		int panelHeight = Math.max(ROW * 8, Math.min(MAX_HEIGHT, height - y - BOTTOM_ROOM));
+		int panelHeight = Math.max(ROW * 10, Math.min(MAX_HEIGHT, height - y - BOTTOM_ROOM));
 		Rectangle panel = new Rectangle(x, y, WIDTH, panelHeight);
-		Rectangle slayer = new Rectangle(x + PAD, y + PAD / 2, WIDTH - PAD * 2, ROW);
+		Rectangle monsters = new Rectangle(x + PAD, y + PAD / 2, WIDTH - PAD * 2, ROW);
+		Rectangle items = new Rectangle(x + PAD, monsters.y + ROW, WIDTH - PAD * 2, ROW);
+		Rectangle slayer = new Rectangle(x + PAD, items.y + ROW, WIDTH - PAD * 2, ROW);
 		Rectangle multiCombat = new Rectangle(x + PAD, slayer.y + slayer.height, WIDTH - PAD * 2, ROW);
 		Rectangle showHidden = new Rectangle(x + PAD, multiCombat.y + multiCombat.height, WIDTH - PAD * 2, ROW);
 		int searchY = showHidden.y + showHidden.height + HINT + PAD;
@@ -286,7 +293,7 @@ final class MapFilters
 		Rectangle allOff = new Rectangle(x + PAD * 2 + half, buttonsY, half, ROW);
 		int listY = buttonsY + ROW + 6;
 		Rectangle list = new Rectangle(x, listY, WIDTH, y + panelHeight - PAD / 2 - listY);
-		return new Layout(panel, slayer, multiCombat, showHidden, search, allOn, allOff, list);
+		return new Layout(panel, monsters, items, slayer, multiCombat, showHidden, search, allOn, allOff, list);
 	}
 
 	/** What a press at a point is on. */
@@ -295,6 +302,14 @@ final class MapFilters
 		if (!layout.getPanel().contains(x, y))
 		{
 			return new Hit(Part.OUTSIDE, null);
+		}
+		if (layout.getMonsters().contains(x, y))
+		{
+			return new Hit(Part.MONSTERS, null);
+		}
+		if (layout.getItems().contains(x, y))
+		{
+			return new Hit(Part.ITEMS, null);
 		}
 		if (layout.getSlayer().contains(x, y))
 		{
@@ -352,8 +367,10 @@ final class MapFilters
 
 		g.setFont(FontManager.getRunescapeSmallFont());
 		FontMetrics metrics = g.getFontMetrics();
+		drawSwitch(g, layout.getMonsters(), settings.isMonsterSpawns(), "Monsters", metrics);
+		drawSwitch(g, layout.getItems(), settings.isItemSpawns(), "Ground items", metrics);
 		drawSlayer(g, layout.getSlayer(), settings, icons, metrics);
-		drawMultiCombat(g, layout.getMultiCombat(), multiCombat, metrics);
+		drawSwitch(g, layout.getMultiCombat(), multiCombat, "Multi-combat areas", metrics);
 		drawShowHidden(g, layout.getShowHidden(), settings, metrics);
 		Rectangle search = layout.getSearch();
 		g.setColor(FIELD);
@@ -465,13 +482,13 @@ final class MapFilters
 		g.drawString(note, row.x + row.width - metrics.stringWidth(note), textY);
 	}
 
-	/** "Multi-combat areas", ticked while the map tints them; they show only when zoomed in, which it says. */
-	private static void drawMultiCombat(Graphics2D g, Rectangle row, boolean on, FontMetrics metrics)
+	/** A row ticked while the map shows something only when zoomed in, which it says: spawns, multi-combat areas. */
+	private static void drawSwitch(Graphics2D g, Rectangle row, boolean on, String label, FontMetrics metrics)
 	{
 		drawBox(g, row.x, row.y + (ROW - BOX) / 2, on);
 		int textY = row.y + (ROW + metrics.getAscent() - metrics.getDescent()) / 2;
 		g.setColor(TEXT);
-		g.drawString("Multi-combat areas", row.x + BOX + 8, textY);
+		g.drawString(label, row.x + BOX + 8, textY);
 		g.setColor(QUIET);
 		g.drawString("zoomed in", row.x + row.width - metrics.stringWidth("zoomed in"), textY);
 	}
