@@ -226,6 +226,29 @@ public class MapPainterTest
 	}
 
 	@Test
+	public void theMenuEntryUnderTheMouseIsLit()
+	{
+		// owner, 2026-11-09: in a right-click menu, show the entry a left click would choose
+		MapPainter painter = blankPainter(new MapIcons());
+		MapSpot spot = MapSpot.icon(3222, 3218, 0, 0, 1059);
+		MapPainter.Selection menu = new MapPainter.Selection(spot, true, 200, 150, new WorldPoint(3222, 3218, 0));
+		MapSettings settings = settings(RoutingPlugin.NONE);
+		Rectangle bounds = MapPainter.menuBounds(menu, MapPainter.menuTitle(menu, Progress.NONE,
+			settings.getFloorNumbers(), null), MapPainter.menuEntries(menu, settings), 800, 600);
+		Rectangle second = MapPainter.menuEntryBounds(bounds, 1);
+		Rectangle first = MapPainter.menuEntryBounds(bounds, 0);
+		BufferedImage image = new BufferedImage(800, 600, BufferedImage.TYPE_INT_RGB);
+		Graphics2D g = image.createGraphics();
+		painter.paint(g, new MapViewport.View(3222, 3218, 4, 800, 600), MapArea.SURFACE, 0, null,
+			new java.awt.Point(second.x + second.width - 6, second.y + 4), true, settings, Progress.NONE, menu);
+		g.dispose();
+		// the same spot of each row's background: brighter in the row under the mouse
+		int lit = image.getRGB(second.x + second.width - 4, second.y + 2) & 0xFF;
+		int plain = image.getRGB(first.x + first.width - 4, first.y + 2) & 0xFF;
+		assertTrue(lit + " vs " + plain, lit > plain + 20);
+	}
+
+	@Test
 	public void aTileWithNoIconRoutesAndTakesAMarker()
 	{
 		MapPainter.Selection tile = new MapPainter.Selection(null, true, 10, 10, new WorldPoint(3222, 3218, 1));
