@@ -495,13 +495,41 @@ public interface AdvancedMapConfig extends Config
 		return 100;
 	}
 
+	@Range(min = MapSettings.MIN_ICON_SCALE, max = MapSettings.MAX_ICON_SCALE)
+	@Units(Units.PERCENT)
+	@ConfigItem(
+		keyName = "monsterSize",
+		name = "Monster size",
+		description = "How big monsters are on the map, apart from the other icons.",
+		section = ICONS,
+		position = 20
+	)
+	default int monsterSize()
+	{
+		return 100;
+	}
+
+	@Range(min = MapSettings.MIN_ICON_SCALE, max = MapSettings.MAX_ICON_SCALE)
+	@Units(Units.PERCENT)
+	@ConfigItem(
+		keyName = "itemSize",
+		name = "Ground item size",
+		description = "How big items lying on the ground are on the map, apart from the other icons.",
+		section = ICONS,
+		position = 21
+	)
+	default int itemSize()
+	{
+		return 100;
+	}
+
 	@ConfigItem(
 		keyName = "transportNames",
 		name = "Transport names",
 		description = "When zoomed in, show each fairy ring's code beside it, and the place of each spirit tree, hot air"
 			+ " balloon, quetzal, gnome glider, mushtree and Lovakengj minecart.",
 		section = ICONS,
-		position = 20
+		position = 22
 	)
 	default boolean transportNames()
 	{

@@ -84,6 +84,7 @@ Game updates need nothing from you. The map, its place names and the game's own 
 - Search for an Agility course by name, like "seers rooftop" or "prifddinas agility"
 - Right-click any icon to open its wiki page
 - Monsters and ground items show on the map when zoomed in, each item as its picture
+- Monster size and Ground item size settings, apart from Icon size
 ## Version 1.1 - 11/8/26
 - Hover over a shop to see what it sells
 - Hover over a transport to see where it goes and the fares
