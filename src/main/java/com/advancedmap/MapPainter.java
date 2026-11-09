@@ -123,7 +123,7 @@ final class MapPainter
 	/** A menu entry's row, and the one under the mouse, which a click would choose (owner, 2026-11-09). */
 	private static final Color MENU_ROW_FILL = new Color(255, 255, 255, 30);
 	private static final Color MENU_ROW_LIT = new Color(255, 255, 255, 80);
-	private static final Color MENU_TEXT_LIT = new Color(0xFFD75C);
+	static final Color MENU_TEXT_LIT = new Color(0xFFD75C);
 	private static final int PAD = 8;
 	/** The most monsters a dungeon preview lists, its "and more" line included, when taller than its map. */
 	private static final int MAX_PREVIEW_LINES = 20;
@@ -590,7 +590,7 @@ final class MapPainter
 		if (filters.isOpen())
 		{
 			Rectangle button = buttons(view.width, view.height, window).get(Button.FILTERS);
-			filters.draw(g, MapFilters.layout(button, view.height), filters.entries(progress), settings, icons);
+			filters.draw(g, MapFilters.layout(button, view.height), filters.entries(progress), settings, icons, mouse);
 		}
 		if (editor.isOpen())
 		{

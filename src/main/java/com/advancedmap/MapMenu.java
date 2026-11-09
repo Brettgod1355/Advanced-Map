@@ -600,8 +600,8 @@ final class MapMenu
 			g.setColor(MapFilters.TEXT);
 			g.drawString(entry.label, menu.x + PAD + 4, y + (ROW + metrics.getAscent() - metrics.getDescent()) / 2);
 		}
-		MapFilters.drawButton(g, layout.getGithub(), "GitHub", metrics);
-		MapFilters.drawButton(g, layout.getDiscord(), "Discord", metrics);
+		MapFilters.drawButton(g, layout.getGithub(), "GitHub", metrics, mouse);
+		MapFilters.drawButton(g, layout.getDiscord(), "Discord", metrics, mouse);
 
 		Rectangle content = layout.getContent();
 		if (content == null || shown == null)
@@ -662,19 +662,19 @@ final class MapMenu
 		switch (shown)
 		{
 			case WELCOME:
-				MapFilters.drawButton(g, layout.getButton1(), "How the map works", metrics);
-				MapFilters.drawButton(g, layout.getButton2(), "Close", metrics);
+				MapFilters.drawButton(g, layout.getButton1(), "How the map works", metrics, mouse);
+				MapFilters.drawButton(g, layout.getButton2(), "Close", metrics, mouse);
 				break;
 			case WHATS_NEW:
-				MapFilters.drawButton(g, layout.getButton1(), "Full release notes on GitHub", metrics);
+				MapFilters.drawButton(g, layout.getButton1(), "Full release notes on GitHub", metrics, mouse);
 				break;
 			case IMPROVE:
-				MapFilters.drawButton(g, layout.getButton1(), "Discord", metrics);
-				MapFilters.drawButton(g, layout.getButton2(), "GitHub issues", metrics);
+				MapFilters.drawButton(g, layout.getButton1(), "Discord", metrics, mouse);
+				MapFilters.drawButton(g, layout.getButton2(), "GitHub issues", metrics, mouse);
 				break;
 			case REDRAW:
-				MapFilters.drawButton(g, layout.getButton1(), "Delete and build again", metrics);
-				MapFilters.drawButton(g, layout.getButton2(), "Cancel", metrics);
+				MapFilters.drawButton(g, layout.getButton1(), "Delete and build again", metrics, mouse);
+				MapFilters.drawButton(g, layout.getButton2(), "Cancel", metrics, mouse);
 				break;
 			default:
 				break;
