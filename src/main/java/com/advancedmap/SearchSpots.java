@@ -82,6 +82,33 @@ final class SearchSpots
 	static List<Area> areas(List<WorldPoint> spawns, WorldPoint from, List<MapLabels.Label> labels,
 		Map<WorldPoint, Integer> floors)
 	{
+		List<List<WorldPoint>> groups = groups(spawns, floors);
+		// groups nearest the same place name, on one floor, are one area: spawns a little apart in one town
+		Map<String, List<WorldPoint>> named = new LinkedHashMap<>();
+		Map<String, String> names = new HashMap<>();
+		for (List<WorldPoint> tiles : groups)
+		{
+			WorldPoint middle = middle(tiles);
+			MapLabels.Label label = nearestLabel(middle, labels);
+			String key = label == null ? middle.toString() : label.getX() + "," + label.getY() + ","
+				+ floors.getOrDefault(middle, middle.getPlane());
+			named.computeIfAbsent(key, k -> new ArrayList<>()).addAll(tiles);
+			names.put(key, label == null ? middle.getX() + ", " + middle.getY() : String.join(" ", label.getLines()));
+		}
+		List<Area> out = new ArrayList<>();
+		named.forEach((key, tiles) ->
+		{
+			WorldPoint middle = middle(tiles);
+			out.add(new Area(names.get(key), middle, tiles.size(), distance(middle, from),
+				floors.getOrDefault(middle, middle.getPlane())));
+		});
+		out.sort(Comparator.comparingInt(Area::getDistance));
+		return out;
+	}
+
+	/** The spawns within {@link #NEAR} tiles of each other on the floor each is really on, together. */
+	static List<List<WorldPoint>> groups(List<WorldPoint> spawns, Map<WorldPoint, Integer> floors)
+	{
 		int n = spawns.size();
 		int[] group = new int[n];
 		for (int i = 0; i < n; i++)
@@ -114,27 +141,7 @@ final class SearchSpots
 			}
 			groups.get(index[r]).add(spawns.get(i));
 		}
-		// groups nearest the same place name, on one floor, are one area: spawns a little apart in one town
-		Map<String, List<WorldPoint>> named = new LinkedHashMap<>();
-		Map<String, String> names = new HashMap<>();
-		for (List<WorldPoint> tiles : groups)
-		{
-			WorldPoint middle = middle(tiles);
-			MapLabels.Label label = nearestLabel(middle, labels);
-			String key = label == null ? middle.toString() : label.getX() + "," + label.getY() + ","
-				+ floors.getOrDefault(middle, middle.getPlane());
-			named.computeIfAbsent(key, k -> new ArrayList<>()).addAll(tiles);
-			names.put(key, label == null ? middle.getX() + ", " + middle.getY() : String.join(" ", label.getLines()));
-		}
-		List<Area> out = new ArrayList<>();
-		named.forEach((key, tiles) ->
-		{
-			WorldPoint middle = middle(tiles);
-			out.add(new Area(names.get(key), middle, tiles.size(), distance(middle, from),
-				floors.getOrDefault(middle, middle.getPlane())));
-		});
-		out.sort(Comparator.comparingInt(Area::getDistance));
-		return out;
+		return groups;
 	}
 
 	private static int root(int[] group, int i)
@@ -148,7 +155,7 @@ final class SearchSpots
 	}
 
 	/** The spawn nearest the tiles' average. */
-	private static WorldPoint middle(List<WorldPoint> tiles)
+	static WorldPoint middle(List<WorldPoint> tiles)
 	{
 		double x = 0;
 		double y = 0;

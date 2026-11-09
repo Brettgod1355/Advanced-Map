@@ -244,6 +244,7 @@ public class AdvancedMapPlugin extends Plugin
 		source = new ClientMapSource(reader);
 		icons = new MapIcons();
 		itemDiscs.clear();
+		itemPictures.clear();
 		itemDiscsAsked.clear();
 		icons.setItemPictures(this::itemDisc);
 		labels = new MapLabels();
@@ -283,6 +284,7 @@ public class AdvancedMapPlugin extends Plugin
 		// a new painter does not follow: neither does the map, until the locate button is pressed again
 		following = false;
 		painter.setMultiCombat(config.multiCombat());
+		painter.setItemPictures(this::itemPicture);
 		painter.setInfoOnHover(config.infoOnHover());
 		painter.setHighestFirst(config.monsterOrder() == MonsterOrder.HIGHEST_FIRST);
 		painter.setPlayerArrow(config.playerArrow());
@@ -380,6 +382,7 @@ public class AdvancedMapPlugin extends Plugin
 		Transports.load();
 		Shops.load();
 		Spawns.load();
+		SpawnMarks.load();
 		MultiCombat.load();
 		Farming.load();
 		SlayerTask.load();
@@ -475,6 +478,7 @@ public class AdvancedMapPlugin extends Plugin
 		yourPlaces = Collections.emptyList();
 		// RuneLite keeps the plugin object while it is off: let go of pictures and other plugins' pins
 		itemDiscs.clear();
+		itemPictures.clear();
 		itemDiscsAsked.clear();
 		pins.setOthers(Collections.emptyList());
 		images = null;
@@ -1651,6 +1655,14 @@ public class AdvancedMapPlugin extends Plugin
 		}
 		MapIcons.Shown icon = iconAt(x, y, width, height);
 		showTransport(null);
+		SpawnMarks.Shown spawn = icon == null ? SpawnMarks.at(SpawnMarks.visible(viewport().view(width, height), area,
+			plane, settings), x, y) : null;
+		if (spawn != null && spawn.getMark().isMonster())
+		{
+			selection = null;
+			showSpawns(spawn.getMark());
+			return;
+		}
 		if (icon != null && (followLink(icon.getSpot()) || followTransport(icon.getSpot())))
 		{
 			selection = null;
@@ -1670,6 +1682,25 @@ public class AdvancedMapPlugin extends Plugin
 				showShop(shop);
 			}
 		}
+	}
+
+	/**
+	 * A monster's icon clicked: the dots of that area's spawns stay, and its details open on the right (stats, Slayer,
+	 * drops, its Wiki page), as a search for it shows them.
+	 */
+	private void showSpawns(SpawnMarks.Mark mark)
+	{
+		MapMessages layers = messages;
+		if (layers != null)
+		{
+			layers.put(SearchSpots.layer(SEARCH_LAYER, mark.getTiles()));
+		}
+		MonsterInfo.Monster monster = MonsterInfo.of(mark.getName());
+		List<SideList.Row> rows = new ArrayList<>(monster != null ? MonsterInfo.rows(monster)
+			: Collections.singletonList(SideList.Row.heading("No details for this monster yet")));
+		rows.add(SideList.Row.heading(mark.getTiles().size() + (mark.getTiles().size() == 1 ? " spawn" : " spawns")
+			+ " here"));
+		sideList.open(SpawnMarks.label(mark), rows, mark);
 	}
 
 	/** Lists what a shop sells and for how much, and any other shops beside it, which a click opens in turn. */
@@ -2781,6 +2812,12 @@ public class AdvancedMapPlugin extends Plugin
 				configManager.setConfiguration(AdvancedMapConfig.GROUP, AdvancedMapConfig.SHOW_HIDDEN,
 					!settings.isShowHidden());
 				break;
+			case MONSTERS:
+				setSwitch(AdvancedMapConfig.MONSTER_SPAWNS, !settings.isMonsterSpawns());
+				break;
+			case ITEMS:
+				setSwitch(AdvancedMapConfig.ITEM_SPAWNS, !settings.isItemSpawns());
+				break;
 			case SLAYER:
 				setSwitch(AdvancedMapConfig.SLAYER_SHOWN, !settings.isSlayerShown());
 				clientThread.invokeLater(this::showSlayerTask);
@@ -3146,6 +3183,27 @@ public class AdvancedMapPlugin extends Plugin
 			});
 		}
 		return disc;
+	}
+
+	/** The game's item pictures cut to the item, for ground items' spawns: by item id, once loaded. */
+	private final Map<Integer, BufferedImage> itemPictures = new ConcurrentHashMap<>();
+
+	/** An item's picture for its spawns, or null while the client loads it (asked once, as {@link #itemDisc}). */
+	private BufferedImage itemPicture(int itemId)
+	{
+		BufferedImage picture = itemPictures.get(itemId);
+		if (picture == null && itemDiscsAsked.add(~itemId))
+		{
+			net.runelite.client.util.AsyncBufferedImage item = itemManager.getImage(itemId);
+			item.onLoaded(() ->
+			{
+				if (started)
+				{
+					itemPictures.put(itemId, SpawnMarks.trim(item));
+				}
+			});
+		}
+		return picture;
 	}
 
 	/** Reads the place names in the background, once; again next time if the client had no world map data yet. */

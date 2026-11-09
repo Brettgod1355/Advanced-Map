@@ -41,7 +41,7 @@ The map opens on your character, on the surface or the underground map, whicheve
 | Switch surface / underground | The button at the top |
 | See what an icon is | Rest the pointer on it; click it to keep its box open |
 | Add a marker, route somewhere, hide an icon | Right-click the spot or the icon |
-| Choose which icons show, mark your Slayer task, tint multi-combat areas | The Filters button at the top left |
+| Choose which icons show, show monsters and ground items, mark your Slayer task, tint multi-combat areas | The Filters button at the top left |
 | Open the menu: help, settings, what's new, where to write | The three lines at the top left |
 | Search | Click the search box at the top and type; Enter or a click on a result goes there |
 | Choose what the search looks in | The three lines beside the magnifying glass |
@@ -134,6 +134,10 @@ on this computer, two clients at once included; turn off "Share markers between 
 
 - **Wilderness teleport limits**: zoomed in, red dashed lines show where the Wilderness passes level 20 and level
   30, above which most teleports stop working.
+- **Monsters and ground items** (on by default, unticked at the top of the Filters list): zoomed in close, one
+  icon for each area a monster lives in, and each item lying on the ground drawn as the item on its tile. Point at a
+  monster for its name and dots on its spawns in that area; click it to keep them and open its stats, drops and
+  Wiki page. Point at an item for its name.
 - **Multi-combat areas** (off by default, ticked at the top of the Filters list): tinted red with a solid edge
   when zoomed in, in the Wilderness and everywhere else.
 - **Farming patches**: a dot on each patch icon, green ready, yellow growing, red diseased or dead, gray empty;
