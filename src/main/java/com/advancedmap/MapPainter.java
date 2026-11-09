@@ -120,6 +120,10 @@ final class MapPainter
 	private static final int ICONS_COMPACT = BUTTON_HEIGHT;
 	private static final int FILTERS_WIDTH = 86;
 	private static final int MENU_ROW = 20;
+	/** A menu entry's row, and the one under the mouse, which a click would choose (owner, 2026-11-09). */
+	private static final Color MENU_ROW_FILL = new Color(255, 255, 255, 30);
+	private static final Color MENU_ROW_LIT = new Color(255, 255, 255, 80);
+	private static final Color MENU_TEXT_LIT = new Color(0xFFD75C);
 	private static final int PAD = 8;
 	/** The most monsters a dungeon preview lists, its "and more" line included, when taller than its map. */
 	private static final int MAX_PREVIEW_LINES = 20;
@@ -560,7 +564,7 @@ final class MapPainter
 			MapIcons.Shown selected = find(shown, selection.getSpot());
 			if (selection.isMenu())
 			{
-				drawMenu(g, view, selection, settings, progress, menuPin);
+				drawMenu(g, view, selection, settings, progress, menuPin, mouse);
 			}
 			else if (selected != null)
 			{
@@ -1660,7 +1664,7 @@ final class MapPainter
 	}
 
 	private static void drawMenu(Graphics2D g, MapViewport.View view, Selection selection, MapSettings settings,
-		Progress progress, MapPins.Pin pin)
+		Progress progress, MapPins.Pin pin, Point mouse)
 	{
 		String title = menuTitle(selection, progress, settings.getFloorNumbers(), pin);
 		List<MenuEntry> entries = menuEntries(selection, settings, pin);
@@ -1674,9 +1678,10 @@ final class MapPainter
 		for (int i = 0; i < entries.size(); i++)
 		{
 			Rectangle row = menuEntryBounds(menu, i);
-			g.setColor(new Color(255, 255, 255, 30));
+			boolean lit = mouse != null && row.contains(mouse);
+			g.setColor(lit ? MENU_ROW_LIT : MENU_ROW_FILL);
 			g.fillRect(row.x + 2, row.y, row.width - 4, row.height - 2);
-			g.setColor(TEXT);
+			g.setColor(lit ? MENU_TEXT_LIT : TEXT);
 			g.drawString(entries.get(i).getText(), row.x + PAD, row.y + baseline);
 		}
 	}
