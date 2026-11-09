@@ -231,6 +231,25 @@ final class SpawnMarks
 		}
 	}
 
+	/**
+	 * The list a click on a mark opens and a hover shows (owner, 2026-11-09: hover shows what a click does, a click
+	 * keeps it): a monster's details, then how many spawns or spots the mark stands for.
+	 */
+	static List<SideList.Row> rows(Mark mark)
+	{
+		List<SideList.Row> rows = new ArrayList<>();
+		if (mark.isMonster())
+		{
+			MonsterInfo.Monster monster = MonsterInfo.of(mark.getName());
+			rows.addAll(monster != null ? MonsterInfo.rows(monster)
+				: Collections.singletonList(SideList.Row.heading("No details for this monster yet")));
+		}
+		int n = mark.getTiles().size();
+		rows.add(SideList.Row.heading(n + (mark.isMonster() ? n == 1 ? " spawn" : " spawns" : n == 1 ? " spot" : " spots")
+			+ " here"));
+		return rows;
+	}
+
 	/** Every mark as a spot, among which the Hidden icons list finds the hidden ones. */
 	static List<MapSpot> spots()
 	{

@@ -92,6 +92,25 @@ public class SpawnMarksTest
 	}
 
 	@Test
+	public void aHoverAndAClickShowTheSameList()
+	{
+		// owner, 2026-11-09: "hovering to always show the same stuff on the screen as clicking"; a click keeps it
+		MonsterInfo.load();
+		WorldPoint a = new WorldPoint(3200, 3200, 0);
+		WorldPoint b = new WorldPoint(3203, 3201, 0);
+		List<SpawnMarks.Mark> marks = new java.util.ArrayList<>();
+		SpawnMarks.build(Arrays.asList(new Spawns.Creature("Goblin", true, "2", Arrays.asList(a, b)),
+			new Spawns.Creature("Egg", false, true, "", Arrays.asList(a, b), Collections.emptyMap())),
+			Collections.emptyMap()).values().forEach(marks::addAll);
+		SpawnMarks.Mark goblin = marks.stream().filter(SpawnMarks.Mark::isMonster).findFirst().get();
+		SpawnMarks.Mark egg = marks.stream().filter(m -> !m.isMonster()).findFirst().get();
+		List<SideList.Row> monster = SpawnMarks.rows(goblin);
+		assertTrue(monster.size() > 1);
+		assertEquals("2 spawns here", monster.get(monster.size() - 1).getText());
+		assertEquals("2 spots here", SpawnMarks.rows(egg).get(0).getText());
+	}
+
+	@Test
 	public void monsterAndGroundItemSizesAreTheirOwnSettings()
 	{
 		// owner, 2026-11-09: 16 px at 100%, the game's icons' size, each scaled on its own; Icon size leaves them be
