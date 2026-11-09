@@ -45,7 +45,7 @@ public class MapFiltersTest
 	private static MapSettings settings(Set<IconGroup> groups, Set<String> hiddenTypes)
 	{
 		return new MapSettings(groups, Collections.emptySet(), hiddenTypes, false, true, false, false, true, true,
-			RoutingPlugin.SHORTEST_PATH, FloorNumbers.GROUND_IS_FIRST, 100, true, true);
+			RoutingPlugin.SHORTEST_PATH, FloorNumbers.GROUND_IS_FIRST, 100, true, true, true, true);
 	}
 
 	@Test
@@ -102,7 +102,7 @@ public class MapFiltersTest
 		assertEquals(MapFilters.Part.SHOW_HIDDEN, filters.hitAt(showHidden.x + 5, showHidden.y + 5, layout, entries)
 			.getPart());
 		assertTrue(showHidden.y + showHidden.height < layout.getSearch().y);
-		// "Your Slayer task" is the list's first row, above "Show hidden icons"
+		// "Your Slayer task" above "Show hidden icons"
 		Rectangle slayer = layout.getSlayer();
 		assertEquals(MapFilters.Part.SLAYER, filters.hitAt(slayer.x + 5, slayer.y + 5, layout, entries).getPart());
 		assertTrue(slayer.y + slayer.height <= showHidden.y);
@@ -111,6 +111,13 @@ public class MapFiltersTest
 		Rectangle multi = layout.getMultiCombat();
 		assertEquals(MapFilters.Part.MULTI_COMBAT, filters.hitAt(multi.x + 5, multi.y + 5, layout, entries).getPart());
 		assertTrue(slayer.y + slayer.height <= multi.y && multi.y + multi.height <= showHidden.y);
+		// "Monsters" and "Ground items" pinned at the very top, above the Slayer task
+		Rectangle monsters = layout.getMonsters();
+		Rectangle items = layout.getItems();
+		assertEquals(MapFilters.Part.MONSTERS, filters.hitAt(monsters.x + 5, monsters.y + 5, layout, entries).getPart());
+		assertEquals(MapFilters.Part.ITEMS, filters.hitAt(items.x + 5, items.y + 5, layout, entries).getPart());
+		assertTrue(monsters.y >= layout.getPanel().y && monsters.y + monsters.height <= items.y
+			&& items.y + items.height <= slayer.y);
 	}
 
 	@Test
