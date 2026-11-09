@@ -131,7 +131,7 @@ public class SpawnMarksTest
 	}
 
 	@Test
-	public void anItemHasAMarkOnEachTileWithItsGameId()
+	public void anItemHasOneMarkForEachAreaItLiesInWithItsGameId()
 	{
 		Spawns.Creature knife = new Spawns.Creature("Knife", false, true, "", Arrays.asList(
 			new WorldPoint(3200, 3200, 0), new WorldPoint(3400, 3400, 1)), Collections.emptyMap());
@@ -143,6 +143,17 @@ public class SpawnMarksTest
 		assertFalse(upstairs.isMonster());
 		assertEquals(946, upstairs.getItemId());
 		assertEquals("Knife", SpawnMarks.label(upstairs));
+		// owner, 2026-11-09: the eggs round a chicken pen are one mark, its hover showing every tile, as a monster's
+		Spawns.Creature egg = new Spawns.Creature("Egg", false, true, "", Arrays.asList(new WorldPoint(3229, 3299, 0),
+			new WorldPoint(3226, 3295, 0), new WorldPoint(3233, 3293, 0), new WorldPoint(3500, 3500, 0)),
+			Collections.emptyMap());
+		List<SpawnMarks.Mark> eggs = new java.util.ArrayList<>();
+		SpawnMarks.build(Collections.singletonList(egg), ids).values().forEach(eggs::addAll);
+		assertEquals(2, eggs.size());
+		SpawnMarks.Mark pen = eggs.stream().filter(m -> m.getTiles().size() == 3).findFirst().get();
+		assertTrue(pen.getTiles().contains(pen.getPoint()));
+		assertEquals("Egg (3 spots)", SpawnMarks.label(pen));
+		assertEquals("Egg", SpawnMarks.label(eggs.stream().filter(m -> m.getTiles().size() == 1).findFirst().get()));
 	}
 
 	@Test

@@ -530,9 +530,9 @@ final class MapPainter
 		}
 		List<MapPins.Shown> pinsShown = pins.visible(view, area, plane, settings.getIconScale());
 		SpawnMarks.Shown spawn = spawnAt(view, window, mouse, settings, selection, shown, pinsShown, spawns);
-		if (spawn != null && spawn.getMark().isMonster())
+		if (spawn != null)
 		{
-			// the dots of that area's spawns only, as a click keeps them
+			// the dots of that area's spawns only, a monster's or a ground item's, as a click keeps a monster's
 			if (spawn.getMark() != spawnHovered)
 			{
 				spawnHovered = spawn.getMark();

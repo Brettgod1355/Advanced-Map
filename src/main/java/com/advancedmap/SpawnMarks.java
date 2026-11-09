@@ -43,7 +43,7 @@ final class SpawnMarks
 	private static final int ITEM = 16;
 	private static final Color MARKER = new Color(0xC8372D);
 
-	/** A monster's area (its icon, the spawns it stands for) or a ground item's tile. */
+	/** A monster's or ground item's area: its icon, and the spawns or tiles it stands for. */
 	@Value
 	static class Mark
 	{
@@ -117,10 +117,12 @@ final class SpawnMarks
 			}
 			else if (creature.isItem())
 			{
+				// one mark for each area it lies in, as a monster's (owner, 2026-11-09: one icon, hover shows them all)
 				int id = itemIds.getOrDefault(creature.getName(), -1);
-				for (WorldPoint tile : creature.getTiles())
+				for (List<WorldPoint> area : SearchSpots.groups(creature.getTiles(), creature.getFloors()))
 				{
-					add(out, new Mark(creature.getName(), "", id, tile, Collections.singletonList(tile)));
+					add(out, new Mark(creature.getName(), "", id, SearchSpots.middle(area),
+						Collections.unmodifiableList(area)));
 				}
 			}
 		}
@@ -286,7 +288,8 @@ final class SpawnMarks
 	/** What a mark's name tag says: a monster with its levels. */
 	static String label(Mark mark)
 	{
-		return mark.isMonster() && !mark.getLevels().isEmpty() ? mark.getName() + " (level " + mark.getLevels() + ")"
-			: mark.getName();
+		return mark.isMonster() ? mark.getLevels().isEmpty() ? mark.getName()
+			: mark.getName() + " (level " + mark.getLevels() + ")"
+			: mark.getTiles().size() > 1 ? mark.getName() + " (" + mark.getTiles().size() + " spots)" : mark.getName();
 	}
 }
