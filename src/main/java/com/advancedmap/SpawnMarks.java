@@ -55,6 +55,10 @@ final class SpawnMarks
 		WorldPoint point;
 		List<WorldPoint> tiles;
 
+		/** Its key among the hidden icons (owner, 2026-11-09: right-click to hide one), made on first use. */
+		@lombok.Getter(lazy = true)
+		private final String key = "s" + name + "@" + point.getX() + "," + point.getY();
+
 		boolean isMonster()
 		{
 			return itemId == Integer.MIN_VALUE;
@@ -66,6 +70,8 @@ final class SpawnMarks
 	{
 		Mark mark;
 		Rectangle bounds;
+		/** Hidden with a right-click and shown faded while "Show hidden icons" is ticked. */
+		boolean hidden;
 	}
 
 	/** The marks by the floor and region of their point: {@code plane << 16 | region id}. */
@@ -147,8 +153,10 @@ final class SpawnMarks
 			{
 				for (Mark mark : marks.getOrDefault(plane << 16 | rx << 8 | ry, Collections.emptyList()))
 				{
+					boolean hidden = !settings.getHidden().isEmpty() && settings.getHidden().contains(mark.getKey());
 					if (MapArea.of(mark.getPoint().getY()) != area
-						|| !(mark.isMonster() ? settings.isMonsterSpawns() : settings.isItemSpawns()))
+						|| !(mark.isMonster() ? settings.isMonsterSpawns() : settings.isItemSpawns())
+						|| hidden && !settings.isShowHidden())
 					{
 						continue;
 					}
@@ -158,7 +166,7 @@ final class SpawnMarks
 					int y = (int) Math.round(view.screenY(mark.getPoint().getY() + 0.5)) - size / 2;
 					if (x + size >= 0 && y + size >= 0 && x <= view.width && y <= view.height)
 					{
-						(mark.isMonster() ? monsters : items).add(new Shown(mark, new Rectangle(x, y, size, size)));
+						(mark.isMonster() ? monsters : items).add(new Shown(mark, new Rectangle(x, y, size, size), hidden));
 					}
 				}
 			}
@@ -186,10 +194,13 @@ final class SpawnMarks
 		Object interpolation = g.getRenderingHint(RenderingHints.KEY_INTERPOLATION);
 		java.awt.Stroke stroke = g.getStroke();
 		g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+		java.awt.Composite composite = g.getComposite();
 		for (Shown each : shown)
 		{
 			Mark mark = each.getMark();
 			Rectangle at = each.getBounds();
+			g.setComposite(each.isHidden() ? java.awt.AlphaComposite.getInstance(java.awt.AlphaComposite.SRC_OVER, 0.35f)
+				: composite);
 			BufferedImage image = mark.isMonster() ? picture(mark.getName())
 				: mark.getItemId() >= 0 ? itemPictures.apply(mark.getItemId()) : null;
 			if (image != null)
@@ -210,11 +221,20 @@ final class SpawnMarks
 				g.drawOval(at.x + inset, at.y + inset, at.width - inset * 2, at.height - inset * 2);
 			}
 		}
+		g.setComposite(composite);
 		g.setStroke(stroke);
 		if (interpolation != null)
 		{
 			g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, interpolation);
 		}
+	}
+
+	/** Every mark as a spot, among which the Hidden icons list finds the hidden ones. */
+	static List<MapSpot> spots()
+	{
+		List<MapSpot> out = new ArrayList<>();
+		index.values().forEach(marks -> marks.forEach(mark -> out.add(MapSpot.spawn(mark))));
+		return out;
 	}
 
 	/** A monster's own picture from the plugin's resources, read once; null when it has none. */

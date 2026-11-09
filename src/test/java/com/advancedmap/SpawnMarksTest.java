@@ -52,6 +52,46 @@ public class SpawnMarksTest
 	}
 
 	@Test
+	public void aMarkCanBeHiddenWithARightClickAndShownFadedAgain()
+	{
+		// owner, 2026-11-09: monsters and ground items "need to be able to be right clicked hide this icon"
+		SpawnMarks.Shown first = SpawnMarks.visible(lumbridge(6), MapArea.SURFACE, 0, settings(true, true)).get(0);
+		SpawnMarks.Mark mark = first.getMark();
+		assertFalse(first.isHidden());
+		MapSpot spot = MapSpot.spawn(mark);
+		assertEquals(mark.getKey(), spot.getKey());
+		assertTrue(spot.getKey().startsWith("s" + mark.getName() + "@"));
+		assertEquals(mark.getName(), MapIcons.name(spot, Progress.NONE));
+		assertTrue(MapIcons.wikiUrl(spot, Progress.NONE).endsWith("search="
+			+ mark.getName().replace(' ', '+')));
+		List<MapPainter.MenuEntry> menu = MapPainter.menuEntries(new MapPainter.Selection(spot, true, 10, 10,
+			mark.getPoint()), settings(true, true));
+		assertEquals(MapPainter.Action.HIDE, menu.get(0).getAction());
+		assertTrue(menu.stream().anyMatch(e -> e.getAction() == MapPainter.Action.WIKI));
+		// hidden: gone from the map, and its menu offers Unhide
+		MapSettings hiding = hiddenSettings(Collections.singleton(spot.getKey()), false);
+		assertTrue(hiding.isHidden(spot));
+		assertTrue(SpawnMarks.visible(lumbridge(6), MapArea.SURFACE, 0, hiding).stream()
+			.noneMatch(s -> s.getMark().equals(mark)));
+		assertEquals(MapPainter.Action.UNHIDE, MapPainter.menuEntries(new MapPainter.Selection(spot, true, 10, 10,
+			mark.getPoint()), hiding).get(0).getAction());
+		// "Show hidden icons": back, faded, so it can be unhidden
+		SpawnMarks.Shown faded = SpawnMarks.visible(lumbridge(6), MapArea.SURFACE, 0,
+			hiddenSettings(Collections.singleton(spot.getKey()), true)).stream().filter(s -> s.getMark().equals(mark))
+			.findFirst().get();
+		assertTrue(faded.isHidden());
+		// and the Hidden icons list finds it by name
+		assertTrue(SpawnMarks.spots().stream().anyMatch(s -> s.getKey().equals(spot.getKey())));
+	}
+
+	private static MapSettings hiddenSettings(java.util.Set<String> hidden, boolean showHidden)
+	{
+		return new MapSettings(EnumSet.allOf(IconGroup.class), hidden, Collections.emptySet(), false, true, false,
+			showHidden, true, true, RoutingPlugin.SHORTEST_PATH, FloorNumbers.GROUND_IS_FIRST, 100, true, true, true,
+			true, 100, 100);
+	}
+
+	@Test
 	public void monsterAndGroundItemSizesAreTheirOwnSettings()
 	{
 		// owner, 2026-11-09: 16 px at 100%, the game's icons' size, each scaled on its own; Icon size leaves them be

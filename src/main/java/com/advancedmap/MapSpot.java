@@ -97,6 +97,14 @@ final class MapSpot
 	}
 
 	/** A teleport's icon, where it lands: in Prifddinas, on the surface where the map draws the city. */
+	/** A monster's or ground item's mark, for its right-click menu (Hide, the wiki), named after it. */
+	static MapSpot spawn(SpawnMarks.Mark mark)
+	{
+		WorldPoint at = mark.getPoint();
+		return new MapSpot(mark.getKey(), at.getX(), at.getY(), at.getPlane(), -1, -1, IconGroup.OTHER, null, null,
+			null, null, mark.getName(), null);
+	}
+
 	static MapSpot teleport(Teleport teleport)
 	{
 		WorldPoint at = Prifddinas.toSurface(teleport.getLocation());
