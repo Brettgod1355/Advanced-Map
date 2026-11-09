@@ -508,6 +508,11 @@ final class MapIcons
 	/** An icon's name: the quest, the shortcut, the teleport, or the game's name for its kind. */
 	static String name(MapSpot spot, Progress progress)
 	{
+		if (spot.getKey().startsWith("s"))
+		{
+			// a monster's or ground item's mark
+			return spot.getDetail();
+		}
 		if (spot.getTeleport() != null)
 		{
 			return spot.getTeleport().title();

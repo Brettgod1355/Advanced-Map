@@ -1924,8 +1924,15 @@ public class AdvancedMapPlugin extends Plugin
 				spot.getPlane()));
 			return;
 		}
-		// a tile's menu: Add marker here, and the route entries when a routing plugin is chosen
 		MapViewport.View view = viewport().view(width, height);
+		SpawnMarks.Shown spawn = SpawnMarks.at(SpawnMarks.visible(view, area, plane, settings), x, y);
+		if (spawn != null)
+		{
+			// a monster's or ground item's menu: Hide, its wiki page (owner, 2026-11-09)
+			selection = new MapPainter.Selection(MapSpot.spawn(spawn.getMark()), true, x, y, spawn.getMark().getPoint());
+			return;
+		}
+		// a tile's menu: Add marker here, and the route entries when a routing plugin is chosen
 		selection = new MapPainter.Selection(null, true, x, y, new WorldPoint((int) Math.floor(view.worldX(x)),
 			(int) Math.floor(view.worldY(y)), plane));
 	}
@@ -2591,6 +2598,7 @@ public class AdvancedMapPlugin extends Plugin
 		WorldPoint from = player != null ? player : center();
 		List<MapSpot> candidates = new ArrayList<>(icons.allSpots());
 		candidates.addAll(MapIcons.teleports());
+		candidates.addAll(SpawnMarks.spots());
 		sideList.open("Hidden icons (" + hidden.size() + "), nearest first", hiddenRows(hidden, candidates, from,
 			labelsNow(), progress), HIDDEN_LIST);
 	}
