@@ -1655,7 +1655,7 @@ public class AdvancedMapPlugin extends Plugin
 		showTransport(null);
 		SpawnMarks.Shown spawn = icon == null ? SpawnMarks.at(SpawnMarks.visible(viewport().view(width, height), area,
 			plane, settings), x, y) : null;
-		if (spawn != null && spawn.getMark().isMonster())
+		if (spawn != null)
 		{
 			selection = null;
 			showSpawns(spawn.getMark());
@@ -1693,12 +1693,7 @@ public class AdvancedMapPlugin extends Plugin
 		{
 			layers.put(SearchSpots.layer(SEARCH_LAYER, mark.getTiles()));
 		}
-		MonsterInfo.Monster monster = MonsterInfo.of(mark.getName());
-		List<SideList.Row> rows = new ArrayList<>(monster != null ? MonsterInfo.rows(monster)
-			: Collections.singletonList(SideList.Row.heading("No details for this monster yet")));
-		rows.add(SideList.Row.heading(mark.getTiles().size() + (mark.getTiles().size() == 1 ? " spawn" : " spawns")
-			+ " here"));
-		sideList.open(SpawnMarks.label(mark), rows, mark);
+		sideList.open(SpawnMarks.label(mark), SpawnMarks.rows(mark), mark);
 	}
 
 	/** Lists what a shop sells and for how much, and any other shops beside it, which a click opens in turn. */

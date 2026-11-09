@@ -138,9 +138,8 @@ on this computer, two clients at once included; turn off "Share markers between 
   30, above which most teleports stop working.
 - **Monsters and ground items** (on by default, unticked at the top of the Filters list): zoomed in close, one
   icon for each area a monster lives in or an item lies in, each item drawn as its own picture. Point at a
-  monster for its name and dots on its spawns in that area; click it to keep them and open its stats, drops and
-  Wiki page. Point at an item for its name and dots on its spots there. Right-click either to hide it or open its
-  wiki page.
+  monster for its stats, drops and Wiki page on the right and dots on its spawns in that area, or at an item for
+  its spots there; a click keeps them. Right-click either to hide it or open its wiki page.
 - **Multi-combat areas** (off by default, ticked at the top of the Filters list): tinted red with a solid edge
   when zoomed in, in the Wilderness and everywhere else.
 - **Farming patches**: a dot on each patch icon, green ready, yellow growing, red diseased or dead, gray empty;

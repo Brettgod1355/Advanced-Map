@@ -608,7 +608,9 @@ final class MapPainter
 		drawHovered(g, view, area, window, mouse, settings, progress, selection, shown, pinsShown, farms);
 		if (spawn != null)
 		{
-			drawTag(g, view, spawn.getBounds(), SpawnMarks.label(spawn.getMark()));
+			SpawnMarks.Mark mark = spawn.getMark();
+			drawClickPreview(g, view, window, mark, () -> SpawnMarks.label(mark), () -> SpawnMarks.rows(mark));
+			drawTag(g, view, spawn.getBounds(), SpawnMarks.label(mark));
 		}
 		drawButtonTip(g, view, area, plane, window, mouse, settings);
 		if (!previewShown)
@@ -1175,7 +1177,8 @@ final class MapPainter
 		java.util.function.Supplier<String> title, java.util.function.Supplier<List<SideList.Row>> rows)
 	{
 		Object open = sideList.isOpen() ? sideList.owner() : null;
-		if (open != null && (owner.equals(open) || !(open instanceof Shops.Shop || open instanceof MapSpot)))
+		if (open != null && (owner.equals(open)
+			|| !(open instanceof Shops.Shop || open instanceof MapSpot || open instanceof SpawnMarks.Mark)))
 		{
 			return;
 		}
