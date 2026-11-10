@@ -154,6 +154,11 @@ public class MapPainterTest
 		assertTrue(MapIcons.wikiUrl(sphere, Progress.NONE).endsWith(".wiki/?search=Goblin+village+sphere"));
 		assertTrue(MapIcons.wikiUrl(MapSpot.teleport(Teleport.named("VARROCK")), Progress.NONE)
 			.endsWith(".wiki/?search=Varrock+Teleport"));
+		assertTrue(MapIcons.wikiUrl(MapSpot.teleport(Teleport.named("RING_OF_THE_ELEMENTS_AIR")), Progress.NONE)
+			.endsWith(".wiki/?search=Ring+of+the+elements"));
+		// a note in brackets is left out: the page is "Canoe"
+		assertTrue(MapIcons.wikiUrl(MapSpot.teleport(Teleport.named("CANOE_WILDERNESS")), Progress.NONE)
+			.endsWith(".wiki/?search=Canoe"));
 	}
 
 	/** The text of an icon's info box lines, logged out. */

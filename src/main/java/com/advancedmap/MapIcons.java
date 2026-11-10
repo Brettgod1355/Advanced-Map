@@ -708,7 +708,9 @@ final class MapIcons
 			return MonsterInfo.WIKI + named.getWikiPage();
 		}
 		Teleport teleport = spot.getTeleport();
-		String search = teleport != null && teleport.getItem() != null ? teleport.getItem() : name(spot, progress);
+		// without a note in brackets: "Canoe (No departure)" is the page "Canoe"
+		String search = teleport != null && teleport.getItem() != null
+			? teleport.getItem().replaceFirst(" \\([^)]*\\)$", "") : name(spot, progress);
 		return "https://oldschool.runescape.wiki/?search="
 			+ java.net.URLEncoder.encode(search, java.nio.charset.StandardCharsets.UTF_8);
 	}
