@@ -1,5 +1,7 @@
 # Advanced Map
 
+[![Plugin Hub installs](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fbrettgod1355.github.io%2Fhub-installs%2Fdata%2Fbadges.json&query=%24.counts%5B%27advanced-map%27%5D&label=installs&color=dc8a00)](https://brettgod1355.github.io/hub-installs/)
+
 A world map for [RuneLite](https://runelite.net/) that shows the whole world at once and lets you zoom in to a single
 tile. Open it in a box over the game that you can move and size, fill the game view with it, or pop it out into its
 own window for a second screen. It's drawn on your computer from the game's own map data, with a fuzzy search over
