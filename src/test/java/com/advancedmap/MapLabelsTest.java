@@ -73,4 +73,27 @@ public class MapLabelsTest
 		labels.set(java.util.Arrays.asList(lower, elsewhere));
 		assertEquals("Motherlode Mine", String.join(" ", labels.all().get(0).getLines()));
 	}
+
+	@Test
+	public void aRowWithNoGameTextAddsALabelOfItsOwnThatTheSearchFinds()
+	{
+		// the owner, 2026-11-10: the Evil Twin random event's rooms (1868, 5131 on the owner's screenshot) have no name
+		MapLabels labels = new MapLabels();
+		labels.set(java.util.Collections.emptyList());
+		MapLabels.Label twin = labels.all().stream().filter(l -> l.getLines().equals(
+			java.util.Collections.singletonList("Evil Twin"))).findFirst().orElse(null);
+		assertEquals(new MapLabels.Label(java.util.Collections.singletonList("Evil Twin"), 1867, 5131, MapLabels.PLACE,
+			MapLabels.PLACE_COLOR), twin);
+		// all thirteen random event areas, after the game's labels, and none of them taken for a rename
+		assertEquals(13, labels.all().size());
+		MapLabels.Label lower = new MapLabels.Label(java.util.Collections.singletonList("Lower level"), 3745, 5698,
+			MapLabels.PLACE, java.awt.Color.YELLOW);
+		labels.set(java.util.Collections.singletonList(lower));
+		assertEquals(14, labels.all().size());
+		assertEquals("Motherlode Mine", String.join(" ", labels.all().get(0).getLines()));
+		// the search has it like any place name
+		MapSearch search = new MapSearch();
+		java.util.List<MapSearch.Entry> index = search.index(labels.all());
+		assertEquals("Evil Twin", MapSearch.search(index, "evil twin").get(0).getName());
+	}
 }

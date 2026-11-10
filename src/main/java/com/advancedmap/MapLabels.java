@@ -41,6 +41,9 @@ final class MapLabels
 		Color color;
 	}
 
+	/** The colour of the game's place names, for the labels Advanced Map adds (set before they are read). */
+	static final Color PLACE_COLOR = Color.WHITE;
+
 	/** How far from a {@code label-names.tsv} row's tile the game's label may be. */
 	static final int RENAME_REACH = 16;
 	/**
@@ -59,6 +62,13 @@ final class MapLabels
 		List<String> lines;
 	}
 
+	/**
+	 * Labels Advanced Map adds where the game's map has none: a {@code label-names.tsv} row with no game text (the
+	 * random event areas; owner, 2026-11-10). Drawn over the map like the game's, so they show while it builds and on
+	 * maps built before them, and found by the search with the others.
+	 */
+	private static final List<Label> ADDED = added();
+
 	private static List<Rename> renames()
 	{
 		List<Rename> out = new ArrayList<>();
@@ -66,12 +76,36 @@ final class MapLabels
 		{
 			try
 			{
-				out.add(new Rename(Integer.parseInt(row[0].trim()), Integer.parseInt(row[1].trim()), row[2].trim(),
-					Arrays.asList(row[3].trim().split("\\|"))));
+				if (!row[2].trim().isEmpty())
+				{
+					out.add(new Rename(Integer.parseInt(row[0].trim()), Integer.parseInt(row[1].trim()), row[2].trim(),
+						Arrays.asList(row[3].trim().split("\\|"))));
+				}
 			}
 			catch (RuntimeException e)
 			{
 				// a row that is no rename renames nothing: the other labels keep loading
+			}
+		}
+		return out;
+	}
+
+	private static List<Label> added()
+	{
+		List<Label> out = new ArrayList<>();
+		for (String[] row : DataFiles.rows("label-names.tsv"))
+		{
+			try
+			{
+				if (row[2].trim().isEmpty())
+				{
+					out.add(new Label(Arrays.asList(row[3].trim().split("\\|")), Integer.parseInt(row[0].trim()),
+						Integer.parseInt(row[1].trim()), PLACE, PLACE_COLOR));
+				}
+			}
+			catch (RuntimeException e)
+			{
+				// a row that is no label adds nothing: the others still show
 			}
 		}
 		return out;
@@ -86,11 +120,12 @@ final class MapLabels
 
 	void set(List<Label> loaded)
 	{
-		List<Label> named = new ArrayList<>(loaded.size());
+		List<Label> named = new ArrayList<>(loaded.size() + ADDED.size());
 		for (Label label : loaded)
 		{
 			named.add(renamed(label));
 		}
+		named.addAll(ADDED);
 		labels = Collections.unmodifiableList(named);
 	}
 
