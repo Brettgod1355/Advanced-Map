@@ -230,6 +230,14 @@ underground tiles of the Tonali Cavern, Shayzien Prison, Scabaras Dungeon, Ogre 
 game facts are written in `Unlockable.java`; no wiki text or image is included, and nothing is fetched while the
 plugin runs. Which chests and banks there are, and whether a player has built or opened one, come from the game.
 
+Three more data files hold game facts checked on the same wiki, under the same license and credit. In
+`src/main/resources/com/advancedmap/named-icons.tsv` (read 2026-10-31 to 2026-11-07), the names of icons the game's
+map gives only a kind, the wiki page each one opens, and what it needs (a skill level), with each icon's tile taken
+from the game's map. In `src/main/resources/com/advancedmap/shortcuts.tsv` (read 2026-11-07), which achievement diary
+an agility shortcut needs. In `src/main/resources/com/advancedmap/label-names.tsv` (read 2026-11-10), the tiles of
+the 13 random event areas, from each event's page map, checked against the game's map moves. Changes: only names,
+tiles, page names and needs kept; no wiki text or image is included.
+
 ## Data from the Old School RuneScape Wiki (CC BY-NC-SA 3.0)
 
 `src/main/resources/com/advancedmap/shops.tsv` (shops, where they are, what they sell, the price, currency and
