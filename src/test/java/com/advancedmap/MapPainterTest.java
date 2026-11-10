@@ -147,6 +147,13 @@ public class MapPainterTest
 		Progress odd = new Progress(false, new int[net.runelite.api.Skill.values().length], Collections.emptyMap(),
 			Collections.emptyMap(), Collections.singletonMap(1059, "Farmer's shed & more"), Collections.emptyMap());
 		assertTrue(MapIcons.wikiUrl(elsewhere, odd).endsWith(".wiki/?search=Farmer%27s+shed+%26+more"));
+		// a teleport by an item searches for the item alone, not "item: destination" (owner, 2026-11-10); a spell keeps
+		// its title, which is its page
+		MapSpot sphere = MapSpot.teleport(Teleport.named("GOBLIN_VILLAGE_SPHERE"));
+		assertEquals("Goblin village sphere: Goblin Village", MapIcons.name(sphere, Progress.NONE));
+		assertTrue(MapIcons.wikiUrl(sphere, Progress.NONE).endsWith(".wiki/?search=Goblin+village+sphere"));
+		assertTrue(MapIcons.wikiUrl(MapSpot.teleport(Teleport.named("VARROCK")), Progress.NONE)
+			.endsWith(".wiki/?search=Varrock+Teleport"));
 	}
 
 	/** The text of an icon's info box lines, logged out. */

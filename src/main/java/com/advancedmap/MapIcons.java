@@ -695,15 +695,22 @@ final class MapIcons
 	/**
 	 * An icon's wiki page: the one {@code named-icons.tsv} gives it, else a wiki search for the name its box shows,
 	 * which opens the page of that name when there is one (a quest, a teleport, "Bank") and lists the nearest ones
-	 * otherwise (owner, 2026-11-08: a wiki link on every icon).
+	 * otherwise (owner, 2026-11-08: a wiki link on every icon). A teleport by an item or object searches for that alone,
+	 * as "Goblin village sphere: Goblin Village" is no page but "Goblin village sphere" is (owner, 2026-11-10).
 	 */
 	static String wikiUrl(MapSpot spot, Progress progress)
 	{
 		// a monster or ground item by its own name, never the named icon it stands beside
 		NamedIcons.Named named = spot.getTeleport() == null && !spot.getKey().startsWith("s")
 			? NamedIcons.at(spot.getX(), spot.getY(), spot.getPlane()) : null;
-		return named != null ? MonsterInfo.WIKI + named.getWikiPage() : "https://oldschool.runescape.wiki/?search="
-			+ java.net.URLEncoder.encode(name(spot, progress), java.nio.charset.StandardCharsets.UTF_8);
+		if (named != null)
+		{
+			return MonsterInfo.WIKI + named.getWikiPage();
+		}
+		Teleport teleport = spot.getTeleport();
+		String search = teleport != null && teleport.getItem() != null ? teleport.getItem() : name(spot, progress);
+		return "https://oldschool.runescape.wiki/?search="
+			+ java.net.URLEncoder.encode(search, java.nio.charset.StandardCharsets.UTF_8);
 	}
 
 	private static void questInfo(List<Line> lines, Progress.QuestInfo quest, Progress progress)
