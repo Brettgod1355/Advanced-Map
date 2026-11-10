@@ -696,8 +696,9 @@ final class MapIcons
 	 */
 	static String wikiUrl(MapSpot spot, Progress progress)
 	{
-		NamedIcons.Named named = spot.getTeleport() == null ? NamedIcons.at(spot.getX(), spot.getY(), spot.getPlane())
-			: null;
+		// a monster or ground item by its own name, never the named icon it stands beside
+		NamedIcons.Named named = spot.getTeleport() == null && !spot.getKey().startsWith("s")
+			? NamedIcons.at(spot.getX(), spot.getY(), spot.getPlane()) : null;
 		return named != null ? MonsterInfo.WIKI + named.getWikiPage() : "https://oldschool.runescape.wiki/?search="
 			+ java.net.URLEncoder.encode(name(spot, progress), java.nio.charset.StandardCharsets.UTF_8);
 	}

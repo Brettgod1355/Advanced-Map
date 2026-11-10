@@ -42,6 +42,9 @@ final class SpawnMarks
 	private static final int MONSTER = 16;
 	private static final int ITEM = 16;
 	private static final Color MARKER = new Color(0xC8372D);
+	private static final Color ITEM_DOT = new Color(0xE8D27A);
+	private static final BasicStroke THIN = new BasicStroke(1);
+	private static final BasicStroke THICK = new BasicStroke(2);
 
 	/** A monster's or ground item's area: its icon, and the spawns or tiles it stands for. */
 	@Value
@@ -57,7 +60,8 @@ final class SpawnMarks
 
 		/** Its key among the hidden icons (owner, 2026-11-09: right-click to hide one), made on first use. */
 		@lombok.Getter(lazy = true)
-		private final String key = "s" + name + "@" + point.getX() + "," + point.getY();
+		private final String key = "s" + name + "@" + point.getX() + "," + point.getY()
+			+ (point.getPlane() > 0 ? "," + point.getPlane() : "");
 
 		boolean isMonster()
 		{
@@ -89,9 +93,14 @@ final class SpawnMarks
 		Map<String, Integer> ids = new HashMap<>();
 		for (String[] row : DataFiles.rows("item-ids.tsv"))
 		{
-			if (row.length > 1)
+			try
 			{
 				ids.put(row[0], Integer.parseInt(row[1].trim()));
+			}
+			catch (RuntimeException e)
+			{
+				// a mistyped row costs only its own picture, not the tables read after this one
+				log.debug("item-ids.tsv: skipped {}", (Object) row);
 			}
 		}
 		index = build(Spawns.all(), ids);
@@ -144,10 +153,12 @@ final class SpawnMarks
 		}
 		List<Shown> items = new ArrayList<>();
 		List<Shown> monsters = new ArrayList<>();
-		int west = (int) Math.floor(view.worldX(0)) >> 6;
-		int east = (int) Math.floor(view.worldX(view.width)) >> 6;
-		int south = (int) Math.floor(view.worldY(view.height)) >> 6;
-		int north = (int) Math.floor(view.worldY(0)) >> 6;
+		// a mark a little off screen can still reach into it, as an icon's
+		int margin = MONSTER * MapSettings.MAX_ICON_SCALE / 100;
+		int west = (int) Math.floor(view.worldX(-margin)) >> 6;
+		int east = (int) Math.floor(view.worldX(view.width + margin)) >> 6;
+		int south = (int) Math.floor(view.worldY(view.height + margin)) >> 6;
+		int north = (int) Math.floor(view.worldY(-margin)) >> 6;
 		Map<Integer, List<Mark>> marks = index;
 		for (int rx = west; rx <= east; rx++)
 		{
@@ -216,9 +227,9 @@ final class SpawnMarks
 			else
 			{
 				int inset = mark.isMonster() ? 2 : at.width / 3;
-				g.setColor(mark.isMonster() ? MARKER : new Color(0xE8D27A));
+				g.setColor(mark.isMonster() ? MARKER : ITEM_DOT);
 				g.fillOval(at.x + inset, at.y + inset, at.width - inset * 2, at.height - inset * 2);
-				g.setStroke(new BasicStroke(mark.isMonster() ? 2 : 1));
+				g.setStroke(mark.isMonster() ? THICK : THIN);
 				g.setColor(mark.isMonster() ? Color.WHITE : Color.BLACK);
 				g.drawOval(at.x + inset, at.y + inset, at.width - inset * 2, at.height - inset * 2);
 			}

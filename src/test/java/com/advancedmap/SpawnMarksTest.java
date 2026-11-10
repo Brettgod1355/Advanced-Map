@@ -254,4 +254,31 @@ public class SpawnMarksTest
 		assertEquals(11, cut.getWidth());
 		assertEquals(21, cut.getHeight());
 	}
+
+	@Test
+	public void marksOnTwoFloorsOfOneTileAreHiddenApart()
+	{
+		// "Mouse" at 2267, 5516 is on the ground and upstairs: hiding one must not hide the other
+		SpawnMarks.Mark ground = new SpawnMarks.Mark("Mouse", "", Integer.MIN_VALUE, new WorldPoint(2267, 5516, 0),
+			Collections.emptyList());
+		SpawnMarks.Mark upstairs = new SpawnMarks.Mark("Mouse", "", Integer.MIN_VALUE, new WorldPoint(2267, 5516, 1),
+			Collections.emptyList());
+		assertEquals("sMouse@2267,5516", ground.getKey());
+		assertFalse(ground.getKey().equals(upstairs.getKey()));
+		Set<String> keys = new HashSet<>();
+		for (MapSpot spot : SpawnMarks.spots())
+		{
+			assertTrue(spot.getKey(), keys.add(spot.getKey()));
+		}
+	}
+
+	@Test
+	public void aMarkBesideANamedIconOpensItsOwnWikiPage()
+	{
+		// the Iron mace lies one tile from the Ardougne Rooftop Course's icon
+		NamedIcons.all();
+		SpawnMarks.Mark mace = new SpawnMarks.Mark("Iron mace", "", 1420, new WorldPoint(2675, 3299, 0),
+			Collections.emptyList());
+		assertTrue(MapIcons.wikiUrl(MapSpot.spawn(mace), null).endsWith("search=Iron+mace"));
+	}
 }

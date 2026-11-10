@@ -2522,8 +2522,6 @@ public class AdvancedMapPlugin extends Plugin
 	/** The side list of the menu's "Your markers", and of its "Hidden icons"; a hidden icon's rows too. */
 	static final Object MARKERS_LIST = new Object();
 	static final Object HIDDEN_LIST = new Object();
-	/** How far in a click on a hidden icon's row zooms, from further out: where icons are drawn, with room around. */
-	private static final double HIDDEN_ZOOM = 3;
 	/** The account "Your markers" was listed for. */
 	private volatile String markersFor;
 
@@ -2748,9 +2746,8 @@ public class AdvancedMapPlugin extends Plugin
 			if (row.getPoint() != null)
 			{
 				selection = null;
-				// a hidden icon is to be unhidden: close enough in for icons to be drawn, as part of the jump
-				goTo(row.getPoint(), row.getTarget() == HIDDEN_LIST
-					&& viewports.get(area).view(1, 1).zoom < MapIcons.ICON_ZOOM ? HIDDEN_ZOOM : 0);
+				// a hidden icon is to be unhidden: close enough in for it to be drawn, a monster or ground item too
+				goTo(row.getPoint(), row.getTarget() == HIDDEN_LIST ? SpawnMarks.ZOOM : 0);
 			}
 			if (row.getTarget() instanceof Shops.Shop)
 			{
