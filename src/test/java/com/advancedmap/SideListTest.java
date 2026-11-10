@@ -213,4 +213,32 @@ public class SideListTest
 		assertEquals(heading.height(), heading.height(lines, java.util.Collections.emptyList()));
 		assertEquals(SideList.Row.heading("Short").height() + SideList.BOLD_LINE * (lines.size() - 1), heading.height());
 	}
+
+	@Test
+	public void theTwoButtonsUnderTheRowsStayPutAndArePressed()
+	{
+		// owner, 2026-11-10: "All spots" left and "Wiki" right, pinned so they don't get lost in the scroll
+		SideList list = new SideList();
+		List<SideList.Row> rows = new java.util.ArrayList<>();
+		for (int i = 0; i < 100; i++)
+		{
+			rows.add(new SideList.Row("Drop " + i, "1/128", null, null, null, null));
+		}
+		SideList.Row left = new SideList.Row("All spots", null, null, null, null, "spots");
+		SideList.Row right = new SideList.Row("Wiki", null, null, null, null, "wiki");
+		list.open("Goblin", rows, "goblin", left, right);
+		SideList.Layout layout = list.layout(MapPainter.buttons(1280, 800, false));
+		java.awt.Rectangle footer = layout.getFooter();
+		assertTrue(footer.y >= layout.getList().y + layout.getList().height);
+		assertTrue(footer.y + footer.height <= layout.getPanel().y + layout.getPanel().height);
+		SideList.Hit l = list.hitAt(footer.x + 5, footer.y + 5, layout);
+		assertEquals(SideList.Hit.FOOTER, l.getIndex());
+		assertEquals("All spots", l.getRow().getText());
+		assertEquals("Wiki", list.hitAt(footer.x + footer.width - 5, footer.y + 5, layout).getRow().getText());
+		// scrolled to the end, the buttons are still where they were
+		list.scroll(1000, layout);
+		assertEquals(footer, list.layout(MapPainter.buttons(1280, 800, false)).getFooter());
+		list.open("Shop", rows, "shop");
+		assertNull(list.layout(MapPainter.buttons(1280, 800, false)).getFooter());
+	}
 }

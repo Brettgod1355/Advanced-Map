@@ -344,6 +344,14 @@ final class MapSearch
 	 * The named icons that need an Agility level, as search entries with it ("Lvl 75 Agility", "Lvl 1/45 Agility" for
 	 * a course of two routes); none whose name is listed already (the Werewolf course is an entrance too).
 	 */
+	/** A monster's, NPC's or ground item's entry, as the search finds it. */
+	static Entry entry(Spawns.Creature creature)
+	{
+		Kind kind = creature.isItem() ? Kind.GROUND_ITEM : creature.isMonster() ? Kind.MONSTER : Kind.NPC;
+		String note = creature.getLevels().isEmpty() ? kind.label : "Lvl " + creature.getLevels();
+		return new Entry(kind, creature.getName(), note, creature.getTiles(), Collections.emptyList(), creature);
+	}
+
 	static List<Entry> agilityCourses(List<NamedIcons.Named> named, java.util.Set<String> listed)
 	{
 		List<Entry> out = new ArrayList<>();
@@ -604,9 +612,7 @@ final class MapSearch
 		});
 		for (Spawns.Creature creature : Spawns.all())
 		{
-			Kind kind = creature.isItem() ? Kind.GROUND_ITEM : creature.isMonster() ? Kind.MONSTER : Kind.NPC;
-			String note = creature.getLevels().isEmpty() ? kind.label : "Lvl " + creature.getLevels();
-			out.add(new Entry(kind, creature.getName(), note, creature.getTiles(), Collections.emptyList(), creature));
+			out.add(entry(creature));
 		}
 		for (Transports.Destination ring : Transports.network("Fairy ring"))
 		{

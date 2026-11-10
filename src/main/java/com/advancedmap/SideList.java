@@ -126,6 +126,8 @@ final class SideList
 		Rectangle close;
 		/** The rows, under the title. */
 		Rectangle list;
+		/** The two buttons kept under the rows, or null when the list has none. */
+		Rectangle footer;
 	}
 
 	/** What a press is on: nothing of the list, its close box, a row (by its index), or the list's other parts. */
@@ -135,6 +137,8 @@ final class SideList
 		static final int OUTSIDE = -3;
 		static final int CLOSE = -2;
 		static final int PANEL = -1;
+		/** One of the two buttons under the rows; its row says which. */
+		static final int FOOTER = -4;
 
 		int index;
 		/** The row hit, from the same reading of the list as its index: the list may be made again meanwhile. */
@@ -172,10 +176,13 @@ final class SideList
 		List<Laid> laid;
 		int height;
 		Object owner;
+		/** The buttons under the rows, left and right, which do not scroll with them; either may be null. */
+		Row left;
+		Row right;
 	}
 
 	private static final Content NOTHING = new Content("", Collections.singletonList(""), Collections.emptyList(),
-		Collections.emptyList(), 0, null);
+		Collections.emptyList(), 0, null, null, null);
 
 	private volatile Content content = NOTHING;
 	/** Scrolled by the wheel on the Swing thread, read when the list is drawn on the client thread. */
@@ -219,6 +226,12 @@ final class SideList
 	 */
 	void open(String title, List<Row> rows, Object owner)
 	{
+		open(title, rows, owner, null, null);
+	}
+
+	/** As above, with buttons kept under the rows (owner, 2026-11-10: "All spots" and "Wiki", pinned at the bottom). */
+	void open(String title, List<Row> rows, Object owner, Row left, Row right)
+	{
 		boolean again = owner != null && owner == content.owner;
 		List<Laid> laid = new ArrayList<>(rows.size());
 		int height = 0;
@@ -232,7 +245,8 @@ final class SideList
 		}
 		List<String> titleLines = wrap(title, WIDTH - PAD * 3 - CLOSE, FontManager.getRunescapeBoldFont());
 		content = new Content(title, titleLines.isEmpty() ? Collections.singletonList("") : titleLines,
-			Collections.unmodifiableList(new ArrayList<>(rows)), Collections.unmodifiableList(laid), height, owner);
+			Collections.unmodifiableList(new ArrayList<>(rows)), Collections.unmodifiableList(laid), height, owner, left,
+			right);
 		if (!again)
 		{
 			scroll = 0;
@@ -242,6 +256,11 @@ final class SideList
 	void close()
 	{
 		content = NOTHING;
+	}
+
+	String title()
+	{
+		return content.title;
 	}
 
 	List<Row> rows()
@@ -273,23 +292,39 @@ final class SideList
 	/** As above, with a title {@code header} pixels tall. */
 	static Layout layout(Map<MapPainter.Button, Rectangle> buttons, int content, int header)
 	{
+		return layout(buttons, content, header, false);
+	}
+
+	/** As above, with room for the two buttons under the rows when {@code footer}. */
+	static Layout layout(Map<MapPainter.Button, Rectangle> buttons, int content, int header, boolean footer)
+	{
+		int under = footer ? ROW + PAD : 0;
 		Rectangle area = buttons.get(MapPainter.Button.AREA);
 		Rectangle locate = buttons.get(MapPainter.Button.LOCATE);
 		Rectangle below = buttons.get(MapPainter.Button.FLOOR_UP);
 		int top = area.y + area.height + 6;
 		int room = Math.max(header + ROW * 3, below.y - 6 - top);
-		int height = Math.min(room, header + content + PAD / 2);
+		int height = Math.min(room + under, header + content + PAD / 2 + under);
 		int x = locate.x + locate.width - WIDTH;
 		Rectangle panel = new Rectangle(x, top, WIDTH, height);
 		Rectangle close = new Rectangle(x + WIDTH - PAD - CLOSE, top + (HEADER - CLOSE) / 2, CLOSE, CLOSE);
-		Rectangle list = new Rectangle(x, top + header, WIDTH, height - header - PAD / 2);
-		return new Layout(panel, close, list);
+		Rectangle list = new Rectangle(x, top + header, WIDTH, height - header - PAD / 2 - under);
+		return new Layout(panel, close, list, footer ? new Rectangle(x + PAD, top + height - ROW - PAD / 2,
+			WIDTH - PAD * 2, ROW) : null);
 	}
 
 	/** The list's layout for its rows and title now. */
 	Layout layout(Map<MapPainter.Button, Rectangle> buttons)
 	{
-		return layout(buttons, contentHeight(), headerHeight());
+		Content open = content;
+		return layout(buttons, open.height, headerHeight(), open.left != null || open.right != null);
+	}
+
+	/** The left and right buttons under the rows, a little apart. */
+	private static Rectangle half(Rectangle footer, boolean right)
+	{
+		int w = (footer.width - PAD) / 2;
+		return new Rectangle(right ? footer.x + footer.width - w : footer.x, footer.y, w, footer.height);
 	}
 
 	/** The title in lines no wider than the room beside the close box: a long name wraps, it is never cut short. */
@@ -315,11 +350,20 @@ final class SideList
 		{
 			return new Hit(Hit.CLOSE);
 		}
+		Rectangle footer = layout.getFooter();
+		Content open = content;
+		for (boolean right : new boolean[]{false, true})
+		{
+			Row button = right ? open.right : open.left;
+			if (footer != null && button != null && half(footer, right).contains(x, y))
+			{
+				return new Hit(Hit.FOOTER, button);
+			}
+		}
 		Rectangle list = layout.getList();
 		if (list.contains(x, y))
 		{
 			// one reading of the list for the rows and their heights: another thread may put a shorter one in
-			Content open = content;
 			int top = list.y - Math.min(scroll, Math.max(0, open.height - list.height));
 			List<Laid> shown = open.laid;
 			for (int i = 0; i < shown.size(); i++)
@@ -433,6 +477,18 @@ final class SideList
 			int top = list.y + (list.height - thumb) * offset(layout) / Math.max(1, all - list.height);
 			g.setColor(THUMB);
 			g.fillRoundRect(list.x + list.width - 5, top, 3, thumb, 3, 3);
+		}
+		Rectangle footer = layout.getFooter();
+		if (footer != null)
+		{
+			for (boolean right : new boolean[]{false, true})
+			{
+				Row button = right ? shown.right : shown.left;
+				if (button != null)
+				{
+					MapFilters.drawButton(g, half(footer, right), button.getText(), metrics, mouse);
+				}
+			}
 		}
 	}
 

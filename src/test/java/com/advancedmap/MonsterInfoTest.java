@@ -24,7 +24,7 @@ import static org.junit.Assert.assertTrue;
 public class MonsterInfoTest
 {
 	private static final String LINE = "Black dragon\t190-250\t21 (Melee), 50 (Dragonfire)\tSlash, Dragonfire\tAggressive"
-		+ "\t\tKonar, Nieve, Duradel, Krystilia\tWater spells 50%\tDragon bones; Black dragonhide\tDraconic visage 1/10,000\n";
+		+ "\t\tKonar, Nieve, Duradel, Krystilia\tWater spells 50%\n";
 
 	private static Map<String, MonsterInfo.Monster> parse(String text) throws Exception
 	{
@@ -37,8 +37,6 @@ public class MonsterInfoTest
 		MonsterInfo.Monster dragon = parse("# header\n" + LINE).get("Black dragon");
 		assertEquals("190-250", dragon.getHitpoints());
 		assertEquals("Konar, Nieve, Duradel, Krystilia", dragon.getMasters());
-		assertEquals(2, dragon.getAlways().size());
-		assertEquals("Draconic visage 1/10,000", dragon.getRare().get(0));
 		assertEquals("", dragon.getSlayerLevel());
 	}
 
@@ -47,23 +45,40 @@ public class MonsterInfoTest
 	{
 		MonsterInfo.Monster cow = parse("Cow\t8\t1\n").get("Cow");
 		assertEquals("8", cow.getHitpoints());
-		assertTrue(cow.getAlways().isEmpty() && cow.getRare().isEmpty() && cow.getMasters().isEmpty());
+		assertTrue(cow.getMasters().isEmpty());
 	}
 
 	@Test
-	public void theRowsTellTheStatsSlayerDropsThenTheWikiButton() throws Exception
+	public void theRowsTellTheStatsThenSlayer() throws Exception
 	{
 		List<SideList.Row> rows = MonsterInfo.rows(parse(LINE).get("Black dragon"));
-		assertEquals(4, rows.size());
+		assertEquals(2, rows.size());
 		assertEquals("Hitpoints 190-250", rows.get(0).getText());
 		assertTrue(rows.get(0).subLines().contains("Weak to water spells 50%"));
 		assertEquals("Slayer task", rows.get(1).getText());
-		assertEquals("Drops", rows.get(2).getText());
-		assertTrue(rows.get(2).subLines().contains("Draconic visage 1/10,000"));
-		SideList.Row wiki = rows.get(3);
-		assertNull(wiki.getPoint());
-		assertEquals("https://oldschool.runescape.wiki/w/Black_dragon",
-			((MonsterInfo.WikiPage) wiki.getTarget()).getUrl());
+	}
+
+	@Test
+	public void everyDropIsListedAlwaysThenItsOwnThenRareThenTheRest()
+	{
+		MonsterInfo.load();
+		List<SideList.Row> hydra = MonsterInfo.drops("Alchemical Hydra");
+		assertEquals("Always", hydra.get(0).getText());
+		assertEquals("Hydra bones x2", hydra.get(1).getText());
+		assertEquals("Always", hydra.get(1).getNote());
+		assertEquals("Its own drops", hydra.get(2).getText());
+		// rarest first among its own: the pet before the claw
+		List<String> names = new java.util.ArrayList<>();
+		hydra.forEach(row -> names.add(row.getText()));
+		assertTrue(names.indexOf("Ikkle Hydra") < names.indexOf("Hydra's claw"));
+		assertTrue(names.indexOf("Hydra's claw") < names.indexOf("Other drops"));
+		// every drop, not three, each with its rate
+		assertTrue(hydra.size() > 30);
+		hydra.forEach(row -> assertTrue(row.getText(), row.isHeading() || !row.getNote().isEmpty()));
+		List<String> demon = new java.util.ArrayList<>();
+		MonsterInfo.drops("Abyssal demon").forEach(row -> demon.add(row.getText()));
+		assertTrue(demon.indexOf("Abyssal whip") < demon.indexOf("Other drops"));
+		assertTrue(MonsterInfo.drops("No such monster").isEmpty());
 	}
 
 	@Test
@@ -124,7 +139,7 @@ public class MonsterInfoTest
 			for (MonsterInfo.Monster monster : MonsterInfo.parse(in).values())
 			{
 				for (String field : new String[]{monster.getMaxHit(), monster.getStyles(), monster.getTraits(),
-					monster.getWeakTo(), String.join(";", monster.getAlways()), String.join(";", monster.getRare())})
+					monster.getWeakTo()})
 				{
 					assertFalse(monster.getName() + ": " + field, field.contains("UNIQ"));
 				}

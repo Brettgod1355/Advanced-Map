@@ -268,12 +268,14 @@ the Node's place from the same wiki's "The Node" page (read on 2026-10-31). The 
 wiki's "Cave (Gemstone Crab)" and "Gemstone Crab" pages (read on 2026-10-31).
 
 `src/main/resources/com/advancedmap/monsters.tsv` (each searchable monster's hitpoints, max hit, attack styles, whether
-it is aggressive or poisonous, Slayer level, the Slayer masters who assign it, what it is weak to, the drops it always
-gives and up to three rare ones) is adapted from the same wiki's Bucket tables `infobox_monster` and `dropsline`, read
-on 2026-10-28, under the same license and credit. Changes: one line a monster, the versions of a monster merged
-(hitpoints and max hit as a range), weakness taken as its lowest defence bonus and its elemental weakness, drops cut
-to "Always" and the three rarest at 1/256 or rarer that are not shared tables (clue scrolls, herbs, seeds,
-Wilderness loot). The Wiki button beside a monster opens its wiki page in the browser; nothing is fetched.
+it is aggressive or poisonous, Slayer level, the Slayer masters who assign it, what it is weak to) and
+`src/main/resources/com/advancedmap/drops.tsv` (every drop of each searchable monster's main version, with its
+quantity and rate) are adapted from the same wiki's Bucket tables `infobox_monster` and `dropsline`, read on
+2026-10-28, under the same license and credit. Changes: one line a monster, the versions of a monster merged
+(hitpoints and max hit as a range), weakness taken as its lowest defence bonus and its elemental weakness; the rare
+drop table's own rows left out, and the drops put in an order of Advanced Map's: always, the rare ones only a few
+monsters drop, the other rare ones, then the rest most common first. The Wiki button under a monster's list opens its
+wiki page in the browser; nothing is fetched.
 
 ## Discord and GitHub logos (trademarks, used as link buttons)
 

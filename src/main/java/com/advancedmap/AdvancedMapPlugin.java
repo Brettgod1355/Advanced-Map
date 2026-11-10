@@ -1693,7 +1693,39 @@ public class AdvancedMapPlugin extends Plugin
 		{
 			layers.put(SearchSpots.layer(SEARCH_LAYER, mark.getTiles()));
 		}
-		sideList.open(SpawnMarks.label(mark), SpawnMarks.rows(mark), mark);
+		back = null;
+		// a monster's "All spots" and "Wiki" kept under its list (owner, 2026-11-10)
+		sideList.open(SpawnMarks.label(mark), SpawnMarks.rows(mark), mark,
+			mark.isMonster() ? new SideList.Row("All spots", null, null, null, null, mark) : null,
+			mark.isMonster() ? wikiButton(mark.getName()) : null);
+	}
+
+	/** What the list's Back button reopens: the monster's area a click opened before its All spots; null for none. */
+	private Runnable back;
+	/** The Back button's target. */
+	private static final Object BACK = new Object();
+
+	private static SideList.Row wikiButton(String monster)
+	{
+		return new SideList.Row("Wiki", null, null, null, null, new MonsterInfo.WikiPage(MonsterInfo.wikiUrl(monster)));
+	}
+
+	/** A monster's every spawn, as a search for it lists them, from its area's list; Back returns to that. */
+	private void showAllSpots(SpawnMarks.Mark mark)
+	{
+		for (Spawns.Creature creature : Spawns.all())
+		{
+			if (creature.isMonster() && creature.getName().equals(mark.getName()))
+			{
+				showSpots(MapSearch.entry(creature), player != null ? player : center());
+				back = () -> showSpawns(mark);
+				// the list again, now with its Back button
+				SideList.Row wiki = wikiButton(mark.getName());
+				sideList.open(sideList.title(), sideList.rows(), sideList.owner(),
+					new SideList.Row("Back", null, null, null, null, BACK), wiki);
+				return;
+			}
+		}
 	}
 
 	/** Lists what a shop sells and for how much, and any other shops beside it, which a click opens in turn. */
@@ -2410,24 +2442,8 @@ public class AdvancedMapPlugin extends Plugin
 			case GROUND_ITEM:
 			case FISHING:
 			case HUNTER:
-				List<SearchSpots.Area> areas = SearchSpots.areas(entry.getPoints(), from, labelsNow(),
-					entry.getCreature() != null ? entry.getCreature().getFloors() : Collections.emptyMap());
-				nearest = areas.get(0).getPoint();
-				messages.put(SearchSpots.layer(SEARCH_LAYER, entry.getPoints()));
-				List<SideList.Row> rows = new ArrayList<>();
-				MonsterInfo.Monster monster = entry.getKind() == MapSearch.Kind.MONSTER ? MonsterInfo.of(entry.getName())
-					: null;
-				if (monster != null)
-				{
-					// what the monster is like first, then where it is
-					rows.addAll(MonsterInfo.rows(monster));
-					rows.add(SideList.Row.heading("Locations (nearest first)"));
-				}
-				rows.addAll(SearchSpots.rows(areas, entry.getKind() == MapSearch.Kind.FISHING
-					|| entry.getKind() == MapSearch.Kind.GROUND_ITEM ? "spot"
-					: entry.getKind() == MapSearch.Kind.HUNTER ? "area" : "spawn"));
-				sideList.open(entry.getName() + (entry.getKind() == MapSearch.Kind.MONSTER
-					? " (" + entry.getNote().toLowerCase(java.util.Locale.ROOT) + ")" : ""), rows, entry);
+				back = null;
+				nearest = showSpots(entry, from);
 				break;
 			default:
 				if (entry.getPoints().size() > 1)
@@ -2437,6 +2453,36 @@ public class AdvancedMapPlugin extends Plugin
 				break;
 		}
 		goTo(nearest, SEARCH_ZOOM);
+	}
+
+	/**
+	 * A monster's, NPC's or other spawn's areas, nearest first, with every spawn marked: a monster's details, then
+	 * where it is (to click through), then its drops, with the Wiki button kept under them. The nearest spawn.
+	 */
+	private WorldPoint showSpots(MapSearch.Entry entry, WorldPoint from)
+	{
+		List<SearchSpots.Area> areas = SearchSpots.areas(entry.getPoints(), from, labelsNow(),
+			entry.getCreature() != null ? entry.getCreature().getFloors() : Collections.emptyMap());
+		messages.put(SearchSpots.layer(SEARCH_LAYER, entry.getPoints()));
+		List<SideList.Row> rows = new ArrayList<>();
+		boolean isMonster = entry.getKind() == MapSearch.Kind.MONSTER;
+		MonsterInfo.Monster monster = isMonster ? MonsterInfo.of(entry.getName()) : null;
+		if (monster != null)
+		{
+			// what the monster is like first, then where it is
+			rows.addAll(MonsterInfo.rows(monster));
+			rows.add(SideList.Row.heading("Locations (nearest first)"));
+		}
+		rows.addAll(SearchSpots.rows(areas, entry.getKind() == MapSearch.Kind.FISHING
+			|| entry.getKind() == MapSearch.Kind.GROUND_ITEM ? "spot"
+			: entry.getKind() == MapSearch.Kind.HUNTER ? "area" : "spawn"));
+		if (isMonster)
+		{
+			rows.addAll(MonsterInfo.drops(entry.getName()));
+		}
+		sideList.open(entry.getName() + (isMonster ? " (" + entry.getNote().toLowerCase(java.util.Locale.ROOT) + ")"
+			: ""), rows, entry, null, isMonster ? wikiButton(entry.getName()) : null);
+		return areas.get(0).getPoint();
 	}
 
 	/** Every place of a kind of map icon, nearest first: named by the game's nearest place name, with how far. */
@@ -2740,7 +2786,7 @@ public class AdvancedMapPlugin extends Plugin
 			selection = null;
 			showTransport(null);
 		}
-		else if (hit.getIndex() >= 0)
+		else if (hit.getIndex() >= 0 || hit.getIndex() == SideList.Hit.FOOTER)
 		{
 			SideList.Row row = hit.getRow();
 			if (row.getPoint() != null)
@@ -2754,6 +2800,14 @@ public class AdvancedMapPlugin extends Plugin
 				showShop((Shops.Shop) row.getTarget());
 			}
 
+			else if (row.getTarget() instanceof SpawnMarks.Mark)
+			{
+				showAllSpots((SpawnMarks.Mark) row.getTarget());
+			}
+			else if (row.getTarget() == BACK && back != null)
+			{
+				back.run();
+			}
 			else if (row.getTarget() instanceof MonsterInfo.WikiPage)
 			{
 				LinkBrowser.browse(((MonsterInfo.WikiPage) row.getTarget()).getUrl());

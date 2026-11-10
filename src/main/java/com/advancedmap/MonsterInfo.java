@@ -22,9 +22,9 @@ import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * What a searched monster is like, from {@code monsters.tsv} (the OSRS Wiki's monster and drop tables; see
- * THIRD_PARTY_NOTICES.md): hitpoints, max hit, how it attacks, the Slayer level and masters, what it is weak to, its
- * sure and rare drops. Shown at the top of the monster's list of spawn areas, with a button to its wiki page.
+ * What a searched monster is like, from {@code monsters.tsv} and {@code drops.tsv} (the OSRS Wiki's monster and drop
+ * tables; see THIRD_PARTY_NOTICES.md): hitpoints, max hit, how it attacks, the Slayer level and masters, what it is
+ * weak to, and every drop with its rate.
  */
 @Slf4j
 final class MonsterInfo
@@ -32,7 +32,9 @@ final class MonsterInfo
 	static final String WIKI = "https://oldschool.runescape.wiki/w/";
 	private static final Color STATS = new Color(0xC8C2B0);
 	private static final Color SLAYER = new Color(0xE0B060);
-	private static final Color DROPS = new Color(0x9CCB7A);
+	/** The headings over a monster's drops, by the group {@code drops.tsv} gives each (in that order). */
+	private static final Map<String, String> GROUPS = Map.of("A", "Always", "S", "Its own drops", "R", "Rare drops",
+		"C", "Other drops");
 	/** The widest a line under a row may be: the list's width less its margins. */
 	private static final int LINE_WIDTH = SideList.WIDTH - 24;
 
@@ -49,8 +51,6 @@ final class MonsterInfo
 		String slayerLevel;
 		String masters;
 		String weakTo;
-		List<String> always;
-		List<String> rare;
 	}
 
 	/** A row's target: a click opens this wiki page in the browser. */
@@ -61,6 +61,8 @@ final class MonsterInfo
 	}
 
 	private static volatile Map<String, Monster> monsters = Collections.emptyMap();
+	/** Each monster's drops in the order shown: group, item, rate. */
+	private static volatile Map<String, List<String[]>> drops = Collections.emptyMap();
 
 	private MonsterInfo()
 	{
@@ -75,6 +77,15 @@ final class MonsterInfo
 			{
 				monsters = parse(in);
 			}
+			Map<String, List<String[]>> read = new HashMap<>();
+			for (String[] row : DataFiles.rows("drops.tsv"))
+			{
+				if (row.length > 3)
+				{
+					read.computeIfAbsent(row[0], k -> new ArrayList<>()).add(row);
+				}
+			}
+			drops = read;
 		}
 		catch (IOException | RuntimeException e)
 		{
@@ -87,19 +98,14 @@ final class MonsterInfo
 		Map<String, Monster> out = new HashMap<>();
 		for (String[] row : DataFiles.rows(in))
 		{
-			String[] f = Arrays.copyOf(row, 10);
+			String[] f = Arrays.copyOf(row, 8);
 			for (int i = 0; i < f.length; i++)
 			{
 				f[i] = f[i] == null ? "" : f[i];
 			}
-			out.put(f[0], new Monster(f[0], f[1], f[2], f[3], f[4], f[5], f[6], f[7], list(f[8]), list(f[9])));
+			out.put(f[0], new Monster(f[0], f[1], f[2], f[3], f[4], f[5], f[6], f[7]));
 		}
 		return Collections.unmodifiableMap(out);
-	}
-
-	private static List<String> list(String field)
-	{
-		return field.isEmpty() ? Collections.emptyList() : Collections.unmodifiableList(Arrays.asList(field.split("; ")));
 	}
 
 	/** The monster of that name, or null when there is nothing known of it. */
@@ -151,18 +157,26 @@ final class MonsterInfo
 				monster.getMasters().isEmpty() ? Collections.emptyList()
 					: Collections.singletonList("Assigned by " + monster.getMasters()), SLAYER));
 		}
-		List<String> drops = new ArrayList<>();
-		if (!monster.getAlways().isEmpty())
+		return rows;
+	}
+
+	/**
+	 * Every drop of a monster with its rate, under a heading for each group (owner, 2026-11-10): what it always drops,
+	 * what only it and a few others drop, the rare ones, then the rest, most common first.
+	 */
+	static List<SideList.Row> drops(String name)
+	{
+		List<SideList.Row> rows = new ArrayList<>();
+		String group = null;
+		for (String[] drop : drops.getOrDefault(name, Collections.emptyList()))
 		{
-			drops.add("Always: " + String.join(", ", monster.getAlways()));
+			if (!drop[1].equals(group))
+			{
+				group = drop[1];
+				rows.add(SideList.Row.heading(GROUPS.getOrDefault(group, "Drops")));
+			}
+			rows.add(new SideList.Row(drop[2], drop[3], null, null, null, null));
 		}
-		drops.addAll(monster.getRare());
-		if (!drops.isEmpty())
-		{
-			rows.add(row("Drops", drops, DROPS));
-		}
-		rows.add(new SideList.Row("Open its wiki page", "Wiki", null, null, null,
-			new WikiPage(wikiUrl(monster.getName()))));
 		return rows;
 	}
 

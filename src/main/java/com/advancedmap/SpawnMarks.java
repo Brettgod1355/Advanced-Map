@@ -258,6 +258,10 @@ final class SpawnMarks
 		int n = mark.getTiles().size();
 		rows.add(SideList.Row.heading(n + (mark.isMonster() ? n == 1 ? " spawn" : " spawns" : n == 1 ? " spot" : " spots")
 			+ " here"));
+		if (mark.isMonster())
+		{
+			rows.addAll(MonsterInfo.drops(mark.getName()));
+		}
 		return rows;
 	}
 

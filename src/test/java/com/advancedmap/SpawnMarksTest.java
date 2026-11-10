@@ -106,7 +106,11 @@ public class SpawnMarksTest
 		SpawnMarks.Mark egg = marks.stream().filter(m -> !m.isMonster()).findFirst().get();
 		List<SideList.Row> monster = SpawnMarks.rows(goblin);
 		assertTrue(monster.size() > 1);
-		assertEquals("2 spawns here", monster.get(monster.size() - 1).getText());
+		// how many spawns the mark stands for, then the goblin's every drop under it
+		List<String> texts = new java.util.ArrayList<>();
+		monster.forEach(row -> texts.add(row.getText()));
+		assertTrue(texts.indexOf("2 spawns here") < texts.indexOf("Always"));
+		assertTrue(texts.contains("Goblin skull"));
 		assertEquals("2 spots here", SpawnMarks.rows(egg).get(0).getText());
 	}
 
