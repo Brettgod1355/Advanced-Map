@@ -58,8 +58,7 @@ public interface AdvancedMapConfig extends Config
 		name = "Zoom",
 		description = "The zoom level things show from: 1 is the furthest out, " + MapViewport.LEVELS + " the closest."
 			+ " \"Show zoom level\" puts the level you are at beside the coordinates.",
-		position = 19,
-		closedByDefault = true
+		position = 19
 	)
 	String ZOOM = "zoom";
 
