@@ -189,7 +189,7 @@ public class MapInputTest
 	public void anOpenMapTakesTheClicksInItsBoxOnlyWhileTheGameIsLoggedIn()
 	{
 		Stub plugin = new Stub();
-		MapInput input = new MapInput(plugin, () -> 1280, () -> 800);
+		MapInput input = new MapInput(plugin, () -> 1280, () -> 800, at -> at);
 		MouseEvent inside = press(400, 300);
 		input.mousePressed(inside);
 		assertTrue("a press on the map is the map's", inside.isConsumed());
@@ -215,7 +215,7 @@ public class MapInputTest
 	public void aKeyReleaseIsTheMapsOnlyWhenItsPressWas()
 	{
 		Stub plugin = new Stub();
-		MapInput input = new MapInput(plugin, () -> 1280, () -> 800);
+		MapInput input = new MapInput(plugin, () -> 1280, () -> 800, at -> at);
 		// an arrow held to turn the camera, then the search bar clicked, then the arrow let go: the game had the
 		// press, so it must get the release, or it keeps turning
 		KeyEvent pressed = key(KeyEvent.KEY_PRESSED, KeyEvent.VK_LEFT, 0);
@@ -244,7 +244,7 @@ public class MapInputTest
 	{
 		Stub plugin = new Stub();
 		plugin.typing = true;
-		MapInput input = new MapInput(plugin, () -> 1280, () -> 800);
+		MapInput input = new MapInput(plugin, () -> 1280, () -> 800, at -> at);
 		// Windows reports AltGr as Ctrl then Alt: the Ctrl press is a shortcut (the game's), so its release is too
 		KeyEvent ctrl = key(KeyEvent.KEY_PRESSED, KeyEvent.VK_CONTROL, KeyEvent.CTRL_DOWN_MASK);
 		input.keyPressed(ctrl);
@@ -258,7 +258,7 @@ public class MapInputTest
 	public void onlyWhatHappensOnTheMapHasItDrawnAgainAtOnce()
 	{
 		Stub plugin = new Stub();
-		MapInput input = new MapInput(plugin, () -> 1280, () -> 800);
+		MapInput input = new MapInput(plugin, () -> 1280, () -> 800, at -> at);
 		input.mouseMoved(move(10, 10));
 		input.mouseMoved(move(400, 300));
 		input.mouseEntered(move(400, 300));
@@ -279,7 +279,7 @@ public class MapInputTest
 	{
 		Stub plugin = new Stub();
 		plugin.typing = true;
-		MapInput input = new MapInput(plugin, () -> 1280, () -> 800);
+		MapInput input = new MapInput(plugin, () -> 1280, () -> 800, at -> at);
 		// RuneLite's Key Remapping plugin runs first: "a" becomes Left with no character, and the typed event never comes
 		KeyEvent a = remapped(KeyEvent.VK_A, 0, KeyEvent.VK_LEFT);
 		input.keyPressed(a);
@@ -305,7 +305,7 @@ public class MapInputTest
 	public void aHeldKeyStaysWhereItsFirstPressWentThroughItsRepeats()
 	{
 		Stub plugin = new Stub();
-		MapInput input = new MapInput(plugin, () -> 1280, () -> 800);
+		MapInput input = new MapInput(plugin, () -> 1280, () -> 800, at -> at);
 		// Left held to turn the camera, the search bar clicked meanwhile: the repeats the OS sends while it is held are
 		// the game's too, and so is the release, else the camera keeps turning
 		input.keyPressed(key(KeyEvent.KEY_PRESSED, KeyEvent.VK_LEFT, 0));
@@ -342,7 +342,7 @@ public class MapInputTest
 	{
 		Stub plugin = new Stub();
 		plugin.typing = true;
-		MapInput input = new MapInput(plugin, () -> 1280, () -> 800);
+		MapInput input = new MapInput(plugin, () -> 1280, () -> 800, at -> at);
 		// Shift held for a capital, another window takes the focus, Shift released there: the map would otherwise eat
 		// the release of the next Shift the game is given
 		input.keyPressed(key(KeyEvent.KEY_PRESSED, KeyEvent.VK_SHIFT, KeyEvent.SHIFT_DOWN_MASK));
@@ -360,7 +360,7 @@ public class MapInputTest
 	public void theReleaseOfAPressTheMapTookIsTheMapsEvenAfterTheMapClosed()
 	{
 		Stub plugin = new Stub();
-		MapInput input = new MapInput(plugin, () -> 1280, () -> 800);
+		MapInput input = new MapInput(plugin, () -> 1280, () -> 800, at -> at);
 		input.mousePressed(press(400, 300));
 		plugin.open = false;
 		MouseEvent released = new MouseEvent(SOURCE, MouseEvent.MOUSE_RELEASED, 0, 0, 400, 300, 1, false,
@@ -379,7 +379,7 @@ public class MapInputTest
 	{
 		Stub plugin = new Stub();
 		plugin.typing = true;
-		MapInput input = new MapInput(plugin, () -> 1280, () -> 800);
+		MapInput input = new MapInput(plugin, () -> 1280, () -> 800, at -> at);
 		// camera on ";" and "'" (IJKL layouts), Key Remapping's own default F11 and F12 on "-" and "=", Control on "`",
 		// Space on Space: all typed; an accented letter of another layout by its character; Shift and a key with
 		// no character (a numpad key, an F key) are not guessed at
@@ -400,7 +400,7 @@ public class MapInputTest
 	public void aHeldKeysTypedRepeatsFollowItsPress()
 	{
 		Stub plugin = new Stub();
-		MapInput input = new MapInput(plugin, () -> 1280, () -> 800);
+		MapInput input = new MapInput(plugin, () -> 1280, () -> 800, at -> at);
 		// Space held in the game (a dialogue), then the Filters list opened while it is held
 		KeyEvent space = new KeyEvent(SOURCE, KeyEvent.KEY_PRESSED, 0, 0, KeyEvent.VK_SPACE, ' ');
 		input.keyPressed(space);
@@ -446,7 +446,7 @@ public class MapInputTest
 	public void aButtonPressedOnTheGameWhileAnotherHoldsTheMapKeepsItsOwnRelease()
 	{
 		Stub plugin = new Stub();
-		MapInput input = new MapInput(plugin, () -> 1280, () -> 800);
+		MapInput input = new MapInput(plugin, () -> 1280, () -> 800, at -> at);
 		// the left button drags the map; the right button clicks an inventory item beside the box meanwhile: the
 		// right release is the game's, the left one the map's, whichever comes first
 		assertTrue(input.mousePressed(pressWith(400, 300, MouseEvent.BUTTON1, MouseEvent.BUTTON1_DOWN_MASK)).isConsumed());
@@ -478,7 +478,7 @@ public class MapInputTest
 	{
 		Stub plugin = new Stub();
 		plugin.typing = true;
-		MapInput input = new MapInput(plugin, () -> 1280, () -> 800);
+		MapInput input = new MapInput(plugin, () -> 1280, () -> 800, at -> at);
 		// Shift held in the search bar when the connection drops: its release lands on the login screen, which this
 		// listener is not told of, so it would have eaten the first Shift of the next session
 		KeyEvent held = key(KeyEvent.KEY_PRESSED, KeyEvent.VK_SHIFT, KeyEvent.SHIFT_DOWN_MASK);
@@ -499,7 +499,7 @@ public class MapInputTest
 	public void aPressWhoseReleaseWentToAnotherWindowIsForgotten()
 	{
 		Stub plugin = new Stub();
-		MapInput input = new MapInput(plugin, () -> 1280, () -> 800);
+		MapInput input = new MapInput(plugin, () -> 1280, () -> 800, at -> at);
 		// the frame grabbed, then another window takes the focus with the button down: the release goes there
 		assertTrue(input.mousePressed(press(400, 102)).isConsumed());
 		assertTrue(plugin.box.isGrabbed());
@@ -518,7 +518,7 @@ public class MapInputTest
 	public void aRightClickOnTheMapDuringADragNeitherEndsTheDragNorClicks()
 	{
 		Stub plugin = new Stub();
-		MapInput input = new MapInput(plugin, () -> 1280, () -> 800);
+		MapInput input = new MapInput(plugin, () -> 1280, () -> 800, at -> at);
 		input.mousePressed(pressWith(400, 300, MouseEvent.BUTTON1, MouseEvent.BUTTON1_DOWN_MASK));
 		assertTrue(plugin.drag);
 		input.mousePressed(pressWith(402, 301, MouseEvent.BUTTON3, MouseEvent.BUTTON1_DOWN_MASK | MouseEvent.BUTTON3_DOWN_MASK));
@@ -536,7 +536,7 @@ public class MapInputTest
 	public void theGameSeesThePointerLeaveItsOpenMenu()
 	{
 		Stub plugin = new Stub();
-		MapInput input = new MapInput(plugin, () -> 1280, () -> 800);
+		MapInput input = new MapInput(plugin, () -> 1280, () -> 800, at -> at);
 		MouseEvent onTheBox = move(400, 300);
 		input.mouseMoved(onTheBox);
 		assertTrue("over the box, moves are the map's", onTheBox.isConsumed());
@@ -557,7 +557,7 @@ public class MapInputTest
 	{
 		Stub plugin = new Stub();
 		plugin.typing = true;
-		MapInput input = new MapInput(plugin, () -> 1280, () -> 800);
+		MapInput input = new MapInput(plugin, () -> 1280, () -> 800, at -> at);
 		KeyEvent letter = key(KeyEvent.KEY_PRESSED, KeyEvent.VK_A, 0);
 		input.keyPressed(letter);
 		assertTrue("a letter is the search's", letter.isConsumed());
@@ -574,5 +574,31 @@ public class MapInputTest
 		// Key Remapping turns 1 into F1 outside the game's chat: in the search it is still a 1
 		input.keyPressed(remapped(KeyEvent.VK_1, 0, KeyEvent.VK_F1));
 		assertEquals("1", plugin.typed.toString());
+	}
+
+	@Test
+	public void stretchedTheMapReadsTheGamesPositionAndPassesTheEventOnAsItCame()
+	{
+		// the window twice the game's size: the map hears the mouse ahead of Stretched Mode (owner, 2026-11-11)
+		java.awt.Dimension stretched = new java.awt.Dimension(2560, 1600);
+		java.awt.Dimension real = new java.awt.Dimension(1280, 800);
+		assertEquals(new java.awt.Point(500, 300), MapInput.unstretched(new java.awt.Point(1000, 600), stretched, real));
+		// not stretched, or not known yet: the same point
+		assertEquals(new java.awt.Point(7, 9), MapInput.unstretched(new java.awt.Point(7, 9), real, real));
+		assertEquals(new java.awt.Point(7, 9), MapInput.unstretched(new java.awt.Point(7, 9), null, real));
+
+		Stub plugin = new Stub();
+		MapInput input = new MapInput(plugin, () -> 1280, () -> 800, at -> MapInput.unstretched(at, stretched, real));
+		// 1000, 600 on the window is 500, 300 in the game, on the map (its box is 100-700 by 100-500)
+		MouseEvent onMap = press(1000, 600);
+		assertTrue(input.mousePressed(onMap) == onMap);
+		assertTrue("the map's: kept from the game", onMap.isConsumed());
+		assertEquals("passed on unchanged, for Stretched Mode to turn into the game's", 1000, onMap.getX());
+		input.mouseReleased(releaseWith(1000, 600, MouseEvent.BUTTON1));
+		// 180, 180 on the window is 90, 90 in the game: beside the box, though 180, 180 itself would be on it
+		MouseEvent beside = press(180, 180);
+		input.mousePressed(beside);
+		assertFalse("the game's", beside.isConsumed());
+		assertEquals(1, plugin.outsideClicks);
 	}
 }

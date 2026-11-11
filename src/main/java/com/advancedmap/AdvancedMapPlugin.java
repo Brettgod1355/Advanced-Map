@@ -293,7 +293,9 @@ public class AdvancedMapPlugin extends Plugin
 		overlay = new MapOverlay(client, this, painter);
 		gameBox = new GameBox(config.gameBounds(), config.gameMaximized());
 		painter.setGameMaximized(gameBox.isMaximized());
-		input = new MapInput(this, client::getCanvasWidth, client::getCanvasHeight);
+		input = new MapInput(this, client::getCanvasWidth, client::getCanvasHeight,
+			at -> client.isStretchedEnabled() ? MapInput.unstretched(at, client.getStretchedDimensions(),
+				client.getRealDimensions()) : at);
 		hotkey = new HotkeyListener(() -> config.toggleKey())
 		{
 			@Override
@@ -312,10 +314,7 @@ public class AdvancedMapPlugin extends Plugin
 			.build();
 
 		overlayManager.add(overlay);
-		// after the listeners already there, not first: Stretched Mode's listener goes first to turn the window's mouse
-		// position into the game's, and a map ahead of it clicked and zoomed in the wrong place (owner, 2026-11-11)
-		mouseManager.registerMouseListener(input);
-		mouseManager.registerMouseWheelListener(input);
+		hearMouseFirst();
 		keyManager.registerKeyListener(input);
 		keyManager.registerKeyListener(hotkey);
 		if (config.sidebarButton())
@@ -750,7 +749,10 @@ public class AdvancedMapPlugin extends Plugin
 		return moved;
 	}
 
-	/** A plugin was turned on or off: "Route here" follows whether the chosen routing plugin is running. */
+	/**
+	 * A plugin was turned on or off: "Route here" follows whether the chosen routing plugin is running, and the map
+	 * goes back to the front of the mouse's line ahead of one that put itself there (Stretched Mode does).
+	 */
 	@Subscribe
 	public void onPluginChanged(PluginChanged event)
 	{
@@ -758,6 +760,24 @@ public class AdvancedMapPlugin extends Plugin
 		{
 			settings = readSettings();
 		}
+		if (started && event.isLoaded() && input != null)
+		{
+			hearMouseFirst();
+		}
+	}
+
+	/**
+	 * The map first in the mouse's line: RuneLite stops at the first listener that keeps a click, and a plugin ahead of
+	 * the map took clicks on it where its own clickable area lay under the map (issue #3: the floor-down button over the
+	 * game's tabs). Clicks outside the box go on untouched. Ahead of Stretched Mode too, so the map turns the window's
+	 * position into the game's itself ({@link MapInput#unstretched}) and passes the event on as it came.
+	 */
+	private void hearMouseFirst()
+	{
+		mouseManager.unregisterMouseListener(input);
+		mouseManager.unregisterMouseWheelListener(input);
+		mouseManager.registerMouseListener(0, input);
+		mouseManager.registerMouseWheelListener(0, input);
 	}
 
 	private MapSettings readSettings()

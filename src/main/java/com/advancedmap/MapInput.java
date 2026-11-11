@@ -5,12 +5,16 @@
  */
 package com.advancedmap;
 
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.IntSupplier;
+import java.util.function.UnaryOperator;
 import javax.swing.SwingUtilities;
 import net.runelite.client.input.KeyListener;
 import net.runelite.client.input.MouseListener;
@@ -51,11 +55,57 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 	/** The code of the last press seen: the typed event that follows a press has no code of its own. */
 	private int lastPressed = KeyEvent.VK_UNDEFINED;
 
-	MapInput(AdvancedMapPlugin plugin, IntSupplier width, IntSupplier height)
+	/** The window's mouse position as the game's: the same point unless Stretched Mode stretches the game. */
+	private final UnaryOperator<Point> toGame;
+
+	MapInput(AdvancedMapPlugin plugin, IntSupplier width, IntSupplier height, UnaryOperator<Point> toGame)
 	{
 		this.plugin = plugin;
 		this.width = width;
 		this.height = height;
+		this.toGame = toGame;
+	}
+
+	/**
+	 * A point on the stretched window where it is on the game, by Stretched Mode's own sum (RuneLite's
+	 * {@code TranslateMouseListener}): the map hears the mouse ahead of it (see {@code AdvancedMapPlugin.hearMouseFirst}).
+	 */
+	static Point unstretched(Point at, Dimension stretched, Dimension real)
+	{
+		if (stretched == null || real == null || stretched.width <= 0 || stretched.height <= 0 || real.width <= 0
+			|| real.height <= 0)
+		{
+			return at;
+		}
+		return new Point((int) (at.x / (stretched.width / real.getWidth())),
+			(int) (at.y / (stretched.height / real.getHeight())));
+	}
+
+	/** The event where the game has it: the map reads this one, and the one it was given goes on as it came. */
+	private MouseEvent inGame(MouseEvent e)
+	{
+		Point at = toGame.apply(e.getPoint());
+		if (at.x == e.getX() && at.y == e.getY())
+		{
+			return e;
+		}
+		MouseEvent seen = new MouseEvent((Component) e.getSource(), e.getID(), e.getWhen(), e.getModifiersEx(), at.x,
+			at.y, e.getClickCount(), e.isPopupTrigger(), e.getButton());
+		if (e.isConsumed())
+		{
+			seen.consume();
+		}
+		return seen;
+	}
+
+	/** The event as it came, kept from the game and the other plugins when the map kept the one it read. */
+	private static <E extends MouseEvent> E passOn(E given, MouseEvent seen)
+	{
+		if (seen.isConsumed())
+		{
+			given.consume();
+		}
+		return given;
 	}
 
 	/**
@@ -90,6 +140,48 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 
 	@Override
 	public MouseEvent mousePressed(MouseEvent e)
+	{
+		return passOn(e, pressed(inGame(e)));
+	}
+
+	@Override
+	public MouseEvent mouseDragged(MouseEvent e)
+	{
+		return passOn(e, dragged(inGame(e)));
+	}
+
+	@Override
+	public MouseEvent mouseReleased(MouseEvent e)
+	{
+		return passOn(e, released(inGame(e)));
+	}
+
+	@Override
+	public MouseEvent mouseClicked(MouseEvent e)
+	{
+		return passOn(e, swallow(inGame(e)));
+	}
+
+	@Override
+	public MouseEvent mouseEntered(MouseEvent e)
+	{
+		return e;
+	}
+
+	@Override
+	public MouseEvent mouseExited(MouseEvent e)
+	{
+		mouse = null;
+		return e;
+	}
+
+	@Override
+	public MouseEvent mouseMoved(MouseEvent e)
+	{
+		return passOn(e, moved(inGame(e)));
+	}
+
+	private MouseEvent pressed(MouseEvent e)
 	{
 		if (!plugin.mapTakesInput())
 		{
@@ -152,8 +244,7 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 		return e;
 	}
 
-	@Override
-	public MouseEvent mouseDragged(MouseEvent e)
+	private MouseEvent dragged(MouseEvent e)
 	{
 		mouse = e.getPoint();
 		if (!plugin.mapTakesInput() || heldButtons == 0)
@@ -184,8 +275,7 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 		return e;
 	}
 
-	@Override
-	public MouseEvent mouseReleased(MouseEvent e)
+	private MouseEvent released(MouseEvent e)
 	{
 		// a release names its button; one that names none (never seen from AWT) lets go of all the map holds
 		int bit = e.getButton() == MouseEvent.NOBUTTON ? heldButtons : 1 << e.getButton();
@@ -233,32 +323,12 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 		return e;
 	}
 
-	@Override
-	public MouseEvent mouseClicked(MouseEvent e)
-	{
-		return swallow(e);
-	}
-
-	@Override
-	public MouseEvent mouseEntered(MouseEvent e)
-	{
-		return e;
-	}
-
-	@Override
-	public MouseEvent mouseExited(MouseEvent e)
-	{
-		mouse = null;
-		return e;
-	}
-
 	/**
 	 * A move only moves the pointer the map draws with at its next redraw (every 50 ms): nothing is drawn at once. While
 	 * the game's right-click menu is open the game sees the pointer go onto the box too: it closes its menu itself once
 	 * the pointer has left it, which it never saw happen when the move stopped at the box.
 	 */
-	@Override
-	public MouseEvent mouseMoved(MouseEvent e)
+	private MouseEvent moved(MouseEvent e)
 	{
 		mouse = e.getPoint();
 		if (heldButtons == 0 && plugin.gameMenuOpen())
@@ -275,7 +345,9 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 		{
 			return e;
 		}
-		GameBox.Part part = partAt(e);
+		// where the game has the wheel (see inGame); the event itself goes on as it came
+		Point at = toGame.apply(e.getPoint());
+		GameBox.Part part = plugin.gameBox().partAt(at.x, at.y, width.getAsInt(), height.getAsInt());
 		if (part == GameBox.Part.OUTSIDE)
 		{
 			// the game's own camera zoom
@@ -283,8 +355,8 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 		}
 		plugin.touched();
 		java.awt.Rectangle map = map();
-		int x = e.getX() - map.x;
-		int y = e.getY() - map.y;
+		int x = at.x - map.x;
+		int y = at.y - map.y;
 		if (part == GameBox.Part.MAP && !plugin.wheelPanels(x, y, e.getPreciseWheelRotation(), map.width, map.height,
 			false))
 		{
