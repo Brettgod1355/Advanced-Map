@@ -132,4 +132,22 @@ public class MapViewportTest
 		assertEquals(0.75, MapViewport.zoomOf(6), 0.04);
 		assertEquals(2.5, MapViewport.zoomOf(11), 0.1);
 	}
+
+	@Test
+	public void aSettingSwitchesWhereTheBarStartsSayingItsLevel()
+	{
+		// owner, 2026-11-11: scrolling in from far out, a notch reached 7.1 pixels a tile, which the bar calls
+		// "Zoom 16"; monsters set to show from 16 stayed hidden there until "Zoom 17" (they switched at 16's own zoom)
+		assertEquals(16, MapViewport.levelOf(MapViewport.MIN_ZOOM * Math.pow(MapInput.WHEEL_STEP, 15)));
+		assertTrue(MapViewport.MIN_ZOOM * Math.pow(MapInput.WHEEL_STEP, 15) >= MapViewport.fromLevel(16));
+		for (int level = 2; level <= MapViewport.LEVELS; level++)
+		{
+			double from = MapViewport.fromLevel(level);
+			assertEquals(level, MapViewport.levelOf(from * 1.000001));
+			assertEquals(level - 1, MapViewport.levelOf(from * 0.999999));
+			assertTrue(from < MapViewport.zoomOf(level));
+		}
+		// level 1 is every zoom there is
+		assertTrue(MapViewport.fromLevel(1) < MapViewport.MIN_ZOOM);
+	}
 }

@@ -34,7 +34,7 @@ import net.runelite.api.coords.WorldPoint;
 final class SpawnMarks
 {
 	/** Shown from this zoom in (pixels a tile): near the closest, where a town fills the map. */
-	static volatile double ZOOM = MapViewport.zoomOf(16);
+	static volatile double ZOOM = MapViewport.fromLevel(16);
 	/**
 	 * A monster's icon and an item's picture, in pixels, at Monster size and Ground item size 100%: the game's own map
 	 * icons' size (owner, 2026-11-09: 24 looked "quite a bit larger than the default icons").

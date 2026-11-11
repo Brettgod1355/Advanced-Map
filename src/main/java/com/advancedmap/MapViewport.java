@@ -35,15 +35,24 @@ final class MapViewport
 		return 1 + (int) Math.round(Math.log(zoom / MIN_ZOOM) / Math.log(STEP));
 	}
 
+	/**
+	 * The zoom from which {@link #levelOf} says a level: halfway from the level below. A setting switches there, so a
+	 * thing set to show from 16 shows whenever the bar says "Zoom 16", however the wheel came to it.
+	 */
+	static double fromLevel(int level)
+	{
+		return MIN_ZOOM * Math.pow(STEP, Math.max(1, Math.min(LEVELS, level)) - 1.5);
+	}
+
 	/** The zoom levels things show from, as the Zoom settings have them; read again whenever a setting changes. */
 	static void apply(AdvancedMapConfig config)
 	{
-		MapIcons.ICON_ZOOM = zoomOf(config.zoomIcons());
-		SpawnMarks.ZOOM = zoomOf(config.zoomSpawns());
-		MapLabels.TOWN_ZOOM = zoomOf(config.zoomTowns());
-		MapLabels.PLACE_ZOOM = zoomOf(config.zoomPlaces());
-		MapLabels.KINGDOM_ZOOM_MAX = zoomOf(config.zoomKingdoms());
-		MapPainter.WILDERNESS_ZOOM = zoomOf(config.zoomLines());
+		MapIcons.ICON_ZOOM = fromLevel(config.zoomIcons());
+		SpawnMarks.ZOOM = fromLevel(config.zoomSpawns());
+		MapLabels.TOWN_ZOOM = fromLevel(config.zoomTowns());
+		MapLabels.PLACE_ZOOM = fromLevel(config.zoomPlaces());
+		MapLabels.KINGDOM_ZOOM_MAX = fromLevel(config.zoomKingdoms());
+		MapPainter.WILDERNESS_ZOOM = fromLevel(config.zoomLines());
 	}
 
 	/** An unchanging copy, for one frame's drawing. */
