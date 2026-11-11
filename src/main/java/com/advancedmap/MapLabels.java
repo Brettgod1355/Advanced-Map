@@ -24,11 +24,11 @@ final class MapLabels
 	static final int KINGDOM = 2;
 
 	/** Kingdoms show while zoomed further out than this (screen pixels per tile). */
-	static final double KINGDOM_ZOOM_MAX = 1.25;
+	static volatile double KINGDOM_ZOOM_MAX = 1.25;
 	/** Towns show from this zoom in. */
-	static final double TOWN_ZOOM = 0.75;
+	static volatile double TOWN_ZOOM = 0.75;
 	/** Smaller places show from this zoom in. */
-	static final double PLACE_ZOOM = 2.5;
+	static volatile double PLACE_ZOOM = 2.5;
 
 	@Value
 	static class Label

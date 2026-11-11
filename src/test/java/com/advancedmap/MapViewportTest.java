@@ -8,6 +8,7 @@ package com.advancedmap;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class MapViewportTest
 {
@@ -107,5 +108,28 @@ public class MapViewportTest
 		assertEquals(MapViewport.MAX_ZOOM, viewport.view(1, 1).zoom, EPSILON);
 		viewport.zoomAt(1e-6, 0, 0, 1, 1);
 		assertEquals(MapViewport.MIN_ZOOM, viewport.view(1, 1).zoom, EPSILON);
+	}
+
+	@Test
+	public void zoomIsNamedInWholeLevels()
+	{
+		// owner, 2026-11-11: whole levels, no fractions; 22 of them, the last one notch closer than before
+		assertEquals(MapViewport.MIN_ZOOM, MapViewport.zoomOf(1), EPSILON);
+		assertEquals(24, MapViewport.zoomOf(21), 1e-6);
+		assertTrue(MapViewport.MAX_ZOOM > 24 && MapViewport.MAX_ZOOM < 31);
+		for (int level = 1; level <= MapViewport.LEVELS; level++)
+		{
+			assertEquals(level, MapViewport.levelOf(MapViewport.zoomOf(level)));
+		}
+		// a setting out of range is kept within the levels there are
+		assertEquals(MapViewport.zoomOf(1), MapViewport.zoomOf(-5), EPSILON);
+		assertEquals(MapViewport.MAX_ZOOM, MapViewport.zoomOf(99), EPSILON);
+		// the map opens at level 13, and monsters and ground items show from 16: further in than it opens
+		assertEquals(13, MapViewport.levelOf(4));
+		assertTrue(SpawnMarks.ZOOM > 4);
+		// the defaults sit where the fixed values were, within a few percent
+		assertEquals(1.25, MapViewport.zoomOf(8), 0.07);
+		assertEquals(0.75, MapViewport.zoomOf(6), 0.04);
+		assertEquals(2.5, MapViewport.zoomOf(11), 0.1);
 	}
 }

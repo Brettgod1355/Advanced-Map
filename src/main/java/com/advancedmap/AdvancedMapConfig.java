@@ -54,6 +54,70 @@ public interface AdvancedMapConfig extends Config
 	)
 	String ICONS = "icons";
 
+	@ConfigSection(
+		name = "Zoom",
+		description = "The zoom level things show from: 1 is the furthest out, " + MapViewport.LEVELS + " the closest."
+			+ " \"Show zoom level\" puts the level you are at beside the coordinates.",
+		position = 19,
+		closedByDefault = true
+	)
+	String ZOOM = "zoom";
+
+	@ConfigItem(keyName = "showZoom", name = "Show zoom level", description = "Show the zoom level you are at beside"
+		+ " the coordinates at the bottom left of the map.", section = ZOOM, position = 0)
+	default boolean showZoom()
+	{
+		return false;
+	}
+
+	@Range(min = 1, max = MapViewport.LEVELS)
+	@ConfigItem(keyName = "zoomIcons", name = "Icons from", description = "Icons show from this zoom level in.",
+		section = ZOOM, position = 1)
+	default int zoomIcons()
+	{
+		return 8;
+	}
+
+	@Range(min = 1, max = MapViewport.LEVELS)
+	@ConfigItem(keyName = "zoomSpawns", name = "Monsters and items from", description = "Monsters and ground items"
+		+ " show from this zoom level in.", section = ZOOM, position = 2)
+	default int zoomSpawns()
+	{
+		return 16;
+	}
+
+	@Range(min = 1, max = MapViewport.LEVELS)
+	@ConfigItem(keyName = "zoomTowns", name = "Town names from", description = "Town names show from this zoom level"
+		+ " in.", section = ZOOM, position = 3)
+	default int zoomTowns()
+	{
+		return 6;
+	}
+
+	@Range(min = 1, max = MapViewport.LEVELS)
+	@ConfigItem(keyName = "zoomPlaces", name = "Small place names from", description = "Smaller places' names, and"
+		+ " transport and marker names, show from this zoom level in.", section = ZOOM, position = 4)
+	default int zoomPlaces()
+	{
+		return 11;
+	}
+
+	@Range(min = 1, max = MapViewport.LEVELS)
+	@ConfigItem(keyName = "zoomKingdoms", name = "Kingdom names until", description = "Kingdom names show while"
+		+ " further out than this zoom level.", section = ZOOM, position = 5)
+	default int zoomKingdoms()
+	{
+		return 8;
+	}
+
+	@Range(min = 1, max = MapViewport.LEVELS)
+	@ConfigItem(keyName = "zoomLines", name = "Wilderness and multi-combat from", description = "The Wilderness"
+		+ " teleport limits and multi-combat areas show from this zoom level in.", section = ZOOM, position = 6)
+	default int zoomLines()
+	{
+		return 8;
+	}
+
 	@ConfigItem(
 		keyName = "toggleKey",
 		name = "Open or close the map",

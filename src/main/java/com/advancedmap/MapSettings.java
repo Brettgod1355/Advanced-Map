@@ -54,6 +54,8 @@ class MapSettings
 	PlayerMarker playerMarker;
 	java.awt.Color playerColor;
 	int playerScale;
+	/** The zoom level shows beside the coordinates. */
+	boolean showZoom;
 
 	static final int MIN_ICON_SCALE = 50;
 	static final int MAX_ICON_SCALE = 300;
@@ -81,7 +83,7 @@ class MapSettings
 			config.placeNames(), config.wildernessLines(), routingRunning ? config.routing() : RoutingPlugin.NONE, config.floorNumbers(),
 			scale(config.iconSize()), config.transportNames(),
 			config.slayerShown(), config.monsterSpawns(), config.itemSpawns(), scale(config.monsterSize()),
-			scale(config.itemSize()), config.playerMarker(), config.playerColor(), scale(config.playerSize()));
+			scale(config.itemSize()), config.playerMarker(), config.playerColor(), scale(config.playerSize()), config.showZoom());
 	}
 
 	private static int scale(int percent)

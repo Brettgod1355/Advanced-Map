@@ -762,6 +762,7 @@ public class AdvancedMapPlugin extends Plugin
 
 	private MapSettings readSettings()
 	{
+		MapViewport.apply(config);
 		return MapSettings.of(config, routingRunning(config.routing()), readHiddenIcons());
 	}
 
@@ -1705,6 +1706,8 @@ public class AdvancedMapPlugin extends Plugin
 
 	/** What the list's Back button reopens: the monster's area a click opened before its All spots; null for none. */
 	private Runnable back;
+	/** When a button under the list was last pressed. */
+	private long footerPressed;
 	/** The Back button's target. */
 	private static final Object BACK = new Object();
 
@@ -1721,7 +1724,12 @@ public class AdvancedMapPlugin extends Plugin
 			if (creature.isMonster() && creature.getName().equals(mark.getName()))
 			{
 				showSpots(MapSearch.entry(creature), player != null ? player : center());
-				back = () -> showSpawns(mark);
+				// Back: that area's list again, and the map on it again after a look at the others
+				back = () ->
+				{
+					showSpawns(mark);
+					goTo(mark.getPoint());
+				};
 				// the list again, now with its Back button
 				SideList.Row wiki = wikiButton(mark.getName());
 				sideList.open(sideList.title(), sideList.rows(), sideList.owner(),
@@ -2791,6 +2799,16 @@ public class AdvancedMapPlugin extends Plugin
 		}
 		else if (hit.getIndex() >= 0 || hit.getIndex() == SideList.Hit.FOOTER)
 		{
+			if (hit.getIndex() == SideList.Hit.FOOTER)
+			{
+				// a double press on "All spots" is not a press on the "Back" that takes its place
+				long now = System.nanoTime();
+				if (now - footerPressed < 500_000_000L)
+				{
+					return true;
+				}
+				footerPressed = now;
+			}
 			SideList.Row row = hit.getRow();
 			if (row.getPoint() != null)
 			{

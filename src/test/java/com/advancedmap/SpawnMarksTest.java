@@ -41,13 +41,13 @@ public class SpawnMarksTest
 	{
 		return new MapSettings(EnumSet.allOf(IconGroup.class), Collections.emptySet(), Collections.emptySet(), false,
 			true, false, false, true, true, RoutingPlugin.SHORTEST_PATH, FloorNumbers.GROUND_IS_FIRST, icons, true, true,
-			monsters, items, monsterSize, itemSize, PlayerMarker.CROSSHAIR, java.awt.Color.BLUE, 100);
+			monsters, items, monsterSize, itemSize, PlayerMarker.CROSSHAIR, java.awt.Color.BLUE, 100, false);
 	}
 
 	/** The size of the first monster's or item's mark shown round Lumbridge. */
 	private static int shownSize(MapSettings settings, boolean monster)
 	{
-		return SpawnMarks.visible(lumbridge(6), MapArea.SURFACE, 0, settings).stream()
+		return SpawnMarks.visible(lumbridge(8), MapArea.SURFACE, 0, settings).stream()
 			.filter(s -> s.getMark().isMonster() == monster).findFirst().get().getBounds().width;
 	}
 
@@ -55,7 +55,7 @@ public class SpawnMarksTest
 	public void aMarkCanBeHiddenWithARightClickAndShownFadedAgain()
 	{
 		// owner, 2026-11-09: monsters and ground items "need to be able to be right clicked hide this icon"
-		SpawnMarks.Shown first = SpawnMarks.visible(lumbridge(6), MapArea.SURFACE, 0, settings(true, true)).get(0);
+		SpawnMarks.Shown first = SpawnMarks.visible(lumbridge(8), MapArea.SURFACE, 0, settings(true, true)).get(0);
 		SpawnMarks.Mark mark = first.getMark();
 		assertFalse(first.isHidden());
 		MapSpot spot = MapSpot.spawn(mark);
@@ -71,12 +71,12 @@ public class SpawnMarksTest
 		// hidden: gone from the map, and its menu offers Unhide
 		MapSettings hiding = hiddenSettings(Collections.singleton(spot.getKey()), false);
 		assertTrue(hiding.isHidden(spot));
-		assertTrue(SpawnMarks.visible(lumbridge(6), MapArea.SURFACE, 0, hiding).stream()
+		assertTrue(SpawnMarks.visible(lumbridge(8), MapArea.SURFACE, 0, hiding).stream()
 			.noneMatch(s -> s.getMark().equals(mark)));
 		assertEquals(MapPainter.Action.UNHIDE, MapPainter.menuEntries(new MapPainter.Selection(spot, true, 10, 10,
 			mark.getPoint()), hiding).get(0).getAction());
 		// "Show hidden icons": back, faded, so it can be unhidden
-		SpawnMarks.Shown faded = SpawnMarks.visible(lumbridge(6), MapArea.SURFACE, 0,
+		SpawnMarks.Shown faded = SpawnMarks.visible(lumbridge(8), MapArea.SURFACE, 0,
 			hiddenSettings(Collections.singleton(spot.getKey()), true)).stream().filter(s -> s.getMark().equals(mark))
 			.findFirst().get();
 		assertTrue(faded.isHidden());
@@ -88,7 +88,7 @@ public class SpawnMarksTest
 	{
 		return new MapSettings(EnumSet.allOf(IconGroup.class), hidden, Collections.emptySet(), false, true, false,
 			showHidden, true, true, RoutingPlugin.SHORTEST_PATH, FloorNumbers.GROUND_IS_FIRST, 100, true, true, true,
-			true, 100, 100, PlayerMarker.CROSSHAIR, java.awt.Color.BLUE, 100);
+			true, 100, 100, PlayerMarker.CROSSHAIR, java.awt.Color.BLUE, 100, false);
 	}
 
 	@Test
@@ -182,7 +182,7 @@ public class SpawnMarksTest
 	@Test
 	public void showsOnlyZoomedInAndAsTheFiltersSay()
 	{
-		List<SpawnMarks.Shown> both = SpawnMarks.visible(lumbridge(6), MapArea.SURFACE, 0, settings(true, true));
+		List<SpawnMarks.Shown> both = SpawnMarks.visible(lumbridge(8), MapArea.SURFACE, 0, settings(true, true));
 		assertTrue(both.stream().anyMatch(s -> s.getMark().isMonster()));
 		assertTrue(both.stream().anyMatch(s -> !s.getMark().isMonster()));
 		// items under monsters: monsters are drawn last, and found first under the mouse
@@ -209,11 +209,11 @@ public class SpawnMarksTest
 		assertTrue(both.stream().noneMatch(s -> s.getMark().getName().contains("Deadman")));
 		assertTrue(SpawnMarks.visible(lumbridge(SpawnMarks.ZOOM - 0.5), MapArea.SURFACE, 0, settings(true, true))
 			.isEmpty());
-		assertTrue(SpawnMarks.visible(lumbridge(6), MapArea.SURFACE, 0, settings(false, true)).stream()
+		assertTrue(SpawnMarks.visible(lumbridge(8), MapArea.SURFACE, 0, settings(false, true)).stream()
 			.noneMatch(s -> s.getMark().isMonster()));
-		assertTrue(SpawnMarks.visible(lumbridge(6), MapArea.SURFACE, 0, settings(true, false)).stream()
+		assertTrue(SpawnMarks.visible(lumbridge(8), MapArea.SURFACE, 0, settings(true, false)).stream()
 			.allMatch(s -> s.getMark().isMonster()));
-		assertTrue(SpawnMarks.visible(lumbridge(6), MapArea.SURFACE, 0, settings(false, false)).isEmpty());
+		assertTrue(SpawnMarks.visible(lumbridge(8), MapArea.SURFACE, 0, settings(false, false)).isEmpty());
 	}
 
 	@Test

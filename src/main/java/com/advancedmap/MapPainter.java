@@ -127,7 +127,7 @@ final class MapPainter
 	/** The most monsters a dungeon preview lists, its "and more" line included, when taller than its map. */
 	private static final int MAX_PREVIEW_LINES = 20;
 	/** The Wilderness teleport limits show from this zoom in, as icons do. */
-	static final double WILDERNESS_ZOOM = MapIcons.ICON_ZOOM;
+	static volatile double WILDERNESS_ZOOM = 1.25;
 
 	static final Color BACKGROUND = new Color(0x0B1520);
 	private static final Color LOADING = new Color(0x13202D);
@@ -500,7 +500,7 @@ final class MapPainter
 			MultiCombat.draw(g, view);
 		}
 		List<MapIcons.Shown> shown = icons.visible(view, area, plane, settings, progress);
-		String bar = barText(view, mouse, loading);
+		String bar = barText(view, mouse, loading, settings.isShowZoom());
 		if (settings.isPlaceNames())
 		{
 			// no name under the buttons, the search box or the bar of text along the bottom (as wide as its text)
@@ -1879,7 +1879,7 @@ final class MapPainter
 	}
 
 	/** What the bar along the bottom says: the tile under the mouse, and whether places on screen are still loading. */
-	private static String barText(MapViewport.View view, Point mouse, boolean loading)
+	private static String barText(MapViewport.View view, Point mouse, boolean loading, boolean showZoom)
 	{
 		// the tile under the mouse, and whether places on screen are still loading; how to use the map is in the
 		// help page, not along the bottom (owner, 2026-11-11)
@@ -1888,6 +1888,10 @@ final class MapPainter
 		{
 			text.append(String.format(Locale.ROOT, "%d, %d", (int) Math.floor(view.worldX(mouse.x)),
 				(int) Math.floor(view.worldY(mouse.y))));
+		}
+		if (showZoom)
+		{
+			text.append(text.length() > 0 ? "    " : "").append("Zoom ").append(MapViewport.levelOf(view.zoom));
 		}
 		if (loading)
 		{

@@ -30,7 +30,7 @@ import net.runelite.client.game.AgilityShortcut;
 final class MapIcons
 {
 	/** Icons show from this zoom (screen pixels per tile) in; further out there would be too many to read. */
-	static final double ICON_ZOOM = 1.25;
+	static volatile double ICON_ZOOM = 1.25;
 	/**
 	 * Zoomed in this far, each icon shows on its own floor only (Lumbridge Castle's bank on the floor it is on, not on
 	 * the ground); further out, the ground shows every floor's icons, as the game's own map does.

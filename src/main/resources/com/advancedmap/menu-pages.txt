@@ -89,6 +89,9 @@ Game updates need nothing from you. The map, its place names and the game's own 
 - Every drop of a monster with its rate: what it always drops first, then its own rare drops, then the rest
 - All spots and Wiki buttons under a monster's details: see everywhere it lives, then Back
 - Your marker's look, color and size, in the Icons settings: crosshair, dot, pin or X
+- Zoom settings: choose the zoom level icons, names, monsters and ground items show from, and show the level you are at
+- Monsters and ground items show only when zoomed in closer than the map opens
+- One more notch of zoom at the close end
 ## Version 1.1 - 11/8/26
 - Hover over a shop to see what it sells
 - Hover over a transport to see where it goes and the fares
