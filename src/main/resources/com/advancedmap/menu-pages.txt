@@ -92,6 +92,10 @@ Game updates need nothing from you. The map, its place names and the game's own 
 - Zoom settings: choose the zoom level icons, names, monsters and ground items show from, and show the level you are at
 - Monsters and ground items show only when zoomed in closer than the map opens
 - One more notch of zoom at the close end
+- The floor buttons sit in a row along the bottom, beside a smaller button that finds you
+- Clicks on the map no longer go to another plugin's buttons hidden under it
+- The random event areas are named on the map and found in search
+- A teleport item's Wiki link opens that item's own page
 ## Version 1.1 - 11/8/26
 - Hover over a shop to see what it sells
 - Hover over a transport to see where it goes and the fares
