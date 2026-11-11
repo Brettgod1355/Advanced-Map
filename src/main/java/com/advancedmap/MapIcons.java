@@ -684,8 +684,11 @@ final class MapIcons
 		WorldPoint tile = Prifddinas.toCity(new WorldPoint(spot.getX(), spot.getY(), spot.getPlane()));
 		lines.add(new Line(tile.getPlane() > 0 ? tile.getX() + ", " + tile.getY() + ", " + floors.name(tile.getPlane())
 			: tile.getX() + ", " + tile.getY(), QUIET));
-		lines.add(new Line(hidden ? "Hidden: right-click to unhide" : "Right-click to hide it or open its wiki page",
-			QUIET));
+		if (hidden)
+		{
+			// how to hide an icon or open its wiki page is on the help page, not under every icon (owner, 2026-11-11)
+			lines.add(new Line("Hidden: right-click to unhide", QUIET));
+		}
 		return lines;
 	}
 

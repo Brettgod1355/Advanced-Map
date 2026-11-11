@@ -39,8 +39,6 @@ final class MapFilters
 	static final int BOTTOM_ROOM = 8;
 	private static final int INDENT = 18;
 	private static final int BOX = 12;
-	/** The line under the switches that says how to hide an icon. */
-	private static final int HINT = 14;
 
 	static final Color PANEL = new Color(0x10, 0x18, 0x22, 240);
 	static final Color EDGE = new Color(0x5A5040);
@@ -290,7 +288,7 @@ final class MapFilters
 		Rectangle multiCombat = new Rectangle(monsters.x, monsters.y + ROW, half, ROW);
 		Rectangle showHidden = new Rectangle(items.x, multiCombat.y, half, ROW);
 		Rectangle slayer = new Rectangle(x + PAD, multiCombat.y + ROW, WIDTH - PAD * 2, ROW);
-		int searchY = slayer.y + ROW + HINT + PAD;
+		int searchY = slayer.y + ROW + PAD;
 		Rectangle search = new Rectangle(x + PAD, searchY, WIDTH - PAD * 2, SEARCH_HEIGHT);
 		int buttonsY = search.y + search.height + 6;
 		Rectangle allOn = new Rectangle(x + PAD, buttonsY, half, ROW);
@@ -375,14 +373,12 @@ final class MapFilters
 		drawSwitch(g, layout.getItems(), settings.isItemSpawns(), "Ground items", metrics);
 		drawSlayer(g, layout.getSlayer(), settings, icons, metrics);
 		drawSwitch(g, layout.getMultiCombat(), multiCombat, "Multi-combat areas", metrics);
-		drawSwitch(g, layout.getShowHidden(), settings.isShowHidden(), "Show hidden icons", metrics);
-		// how to hide an icon, and how many are hidden, under the switches
-		Rectangle slayer = layout.getSlayer();
+		// how many are hidden, beside it; how to hide one is on the help page (owner, 2026-11-11)
 		int count = settings.getHidden().size();
-		g.setColor(QUIET);
-		g.drawString("Right-click an icon to hide it (" + (count == 0 ? "none" : count) + " hidden)",
-			slayer.x + BOX + 8, slayer.y + slayer.height + metrics.getAscent() - 2);
-		int lineY = slayer.y + slayer.height + HINT + PAD / 2;
+		drawSwitch(g, layout.getShowHidden(), settings.isShowHidden(),
+			count == 0 ? "Show hidden icons" : "Show hidden (" + count + ")", metrics);
+		Rectangle slayer = layout.getSlayer();
+		int lineY = slayer.y + slayer.height + PAD / 2;
 		g.setColor(EDGE);
 		g.drawLine(slayer.x, lineY, slayer.x + slayer.width, lineY);
 		Rectangle search = layout.getSearch();
