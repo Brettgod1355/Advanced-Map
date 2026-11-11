@@ -23,7 +23,6 @@ public enum PlayerMarker
 {
 	CROSSHAIR("Crosshair"),
 	DOT("Dot"),
-	RING("Ring"),
 	PIN("Pin"),
 	X("X");
 
@@ -52,11 +51,6 @@ public enum PlayerMarker
 				double r = 6 * scale;
 				g.fill(new Ellipse2D.Double(cx - r, cy - r, 2 * r, 2 * r));
 				g.draw(new Ellipse2D.Double(cx - r, cy - r, 2 * r, 2 * r));
-				break;
-			case RING:
-				double outer = 8 * scale;
-				g.draw(new Ellipse2D.Double(cx - outer, cy - outer, 2 * outer, 2 * outer));
-				g.fill(new Ellipse2D.Double(cx - dot, cy - dot, 2 * dot, 2 * dot));
 				break;
 			case PIN:
 				// a teardrop: its head above the spot, its point on it
