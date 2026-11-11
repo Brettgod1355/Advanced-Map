@@ -5,6 +5,7 @@
  */
 package com.advancedmap;
 
+import java.awt.Color;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import net.runelite.client.config.Config;
@@ -534,6 +535,44 @@ public interface AdvancedMapConfig extends Config
 	default boolean transportNames()
 	{
 		return true;
+	}
+
+	@ConfigItem(
+		keyName = "playerMarker",
+		name = "Your marker",
+		description = "How the map marks where you are, and the picture on the button that takes the map back to you.",
+		section = ICONS,
+		position = 23
+	)
+	default PlayerMarker playerMarker()
+	{
+		return PlayerMarker.CROSSHAIR;
+	}
+
+	@ConfigItem(
+		keyName = "playerColor",
+		name = "Your marker color",
+		description = "The color of your marker, of the button that takes the map back to you and of the arrow to you.",
+		section = ICONS,
+		position = 24
+	)
+	default Color playerColor()
+	{
+		return new Color(0x5AA9FF);
+	}
+
+	@Range(min = MapSettings.MIN_ICON_SCALE, max = MapSettings.MAX_ICON_SCALE)
+	@Units(Units.PERCENT)
+	@ConfigItem(
+		keyName = "playerSize",
+		name = "Your marker size",
+		description = "How big your marker is on the map, apart from the other icons.",
+		section = ICONS,
+		position = 25
+	)
+	default int playerSize()
+	{
+		return 100;
 	}
 
 	@ConfigItem(

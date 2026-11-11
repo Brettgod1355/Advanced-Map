@@ -41,7 +41,7 @@ public class SpawnMarksTest
 	{
 		return new MapSettings(EnumSet.allOf(IconGroup.class), Collections.emptySet(), Collections.emptySet(), false,
 			true, false, false, true, true, RoutingPlugin.SHORTEST_PATH, FloorNumbers.GROUND_IS_FIRST, icons, true, true,
-			monsters, items, monsterSize, itemSize);
+			monsters, items, monsterSize, itemSize, PlayerMarker.CROSSHAIR, java.awt.Color.BLUE, 100);
 	}
 
 	/** The size of the first monster's or item's mark shown round Lumbridge. */
@@ -88,7 +88,7 @@ public class SpawnMarksTest
 	{
 		return new MapSettings(EnumSet.allOf(IconGroup.class), hidden, Collections.emptySet(), false, true, false,
 			showHidden, true, true, RoutingPlugin.SHORTEST_PATH, FloorNumbers.GROUND_IS_FIRST, 100, true, true, true,
-			true, 100, 100);
+			true, 100, 100, PlayerMarker.CROSSHAIR, java.awt.Color.BLUE, 100);
 	}
 
 	@Test

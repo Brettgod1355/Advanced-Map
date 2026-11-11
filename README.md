@@ -210,7 +210,8 @@ choose with Filters on the map itself.
 | Route with | Shortest Path | The plugin "Route here" asks |
 
 The **Icons** section holds "Hide completed quests", "Mark what you can't use yet", "Icon size", "Monster size",
-"Ground item size" and "Transport names"; the two sizes scale monsters and ground items on their own. Which kinds of icon show, your Slayer task and the multi-combat areas are ticked in Filters on the map.
+"Ground item size", "Transport names" and your marker's look (crosshair, dot, ring, pin or star), color and size;
+the sizes scale monsters, ground items and your marker on their own. Which kinds of icon show, your Slayer task and the multi-combat areas are ticked in Filters on the map.
 
 ## Privacy and what it uses
 

@@ -66,7 +66,7 @@ public class ConfigPositionsTest
 			"ConfigTypesTest.java")), StandardCharsets.UTF_8);
 		// every method of the interface, with or without "default", whatever shape its type has (nested, generic)
 		Matcher setting = Pattern.compile("\\n\\t(?:default )?([\\w.<>\\[\\], ]+?) (\\w+)\\(\\)").matcher(config);
-		java.util.Set<String> foreign = new java.util.HashSet<>(java.util.Arrays.asList("boolean", "int", "String", "Keybind"));
+		java.util.Set<String> foreign = new java.util.HashSet<>(java.util.Arrays.asList("boolean", "int", "String", "Keybind", "Color"));
 		int pluginTypes = 0;
 		int settings = 0;
 		while (setting.find())

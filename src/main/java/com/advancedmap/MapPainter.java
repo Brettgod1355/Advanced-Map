@@ -100,7 +100,6 @@ final class MapPainter
 	/** The player's marker: the locate button's crosshair at this size (about 36 pixels across). */
 	static final double PLAYER_MARKER_SCALE = 1.4;
 	private static final float PLAYER_STROKE = 2.5f;
-	private static final Color LOCATED = new Color(0x5AA9FF);
 	private static final Color TIP = new Color(0x10, 0x18, 0x22, 235);
 	private static final Color TIP_EDGE = new Color(0x5A5040);
 	/** The names beside transport icons. */
@@ -545,8 +544,8 @@ final class MapPainter
 			drawLayer(g, view, spawnDots);
 		}
 		MapPins.draw(g, pinsShown, view.zoom);
-		drawPlayer(g, view, area, player);
-		drawPlayerArrow(g, view, area, player, playerArrow);
+		drawPlayer(g, view, area, player, settings);
+		drawPlayerArrow(g, view, area, player, playerArrow, settings.getPlayerColor());
 		MapPins.Pin pin = pins.selected();
 		if (pin != null)
 		{
@@ -1819,7 +1818,7 @@ final class MapPainter
 
 	/** The arrow at the edge pointing to the player when they are off the view, with how many tiles away. */
 	private static void drawPlayerArrow(Graphics2D g, MapViewport.View view, MapArea area, WorldPoint player,
-		boolean on)
+		boolean on, Color color)
 	{
 		Rectangle at = playerArrow(view, area, player, on);
 		if (at == null)
@@ -1842,7 +1841,7 @@ final class MapPainter
 		g.setColor(OUTLINE);
 		g.draw(shape);
 		g.setStroke(stroke);
-		g.setColor(LOCATED);
+		g.setColor(color);
 		g.fill(shape);
 		int tiles = (int) Math.max(Math.abs(player.getX() - view.centerX), Math.abs(player.getY() - view.centerY));
 		String text = tiles + " tiles";
@@ -1854,7 +1853,8 @@ final class MapPainter
 		drawShadowed(g, text, tx, ty, TEXT);
 	}
 
-	private static void drawPlayer(Graphics2D g, MapViewport.View view, MapArea area, WorldPoint point)
+	private static void drawPlayer(Graphics2D g, MapViewport.View view, MapArea area, WorldPoint point,
+		MapSettings settings)
 	{
 		if (point == null || MapArea.of(point.getY()) != area)
 		{
@@ -1864,34 +1864,14 @@ final class MapPainter
 		double sy = view.screenY(point.getY() + 0.5);
 		Object antialiasing = g.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		// the locate button's crosshair, bigger, with a dark edge so it reads on any ground
-		drawCrosshair(g, sx, sy, PLAYER_MARKER_SCALE, OUTLINE, PLAYER_STROKE + 2.5f);
-		drawCrosshair(g, sx, sy, PLAYER_MARKER_SCALE, LOCATED, PLAYER_STROKE);
+		// the locate button's picture, bigger (and as big as set), with a dark edge so it reads on any ground
+		double scale = PLAYER_MARKER_SCALE * settings.getPlayerScale() / 100;
+		settings.getPlayerMarker().draw(g, sx, sy, scale, OUTLINE, PLAYER_STROKE + 2.5f);
+		settings.getPlayerMarker().draw(g, sx, sy, scale, settings.getPlayerColor(), PLAYER_STROKE);
 		if (antialiasing != null)
 		{
 			g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, antialiasing);
 		}
-	}
-
-	/**
-	 * A crosshair: a ring, four ticks pointing out and a dot in the middle, the shape of the locate button. At scale 1
-	 * the ring is 16 pixels across and the ticks reach 13 from the middle.
-	 */
-	static void drawCrosshair(Graphics2D g, double cx, double cy, double scale, Color color, float width)
-	{
-		Stroke stroke = g.getStroke();
-		g.setStroke(new BasicStroke(width, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-		g.setColor(color);
-		double ring = 8 * scale;
-		double tick = 13 * scale;
-		g.draw(new Ellipse2D.Double(cx - ring, cy - ring, 2 * ring, 2 * ring));
-		g.draw(new java.awt.geom.Line2D.Double(cx, cy - tick, cx, cy - ring));
-		g.draw(new java.awt.geom.Line2D.Double(cx, cy + ring, cx, cy + tick));
-		g.draw(new java.awt.geom.Line2D.Double(cx - tick, cy, cx - ring, cy));
-		g.draw(new java.awt.geom.Line2D.Double(cx + ring, cy, cx + tick, cy));
-		double dot = 3.5 * scale + (width - PLAYER_STROKE) / 2;
-		g.fill(new Ellipse2D.Double(cx - dot, cy - dot, 2 * dot, 2 * dot));
-		g.setStroke(stroke);
 	}
 
 	/** What the bar along the bottom says: the tile under the mouse, how to use the map, and whether places on screen are still loading. */
@@ -2005,7 +1985,7 @@ final class MapPainter
 			g.setColor(BAR);
 			if (entry.getKey() == Button.LOCATE)
 			{
-				drawLocate(g, button, located, following);
+				drawLocate(g, button, located, following, settings);
 				continue;
 			}
 			if (entry.getKey() == Button.FLOOR_UP || entry.getKey() == Button.FLOOR_DOWN)
@@ -2162,14 +2142,18 @@ final class MapPainter
 
 	/** The find-me button: a round button with a location mark, dimmed while there is no player to find. */
 	/** The button that finds the player: lit (a blue disc, a white crosshair) while the map follows them. */
-	private static void drawLocate(Graphics2D g, Rectangle button, boolean located, boolean following)
+	private static void drawLocate(Graphics2D g, Rectangle button, boolean located, boolean following,
+		MapSettings settings)
 	{
 		Object antialiasing = g.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		g.setColor(following && located ? LOCATED : BAR);
+		Color color = settings.getPlayerColor();
+		g.setColor(following && located ? color : BAR);
 		g.fillOval(button.x, button.y, button.width, button.height);
-		drawCrosshair(g, button.getCenterX(), button.getCenterY(), 1, following && located ? PLAYER
-			: located ? LOCATED : new Color(0x707070), 2);
+		PlayerMarker marker = settings.getPlayerMarker();
+		// a pin's point is on its spot: the button's middle holds the whole pin
+		marker.draw(g, button.getCenterX(), button.getCenterY() + (marker == PlayerMarker.PIN ? 8 : 0), 1,
+			following && located ? PLAYER : located ? color : new Color(0x707070), 2);
 		if (antialiasing != null)
 		{
 			g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, antialiasing);

@@ -50,6 +50,10 @@ class MapSettings
 	/** How big monsters and ground items are drawn, in percent, apart from {@link #iconScale}. */
 	int monsterScale;
 	int itemScale;
+	/** Your marker on the map and on the locate button: its look, color and size in percent. */
+	PlayerMarker playerMarker;
+	java.awt.Color playerColor;
+	int playerScale;
 
 	static final int MIN_ICON_SCALE = 50;
 	static final int MAX_ICON_SCALE = 300;
@@ -77,7 +81,7 @@ class MapSettings
 			config.placeNames(), config.wildernessLines(), routingRunning ? config.routing() : RoutingPlugin.NONE, config.floorNumbers(),
 			scale(config.iconSize()), config.transportNames(),
 			config.slayerShown(), config.monsterSpawns(), config.itemSpawns(), scale(config.monsterSize()),
-			scale(config.itemSize()));
+			scale(config.itemSize()), config.playerMarker(), config.playerColor(), scale(config.playerSize()));
 	}
 
 	private static int scale(int percent)

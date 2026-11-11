@@ -7,6 +7,7 @@ package com.advancedmap.check;
 
 import com.advancedmap.FloorNumbers;
 import com.advancedmap.MonsterOrder;
+import com.advancedmap.PlayerMarker;
 import com.advancedmap.RoutingPlugin;
 import org.junit.Test;
 
@@ -24,6 +25,7 @@ public class ConfigTypesTest
 	public void everyTypeASettingReturnsIsPublic()
 	{
 		assertTrue(MonsterOrder.values().length > 0);
+		assertTrue(PlayerMarker.values().length > 0);
 		assertTrue(FloorNumbers.values().length > 0);
 		assertTrue(RoutingPlugin.values().length > 0);
 	}
