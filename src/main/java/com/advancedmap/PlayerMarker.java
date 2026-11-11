@@ -25,7 +25,7 @@ public enum PlayerMarker
 	DOT("Dot"),
 	RING("Ring"),
 	PIN("Pin"),
-	STAR("Star");
+	X("X");
 
 	private final String label;
 
@@ -71,26 +71,12 @@ public enum PlayerMarker
 				g.fill(pin);
 				g.draw(pin);
 				break;
-			case STAR:
-				Path2D star = new Path2D.Double();
-				for (int i = 0; i < 10; i++)
-				{
-					double reach = (i % 2 == 0 ? 9 : 4) * scale;
-					double angle = Math.PI / 5 * i - Math.PI / 2;
-					double x = cx + reach * Math.cos(angle);
-					double y = cy + reach * Math.sin(angle);
-					if (i == 0)
-					{
-						star.moveTo(x, y);
-					}
-					else
-					{
-						star.lineTo(x, y);
-					}
-				}
-				star.closePath();
-				g.fill(star);
-				g.draw(star);
+			case X:
+				// two thick crossed bars, their middle on the spot
+				double arm = 7 * scale;
+				g.setStroke(new BasicStroke(width + 2.5f * (float) scale, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+				g.draw(new Line2D.Double(cx - arm, cy - arm, cx + arm, cy + arm));
+				g.draw(new Line2D.Double(cx - arm, cy + arm, cx + arm, cy - arm));
 				break;
 			default:
 				double ring = 8 * scale;

@@ -88,7 +88,7 @@ Game updates need nothing from you. The map, its place names and the game's own 
 - Right-click a monster or ground item to hide it or open its wiki page
 - Every drop of a monster with its rate: what it always drops first, then its own rare drops, then the rest
 - All spots and Wiki buttons under a monster's details: see everywhere it lives, then Back
-- Your marker's look, color and size, in the Icons settings: crosshair, dot, ring, pin or star
+- Your marker's look, color and size, in the Icons settings: crosshair, dot, ring, pin or X
 ## Version 1.1 - 11/8/26
 - Hover over a shop to see what it sells
 - Hover over a transport to see where it goes and the fares
