@@ -384,11 +384,12 @@ public class AdvancedMapPlugin extends Plugin
 		Transports.load();
 		Shops.load();
 		Spawns.load();
+		// before the marks show: a mark pointed at the moment it appears has its monster's details
+		MonsterInfo.load();
 		SpawnMarks.load();
 		MultiCombat.load();
 		Farming.load();
 		SlayerTask.load();
-		MonsterInfo.load();
 		DungeonPreview.load();
 		search.load();
 	}

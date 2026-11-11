@@ -231,6 +231,9 @@ public class SideListTest
 		java.awt.Rectangle footer = layout.getFooter();
 		assertTrue(footer.y >= layout.getList().y + layout.getList().height);
 		assertTrue(footer.y + footer.height <= layout.getPanel().y + layout.getPanel().height);
+		// a long list with its buttons stops above the floor buttons: a press on floor-up is not a press on "Wiki"
+		assertTrue(layout.getPanel().y + layout.getPanel().height
+			<= MapPainter.buttons(1280, 800, false).get(MapPainter.Button.FLOOR_UP).y);
 		SideList.Hit l = list.hitAt(footer.x + 5, footer.y + 5, layout);
 		assertEquals(SideList.Hit.FOOTER, l.getIndex());
 		assertEquals("All spots", l.getRow().getText());

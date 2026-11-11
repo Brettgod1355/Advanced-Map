@@ -303,8 +303,9 @@ final class SideList
 		Rectangle locate = buttons.get(MapPainter.Button.LOCATE);
 		Rectangle below = buttons.get(MapPainter.Button.FLOOR_UP);
 		int top = area.y + area.height + 6;
-		int room = Math.max(header + ROW * 3, below.y - 6 - top);
-		int height = Math.min(room + under, header + content + PAD / 2 + under);
+		// the buttons under the rows come out of the same room: the list never reaches the floor buttons below it
+		int room = Math.max(header + ROW * 3 + under, below.y - 6 - top);
+		int height = Math.min(room, header + content + PAD / 2 + under);
 		int x = locate.x + locate.width - WIDTH;
 		Rectangle panel = new Rectangle(x, top, WIDTH, height);
 		Rectangle close = new Rectangle(x + WIDTH - PAD - CLOSE, top + (HEADER - CLOSE) / 2, CLOSE, CLOSE);

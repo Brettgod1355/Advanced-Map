@@ -1187,7 +1187,11 @@ final class MapPainter
 		}
 		if (!owner.equals(previewed))
 		{
-			clickPreview.open(title.get(), rows.get(), owner);
+			// a monster's buttons show as a click would keep them, so the list is as tall and covers another's
+			boolean monster = owner instanceof SpawnMarks.Mark && ((SpawnMarks.Mark) owner).isMonster();
+			clickPreview.open(title.get(), rows.get(), owner,
+				monster ? new SideList.Row("All spots", null, null, null, null, null) : null,
+				monster ? new SideList.Row("Wiki", null, null, null, null, null) : null);
 			previewed = owner;
 		}
 		clickPreview.draw(g, clickPreview.layout(buttons(view.width, view.height, window)), null);

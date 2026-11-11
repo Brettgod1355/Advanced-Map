@@ -1,7 +1,6 @@
 # Every drop of each monster, from the OSRS Wiki's dropsline bucket (2026-10-28). CC BY-NC-SA 3.0, see
 # THIRD_PARTY_NOTICES.md. Made by the notes' research/gen/monster_drops.py; in the order shown. Groups: A always,
 # S only a few monsters drop it, R rare (1/256 or rarer), C the rest. monster, group, item, rate
-Aberrant spectre	A	Reward casket (elite)	Always
 Aberrant spectre	R	Mystic robe bottom (dark)	1/512
 Aberrant spectre	C	Steel axe	3/128
 Aberrant spectre	C	Adamant platelegs	1/128
@@ -36,6 +35,7 @@ Aberrant spectre	C	Lantadyme seed	1/319.3
 Aberrant spectre	C	Snape grass seed x3	1/367.2
 Aberrant spectre	C	Dwarf weed seed	1/524.5
 Aberrant spectre	C	Torstol seed	1/815.9
+Aberrant spectre	C	Reward casket (elite)	Clue step
 Abyssal Sire	A	Abyssal ashes	Always
 Abyssal Sire	R	Chaos talisman	1/1,081.1
 Abyssal Sire	R	Nature talisman	1/1,081.1
@@ -683,7 +683,6 @@ Anja	C	Grimy cadantine	1/178.1
 Anja	C	Grimy dwarf weed	1/237.4
 Anja	C	Grimy lantadyme	1/237.4
 Ankou	A	Bones	Always
-Ankou	A	Reward casket (elite)	Always
 Ankou	R	Mushroom spore	1/3,613.8
 Ankou	C	Dark fishing bait x60	38/100
 Ankou	C	Coins x8	33/100
@@ -738,6 +737,7 @@ Ankou	C	Cadantine seed	1/26,200
 Ankou	C	Lantadyme seed	1/34,933.3
 Ankou	C	Dwarf weed seed	1/52,400
 Ankou	C	Torstol seed	1/104,800
+Ankou	C	Reward casket (elite)	Clue step
 Aquanite	A	Big bones	Always
 Aquanite	S	Aquanite tendon	1/3,500
 Aquanite	R	Curved bone	1/5,012.5
@@ -1351,7 +1351,6 @@ Banshee	C	Clue scroll (easy)	1/128
 Banshee	C	Grimy dwarf weed	1/165.5
 Banshee	C	Grimy lantadyme	1/165.5
 Barbarian	A	Bones	Always
-Barbarian	A	Key (medium)	Always
 Barbarian	C	Coins x5	42/128
 Barbarian	C	Coins x8	9/128
 Barbarian	C	Bronze axe	6/128
@@ -1373,8 +1372,8 @@ Barbarian	C	Ring mould	1/128
 Barbarian	C	Tin ore	1/128
 Barbarian	C	Clue scroll (beginner)	1/75
 Barbarian	C	Clue scroll (easy)	1/128
+Barbarian	C	Key (medium)	Clue step
 Barbarian (Barbarian Camp)	A	Bones	Always
-Barbarian (Barbarian Camp)	A	Key (medium)	Always
 Barbarian (Barbarian Camp)	C	Coins x5	42/128
 Barbarian (Barbarian Camp)	C	Coins x8	9/128
 Barbarian (Barbarian Camp)	C	Bronze axe	6/128
@@ -1396,10 +1395,10 @@ Barbarian (Barbarian Camp)	C	Ring mould	1/128
 Barbarian (Barbarian Camp)	C	Tin ore	1/128
 Barbarian (Barbarian Camp)	C	Clue scroll (beginner)	1/75
 Barbarian (Barbarian Camp)	C	Clue scroll (easy)	1/128
+Barbarian (Barbarian Camp)	C	Key (medium)	Clue step
 Bark Blamish Snail	A	Blamish bark shell	Always
 Bark Blamish Snail	A	Lean snail	Always
 Basilisk	A	Bones	Always
-Basilisk	A	Reward casket (elite)	Always
 Basilisk	R	Basilisk head	1/2,000
 Basilisk	R	Mystic hat (light)	1/512
 Basilisk	C	Basilisk bone	1/4
@@ -1431,8 +1430,8 @@ Basilisk	C	Grimy cadantine	1/117
 Basilisk	C	Grimy dwarf weed	1/156
 Basilisk	C	Grimy lantadyme	1/156
 Basilisk	C	Brimstone key	1/323
+Basilisk	C	Reward casket (elite)	Clue step
 Basilisk Knight	A	Big bones	Always
-Basilisk Knight	A	Reward casket (elite)	Always
 Basilisk Knight	S	Basilisk jaw	1/5,000
 Basilisk Knight	R	Curved bone	1/5,012.5
 Basilisk Knight	R	Basilisk head	1/1,000
@@ -1460,6 +1459,7 @@ Basilisk Knight	C	Grimy ranarr weed	1/69.33
 Basilisk Knight	C	Grimy snapdragon	1/69.33
 Basilisk Knight	C	Grimy torstol	1/92.44
 Basilisk Knight	C	Clue scroll (hard)	1/192
+Basilisk Knight	C	Reward casket (elite)	Clue step
 Bat	A	Bat bones	Always
 Bat	C	Bat wing	1/4
 Battle mage	A	Bones	Always
@@ -1717,7 +1717,6 @@ Black Knight	C	Grimy cadantine	1/1,365.3
 Black Knight	C	Grimy dwarf weed	1/1,820.4
 Black Knight	C	Grimy lantadyme	1/1,820.4
 Black Knight Titan	A	Bones	Always
-Black Knight Titan	A	Key (medium)	Always
 Black Knight Titan	C	Coins x38	14/128
 Black Knight Titan	C	Limpwurt root	11/128
 Black Knight Titan	C	Coins x52	10/128
@@ -1799,6 +1798,7 @@ Black Knight Titan	C	Cadantine seed	1/25,396
 Black Knight Titan	C	Lantadyme seed	1/35,555
 Black Knight Titan	C	Dwarf weed seed	1/59,259
 Black Knight Titan	C	Torstol seed	1/88,888
+Black Knight Titan	C	Key (medium)	Clue step
 Black bear	A	Bear fur	Always
 Black bear	A	Bear ribs	Always
 Black bear	A	Bones	Always
@@ -3104,11 +3104,11 @@ Chaos dwarf	C	Mithril sq shield	1/128
 Chaos dwarf	C	Water rune x10	1/128
 Chaos dwarf	C	Looting bag	1/3
 Chicken	A	Bones	Always
-Chicken	A	Key (medium)	Always
 Chicken	A	Raw chicken	Always
 Chicken	C	Feather x5	64/128
 Chicken	C	Feather x15	32/128
 Chicken	C	Clue scroll (beginner)	1/300
+Chicken	C	Key (medium)	Clue step
 Chicken (Tutorial Island)	A	Bones	Always
 Chilled jelly	R	Tooth half of key (moon key)	1/504
 Chilled jelly	R	Frozen tear x8	Rare
@@ -3451,7 +3451,6 @@ Cyclops	C	Lantadyme seed	1/34,933.3
 Cyclops	C	Dwarf weed seed	1/52,400
 Cyclops	C	Torstol seed	1/104,800
 Cyclops (Ardougne Zoo)	A	Big bones	Always
-Cyclops (Ardougne Zoo)	A	Key (medium)	Always
 Cyclops (Ardougne Zoo)	R	Curved bone	1/5,012.5
 Cyclops (Ardougne Zoo)	R	Long bone	1/400
 Cyclops (Ardougne Zoo)	C	Coins x38	14/128
@@ -3506,6 +3505,7 @@ Cyclops (Ardougne Zoo)	C	Krandorian seed x2	1/931
 Cyclops (Ardougne Zoo)	C	Snape grass seed x2	1/1,034
 Cyclops (Ardougne Zoo)	C	Wildblood seed	1/1,830
 Cyclops (Ardougne Zoo)	C	Giant champion scroll	1/5,000
+Cyclops (Ardougne Zoo)	C	Key (medium)	Clue step
 Cyclops (Catacombs of Kourend)	A	Big bones	Always
 Cyclops (Catacombs of Kourend)	R	Curved bone	1/5,012.5
 Cyclops (Catacombs of Kourend)	R	Mushroom spore	1/3,613.8
@@ -4188,7 +4188,6 @@ Desert Lizard	C	Watermelon seed x2	1/1,303
 Desert Lizard	C	Snape grass seed x2	1/1,792
 Desert Wolf	A	Wolf bones	Always
 Desert Wolf	C	Wolf bone	1/4
-Deviant spectre	A	Reward casket (elite)	Always
 Deviant spectre	R	Mystic robe bottom (dark)	1/512
 Deviant spectre	C	Adamantite ore	5/128
 Deviant spectre	C	Battlestaff	5/128
@@ -4229,6 +4228,7 @@ Deviant spectre	C	Lantadyme seed	1/379.1
 Deviant spectre	C	Snape grass seed x3	1/436
 Deviant spectre	C	Dwarf weed seed	1/622.9
 Deviant spectre	C	Torstol seed	1/968.9
+Deviant spectre	C	Reward casket (elite)	Clue step
 Dire Wolf	A	Wolf bones	Always
 Dire Wolf	C	Wolf bone	1/4
 Dire Wolf Alpha	A	Wolf bones	Always
@@ -4370,7 +4370,6 @@ Druid	C	Grimy cadantine	1/157.5
 Druid	C	Grimy dwarf weed	1/210.1
 Druid	C	Grimy lantadyme	1/210.1
 Drunken man	A	Bones	Always
-Drunken man	A	Key (medium)	Always
 Drunken man	C	Coins x3	38/128
 Drunken man	C	Coins x10	23/128
 Drunken man	C	Bronze bolts x2-12	22/128
@@ -4401,6 +4400,7 @@ Drunken man	C	Grimy kwuarm	1/142.5
 Drunken man	C	Grimy cadantine	1/178.1
 Drunken man	C	Grimy dwarf weed	1/237.4
 Drunken man	C	Grimy lantadyme	1/237.4
+Drunken man	C	Key (medium)	Clue step
 Duke Sucellus	A	Ancient blood ornament kit	Always
 Duke Sucellus	A	Odd key	Always
 Duke Sucellus	S	Baron	1/2,500
@@ -6144,7 +6144,6 @@ Greater demon	C	Clue scroll (hard)	1/128
 Greater demon	C	Slayer's enchantment	1/249
 Green dragon	A	Dragon bones	Always
 Green dragon	A	Green dragonhide	Always
-Green dragon	A	Reward casket (elite)	Always
 Green dragon	C	Coins x44	29/128
 Green dragon	C	Coins x132	25/128
 Green dragon	C	Coins x200	10/128
@@ -6179,6 +6178,7 @@ Green dragon	C	Slayer's enchantment	1/260
 Green dragon	C	Grimy cadantine	1/273.1
 Green dragon	C	Grimy dwarf weed	1/364.1
 Green dragon	C	Grimy lantadyme	1/364.1
+Green dragon	C	Reward casket (elite)	Clue step
 Grimy Lizard	A	Bones	Always
 Grimy Lizard	R	Mystic gloves (light)	1/512
 Grimy Lizard	C	Earth rune x10-25	27/128
@@ -6309,7 +6309,6 @@ Gryphon	C	Strawberry seed	1/682.7
 Gryphon	C	Snape grass seed	1/1,365.3
 Gryphon	C	Watermelon seed	1/1,365.3
 Guard	A	Bones	Always
-Guard	A	Key (medium)	Always
 Guard	C	Coins	19/128
 Guard	C	Coins x5	18/128
 Guard	C	Coins x7	16/128
@@ -6342,6 +6341,7 @@ Guard	C	Sweetcorn seed x3	1/155
 Guard	C	Strawberry seed x2	1/311
 Guard	C	Watermelon seed x2	1/651
 Guard	C	Snape grass seed x2	1/896
+Guard	C	Key (medium)	Clue step
 Guard (Aldarin)	A	Bones	Always
 Guard (Aldarin)	C	Coins	19/128
 Guard (Aldarin)	C	Coins x7	16/128
@@ -6439,7 +6439,6 @@ Guard (Cave goblin)	C	Tinderbox	20/128
 Guard (Cave goblin)	C	Goblin champion scroll	1/5,000
 Guard (Desert Mining Camp)	A	Bones	Always
 Guard (Doric's hut)	A	Bones	Always
-Guard (Doric's hut)	A	Key (medium)	Always
 Guard (Doric's hut)	C	Coins	19/128
 Guard (Doric's hut)	C	Coins x5	18/128
 Guard (Doric's hut)	C	Coins x7	16/128
@@ -6472,6 +6471,7 @@ Guard (Doric's hut)	C	Sweetcorn seed x3	1/155
 Guard (Doric's hut)	C	Strawberry seed x2	1/311
 Guard (Doric's hut)	C	Watermelon seed x2	1/651
 Guard (Doric's hut)	C	Snape grass seed x2	1/896
+Guard (Doric's hut)	C	Key (medium)	Clue step
 Guard (Hosidius)	A	Bones	Always
 Guard (Hosidius)	C	Coins	19/128
 Guard (Hosidius)	C	Coins x7	16/128
@@ -6504,7 +6504,6 @@ Guard (Hosidius)	C	Strawberry seed x2	1/311
 Guard (Hosidius)	C	Watermelon seed x2	1/651
 Guard (Hosidius)	C	Snape grass seed x2	1/896
 Guard (Port Roberts)	A	Bones	Always
-Guard (Port Roberts)	A	Key (medium)	Always
 Guard (Port Roberts)	C	Coins	19/128
 Guard (Port Roberts)	C	Coins x5	18/128
 Guard (Port Roberts)	C	Coins x7	16/128
@@ -6537,8 +6536,8 @@ Guard (Port Roberts)	C	Sweetcorn seed x3	1/155
 Guard (Port Roberts)	C	Strawberry seed x2	1/311
 Guard (Port Roberts)	C	Watermelon seed x2	1/651
 Guard (Port Roberts)	C	Snape grass seed x2	1/896
+Guard (Port Roberts)	C	Key (medium)	Clue step
 Guard (Port Sarim jail)	A	Bones	Always
-Guard (Port Sarim jail)	A	Key (medium)	Always
 Guard (Port Sarim jail)	C	Coins	19/128
 Guard (Port Sarim jail)	C	Coins x5	18/128
 Guard (Port Sarim jail)	C	Coins x7	16/128
@@ -6571,6 +6570,7 @@ Guard (Port Sarim jail)	C	Sweetcorn seed x3	1/155
 Guard (Port Sarim jail)	C	Strawberry seed x2	1/311
 Guard (Port Sarim jail)	C	Watermelon seed x2	1/651
 Guard (Port Sarim jail)	C	Snape grass seed x2	1/896
+Guard (Port Sarim jail)	C	Key (medium)	Clue step
 Guard (Prifddinas)	A	Bones	Always
 Guard (Prifddinas)	C	Coins x44	29/128
 Guard (Prifddinas)	C	Coins x180	10/128
@@ -6639,7 +6639,6 @@ Guard (Shayzien)	C	Strawberry seed x2	1/311
 Guard (Shayzien)	C	Watermelon seed x2	1/651
 Guard (Shayzien)	C	Snape grass seed x2	1/896
 Guard (Tlati Rainforest)	A	Bones	Always
-Guard (Tlati Rainforest)	A	Key (medium)	Always
 Guard (Tlati Rainforest)	C	Coins	19/128
 Guard (Tlati Rainforest)	C	Coins x5	18/128
 Guard (Tlati Rainforest)	C	Coins x7	16/128
@@ -6672,6 +6671,7 @@ Guard (Tlati Rainforest)	C	Sweetcorn seed x3	1/155
 Guard (Tlati Rainforest)	C	Strawberry seed x2	1/311
 Guard (Tlati Rainforest)	C	Watermelon seed x2	1/651
 Guard (Tlati Rainforest)	C	Snape grass seed x2	1/896
+Guard (Tlati Rainforest)	C	Key (medium)	Clue step
 Guard (Varlamore)	A	Bones	Always
 Guard (Varlamore)	C	Coins	19/128
 Guard (Varlamore)	C	Coins x7	16/128
@@ -6710,12 +6710,11 @@ Guard Bandit	C	Looting bag	1/6
 Guard Bandit	C	Slayer's enchantment	1/299
 Guard Bandit	C	Larran's key	1/1,109
 Guard dog	A	Bones	Always
-Guard dog	A	Key (medium)	Always
 Guard dog	C	Ensouled dog head	1/25
+Guard dog	C	Key (medium)	Clue step
 Guardian of Armadyl	A	Bones	Always
 Guardian of Armadyl	C	Armadyl pendant	Common
 Gunthor the brave	A	Bones	Always
-Gunthor the brave	A	Key (medium)	Always
 Gunthor the brave	C	Coins x8	42/128
 Gunthor the brave	C	Coins x12	9/128
 Gunthor the brave	C	Iron axe	6/128
@@ -6738,6 +6737,7 @@ Gunthor the brave	C	Law rune x2	1/128
 Gunthor the brave	C	Tin ore	1/128
 Gunthor the brave	C	Clue scroll (beginner)	1/30
 Gunthor the brave	C	Clue scroll (easy)	1/128
+Gunthor the brave	C	Key (medium)	Clue step
 H.A.M. Guard	A	Bones	Always
 H.A.M. Guard	S	Ham cloak	1/110
 H.A.M. Guard	S	Ham hood	1/110
@@ -6949,7 +6949,6 @@ Highwayman	A	Black cape	Always
 Highwayman	A	Bones	Always
 Highwayman	C	Iron bolts x2-12	5/100
 Hill Giant	A	Big bones	Always
-Hill Giant	A	Key (medium)	Always
 Hill Giant	R	Curved bone	1/5,012.5
 Hill Giant	R	Long bone	1/400
 Hill Giant	C	Coins x5	18/128
@@ -7002,6 +7001,7 @@ Hill Giant	C	Grimy lantadyme	1/780.2
 Hill Giant	C	Snape grass seed x2	1/896
 Hill Giant	C	Larran's key	1/911
 Hill Giant	C	Giant champion scroll	1/5,000
+Hill Giant	C	Key (medium)	Clue step
 Hobgoblin	A	Bones	Always
 Hobgoblin	C	Limpwurt root	22/128
 Hobgoblin	C	Coins x5	18/128
@@ -8282,7 +8282,6 @@ Killerwatt	C	Grimy dwarf weed	1/169.4
 Killerwatt	C	Grimy lantadyme	1/169.4
 King Black Dragon	A	Black dragonhide x2	Always
 King Black Dragon	A	Dragon bones	Always
-King Black Dragon	A	Key (elite)	Always
 King Black Dragon	S	Prince Black Dragon	1/3,000
 King Black Dragon	S	Kbd heads	1/128
 King Black Dragon	R	Draconic visage	1/5,000
@@ -8309,6 +8308,7 @@ King Black Dragon	C	Gold ore x100 (noted)	2/128
 King Black Dragon	C	Dragon med helm	1/128
 King Black Dragon	C	Brimstone key	1/65
 King Black Dragon	C	Clue scroll (elite)	1/450
+King Black Dragon	C	Key (elite)	Clue step
 King Sand Crab	A	Bones	Always
 King Sand Crab	R	Chaos talisman	1/298.7
 King Sand Crab	R	Nature talisman	1/298.7
@@ -9342,7 +9342,6 @@ Mammoth	C	Papaya tree seed	1/640
 Mammoth	C	Grimy dwarf weed	1/682.7
 Mammoth	C	Grimy lantadyme	1/682.7
 Man	A	Bones	Always
-Man	A	Key (medium)	Always
 Man	C	Coins x3	38/128
 Man	C	Coins x10	23/128
 Man	C	Bronze bolts x2-12	22/128
@@ -9374,6 +9373,7 @@ Man	C	Grimy kwuarm	1/142.5
 Man	C	Grimy cadantine	1/178.1
 Man	C	Grimy dwarf weed	1/237.4
 Man	C	Grimy lantadyme	1/237.4
+Man	C	Key (medium)	Clue step
 Man (East Ardougne)	A	Bones	Always
 Man (level 4)	A	Bones	Always
 Maniacal Monkey Archer	A	Small ninja monkey bones	Always
@@ -9480,7 +9480,6 @@ Manta ray (monster)	C	Dwarf weed seed x1-2	1/1,729.2
 Manta ray (monster)	C	Rosewood seed	1/1,980
 Manta ray (monster)	C	Torstol seed x1-2	1/3,458.4
 Market Guard	A	Bones	Always
-Market Guard	A	Key (medium)	Always
 Market Guard	C	Coins x15	42/128
 Market Guard	C	Coins x22	9/128
 Market Guard	C	Iron warhammer	6/128
@@ -9514,6 +9513,7 @@ Market Guard	C	Grimy kwuarm	1/1,638.4
 Market Guard	C	Grimy cadantine	1/2,048
 Market Guard	C	Grimy dwarf weed	1/2,730.7
 Market Guard	C	Grimy lantadyme	1/2,730.7
+Market Guard	C	Key (medium)	Clue step
 Market Guard (Draynor)	A	Bones	Always
 Mature custodian stalker	A	Big bones	Always
 Mature custodian stalker	S	Antler guard	1/800
@@ -9760,7 +9760,7 @@ Molanisk	C	Grimy cadantine	1/128
 Molanisk	C	Grimy dwarf weed	1/170.7
 Molanisk	C	Grimy lantadyme	1/170.7
 Monk	A	Bones	Always
-Monk	A	Key (medium)	Always
+Monk	C	Key (medium)	Clue step
 Monk of Zamorak	A	Bones	Always
 Monk of Zamorak	C	Zamorak monk bottom	1/20
 Monk of Zamorak	C	Zamorak monk top	1/20
@@ -10113,7 +10113,6 @@ Mummy (Ancient Pyramid)	C	Grimy cadantine	1/5,472
 Mummy (Ancient Pyramid)	C	Grimy dwarf weed	1/7,296
 Mummy (Ancient Pyramid)	C	Grimy lantadyme	1/7,296
 Mummy (Klenter's Pyramid)	A	Bones	Always
-Mutated Bloodveld	A	Reward casket (elite)	Always
 Mutated Bloodveld	A	Vile ashes	Always
 Mutated Bloodveld	C	Blood rune x30	13/128
 Mutated Bloodveld	C	Blood rune x7	10/128
@@ -10148,6 +10147,7 @@ Mutated Bloodveld	C	Ancient shard	1/220
 Mutated Bloodveld	C	Dark totem base	1/330
 Mutated Bloodveld	C	Dark totem middle	1/330
 Mutated Bloodveld	C	Dark totem top	1/330
+Mutated Bloodveld	C	Reward casket (elite)	Clue step
 Myre Blamish Snail	A	Blamish myre shell (round)	Always
 Myre Blamish Snail	A	Thin snail	Always
 Narf	A	Bones	Always
@@ -10877,7 +10877,6 @@ Penance Runner	A	Blue egg x2	Always
 Penance Runner	A	Green egg x2	Always
 Penance Runner	A	Red egg x2	Always
 Penda	A	Bones	Always
-Penda	A	Key (medium)	Always
 Penda	C	Coins x3	38/128
 Penda	C	Bronze bolts x2-12	22/128
 Penda	C	Energy potion(3)	9/128
@@ -10907,6 +10906,7 @@ Penda	C	Grimy kwuarm	1/142.5
 Penda	C	Grimy cadantine	1/178.1
 Penda	C	Grimy dwarf weed	1/237.4
 Penda	C	Grimy lantadyme	1/237.4
+Penda	C	Key (medium)	Clue step
 Penguin (monster)	A	Bones	Always
 Phantom Muspah	A	Charged ice	Always
 Phantom Muspah	S	Muphin	1/2,500
@@ -10982,7 +10982,6 @@ Phantom Muspah	C	Celastrus seed x3	1/2,937.5
 Phantom Muspah	C	Redwood tree seed x3	1/2,937.5
 Phrin Shade	A	Phrin remains	Always
 Pirate	A	Bones	Always
-Pirate	A	Key (medium)	Always
 Pirate	C	Coins x4	29/128
 Pirate	C	Coins x25	13/128
 Pirate	C	Right eye patch	12/128
@@ -11005,6 +11004,7 @@ Pirate	C	Iron bar	1/128
 Pirate	C	Iron platebody	1/128
 Pirate	C	Law rune x2	1/128
 Pirate	C	Looting bag	1/6
+Pirate	C	Key (medium)	Clue step
 Pirate (Thieving)	A	Bones	Always
 Pirate (Thieving)	C	Coins x4	29/128
 Pirate (Thieving)	C	Medallion fragment#3	1/6
@@ -11804,7 +11804,6 @@ Rock (Troll)	C	Grimy kwuarm	1/218.5
 Rock (Troll)	C	Grimy cadantine	1/273.1
 Rock (Troll)	C	Grimy dwarf weed	1/364.1
 Rock (Troll)	C	Grimy lantadyme	1/364.1
-Rock Crab	A	Reward casket (elite)	Always
 Rock Crab	C	Coins x4	29/128
 Rock Crab	C	Oyster x2	12/128
 Rock Crab	C	Oyster	9/128
@@ -11828,6 +11827,7 @@ Rock Crab	C	Empty oyster x3	1/128
 Rock Crab	C	Oyster pearl	1/128
 Rock Crab	C	Spinach roll	1/128
 Rock Crab	C	Clue scroll (easy)	1/128
+Rock Crab	C	Reward casket (elite)	Clue step
 Rock lobster	A	Raw lobster	Always
 Rock lobster	R	Chaos talisman	1/746.7
 Rock lobster	R	Nature talisman	1/746.7
@@ -13130,7 +13130,6 @@ Skogre	A	Zogre bones	Always
 Skogre	C	Zogre bone	1/4
 Skogre	C	Skeleton champion scroll	1/5,000
 Skogre	C	Zombie champion scroll	1/5,000
-Skotizo	A	Clue scroll (hard)	Always
 Skotizo	A	Infernal ashes	Always
 Skotizo	S	Uncut onyx	1/1,000
 Skotizo	S	Jar of Darkness	1/200
@@ -13164,6 +13163,7 @@ Skotizo	C	Dark totem top	3/128
 Skotizo	C	Brimstone key	1/56
 Skotizo	C	Ancient shard x5	1/100
 Skotizo	C	Dark totem	1/128
+Skotizo	C	Clue scroll (hard)	Clue step
 Skraeling (Etceteria)	A	Bones	Always
 Skraeling (Miscellania)	A	Bones	Always
 Slagilith	A	Adamantite ore	Always
@@ -16150,7 +16150,6 @@ Wingman Skree	C	Grimy kwuarm x1 (noted)	8/127
 Wingman Skree	C	Brimstone key	1/92
 Wingman Skree	C	Clue scroll (hard)	1/128
 Wizard	A	Bones	Always
-Wizard	A	Key (medium)	Always
 Wizard	C	Coins	23/128
 Wizard	C	Coins x2	9/128
 Wizard	C	Chaos rune x2	8/128
@@ -16176,6 +16175,7 @@ Wizard	C	Water rune x12	2/128
 Wizard	C	Blood rune x2	1/128
 Wizard	C	Coins x30	1/128
 Wizard	C	Law rune x2	1/128
+Wizard	C	Key (medium)	Clue step
 Wolf	A	Wolf bones	Always
 Wolf	C	Wolf bone	1/4
 Wolf	C	Looting bag	1/6
