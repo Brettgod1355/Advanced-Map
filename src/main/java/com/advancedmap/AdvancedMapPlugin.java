@@ -312,8 +312,10 @@ public class AdvancedMapPlugin extends Plugin
 			.build();
 
 		overlayManager.add(overlay);
-		mouseManager.registerMouseListener(input);
-		mouseManager.registerMouseWheelListener(input);
+		// first in line: RuneLite stops at the first listener that keeps a click, and another plugin's clickable area
+		// hidden under the map took most of the floor-down button (issue #3); clicks outside the map are passed on
+		mouseManager.registerMouseListener(0, input);
+		mouseManager.registerMouseWheelListener(0, input);
 		keyManager.registerKeyListener(input);
 		keyManager.registerKeyListener(hotkey);
 		if (config.sidebarButton())
