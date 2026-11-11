@@ -500,13 +500,13 @@ final class MapPainter
 			MultiCombat.draw(g, view);
 		}
 		List<MapIcons.Shown> shown = icons.visible(view, area, plane, settings, progress);
-		String bar = barText(view, mouse, loading, window, !shown.isEmpty(), infoOnHover);
+		String bar = barText(view, mouse, loading);
 		if (settings.isPlaceNames())
 		{
 			// no name under the buttons, the search box or the bar of text along the bottom (as wide as its text)
 			List<Rectangle> taken = spaceTaken(buttons(view.width, view.height, window));
 			taken.add(search.layout(buttons(view.width, view.height, window), view.width).getBox());
-			if (!filters.isOpen())
+			if (!filters.isOpen() && !bar.isEmpty())
 			{
 				taken.add(barBounds(g, view, bar));
 			}
@@ -1874,25 +1874,20 @@ final class MapPainter
 		}
 	}
 
-	/** What the bar along the bottom says: the tile under the mouse, how to use the map, and whether places on screen are still loading. */
-	private static String barText(MapViewport.View view, Point mouse, boolean loading, boolean window, boolean icons,
-		boolean hover)
+	/** What the bar along the bottom says: the tile under the mouse, and whether places on screen are still loading. */
+	private static String barText(MapViewport.View view, Point mouse, boolean loading)
 	{
+		// the tile under the mouse, and whether places on screen are still loading; how to use the map is in the
+		// help page, not along the bottom (owner, 2026-11-11)
 		StringBuilder text = new StringBuilder();
 		if (mouse != null && mouse.x >= 0 && mouse.y >= 0)
 		{
-			int tx = (int) Math.floor(view.worldX(mouse.x));
-			int ty = (int) Math.floor(view.worldY(mouse.y));
-			text.append(String.format(Locale.ROOT, "%d, %d", tx, ty)).append("    ");
-		}
-		text.append(window ? "Drag to move, scroll to zoom" : "Drag to move, scroll to zoom, Esc to close");
-		if (icons)
-		{
-			text.append(hover ? ", point at an icon for details, click to keep them" : ", click an icon for details");
+			text.append(String.format(Locale.ROOT, "%d, %d", (int) Math.floor(view.worldX(mouse.x)),
+				(int) Math.floor(view.worldY(mouse.y))));
 		}
 		if (loading)
 		{
-			text.append("    Loading the map...");
+			text.append(text.length() > 0 ? "    " : "").append("Loading the map...");
 		}
 		return text.toString();
 	}
@@ -1958,6 +1953,11 @@ final class MapPainter
 
 	private static void drawBar(Graphics2D g, MapViewport.View view, String text)
 	{
+		if (text.isEmpty())
+		{
+			// the mouse off the map and nothing loading: no empty bar
+			return;
+		}
 		g.setFont(FontManager.getRunescapeSmallFont());
 		FontMetrics metrics = g.getFontMetrics();
 		Rectangle bar = barBounds(g, view, text);
