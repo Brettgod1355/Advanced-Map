@@ -78,14 +78,19 @@ public class MapPainterTest
 	}
 
 	@Test
-	public void theFloorButtonsSitAboveTheFindMeButton()
+	public void theFloorButtonsSitInARowLeftOfTheFindMeButton()
 	{
+		// owner, 2026-11-11: down, the floor's name, up along the bottom, and the find-me button a top-row button's size
 		Map<MapPainter.Button, Rectangle> buttons = MapPainter.buttons(1000, 700, false);
 		Rectangle locate = buttons.get(MapPainter.Button.LOCATE);
 		Rectangle up = buttons.get(MapPainter.Button.FLOOR_UP);
 		Rectangle down = buttons.get(MapPainter.Button.FLOOR_DOWN);
-		assertTrue(up.y < down.y && down.y + down.height <= locate.y);
-		assertEquals(locate.x + locate.width, down.x + down.width);
+		assertEquals(MapPainter.BUTTON_HEIGHT, locate.height);
+		assertTrue(down.x + down.width < up.x && up.x + up.width < locate.x);
+		assertEquals(locate.y + locate.height, up.y + up.height);
+		assertEquals(up.y, down.y);
+		// room for the floor's name between them
+		assertTrue(up.x - (down.x + down.width) >= 24);
 	}
 
 	@Test
@@ -724,7 +729,8 @@ public class MapPainterTest
 	{
 		// the Slayer task moved into the Filters list: its button's square on the top row is the search box's again
 		Map<MapPainter.Button, Rectangle> buttons = MapPainter.buttons(1280, 800, false);
-		assertEquals(buttons.size(), MapPainter.spaceTaken(buttons).size());
+		// every button, and the floor's name between the floor buttons
+		assertEquals(buttons.size() + 1, MapPainter.spaceTaken(buttons).size());
 		Rectangle filters = buttons.get(MapPainter.Button.FILTERS);
 		Rectangle box = MapSearch.layout(MapPainter.buttons(560, 400, false), 560, 0).getBox();
 		Rectangle small = MapPainter.buttons(560, 400, false).get(MapPainter.Button.FILTERS);

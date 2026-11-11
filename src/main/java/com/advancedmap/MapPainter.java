@@ -96,7 +96,10 @@ final class MapPainter
 	}
 
 	static final int BUTTON_HEIGHT = 28;
-	static final int LOCATE_SIZE = 36;
+	/** The find-me button, as tall as the top row's buttons (owner, 2026-11-11: a little smaller than its 36). */
+	static final int LOCATE_SIZE = BUTTON_HEIGHT;
+	/** The size the locate button's marker was drawn for: smaller buttons draw it smaller. */
+	private static final double MARKER_BUTTON = 36;
 	/** The player's marker: the locate button's crosshair at this size (about 36 pixels across). */
 	static final double PLAYER_MARKER_SCALE = 1.4;
 	private static final float PLAYER_STROKE = 2.5f;
@@ -104,10 +107,11 @@ final class MapPainter
 	private static final Color TIP_EDGE = new Color(0x5A5040);
 	/** The names beside transport icons. */
 	private static final Color STOP_NAME = Transports.LINE;
-	static final int FLOOR_WIDTH = LOCATE_SIZE;
-	static final int FLOOR_HEIGHT = 24;
+	/** The floor buttons: a row along the bottom, left of the find-me button (owner, 2026-11-11), as tall as it. */
+	static final int FLOOR_WIDTH = BUTTON_HEIGHT;
+	static final int FLOOR_HEIGHT = BUTTON_HEIGHT;
 	/** Room for the floor's name between its two buttons. */
-	private static final int FLOOR_LABEL = 22;
+	private static final int FLOOR_LABEL = 30;
 	private static final int GAP = 8;
 	private static final int AREA_WIDTH = 110;
 	/** "Underground" / "Surface", on a map too narrow for the full name and the search box beside it. */
@@ -411,10 +415,12 @@ final class MapPainter
 		out.put(Button.FILTERS, new Rectangle(GAP * 3 + BUTTON_HEIGHT + iconsWidth, GAP, filters, BUTTON_HEIGHT));
 		out.put(Button.LOCATE, new Rectangle(width - GAP - LOCATE_SIZE, height - GAP - LOCATE_SIZE, LOCATE_SIZE,
 			LOCATE_SIZE));
-		int down = height - GAP - LOCATE_SIZE - GAP - FLOOR_HEIGHT;
-		out.put(Button.FLOOR_DOWN, new Rectangle(width - GAP - FLOOR_WIDTH, down, FLOOR_WIDTH, FLOOR_HEIGHT));
-		out.put(Button.FLOOR_UP, new Rectangle(width - GAP - FLOOR_WIDTH, down - FLOOR_LABEL - FLOOR_HEIGHT, FLOOR_WIDTH,
-			FLOOR_HEIGHT));
+		// down, the floor's name, up, left of the find-me button and level with it: the list on the right runs down to
+		// them, not to a column of buttons above it
+		int floorY = height - GAP - FLOOR_HEIGHT;
+		int upX = width - GAP - LOCATE_SIZE - GAP - FLOOR_WIDTH;
+		out.put(Button.FLOOR_UP, new Rectangle(upX, floorY, FLOOR_WIDTH, FLOOR_HEIGHT));
+		out.put(Button.FLOOR_DOWN, new Rectangle(upX - FLOOR_LABEL - FLOOR_WIDTH, floorY, FLOOR_WIDTH, FLOOR_HEIGHT));
 		int right = width - GAP;
 		if (!window)
 		{
@@ -1412,7 +1418,10 @@ final class MapPainter
 	/** The buttons' squares, which no place name may cross. */
 	static List<Rectangle> spaceTaken(Map<Button, Rectangle> buttons)
 	{
-		return new ArrayList<>(buttons.values());
+		List<Rectangle> taken = new ArrayList<>(buttons.values());
+		// the floor's name between its two buttons
+		taken.add(buttons.get(Button.FLOOR_DOWN).union(buttons.get(Button.FLOOR_UP)));
+		return taken;
 	}
 
 	/** The ids of a map's regions a view shows. */
@@ -1987,7 +1996,8 @@ final class MapPainter
 		MapSettings settings, boolean located, boolean following, boolean maximized, boolean filtersOpen,
 		boolean menuOpen)
 	{
-		for (Map.Entry<Button, Rectangle> entry : buttons(view.width, view.height, window).entrySet())
+		Map<Button, Rectangle> buttons = buttons(view.width, view.height, window);
+		for (Map.Entry<Button, Rectangle> entry : buttons.entrySet())
 		{
 			Rectangle button = entry.getValue();
 			g.setColor(BAR);
@@ -2004,7 +2014,7 @@ final class MapPainter
 				drawFloorButton(g, button, up, enabled);
 				if (up)
 				{
-					drawFloorName(g, button, area, plane, settings.getFloorNumbers());
+					drawFloorName(g, buttons.get(Button.FLOOR_DOWN), button, area, plane, settings.getFloorNumbers());
 				}
 				continue;
 			}
@@ -2064,18 +2074,23 @@ final class MapPainter
 	 * The floor's short name between the floor buttons: "G", "2" and so on; on the underground map "U", then "U2" for a
 	 * floor above a dungeon's lowest.
 	 */
-	private static void drawFloorName(Graphics2D g, Rectangle up, MapArea area, int plane, FloorNumbers floors)
+	private static void drawFloorName(Graphics2D g, Rectangle down, Rectangle up, MapArea area, int plane,
+		FloorNumbers floors)
 	{
 		g.setFont(FontManager.getRunescapeSmallFont());
 		FontMetrics metrics = g.getFontMetrics();
 		String text = area == MapArea.UNDERGROUND ? plane == 0 ? "U" : "U" + floors.shortName(plane) : floors.shortName(plane);
-		int width = Math.max(FLOOR_LABEL - 4, metrics.stringWidth(text) + 10);
-		int x = up.x + (up.width - width) / 2;
-		int y = up.y + up.height + 2;
+		// in the room between the two buttons, middled on it
+		int room = up.x - (down.x + down.width);
+		int width = Math.max(room - 4, metrics.stringWidth(text) + 10);
+		int height = up.height - 6;
+		int x = down.x + down.width + (room - width) / 2;
+		int y = up.y + (up.height - height) / 2;
 		g.setColor(BAR);
-		g.fillRoundRect(x, y, width, FLOOR_LABEL - 4, 8, 8);
+		g.fillRoundRect(x, y, width, height, 8, 8);
 		g.setColor(TEXT);
-		g.drawString(text, x + 5, y + (FLOOR_LABEL - 4 + metrics.getAscent() - metrics.getDescent()) / 2);
+		g.drawString(text, x + (width - metrics.stringWidth(text)) / 2,
+			y + (height + metrics.getAscent() - metrics.getDescent()) / 2);
 	}
 
 	/**
@@ -2159,8 +2174,9 @@ final class MapPainter
 		g.setColor(following && located ? color : BAR);
 		g.fillOval(button.x, button.y, button.width, button.height);
 		PlayerMarker marker = settings.getPlayerMarker();
-		// a pin's point is on its spot: the button's middle holds the whole pin
-		marker.draw(g, button.getCenterX(), button.getCenterY() + (marker == PlayerMarker.PIN ? 8 : 0), 1,
+		// as big as the button allows; a pin's point is on its spot, so the button's middle holds the whole pin
+		double scale = button.width / MARKER_BUTTON;
+		marker.draw(g, button.getCenterX(), button.getCenterY() + (marker == PlayerMarker.PIN ? 8 * scale : 0), scale,
 			following && located ? PLAYER : located ? color : new Color(0x707070), 2);
 		if (antialiasing != null)
 		{
