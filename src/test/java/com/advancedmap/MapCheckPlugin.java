@@ -10,6 +10,7 @@ import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,7 +37,8 @@ import net.runelite.client.util.LinkBrowser;
  * {@link AdvancedMapPluginTest}; in the test folder, so it is never built into the plugin the Plugin Hub ships.
  */
 @Slf4j
-@PluginDescriptor(name = "Advanced Map check (dev)", description = "Lists dungeon icons with no link or no name")
+@PluginDescriptor(name = "Advanced Map check (dev)",
+	description = "Lists dungeon icons with no link or no name, and shops with no icon")
 public class MapCheckPlugin extends Plugin
 {
 	static final Path FOLDER = RuneLite.RUNELITE_DIR.toPath().resolve("advanced-map-check");
@@ -67,7 +69,20 @@ public class MapCheckPlugin extends Plugin
 			rows.add(open);
 		}
 		JButton folder = new JButton("Open the lists' folder");
-		folder.addActionListener(e -> LinkBrowser.open(FOLDER.toString()));
+		folder.addActionListener(e ->
+		{
+			// made first: nothing is written there until a list is opened or the map watch finds something, and
+			// opening a folder that is not there threw (owner's Black Box, 2026-11-14)
+			try
+			{
+				Files.createDirectories(FOLDER);
+				LinkBrowser.open(FOLDER.toString());
+			}
+			catch (IOException ex)
+			{
+				status.setText("Could not make " + FOLDER);
+			}
+		});
 		rows.add(folder);
 		rows.add(status);
 		panel.add(rows);
@@ -119,14 +134,24 @@ public class MapCheckPlugin extends Plugin
 			List<MapLabels.Label> labels = names == null ? Collections.emptyList() : names.all();
 			List<MapSearch.Entry> places = map.search().places();
 			WorldPoint player = map.playerLocation();
-			List<MapCheck.Found> list = MapCheck.of(MapCheck.find(spots, map::leadsTo,
-				(spot, to, withLabels) -> DungeonPreview.name(spot, to, places,
-					withLabels ? labels : Collections.emptyList()),
-				player != null ? player : new WorldPoint(3222, 3218, 0)), kind);
+			WorldPoint from = player != null ? player : new WorldPoint(3222, 3218, 0);
+			List<MapCheck.Found> list;
 			int icons = 0;
-			for (MapSpot spot : new ArrayList<>(spots))
+			if (kind == MapCheck.Kind.SHOP_NO_ICON)
 			{
-				icons += spot.getGroup() == IconGroup.DUNGEONS ? 1 : 0;
+				List<Shops.Shop> shops = Shops.all();
+				list = MapCheck.shopsWithoutIcon(shops, spots, from);
+				icons = shops.size();
+			}
+			else
+			{
+				list = MapCheck.of(MapCheck.find(spots, map::leadsTo,
+					(spot, to, withLabels) -> DungeonPreview.name(spot, to, places,
+						withLabels ? labels : Collections.emptyList()), from), kind);
+				for (MapSpot spot : new ArrayList<>(spots))
+				{
+					icons += spot.getGroup() == IconGroup.DUNGEONS ? 1 : 0;
+				}
 			}
 			Path file = FOLDER.resolve(kind.file + ".tsv");
 			MapCheck.write(file, list, labels);

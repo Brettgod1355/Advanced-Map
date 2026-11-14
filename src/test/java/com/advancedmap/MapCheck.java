@@ -21,9 +21,10 @@ import net.runelite.api.coords.WorldPoint;
 
 /**
  * The development client's map check (never shipped: the test folder is not built into the plugin): the dungeon
- * icons whose data is not finished, as lists the owner clicks through in game. Three lists: an icon a click on which
+ * icons whose data is not finished, as lists the owner clicks through in game. Four lists: an icon a click on which
  * leads nowhere; a way into a dungeon that has no name at all; a way into one whose name is only the nearest of the
- * game's map labels, which may be the wrong one. Each list is also written to a file with a column to fill in.
+ * game's map labels, which may be the wrong one; a shop the map's data knows that has no shop icon near it. Each list
+ * is also written to a file with a column to fill in.
  */
 final class MapCheck
 {
@@ -31,7 +32,8 @@ final class MapCheck
 	{
 		NO_LINK("Dungeon icons that lead nowhere", "no-link"),
 		NO_NAME("Dungeons with no name", "no-name"),
-		LABEL_NAME("Dungeons named by the nearest map label", "label-name");
+		LABEL_NAME("Dungeons named by the nearest map label", "label-name"),
+		SHOP_NO_ICON("Shops with no icon", "shop-no-icon");
 
 		final String title;
 		final String file;
@@ -109,6 +111,41 @@ final class MapCheck
 		return out;
 	}
 
+	/** The category a shop with no icon is listed under: the first of {@link IconGroup#SHOPS}' (a shop icon). */
+	private static final int SHOP = 1049;
+
+	/**
+	 * Every shop of the map's data with no shop icon within {@link Shops#REACH} on its floor, nearest {@code from}
+	 * first: the game's map does not mark it (the Blast Furnace's two, owner 2026-11-14), so the map shows no icon to
+	 * point at for what it sells. Only icons found so far count: a region not yet scanned has none.
+	 */
+	static List<Found> shopsWithoutIcon(List<Shops.Shop> shops, List<MapSpot> spots, WorldPoint from)
+	{
+		List<Found> out = new ArrayList<>();
+		for (Shops.Shop shop : shops)
+		{
+			WorldPoint at = shop.getPoint();
+			boolean marked = false;
+			for (MapSpot spot : spots)
+			{
+				if (spot.getGroup() == IconGroup.SHOPS && spot.getPlane() == at.getPlane()
+					&& Math.max(Math.abs(spot.getX() - at.getX()), Math.abs(spot.getY() - at.getY())) <= Shops.REACH)
+				{
+					marked = true;
+					break;
+				}
+			}
+			if (!marked)
+			{
+				String owner = shop.getOwner() == null || shop.getOwner().isEmpty() ? "" : " (" + shop.getOwner() + ")";
+				out.add(new Found(Kind.SHOP_NO_ICON, MapSpot.icon(at.getX(), at.getY(), at.getPlane(), 0, SHOP), null,
+					shop.getName() + owner));
+			}
+		}
+		out.sort(Comparator.comparingInt(found -> SearchSpots.distance(found.point(), from)));
+		return out;
+	}
+
 	static List<Found> of(List<Found> all, Kind kind)
 	{
 		List<Found> out = new ArrayList<>();
@@ -126,16 +163,18 @@ final class MapCheck
 	static List<SideList.Row> rows(List<Found> list, Kind kind, List<MapLabels.Label> labels, int icons, Path file)
 	{
 		List<SideList.Row> rows = new ArrayList<>();
-		rows.add(new SideList.Row(list.size() + " of the " + icons + " dungeon icons found so far (the map finds more"
-			+ " as it scans). Click one to go there. Also written to " + file, null, null, null, null, null));
+		boolean shops = kind == Kind.SHOP_NO_ICON;
+		rows.add(new SideList.Row(list.size() + " of the " + icons + (shops ? " shops have no shop icon among the icons"
+			: " dungeon icons") + " found so far (the map finds more as it scans). Click one to go there. Also written"
+			+ " to " + file, null, null, null, null, null));
 		for (Found found : list)
 		{
 			WorldPoint at = found.point();
 			String near = SearchSpots.name(at, labels);
-			String where = "icon " + tile(at) + (found.to == null ? "" : "; leads to " + tile(found.to));
-			String text = kind == Kind.LABEL_NAME ? found.name : near;
-			rows.add(new SideList.Row(text, MapArea.of(at.getY()) == MapArea.SURFACE ? "surface" : "underground",
-				kind == Kind.LABEL_NAME ? "near " + near + "; " + where : where, null, at, null));
+			String where = (shops ? "shop " : "icon ") + tile(at) + (found.to == null ? "" : "; leads to " + tile(found.to));
+			boolean named = kind == Kind.LABEL_NAME || shops;
+			rows.add(new SideList.Row(named ? found.name : near, MapArea.of(at.getY()) == MapArea.SURFACE ? "surface"
+				: "underground", named ? "near " + near + "; " + where : where, null, at, null));
 		}
 		return rows;
 	}

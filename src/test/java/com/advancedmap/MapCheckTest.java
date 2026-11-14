@@ -78,6 +78,33 @@ public class MapCheckTest
 			MapCheck.lines(MapCheck.of(all, MapCheck.Kind.NO_LINK), labels, Collections.emptyList()).get(1));
 	}
 
+	@Test
+	public void aShopWithNoShopIconNearOnItsFloorIsListed()
+	{
+		// owner, 2026-11-14: Ordan's and Jorzik's shops in the Blast Furnace have no icon on the game's map
+		Shops.Shop furnace = new Shops.Shop("Armour store", new WorldPoint(1939, 4968, 0), "Jorzik",
+			Collections.emptyList(), 0);
+		Shops.Shop marked = new Shops.Shop("General Store", new WorldPoint(3212, 3246, 0), "Shop keeper",
+			Collections.emptyList(), 0);
+		Shops.Shop upstairs = new Shops.Shop("Upstairs shop", new WorldPoint(3215, 3250, 1), "",
+			Collections.emptyList(), 1);
+		// a shop icon 4 tiles from the general store, on the ground floor; a bank icon by the Blast Furnace counts not
+		MapSpot generalIcon = MapSpot.icon(3215, 3249, 0, 1, 1049);
+		MapSpot bankIcon = MapSpot.icon(1940, 4966, 0, 2, IconGroup.BANK);
+		List<MapCheck.Found> found = MapCheck.shopsWithoutIcon(Arrays.asList(furnace, marked, upstairs),
+			Arrays.asList(generalIcon, bankIcon), LUMBRIDGE);
+		// the general store has its icon; the upstairs shop is on another floor than that icon, and the furnace's has none
+		assertEquals(2, found.size());
+		assertEquals("Upstairs shop", found.get(0).getName());
+		assertEquals("Armour store (Jorzik)", found.get(1).getName());
+		assertEquals(new WorldPoint(1939, 4968, 0), found.get(1).point());
+		List<SideList.Row> rows = MapCheck.rows(found, MapCheck.Kind.SHOP_NO_ICON, Collections.emptyList(), 3,
+			Paths.get("shop-no-icon.tsv"));
+		assertTrue(rows.get(0).getText(), rows.get(0).getText().startsWith("2 of the 3 shops have no shop icon"));
+		assertEquals("Armour store (Jorzik)", rows.get(2).getText());
+		assertEquals(new WorldPoint(1939, 4968, 0), rows.get(2).getPoint());
+	}
+
 	private static List<MapSpot> spots(List<MapCheck.Found> found)
 	{
 		List<MapSpot> out = new java.util.ArrayList<>();
