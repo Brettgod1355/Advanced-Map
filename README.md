@@ -288,6 +288,11 @@ Questions, ideas and bug reports: [GitHub issues](https://github.com/Brettgod135
 - Mining sites, rare trees, fishing spots, hunter areas, dungeon and minigame entrances come from RuneLite's own
   world map plugin (BSD 2-Clause).
 - Transport routes and fares come from [Shortest Path](https://github.com/Skretzo/shortest-path) (BSD 2-Clause).
+- Monster pictures are Jagex's artwork, from the [Old School RuneScape Wiki](https://oldschool.runescape.wiki/),
+  included under Jagex's [Fan Content Policy](https://legal.jagex.com/docs/policies/fan-content-policy):
+
+  Created using intellectual property belonging to Jagex Limited under the terms of Jagex's Fan Content Policy.
+  This content is not endorsed by or affiliated with Jagex.
 
 Every bundled source, its license and what was changed are listed in
 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). Advanced Map itself is under the BSD 2-Clause license

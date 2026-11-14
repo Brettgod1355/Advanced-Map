@@ -217,7 +217,23 @@ The game and its data are Jagex's; this plugin is not affiliated with or endorse
 
 `icon.png` and the sidebar icon are this project's own drawing, made in code (`MapIcon.java`) and licensed with
 the rest of the project under the BSD 2-Clause License. So are the pictures a player's markers can have
-(`MarkerIcons.java`). No game artwork or wiki image is included.
+(`MarkerIcons.java`). The only game artwork included is the monster pictures below.
+
+## Monster pictures (Jagex's artwork, from the Old School RuneScape Wiki)
+
+`src/main/resources/com/advancedmap/monsters/` holds one picture for each monster the map shows (821). They are
+the monster images from the [Old School RuneScape Wiki](https://oldschool.runescape.wiki/), each the main image of
+the monster's page there, downloaded once on 2026-11-14. The images are Jagex's artwork, which the wiki uses with
+Jagex's permission; they are not covered by the wiki's CC BY-NC-SA licence and are not under this project's BSD
+license. They are included under Jagex's
+[Fan Content Policy](https://legal.jagex.com/docs/policies/fan-content-policy):
+
+Created using intellectual property belonging to Jagex Limited under the terms of Jagex's Fan Content Policy.
+This content is not endorsed by or affiliated with Jagex.
+
+Changes: each picture trimmed to the monster, scaled so its longest side is 64 pixels, and reduced to 128 colours;
+named after the monster as the map names it. Nothing is fetched while the plugin runs. Ground items' pictures are
+not bundled: they are the game's own item icons, drawn by RuneLite while you play.
 
 ## Facts from the Old School RuneScape Wiki
 
