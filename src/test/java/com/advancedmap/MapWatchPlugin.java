@@ -80,6 +80,24 @@ public class MapWatchPlugin extends Plugin
 	private int usedTick;
 	/** The option of {@link #used} alone ("Travel"), to tell an Agility obstacle from a transport. */
 	private String usedOption;
+	/**
+	 * What was used as the reports' receiver takes it ({@code "k":"o","id":14880,"op":1}), as the plugin's own "Report
+	 * missing transports" would send it; null when the option is no first to fifth (an examine).
+	 */
+	private String usedReport;
+	/** Each way sent once a client session, as the plugin would. */
+	private final java.util.Set<String> sent = new java.util.HashSet<>();
+
+	/**
+	 * Where the dev client sends its missing-transport findings, to see the public page as it would be with the
+	 * setting shipped (owner, 2026-11-14: "I want these findings to also show on the website"). The Worker of the
+	 * advanced-map-reports repository; it answers 404 until deployed, which is only logged.
+	 */
+	static final String REPORTS = "https://advanced-map-reports.brettgodfrey96.workers.dev/report";
+	private static final List<String> OPTIONS = java.util.Arrays.asList("FIRST", "SECOND", "THIRD", "FOURTH", "FIFTH");
+
+	@Inject
+	private okhttp3.OkHttpClient http;
 	private int markerOff;
 	private boolean shopOpened;
 
@@ -190,16 +208,81 @@ public class MapWatchPlugin extends Plugin
 		{
 			NPC npc = event.getMenuEntry().getNpc();
 			usedAt = npc != null ? npc.getWorldLocation() : client.getTopLevelWorldView() == null ? null
-				: WorldPoint.fromScene(client.getTopLevelWorldView(), event.getParam0(), event.getParam1(), 0);
+				: WorldPoint.fromScene(client.getTopLevelWorldView(), event.getParam0(), event.getParam1(),
+					client.getTopLevelWorldView().getPlane());
 			used = "\"" + option + " " + Text.removeTags(event.getMenuTarget()) + "\" (id " + event.getId() + ")";
 			usedOption = option;
 			usedTick = client.getTickCount();
+			usedReport = report(action, npc, event.getId());
 		}
 		else if (action.equals("WALK") || option.startsWith("Cast") || option.contains("eleport")
 			|| option.equals("Rub") || option.equals("Break"))
 		{
 			used = null;
 		}
+	}
+
+	/**
+	 * What was used, as the receiver takes it: the kind, its id (an NPC's own, not its slot; an object as this player
+	 * sees it), and which of its first five options. Null for another option. As TransportReports does.
+	 */
+	private String report(String action, NPC npc, int id)
+	{
+		String[] parts = action.split("_");
+		boolean object = parts[0].equals("GAME") && parts.length == 4;
+		int option = OPTIONS.indexOf(parts[object ? 2 : 1]) + 1;
+		if (option == 0 || !object && npc == null)
+		{
+			return null;
+		}
+		int kind = object ? id : npc.getId();
+		if (object)
+		{
+			net.runelite.api.ObjectComposition seen = client.getObjectDefinition(id);
+			seen = seen == null || seen.getImpostorIds() == null ? seen : seen.getImpostor();
+			kind = seen == null ? id : seen.getId();
+		}
+		return "\"k\":\"" + (object ? 'o' : 'n') + "\",\"id\":" + kind + ",\"op\":" + option;
+	}
+
+	/**
+	 * Sends a missing way to the reports' receiver, once a session: what was used, its tile, where the player stood
+	 * and arrived. Only a jump the receiver takes (onto the other map, or over its 24 tiles): a short trip is logged
+	 * here and not sent. The answer is logged ("map watch report: 204").
+	 */
+	private void send(WorldPoint at, WorldPoint from, WorldPoint to)
+	{
+		String what = usedReport;
+		if (what == null || at == null || from == null || to == null
+			|| MapArea.of(from.getY()) == MapArea.of(to.getY()) && MapWatch.flat(from, to) <= MapWatch.JUMP
+			|| !sent.add(what + tile(at) + (to.getX() >> 3) + "," + (to.getY() >> 3)))
+		{
+			return;
+		}
+		String body = "{\"v\":\"" + WhatsNew.VERSION + "\"," + what + ",\"at\":" + json(at) + ",\"from\":" + json(from)
+			+ ",\"to\":" + json(to) + "}";
+		http.newCall(new okhttp3.Request.Builder().url(REPORTS)
+			.post(okhttp3.RequestBody.create(okhttp3.MediaType.parse("application/json"), body)).build())
+			.enqueue(new okhttp3.Callback()
+			{
+				@Override
+				public void onFailure(okhttp3.Call call, IOException e)
+				{
+					log.debug("map watch report: not sent ({}) {}", e.getMessage(), body);
+				}
+
+				@Override
+				public void onResponse(okhttp3.Call call, okhttp3.Response response)
+				{
+					log.debug("map watch report: {} {}", response.code(), body);
+					response.close();
+				}
+			});
+	}
+
+	private static String json(WorldPoint at)
+	{
+		return "[" + at.getX() + "," + at.getY() + "," + at.getPlane() + "]";
 	}
 
 	@Subscribe
@@ -271,7 +354,7 @@ public class MapWatchPlugin extends Plugin
 		boolean afterUse = used != null && client.getTickCount() - usedTick <= USED_FOR && !MapWatch.agility(usedOption);
 		if (last != null && (MapWatch.jumped(last, at) || afterUse && MapWatch.stepped(last, at)))
 		{
-			jumped(map, last, at);
+			jumped(map, last, at, raw);
 		}
 		last = at;
 		lastRaw = raw;
@@ -302,7 +385,7 @@ public class MapWatchPlugin extends Plugin
 	}
 
 	/** A jump: by a dungeon icon it must lead where the player arrived; elsewhere the map must know the way. */
-	private void jumped(AdvancedMapPlugin map, WorldPoint from, WorldPoint to)
+	private void jumped(AdvancedMapPlugin map, WorldPoint from, WorldPoint to, WorldPoint toRaw)
 	{
 		String with = used != null && client.getTickCount() - usedTick <= USED_FOR && usedAt != null
 			&& lastRaw != null && MapWatch.flat(usedAt, lastRaw) <= USED_REACH ? used : null;
@@ -324,6 +407,11 @@ public class MapWatchPlugin extends Plugin
 			: icon != null ? "the dungeon icon at " + tile(new WorldPoint(icon.getX(), icon.getY(), icon.getPlane()))
 			+ " leads there" : known ? "the map knows the way" : "nothing to report");
 		note(finding);
+		// a way the map lacks goes to the public reports page too, as the plugin's setting would send it
+		if (finding != null && (finding[0].equals("transport-unlisted") || finding[0].startsWith("link-")))
+		{
+			send(usedAt, lastRaw, toRaw);
+		}
 	}
 
 	private static String tile(WorldPoint at)
