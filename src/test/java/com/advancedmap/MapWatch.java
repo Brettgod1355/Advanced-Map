@@ -235,6 +235,36 @@ final class MapWatch
 		return !near(from, to, JUMP);
 	}
 
+	/**
+	 * A move of more than this many tiles in one tick, right after an object or NPC was used, is a trip too: running
+	 * covers 2. Keldagrim's ferries move 11 to 16 tiles, under {@link #JUMP} (owner's Black Box, 2026-11-14).
+	 */
+	static final int STEP = 3;
+
+	/** True when a tick's move is more than a run: farther than {@link #STEP}, or onto the other map. */
+	static boolean stepped(WorldPoint from, WorldPoint to)
+	{
+		return !near(from, to, STEP);
+	}
+
+	/**
+	 * True for an option that moves a player a few tiles at once on an Agility course or shortcut (a rooftop gap, a
+	 * log): no transport, so a short move after it is no trip. A long jump after one is still judged.
+	 */
+	static boolean agility(String option)
+	{
+		String o = option == null ? "" : option.toLowerCase(java.util.Locale.ROOT);
+		for (String verb : new String[]{"jump", "cross", "balance", "climb", "squeeze", "leap", "vault", "hurdle",
+			"swing", "grab", "walk-", "run-", "tightrope", "teeth-grip", "shimmy", "crawl", "pass"})
+		{
+			if (o.startsWith(verb))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
 	/** The dungeon icon nearest a tile on its map, within {@link #ICON_REACH}, or null. */
 	static MapSpot dungeonIconNear(List<MapSpot> spots, WorldPoint at)
 	{

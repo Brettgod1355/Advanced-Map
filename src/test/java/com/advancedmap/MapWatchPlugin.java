@@ -78,6 +78,8 @@ public class MapWatchPlugin extends Plugin
 	private String used;
 	private WorldPoint usedAt;
 	private int usedTick;
+	/** The option of {@link #used} alone ("Travel"), to tell an Agility obstacle from a transport. */
+	private String usedOption;
 	private int markerOff;
 	private boolean shopOpened;
 
@@ -190,6 +192,7 @@ public class MapWatchPlugin extends Plugin
 			usedAt = npc != null ? npc.getWorldLocation() : client.getTopLevelWorldView() == null ? null
 				: WorldPoint.fromScene(client.getTopLevelWorldView(), event.getParam0(), event.getParam1(), 0);
 			used = "\"" + option + " " + Text.removeTags(event.getMenuTarget()) + "\" (id " + event.getId() + ")";
+			usedOption = option;
 			usedTick = client.getTickCount();
 		}
 		else if (action.equals("WALK") || option.startsWith("Cast") || option.contains("eleport")
@@ -264,7 +267,9 @@ public class MapWatchPlugin extends Plugin
 			last = null;
 			return;
 		}
-		if (last != null && MapWatch.jumped(last, at))
+		// a long jump, or a short one right after using an object or NPC that is no Agility obstacle (a ferry)
+		boolean afterUse = used != null && client.getTickCount() - usedTick <= USED_FOR && !MapWatch.agility(usedOption);
+		if (last != null && (MapWatch.jumped(last, at) || afterUse && MapWatch.stepped(last, at)))
 		{
 			jumped(map, last, at);
 		}

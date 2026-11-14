@@ -226,4 +226,19 @@ public class MapWatchTest
 		assertNull(memory.add(false, 2000, 0));
 		assertNull(memory.add(true, 2000, 1));
 	}
+
+	@Test
+	public void aShortMoveRightAfterAFerryIsATripButNotAfterAnAgilityObstacle()
+	{
+		// owner, 2026-11-14: Keldagrim's ferry moved 16 tiles in a tick, under the 24 of a jump, and was not judged
+		WorldPoint ferry = new WorldPoint(2841, 10127, 0);
+		WorldPoint across = new WorldPoint(2837, 10143, 0);
+		assertTrue(!MapWatch.jumped(ferry, across) && MapWatch.stepped(ferry, across));
+		// a run covers 2 tiles a tick: no trip
+		assertTrue(!MapWatch.stepped(ferry, new WorldPoint(2843, 10129, 0)));
+		// the option tells a transport from an Agility obstacle
+		assertTrue(!MapWatch.agility("Travel") && !MapWatch.agility("Board"));
+		assertTrue(MapWatch.agility("Jump") && MapWatch.agility("Cross") && MapWatch.agility("Climb-over")
+			&& MapWatch.agility("Balance-across"));
+	}
 }
