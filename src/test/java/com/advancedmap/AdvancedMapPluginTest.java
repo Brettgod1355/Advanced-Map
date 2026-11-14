@@ -9,7 +9,9 @@ import net.runelite.client.RuneLite;
 import net.runelite.client.externalplugins.ExternalPluginManager;
 
 /**
- * Starts a development RuneLite client with this plugin loaded.
+ * Starts a development RuneLite client with this plugin loaded, and beside it the map check and the map watch
+ * ({@link MapCheckPlugin}, {@link MapWatchPlugin}), which are only in the test folder and so never in the plugin the
+ * Plugin Hub ships.
  * Run with {@code ./gradlew run} or from IntelliJ.
  */
 public final class AdvancedMapPluginTest
@@ -17,7 +19,7 @@ public final class AdvancedMapPluginTest
 	@SuppressWarnings("unchecked") // RuneLite's loadBuiltin uses generic varargs.
 	public static void main(String[] args) throws Exception
 	{
-		ExternalPluginManager.loadBuiltin(AdvancedMapPlugin.class);
+		ExternalPluginManager.loadBuiltin(AdvancedMapPlugin.class, MapCheckPlugin.class, MapWatchPlugin.class);
 		RuneLite.main(args);
 	}
 }

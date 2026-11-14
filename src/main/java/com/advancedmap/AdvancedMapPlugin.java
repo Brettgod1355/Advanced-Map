@@ -142,9 +142,10 @@ public class AdvancedMapPlugin extends Plugin
 	/** The markers' file work, one task after another, so a read never runs ahead of a save made before it. */
 	private ExecutorService markerFiles;
 	private CacheReader reader;
-	private ClientMapSource source;
-	private MapIcons icons;
-	private MapLabels labels;
+	// these three are open to the package for the development client's map check (in the test folder)
+	ClientMapSource source;
+	MapIcons icons;
+	MapLabels labels;
 	private final MapFilters filters = new MapFilters();
 	private final SideList sideList = new SideList();
 	private final MapSearch search = new MapSearch();
@@ -173,7 +174,8 @@ public class AdvancedMapPlugin extends Plugin
 	private volatile MapPins.Pin menuPin;
 	private volatile boolean labelsLoading;
 	private volatile boolean regionsListing;
-	private RegionImages images;
+	// open to the package for the development client's map watch
+	RegionImages images;
 	private MapPreparer preparer;
 	private AdvancedMapPanel panel;
 	private MapMessages messages;
@@ -3483,7 +3485,7 @@ public class AdvancedMapPlugin extends Plugin
 	 * Where the player is in the world. Aboard a boat the player stands in the boat's own small world (its deck, which
 	 * the map would show as a few planks in open sea): the spot is moved through the boat to where it sails.
 	 */
-	private WorldPoint currentPlayerLocation()
+	WorldPoint currentPlayerLocation()
 	{
 		Player local = client.getLocalPlayer();
 		LocalPoint at = local == null ? null : local.getLocalLocation();
