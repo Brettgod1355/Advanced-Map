@@ -226,6 +226,18 @@ public class DungeonPreviewTest
 	}
 
 	@Test
+	public void theTombsOfAmascutEntranceIsNamedOnItsIconsFloor()
+	{
+		// owner, 2026-11-14 (the map check's "Dungeons with no name"): the pyramid's dungeon icon is on floor 1, where
+		// RuneLite's list had floor 0, so the name never reached it
+		MapSearch search = new MapSearch();
+		search.load();
+		MapSpot icon = MapSpot.icon(3358, 2711, 1, 1, IconGroup.DUNGEON);
+		assertEquals("Tombs of Amascut", DungeonPreview.name(icon, new WorldPoint(3359, 9129, 0), search.places(),
+			Collections.emptyList()));
+	}
+
+	@Test
 	public void theQueensChamberCountsFromTheDesertButNotFromItsOwnRopeUp() throws Exception
 	{
 		List<DungeonPreview.Way> all;

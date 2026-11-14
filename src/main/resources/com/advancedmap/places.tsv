@@ -194,7 +194,8 @@ D	Passage to Gemstone Crab	1246	3036	0
 D	Tonali Cavern	1309	3104	0
 D	Tonali Cavern	1305	3035	0
 D	Tolna's rift	3308	3450	0
-D	Tombs of Amascut	3357	2711	0
+# RuneLite's list has floor 0; the game's dungeon icon at the pyramid's entrance is on floor 1 (3358, 2711; owner in game, 2026-11-14)
+D	Tombs of Amascut	3357	2711	1
 D	Tombs of Amascut	3358	9240	0
 D	Tower of Life dungeon	2649	3213	0
 D	Trahaearn Mine	3270	6049	0
