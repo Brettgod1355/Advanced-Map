@@ -235,6 +235,11 @@ public class DungeonPreviewTest
 		MapSpot icon = MapSpot.icon(3358, 2711, 1, 1, IconGroup.DUNGEON);
 		assertEquals("Tombs of Amascut", DungeonPreview.name(icon, new WorldPoint(3359, 9129, 0), search.places(),
 			Collections.emptyList()));
+		// and a search for it opens the pyramid from anywhere, underground too: its one spot is the entrance (owner:
+		// "when searching for toa ... it should link to there", not the empty instance underground)
+		MapSearch.Entry tombs = search.places().stream().filter(e -> e.getName().equals("Tombs of Amascut"))
+			.findFirst().get();
+		assertEquals(Collections.singletonList(new WorldPoint(3357, 2711, 1)), tombs.getPoints());
 	}
 
 	@Test
