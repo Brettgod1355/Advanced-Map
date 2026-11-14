@@ -1,0 +1,6 @@
+# Icons Advanced Map adds where the game's own map has none, read by MapIcons, drawn with the game's own picture of
+# their kind. The kind is named as the game's map key (the Filters list) names it, any case; a row whose kind the game
+# does not have adds nothing (logged at debug). Text here costs no Plugin Hub tokens.
+# x, y, plane, kind, what it is
+1936	4966	0	Mining shop	Ordan's ore seller in the Blast Furnace (owner, 2026-11-14: the game's map marks no shop there)
+1939	4968	0	Platebody shop	Jorzik's armour store in the Blast Furnace (owner, 2026-11-14)

@@ -358,4 +358,38 @@ public class MapIconsTest
 		assertNotSame("grayed, not the item's own picture", disc, gray);
 		assertSame("the grayed copy is kept, not made again each paint", gray, icons.teleportPicture(item, true));
 	}
+
+	@Test
+	public void aRowOfTheAddedIconsListIsDrawnWithThePictureOfItsKind()
+	{
+		// owner, 2026-11-14: the Blast Furnace's ore seller and armour store, which the game's map does not mark
+		Map<Integer, String> names = new java.util.HashMap<>();
+		names.put(1049, "General store");
+		names.put(1052, "Mining shop");
+		names.put(1053, "Platebody shop");
+		Progress kinds = new Progress(true, new int[Skill.values().length], new EnumMap<>(Quest.class),
+			Collections.emptyMap(), names, Collections.emptyMap());
+		Map<Integer, Integer> areas = new java.util.HashMap<>();
+		areas.put(1049, 9001);
+		areas.put(1052, 9002);
+		areas.put(1053, 9003);
+		MapIcons icons = new MapIcons();
+		MapSettings on = settings(Collections.emptySet(), false, false, false);
+		MapViewport.View furnace = new MapViewport.View(1937, 4966, 4, 800, 600);
+		// nothing before the game's kinds are read, nor while their names are not known
+		assertTrue(icons.visible(furnace, MapArea.UNDERGROUND, 0, on, kinds).isEmpty());
+		icons.setKindAreas(areas);
+		// the game's pictures of the kinds, read just before (as the plugin does)
+		icons.addSprite(9002, com.advancedmap.cache.MapSprite.of(15, 15, 0, 0, 1, 1, new int[]{0xFFFFFF}));
+		icons.addSprite(9003, com.advancedmap.cache.MapSprite.of(15, 15, 0, 0, 1, 1, new int[]{0xFFFFFF}));
+		assertTrue(icons.visible(furnace, MapArea.UNDERGROUND, 0, on, Progress.NONE).isEmpty());
+		List<MapIcons.Shown> shown = icons.visible(furnace, MapArea.UNDERGROUND, 0, on, kinds);
+		assertEquals(2, shown.size());
+		MapSpot ore = shown.stream().map(MapIcons.Shown::getSpot).filter(s -> s.getX() == 1936).findFirst().get();
+		assertEquals(9002, ore.getAreaId());
+		assertEquals(1052, ore.getCategory());
+		assertEquals(IconGroup.SHOPS, ore.getGroup());
+		// and the map's other lists see them too (the map check, the search's icons)
+		assertEquals(2, icons.allSpots().size());
+	}
 }

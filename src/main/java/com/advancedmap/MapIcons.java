@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import lombok.Value;
+import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Quest;
 import net.runelite.api.QuestState;
 import net.runelite.api.Skill;
@@ -27,6 +28,7 @@ import net.runelite.client.game.AgilityShortcut;
  * teleports. Works out which are on screen with the player's settings, how each looks (usable, locked, done, hidden)
  * and what its info box says. Regions are added from the render threads; everything else may run on any thread.
  */
+@Slf4j
 final class MapIcons
 {
 	/** Icons show from this zoom (screen pixels per tile) in; further out there would be too many to read. */
@@ -151,7 +153,7 @@ final class MapIcons
 		return TELEPORTS;
 	}
 
-	/** Every icon found so far, on every map and floor (not the teleports). */
+	/** Every icon found so far, on every map and floor (not the teleports), the added ones once made. */
 	List<MapSpot> allSpots()
 	{
 		List<MapSpot> out = new ArrayList<>();
@@ -159,6 +161,62 @@ final class MapIcons
 		{
 			out.addAll(spots);
 		}
+		List<MapSpot> made = added;
+		if (made != null)
+		{
+			out.addAll(made);
+		}
+		return out;
+	}
+
+	/**
+	 * Icons Advanced Map adds where the game's map has none, from {@code added-icons.tsv}: x, y, plane, the kind as the
+	 * game's map key names it ("Mining shop"), what it is (the Blast Furnace's shops; owner, 2026-11-14). In a data
+	 * file, so another costs no tokens.
+	 */
+	private static final List<String[]> ADDED = DataFiles.rows("added-icons.tsv");
+	/** The game's icon kinds and the map area of each one's picture, once read. */
+	private volatile Map<Integer, Integer> kindAreas;
+	/** The added icons, made once the kinds' names are known; null until then. */
+	private volatile List<MapSpot> added;
+
+	void setKindAreas(Map<Integer, Integer> areas)
+	{
+		kindAreas = areas;
+	}
+
+	/** The added icons, each with the game's picture of its kind; none until the kinds and their names are read. */
+	private List<MapSpot> added(Progress progress)
+	{
+		List<MapSpot> made = added;
+		Map<Integer, Integer> areas = kindAreas;
+		if (made != null || areas == null || areas.isEmpty() || progress.categoryName(areas.keySet().iterator().next())
+			== null)
+		{
+			return made == null ? Collections.emptyList() : made;
+		}
+		List<MapSpot> out = new ArrayList<>();
+		for (String[] row : ADDED)
+		{
+			try
+			{
+				Map.Entry<Integer, Integer> kind = areas.entrySet().stream()
+					.filter(e -> row[3].trim().equalsIgnoreCase(progress.categoryName(e.getKey()))).findFirst()
+					.orElse(null);
+				if (kind == null)
+				{
+					log.debug("added-icons.tsv: no icon kind of the game's is named {}", row[3]);
+					continue;
+				}
+				out.add(MapSpot.icon(Integer.parseInt(row[0].trim()), Integer.parseInt(row[1].trim()),
+					Integer.parseInt(row[2].trim()), kind.getValue(), kind.getKey()));
+			}
+			catch (RuntimeException e)
+			{
+				// a row that is no icon adds nothing: the others still show
+			}
+		}
+		added = out;
 		return out;
 	}
 
@@ -330,6 +388,13 @@ final class MapIcons
 			}
 		}
 		for (MapSpot spot : TELEPORTS)
+		{
+			if (everyFloor || spot.getPlane() == plane)
+			{
+				add(out, spot, view, area, settings, progress);
+			}
+		}
+		for (MapSpot spot : added(progress))
 		{
 			if (everyFloor || spot.getPlane() == plane)
 			{

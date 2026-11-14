@@ -3343,6 +3343,8 @@ public class AdvancedMapPlugin extends Plugin
 				categories.values().forEach(areaId -> pictures.addSprite(areaId, from.areaIcon(areaId)));
 				// the minigame teleports' icon
 				pictures.setMinigameArea(categories.getOrDefault(IconGroup.MINIGAME, -1));
+				// the icons added where the game's map has none take their kinds' pictures from these
+				pictures.setKindAreas(categories);
 				list.setCategoryIcons(categories);
 				// all read before any is kept: a part still downloading throws, and the next opening reads it all again
 				var names = from.labels();
