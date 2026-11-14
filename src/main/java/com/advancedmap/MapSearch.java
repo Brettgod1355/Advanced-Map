@@ -849,7 +849,7 @@ final class MapSearch
 			: null;
 	}
 
-	/** A searched tile's ring, kept on the map until it is moved or closed: a circle round it and a dot with its name. */
+	/** The ring round a search result, kept on the map until it is moved or closed: a circle and a dot, named or not. */
 	static MapLayer ring(String id, WorldPoint at, String name)
 	{
 		List<WorldPoint> circle = new ArrayList<>();

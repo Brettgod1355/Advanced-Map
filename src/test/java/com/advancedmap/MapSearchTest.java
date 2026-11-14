@@ -618,5 +618,8 @@ public class MapSearchTest
 		assertTrue(circle.stream().allMatch(p -> Math.max(Math.abs(p.getX() - 3222), Math.abs(p.getY() - 3218)) == 3
 			|| Math.abs(p.getX() - 3222) + Math.abs(p.getY() - 3218) >= 3));
 		assertEquals("3222, 3218", ring.getMarkers().get(0).getLabel());
+		// a monster's or an item's ring has no name: its spawns have dots of their own
+		assertNull(MapSearch.ring("t", new WorldPoint(3222, 3218, 0), null).getMarkers().get(0).getLabel());
+		assertEquals(MapSearch.Group.PLACES, MapSearch.groupOf(MapSearch.Kind.TILE));
 	}
 }

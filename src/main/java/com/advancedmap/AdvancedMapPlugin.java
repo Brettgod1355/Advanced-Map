@@ -2488,15 +2488,15 @@ public class AdvancedMapPlugin extends Plugin
 				break;
 		}
 		goTo(nearest, SEARCH_ZOOM);
-		if (entry.getKind() == MapSearch.Kind.TILE)
-		{
-			// put down after the jump, which takes any old one away; kept until the map is moved or closed
-			messages.put(MapSearch.ring(TILE_LAYER, nearest, entry.getName()));
-		}
+		// a ring round where the result took the map, put down after the jump (which takes any old one away) and kept
+		// until the map is moved or closed; named for a place only, as a monster's spawns have dots of their own
+		// (owner, 2026-11-14)
+		messages.put(MapSearch.ring(TILE_LAYER, nearest,
+			MapSearch.groupOf(entry) == MapSearch.Group.PLACES ? entry.getName() : null));
 	}
 
-	/** The ring round a tile searched by its coordinates. */
-	static final String TILE_LAYER = "advancedmap:tile";
+	/** The ring round where the last search result took the map. */
+	static final String TILE_LAYER = "advancedmap:ring";
 
 	/**
 	 * A monster's, NPC's or other spawn's areas, nearest first, with every spawn marked: a monster's details, then
