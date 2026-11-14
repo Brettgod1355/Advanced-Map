@@ -309,13 +309,26 @@ public class MapWatchPlugin extends Plugin
 		used = null;
 		MapIcons icons = map.icons;
 		ClientMapSource source = map.source;
+		// every trip says how it was judged, so a quiet one is told from one never looked at (owner, 2026-11-14)
 		if (with == null || icons == null || source == null || source.knownMapLinks().isEmpty() || instanced())
 		{
+			log.debug("map watch trip: {} -> {} not judged: {}", tile(from), tile(to), with == null
+				? "no object or NPC used near, just before" : instanced() ? "an instance" : "the map's links not read yet");
 			return;
 		}
 		MapSpot icon = MapWatch.dungeonIconNear(icons.allSpots(), from);
-		note(MapWatch.jump(from, to, with, icon, icon == null ? null : map.leadsTo(icon),
-			known(source.knownMapLinks(), from, to)));
+		WorldPoint leads = icon == null ? null : map.leadsTo(icon);
+		boolean known = known(source.knownMapLinks(), from, to);
+		String[] finding = MapWatch.jump(from, to, with, icon, leads, known);
+		log.debug("map watch trip: {} {} -> {}: {}", with, tile(from), tile(to), finding != null ? "finding " + finding[0]
+			: icon != null ? "the dungeon icon at " + tile(new WorldPoint(icon.getX(), icon.getY(), icon.getPlane()))
+			+ " leads there" : known ? "the map knows the way" : "nothing to report");
+		note(finding);
+	}
+
+	private static String tile(WorldPoint at)
+	{
+		return at.getX() + "," + at.getY() + "," + at.getPlane();
 	}
 
 	/** True when the map has a way from near one tile to near the other: a transport, a link, a way in a dungeon. */
