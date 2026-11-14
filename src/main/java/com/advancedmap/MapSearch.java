@@ -1107,8 +1107,8 @@ final class MapSearch
 	{
 		Rectangle icons = buttons.get(MapPainter.Button.ICONS);
 		Rectangle filters = buttons.get(MapPainter.Button.FILTERS);
-		// after Filters, before "Show underground"
-		Rectangle area = buttons.get(MapPainter.Button.AREA);
+		// after Filters, before the floor buttons
+		Rectangle area = buttons.get(MapPainter.Button.FLOOR_DOWN);
 		int left = filters.x + filters.width + GAP;
 		int right = area.x - GAP;
 		Rectangle box;

@@ -166,4 +166,32 @@ public class JumpHistoryTest
 		assertTrue(plugin.historyButton(AdvancedMapPlugin.BACK_BUTTON));
 		assertTrue(plugin.historyButton(AdvancedMapPlugin.FORWARD_BUTTON));
 	}
+
+	@Test
+	public void aMovedMapOpensWhereItWasLeftUntilTheLocateButton()
+	{
+		// owner, 2026-11-12 (issue #3): "retain its last known position upon closing"; the locate button takes it back
+		AdvancedMapPlugin plugin = new AdvancedMapPlugin();
+		plugin.newViews();
+		// never moved: an opening is on the player (Lumbridge while there is none)
+		plugin.lookAt(null);
+		MapViewport.View home = plugin.viewport().view(1, 1);
+		assertEquals(3222.5, home.centerX, 0);
+		// dragged away, as the map's input does it: the next opening stays there
+		plugin.setFollowing(false);
+		plugin.viewport().drag(400, 0);
+		MapViewport.View dragged = plugin.viewport().view(1, 1);
+		assertTrue(dragged.centerX != home.centerX);
+		plugin.lookAt(null);
+		assertEquals(dragged.centerX, plugin.viewport().view(1, 1).centerX, 0);
+		// a place to show (a search, another plugin) is shown, and kept at the next opening
+		plugin.lookAt(new net.runelite.api.coords.WorldPoint(2965, 3380, 0));
+		assertEquals(2965.5, plugin.viewport().view(1, 1).centerX, 0);
+		plugin.lookAt(null);
+		assertEquals(2965.5, plugin.viewport().view(1, 1).centerX, 0);
+		// the locate button: on the player again, at this opening and the next
+		plugin.setFollowing(true);
+		plugin.lookAt(null);
+		assertEquals(home.centerX, plugin.viewport().view(1, 1).centerX, 0);
+	}
 }

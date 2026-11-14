@@ -209,6 +209,8 @@ public class AdvancedMapPlugin extends Plugin
 	private volatile GameBox gameBox = new GameBox("", false);
 	/** The map keeps itself on the player as they move: the locate button's doing, until the map is moved. */
 	private volatile boolean following;
+	/** The map was moved off the player since the locate button last put it on them: it opens where it was left. */
+	private volatile boolean moved;
 	/** The floor shown: 0 for the ground, up to 3. */
 	private volatile int plane;
 	private int ticks;
@@ -283,6 +285,7 @@ public class AdvancedMapPlugin extends Plugin
 		painter.setExecutor(executor);
 		// a new painter does not follow: neither does the map, until the locate button is pressed again
 		following = false;
+		moved = false;
 		painter.setMultiCombat(config.multiCombat());
 		painter.setItemPictures(this::itemPicture);
 		painter.setInfoOnHover(config.infoOnHover());
@@ -3074,6 +3077,8 @@ public class AdvancedMapPlugin extends Plugin
 	void setFollowing(boolean on)
 	{
 		following = on;
+		// stopped by a drag or a jump: the map was moved off the player, and opens there again
+		moved = !on;
 		MapPainter drawing = painter;
 		if (drawing != null)
 		{
@@ -3146,6 +3151,28 @@ public class AdvancedMapPlugin extends Plugin
 		}
 	}
 
+	/**
+	 * Where an opening looks: a place to show, else the player. But a map that was moved off the player (dragged, sent
+	 * to a search result, another floor) opens where it was left, until the locate button takes it back to them
+	 * (owner, 2026-11-12, issue #3: "retain its last known position upon closing").
+	 */
+	void lookAt(WorldPoint at)
+	{
+		if (at != null)
+		{
+			// a place to show (another plugin's, a search's): following the player would move straight off it
+			setFollowing(false);
+		}
+		else if (moved)
+		{
+			return;
+		}
+		WorldPoint center = at != null ? at : player != null ? player : LUMBRIDGE;
+		area = MapArea.of(center.getY());
+		plane = center.getPlane();
+		viewports.get(area).centerOn(center.getX(), center.getY());
+	}
+
 	/** Opens the map on a point, or on the player when {@code at} is null; at a zoom, or the last one. */
 	void openMap(WorldPoint at, Double zoom)
 	{
@@ -3169,16 +3196,8 @@ public class AdvancedMapPlugin extends Plugin
 			progressDue = true;
 			listRegions();
 			loadLabels();
-			WorldPoint center = at != null ? at : player != null ? player : LUMBRIDGE;
-			if (at != null)
-			{
-				// a place to show (another plugin's, a search's): following the player would move straight off it
-				setFollowing(false);
-			}
-			area = MapArea.of(center.getY());
-			plane = center.getPlane();
+			lookAt(at);
 			MapViewport viewport = viewports.get(area);
-			viewport.centerOn(center.getX(), center.getY());
 			if (zoom != null)
 			{
 				viewport.setZoom(zoom);

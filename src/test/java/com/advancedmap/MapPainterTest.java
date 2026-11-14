@@ -78,19 +78,40 @@ public class MapPainterTest
 	}
 
 	@Test
-	public void theFloorButtonsSitInARowLeftOfTheFindMeButton()
+	public void theFloorButtonsAndTheFloorsNameAreOnTheTopRow()
 	{
-		// owner, 2026-11-11: down, the floor's name, up along the bottom, and the find-me button a top-row button's size
-		Map<MapPainter.Button, Rectangle> buttons = MapPainter.buttons(1000, 700, false);
-		Rectangle locate = buttons.get(MapPainter.Button.LOCATE);
-		Rectangle up = buttons.get(MapPainter.Button.FLOOR_UP);
-		Rectangle down = buttons.get(MapPainter.Button.FLOOR_DOWN);
-		assertEquals(MapPainter.BUTTON_HEIGHT, locate.height);
-		assertTrue(down.x + down.width < up.x && up.x + up.width < locate.x);
-		assertEquals(locate.y + locate.height, up.y + up.height);
-		assertEquals(up.y, down.y);
-		// room for the floor's name between them
-		assertTrue(up.x - (down.x + down.width) >= 24);
+		// owner, 2026-11-12 (issue #3): down, the floor's name, up, where "Show underground" was; a press on the name
+		// switches between the surface and the underground map, as that button did
+		for (int width : new int[]{GameBox.MIN_WIDTH, 1000})
+		{
+			for (boolean window : new boolean[]{false, true})
+			{
+				Map<MapPainter.Button, Rectangle> buttons = MapPainter.buttons(width, 700, window);
+				Rectangle up = buttons.get(MapPainter.Button.FLOOR_UP);
+				Rectangle name = buttons.get(MapPainter.Button.AREA);
+				Rectangle down = buttons.get(MapPainter.Button.FLOOR_DOWN);
+				Rectangle mode = buttons.get(MapPainter.Button.MODE);
+				assertEquals(mode.y, up.y);
+				assertEquals(mode.y, name.y);
+				assertEquals(mode.y, down.y);
+				assertTrue(down.x + down.width <= name.x && name.x + name.width <= up.x && up.x + up.width < mode.x);
+				// the search box keeps its room on the smallest map, left of them
+				Rectangle box = MapSearch.layout(buttons, width, 0).getBox();
+				assertEquals(mode.y, box.y);
+				assertTrue(box.width >= MapSearch.MIN_WIDTH && box.x + box.width < down.x);
+				// only the button that finds the player is left at the bottom right, a top-row button's size (owner,
+				// 2026-11-11: smaller than its 36)
+				Rectangle locate = buttons.get(MapPainter.Button.LOCATE);
+				assertEquals(MapPainter.BUTTON_HEIGHT, locate.width);
+				for (Map.Entry<MapPainter.Button, Rectangle> button : buttons.entrySet())
+				{
+					assertTrue(button.getKey() == MapPainter.Button.LOCATE || button.getValue().y < locate.y - 100);
+				}
+			}
+		}
+		MapSettings settings = settings(RoutingPlugin.SHORTEST_PATH);
+		assertEquals("Show the surface map", MapPainter.tip(MapPainter.Button.AREA, MapArea.UNDERGROUND, 0, false,
+			settings, false, false));
 	}
 
 	@Test
@@ -729,8 +750,7 @@ public class MapPainterTest
 	{
 		// the Slayer task moved into the Filters list: its button's square on the top row is the search box's again
 		Map<MapPainter.Button, Rectangle> buttons = MapPainter.buttons(1280, 800, false);
-		// every button, and the floor's name between the floor buttons
-		assertEquals(buttons.size() + 1, MapPainter.spaceTaken(buttons).size());
+		assertEquals(buttons.size(), MapPainter.spaceTaken(buttons).size());
 		Rectangle filters = buttons.get(MapPainter.Button.FILTERS);
 		Rectangle box = MapSearch.layout(MapPainter.buttons(560, 400, false), 560, 0).getBox();
 		Rectangle small = MapPainter.buttons(560, 400, false).get(MapPainter.Button.FILTERS);
@@ -750,8 +770,8 @@ public class MapPainterTest
 		menu.setPage(MapMenu.Page.HELP);
 		withMenu.setMenu(menu);
 		MapViewport.View view = new MapViewport.View(3222, 3218, 4, 800, 400);
-		// the pointer rests on a floor button, under the page that runs to the map's bottom on a map this short
-		Rectangle up = MapPainter.buttons(800, 400, true).get(MapPainter.Button.FLOOR_UP);
+		// the pointer rests on the locate button, under the page that runs to the map's bottom on a map this short
+		Rectangle up = MapPainter.buttons(800, 400, true).get(MapPainter.Button.LOCATE);
 		java.awt.Point onButton = new java.awt.Point(up.x + 2, up.y + 2);
 		BufferedImage without = restOn(plain, view, onButton);
 		BufferedImage with = restOn(withMenu, view, onButton);

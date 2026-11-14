@@ -49,6 +49,10 @@ final class MapPainter
 		CLOSE,
 		/** Over the game only: the map's box fills the game view, or goes back to its size. */
 		MAXIMIZE,
+		/**
+		 * The floor's name between the two floor buttons, and the switch between the surface and the underground map
+		 * (owner, 2026-11-12, issue #3: the "Show underground" button's job, in the room the three now share).
+		 */
 		AREA,
 		MODE,
 		/** Shows or hides every icon at once; place names stay. */
@@ -107,15 +111,12 @@ final class MapPainter
 	private static final Color TIP_EDGE = new Color(0x5A5040);
 	/** The names beside transport icons. */
 	private static final Color STOP_NAME = Transports.LINE;
-	/** The floor buttons: a row along the bottom, left of the find-me button (owner, 2026-11-11), as tall as it. */
 	static final int FLOOR_WIDTH = BUTTON_HEIGHT;
-	static final int FLOOR_HEIGHT = BUTTON_HEIGHT;
-	/** Room for the floor's name between its two buttons. */
+	/** The floor's name between its two buttons. */
 	private static final int FLOOR_LABEL = 30;
+	/** Down, the floor's name and up, a little apart, as one control on the top row. */
+	private static final int FLOORS = FLOOR_WIDTH * 2 + FLOOR_LABEL + 4;
 	private static final int GAP = 8;
-	private static final int AREA_WIDTH = 110;
-	/** "Underground" / "Surface", on a map too narrow for the full name and the search box beside it. */
-	private static final int AREA_COMPACT = 86;
 	/** The Filters button's funnel and arrow alone, likewise. */
 	private static final int FILTERS_COMPACT = 44;
 	private static final int ICONS_WIDTH = 64;
@@ -404,23 +405,16 @@ final class MapPainter
 		// a map too narrow for the search box between the top buttons at their full width gets the shorter ones, so the
 		// box stays on the top row
 		int squares = window ? 1 : 3;
-		int full = GAP * 4 + BUTTON_HEIGHT + ICONS_WIDTH + FILTERS_WIDTH + squares * (BUTTON_HEIGHT + GAP) + AREA_WIDTH
+		int full = GAP * 4 + BUTTON_HEIGHT + ICONS_WIDTH + FILTERS_WIDTH + squares * (BUTTON_HEIGHT + GAP) + FLOORS
 			+ GAP * 2;
 		boolean compact = width - full < MapSearch.MIN_WIDTH;
 		int iconsWidth = compact ? ICONS_COMPACT : ICONS_WIDTH;
 		int filters = compact ? FILTERS_COMPACT : FILTERS_WIDTH;
-		int areaWidth = compact ? AREA_COMPACT : AREA_WIDTH;
 		out.put(Button.MENU, new Rectangle(GAP, GAP, BUTTON_HEIGHT, BUTTON_HEIGHT));
 		out.put(Button.ICONS, new Rectangle(GAP * 2 + BUTTON_HEIGHT, GAP, iconsWidth, BUTTON_HEIGHT));
 		out.put(Button.FILTERS, new Rectangle(GAP * 3 + BUTTON_HEIGHT + iconsWidth, GAP, filters, BUTTON_HEIGHT));
 		out.put(Button.LOCATE, new Rectangle(width - GAP - LOCATE_SIZE, height - GAP - LOCATE_SIZE, LOCATE_SIZE,
 			LOCATE_SIZE));
-		// down, the floor's name, up, left of the find-me button and level with it: the list on the right runs down to
-		// them, not to a column of buttons above it
-		int floorY = height - GAP - FLOOR_HEIGHT;
-		int upX = width - GAP - LOCATE_SIZE - GAP - FLOOR_WIDTH;
-		out.put(Button.FLOOR_UP, new Rectangle(upX, floorY, FLOOR_WIDTH, FLOOR_HEIGHT));
-		out.put(Button.FLOOR_DOWN, new Rectangle(upX - FLOOR_LABEL - FLOOR_WIDTH, floorY, FLOOR_WIDTH, FLOOR_HEIGHT));
 		int right = width - GAP;
 		if (!window)
 		{
@@ -432,7 +426,10 @@ final class MapPainter
 		// pop out (or, in the window, back over the game) as a square icon beside the window's own buttons
 		out.put(Button.MODE, new Rectangle(right - BUTTON_HEIGHT, GAP, BUTTON_HEIGHT, BUTTON_HEIGHT));
 		right -= BUTTON_HEIGHT + GAP;
-		out.put(Button.AREA, new Rectangle(right - areaWidth, GAP, areaWidth, BUTTON_HEIGHT));
+		// down, the floor's name (a press switches between the surface and the underground map), up
+		out.put(Button.FLOOR_UP, new Rectangle(right - FLOOR_WIDTH, GAP, FLOOR_WIDTH, BUTTON_HEIGHT));
+		out.put(Button.AREA, new Rectangle(right - FLOOR_WIDTH - 2 - FLOOR_LABEL, GAP, FLOOR_LABEL, BUTTON_HEIGHT));
+		out.put(Button.FLOOR_DOWN, new Rectangle(right - FLOORS, GAP, FLOOR_WIDTH, BUTTON_HEIGHT));
 		return out;
 	}
 
@@ -1418,10 +1415,7 @@ final class MapPainter
 	/** The buttons' squares, which no place name may cross. */
 	static List<Rectangle> spaceTaken(Map<Button, Rectangle> buttons)
 	{
-		List<Rectangle> taken = new ArrayList<>(buttons.values());
-		// the floor's name between its two buttons
-		taken.add(buttons.get(Button.FLOOR_DOWN).union(buttons.get(Button.FLOOR_UP)));
-		return taken;
+		return new ArrayList<>(buttons.values());
 	}
 
 	/** The ids of a map's regions a view shows. */
@@ -2012,10 +2006,6 @@ final class MapPainter
 				// down from the ground leads underground
 				boolean enabled = up ? plane < RegionImages.PLANES - 1 : plane > 0 || area == MapArea.SURFACE;
 				drawFloorButton(g, button, up, enabled);
-				if (up)
-				{
-					drawFloorName(g, buttons.get(Button.FLOOR_DOWN), button, area, plane, settings.getFloorNumbers());
-				}
 				continue;
 			}
 			g.fillRoundRect(button.x, button.y, button.width, button.height, 8, 8);
@@ -2028,9 +2018,11 @@ final class MapPainter
 					drawMaximize(g, button, maximized);
 					break;
 				case AREA:
-					// the short name on a narrow map; its tip says the rest
-					drawLabel(g, button, button.width < AREA_WIDTH ? area.other().label
-						: "Show " + area.other().label.toLowerCase(Locale.ROOT));
+					// the floor's short name: "G", "2" and so on; on the underground map "U", then "U2" for a floor
+					// above a dungeon's lowest. Its tip says what a press does
+					FloorNumbers floors = settings.getFloorNumbers();
+					drawLabel(g, button, area == MapArea.UNDERGROUND ? plane == 0 ? "U" : "U" + floors.shortName(plane)
+						: floors.shortName(plane));
 					break;
 				case MENU:
 					drawMenuButton(g, button, menuOpen);
@@ -2068,29 +2060,6 @@ final class MapPainter
 		{
 			g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, antialiasing);
 		}
-	}
-
-	/**
-	 * The floor's short name between the floor buttons: "G", "2" and so on; on the underground map "U", then "U2" for a
-	 * floor above a dungeon's lowest.
-	 */
-	private static void drawFloorName(Graphics2D g, Rectangle down, Rectangle up, MapArea area, int plane,
-		FloorNumbers floors)
-	{
-		g.setFont(FontManager.getRunescapeSmallFont());
-		FontMetrics metrics = g.getFontMetrics();
-		String text = area == MapArea.UNDERGROUND ? plane == 0 ? "U" : "U" + floors.shortName(plane) : floors.shortName(plane);
-		// in the room between the two buttons, middled on it
-		int room = up.x - (down.x + down.width);
-		int width = Math.max(room - 4, metrics.stringWidth(text) + 10);
-		int height = up.height - 6;
-		int x = down.x + down.width + (room - width) / 2;
-		int y = up.y + (up.height - height) / 2;
-		g.setColor(BAR);
-		g.fillRoundRect(x, y, width, height, 8, 8);
-		g.setColor(TEXT);
-		g.drawString(text, x + (width - metrics.stringWidth(text)) / 2,
-			y + (height + metrics.getAscent() - metrics.getDescent()) / 2);
 	}
 
 	/**

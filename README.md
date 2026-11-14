@@ -37,10 +37,10 @@ The map opens on your character, on the surface or the underground map, whicheve
 |---|---|
 | Move the map | Drag it |
 | Zoom | Scroll, around the pointer |
-| Go back to your character | The round button at the bottom right (it keeps following you until you drag) |
+| Go back to your character | The round button at the bottom right (it keeps following you until you drag). A map you moved opens where you left it until you press it |
 | Go back after a jump (into a dungeon, to a search result or a pin) | The mouse's back button; its forward button goes on again |
-| Change floor | The arrows above that button |
-| Switch surface / underground | The button at the top |
+| Change floor | The arrows at the top right, with the floor's name between them |
+| Switch surface / underground | Click the floor's name between those arrows |
 | See what an icon is | Rest the pointer on it; click it to keep its box open |
 | Add a marker, route somewhere, hide an icon | Right-click the spot or the icon |
 | Choose which icons show, show monsters and ground items, mark your Slayer task, tint multi-combat areas | The Filters button at the top left |
