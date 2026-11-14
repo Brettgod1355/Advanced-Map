@@ -2488,7 +2488,15 @@ public class AdvancedMapPlugin extends Plugin
 				break;
 		}
 		goTo(nearest, SEARCH_ZOOM);
+		if (entry.getKind() == MapSearch.Kind.TILE)
+		{
+			// put down after the jump, which takes any old one away; kept until the map is moved or closed
+			messages.put(MapSearch.ring(TILE_LAYER, nearest, entry.getName()));
+		}
 	}
+
+	/** The ring round a tile searched by its coordinates. */
+	static final String TILE_LAYER = "advancedmap:tile";
 
 	/**
 	 * A monster's, NPC's or other spawn's areas, nearest first, with every spawn marked: a monster's details, then
@@ -3080,6 +3088,12 @@ public class AdvancedMapPlugin extends Plugin
 		following = on;
 		// stopped by a drag or a jump: the map was moved off the player, and opens there again
 		moved = !on;
+		// a searched tile's ring stays only until the map moves
+		MapMessages layers = messages;
+		if (layers != null)
+		{
+			layers.remove(TILE_LAYER);
+		}
 		MapPainter drawing = painter;
 		if (drawing != null)
 		{
@@ -3472,6 +3486,11 @@ public class AdvancedMapPlugin extends Plugin
 	{
 		closeMenuLists();
 		giveKeysBack();
+		MapMessages layers = messages;
+		if (layers != null)
+		{
+			layers.remove(TILE_LAYER);
+		}
 		// a window closed with the button down never sees the release: hover boxes and tips would stay off
 		setDragging(false);
 		RegionImages current = images;

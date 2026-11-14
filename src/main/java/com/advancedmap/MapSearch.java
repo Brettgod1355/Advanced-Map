@@ -89,6 +89,7 @@ final class MapSearch
 			case ICON:
 			case FAIRY_RING:
 			case AGILITY:
+			case TILE:
 				return Group.PLACES;
 			case MONSTER:
 				return Group.MONSTERS;
@@ -171,7 +172,8 @@ final class MapSearch
 		NPC("NPC", Scope.NPCS),
 		FISHING("Fishing", Scope.SKILLING),
 		HUNTER("Hunter", Scope.SKILLING),
-		AGILITY("Agility course", Scope.PLACES);
+		AGILITY("Agility course", Scope.PLACES),
+		TILE("Tile", Scope.PLACES);
 
 		final String label;
 		final Scope scope;
@@ -731,6 +733,13 @@ final class MapSearch
 		{
 			return Collections.emptyList();
 		}
+		WorldPoint tile = tile(wanted);
+		if (tile != null)
+		{
+			return Collections.singletonList(new Entry(Kind.TILE, tile.getX() + ", " + tile.getY()
+				+ (tile.getPlane() > 0 ? ", floor " + tile.getPlane() : ""), Kind.TILE.label,
+				Collections.singletonList(tile), Collections.emptyList(), null));
+		}
 		java.util.Set<String> nicknamed = nicknames.getOrDefault(wanted, Collections.emptySet());
 		List<Ranked> ranked = new ArrayList<>();
 		for (Entry entry : entries)
@@ -823,6 +832,39 @@ final class MapSearch
 	}
 
 		/** Lower case, apostrophes dropped, anything else that is not a letter or digit a single space. */
+	/**
+	 * A tile typed as its coordinates, {@link #normalize normalized}: "3222 3218", or with its floor "3222 3218 1"
+	 * (owner, 2026-11-14: to go to coordinates read off the bar or given in a reply). Null for anything else.
+	 */
+	static WorldPoint tile(String wanted)
+	{
+		java.util.regex.Matcher m = java.util.regex.Pattern.compile("(\\d{4,5}) (\\d{4,5})(?: ([0-3]))?").matcher(wanted);
+		if (!m.matches())
+		{
+			return null;
+		}
+		int x = Integer.parseInt(m.group(1));
+		int y = Integer.parseInt(m.group(2));
+		return x < 16384 && y < 16384 ? new WorldPoint(x, y, m.group(3) == null ? 0 : Integer.parseInt(m.group(3)))
+			: null;
+	}
+
+	/** A searched tile's ring, kept on the map until it is moved or closed: a circle round it and a dot with its name. */
+	static MapLayer ring(String id, WorldPoint at, String name)
+	{
+		List<WorldPoint> circle = new ArrayList<>();
+		for (int i = 0; i <= 16; i++)
+		{
+			double a = Math.PI * i / 8;
+			circle.add(new WorldPoint(at.getX() + (int) Math.round(3 * Math.cos(a)),
+				at.getY() + (int) Math.round(3 * Math.sin(a)), at.getPlane()));
+		}
+		return new MapLayer(id, 90, Collections.singletonList(new MapLayer.Line(circle, RING, 3, false)),
+			Collections.singletonList(new MapLayer.Marker(at, RING, MapLayer.Shape.CIRCLE, 6, name)));
+	}
+
+	private static final Color RING = new Color(0xFF, 0xD2, 0x3C);
+
 	static String normalize(String text)
 	{
 		return text.toLowerCase(Locale.ROOT).replace("'", "").replaceAll("[^a-z0-9]+", " ").trim();

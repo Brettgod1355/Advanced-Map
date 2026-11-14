@@ -97,6 +97,7 @@ Game updates need nothing from you. The map, its place names and the game's own 
 - Clicks on the map no longer go to another plugin's buttons hidden under it
 - The random event areas are named on the map and found in search
 - A teleport item's Wiki link opens that item's own page
+- Type coordinates in the search, like 3222, 3218, to go to that tile: a ring marks it until you move the map
 - The floor arrows are on the top row; click the floor's name between them to switch surface and underground
 - The map opens where you left it; the round button at the bottom right takes it back to you
 ## Version 1.1 - 11/8/26

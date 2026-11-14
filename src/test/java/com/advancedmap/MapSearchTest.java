@@ -592,4 +592,31 @@ public class MapSearchTest
 		assertTrue(layout.getClear().x - (layout.getScopes().x + layout.getScopes().width) >= 30);
 		assertTrue(box.contains(layout.getScopes()));
 	}
+
+	@Test
+	public void coordinatesFindTheirTileAndItsRing()
+	{
+		// owner, 2026-11-14: paste coordinates from the bar or a reply and go there
+		List<MapSearch.Entry> found = MapSearch.search(Collections.emptyList(), "1872, 7103");
+		assertEquals(1, found.size());
+		assertEquals(MapSearch.Kind.TILE, found.get(0).getKind());
+		assertEquals("1872, 7103", found.get(0).getName());
+		assertEquals(Collections.singletonList(new WorldPoint(1872, 7103, 0)), found.get(0).getPoints());
+		// with a floor, and as typed with spaces only
+		assertEquals(new WorldPoint(3205, 3209, 1), MapSearch.search(Collections.emptyList(), "3205 3209 1").get(0)
+			.getPoints().get(0));
+		assertEquals("3205, 3209, floor 1", MapSearch.search(Collections.emptyList(), "3205,3209,1").get(0).getName());
+		// not coordinates: too short, out of the world, a fourth number, words
+		for (String no : new String[]{"300 20", "99999 3218", "3222 3218 4", "3222 3218 0 1", "rune 2000"})
+		{
+			assertNull(no, MapSearch.tile(MapSearch.normalize(no)));
+		}
+		// the ring: a closed circle round the tile, and a dot on it with its name
+		MapLayer ring = MapSearch.ring("t", new WorldPoint(3222, 3218, 0), "3222, 3218");
+		List<WorldPoint> circle = ring.getLines().get(0).getPoints();
+		assertEquals(circle.get(0), circle.get(circle.size() - 1));
+		assertTrue(circle.stream().allMatch(p -> Math.max(Math.abs(p.getX() - 3222), Math.abs(p.getY() - 3218)) == 3
+			|| Math.abs(p.getX() - 3222) + Math.abs(p.getY() - 3218) >= 3));
+		assertEquals("3222, 3218", ring.getMarkers().get(0).getLabel());
+	}
 }
