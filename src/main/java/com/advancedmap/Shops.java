@@ -149,4 +149,19 @@ final class Shops
 		}
 		return best;
 	}
+
+	/**
+	 * The shop an icon stands for: a shop icon's within {@link #REACH}; an icon of another kind's only on its own tile
+	 * (the Keldagrim Stonemason's is the game's stonemason icon, not a shop icon; owner, 2026-11-14). Null for none.
+	 */
+	static Shop of(MapSpot spot)
+	{
+		Shop shop = near(spot.getX(), spot.getY(), spot.getPlane());
+		if (shop == null || spot.getGroup() == IconGroup.SHOPS)
+		{
+			return shop;
+		}
+		WorldPoint at = shop.getPoint();
+		return Math.max(Math.abs(at.getX() - spot.getX()), Math.abs(at.getY() - spot.getY())) <= 1 ? shop : null;
+	}
 }

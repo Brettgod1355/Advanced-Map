@@ -1700,10 +1700,9 @@ public class AdvancedMapPlugin extends Plugin
 		{
 			showTransport(icon.getSpot());
 		}
-		else if (icon != null && icon.getSpot().getGroup() == IconGroup.SHOPS)
+		else if (icon != null)
 		{
-			MapSpot spot = icon.getSpot();
-			Shops.Shop shop = Shops.near(spot.getX(), spot.getY(), spot.getPlane());
+			Shops.Shop shop = Shops.of(icon.getSpot());
 			if (shop != null)
 			{
 				showShop(shop);

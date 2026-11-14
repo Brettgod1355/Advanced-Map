@@ -128,8 +128,11 @@ final class MapCheck
 			boolean marked = false;
 			for (MapSpot spot : spots)
 			{
-				if (spot.getGroup() == IconGroup.SHOPS && spot.getPlane() == at.getPlane()
-					&& Math.max(Math.abs(spot.getX() - at.getX()), Math.abs(spot.getY() - at.getY())) <= Shops.REACH)
+				// as Shops.of pairs them: a shop icon within reach, or an icon of any kind on the shop's own tile (the
+				// Keldagrim Stonemason's stonemason icon; owner, 2026-11-14)
+				int distance = Math.max(Math.abs(spot.getX() - at.getX()), Math.abs(spot.getY() - at.getY()));
+				if (spot.getPlane() == at.getPlane()
+					&& (spot.getGroup() == IconGroup.SHOPS ? distance <= Shops.REACH : distance <= 1))
 				{
 					marked = true;
 					break;

@@ -52,6 +52,20 @@ public class ShopsTest
 	}
 
 	@Test
+	public void anIconOfAnotherKindOnAShopsOwnTileStandsForIt()
+	{
+		// owner, 2026-11-14: the Keldagrim Stonemason's icon is the game's stonemason icon, not a shop icon
+		Shops.load();
+		MapSpot stonemason = MapSpot.icon(2849, 10184, 0, 1, IconGroup.QUEST + 1000);
+		assertEquals("Keldagrim Stonemason", Shops.of(stonemason).getName());
+		// an icon of another kind a few tiles off is not the shop's; a shop icon that far still is
+		assertNull(Shops.of(MapSpot.icon(2849, 10188, 0, 1, IconGroup.QUEST + 1000)));
+		assertEquals("Keldagrim Stonemason", Shops.of(MapSpot.icon(2849, 10188, 0, 1, 1049)).getName());
+		// "Ore seller", not the wiki's "Ore seller.&#91;sic&#93;" left encoded
+		assertEquals("Ore seller", Shops.near(1936, 4966, 0).getName());
+	}
+
+	@Test
 	public void spawnsReadTheirTilesAndLevels() throws IOException
 	{
 		List<Spawns.Creature> creatures = Spawns.parse(tsv("M\tGoblin\t2,5\t3250,3240,0;3251,3241,0\n"

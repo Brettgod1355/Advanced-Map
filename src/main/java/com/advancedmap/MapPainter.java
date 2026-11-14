@@ -1157,12 +1157,12 @@ final class MapPainter
 			drawClickPreview(g, view, window, spot, () -> MapIcons.name(spot, progress),
 				() -> AdvancedMapPlugin.transportRows(from, destinations));
 		}
-		else if (spot.getGroup() == IconGroup.SHOPS)
+		else
 		{
 			if (!spot.equals(shopSpot) || spot.getPlane() != shopSpot.getPlane())
 			{
 				shopSpot = spot;
-				shopAt = Shops.near(spot.getX(), spot.getY(), spot.getPlane());
+				shopAt = Shops.of(spot);
 			}
 			Shops.Shop shop = shopAt;
 			if (shop != null)
