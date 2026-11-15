@@ -120,6 +120,13 @@ final class MapLabels
 
 	void set(List<Label> loaded)
 	{
+		if (loaded.isEmpty())
+		{
+			// the game's names are not there yet: none of the map's own either, so the next opening reads them again
+			// (with the added ones alone the map took the names for read, and showed no town all run)
+			labels = Collections.emptyList();
+			return;
+		}
 		List<Label> named = new ArrayList<>(loaded.size() + ADDED.size());
 		for (Label label : loaded)
 		{
@@ -127,6 +134,12 @@ final class MapLabels
 		}
 		named.addAll(ADDED);
 		labels = Collections.unmodifiableList(named);
+	}
+
+	/** True for a label Advanced Map added: a place of its own, not what the places around it are called after. */
+	static boolean isAdded(Label label)
+	{
+		return ADDED.contains(label);
 	}
 
 	/** A label as Advanced Map names it: the list's name for the game's text near its tile, "|" breaking lines. */

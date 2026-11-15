@@ -190,8 +190,8 @@ final class MapIcons
 	{
 		List<MapSpot> made = added;
 		Map<Integer, Integer> areas = kindAreas;
-		if (made != null || areas == null || areas.isEmpty() || progress.categoryName(areas.keySet().iterator().next())
-			== null)
+		// not before the kinds' names are read: by any one kind's name it would wait for ever on a kind with none
+		if (made != null || areas == null || areas.isEmpty() || progress.getCategoryNames().isEmpty())
 		{
 			return made == null ? Collections.emptyList() : made;
 		}

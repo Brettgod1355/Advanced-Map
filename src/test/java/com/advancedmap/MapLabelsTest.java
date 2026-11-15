@@ -79,13 +79,25 @@ public class MapLabelsTest
 	{
 		// the owner, 2026-11-10: the Evil Twin random event's rooms (1868, 5131 on the owner's screenshot) have no name
 		MapLabels labels = new MapLabels();
+		// before the game's own names are read there are none at all: the next opening then reads them again, where
+		// the thirteen added ones alone were taken for the names read (deep scan, 2026-11-15)
 		labels.set(java.util.Collections.emptyList());
+		assertTrue(labels.all().isEmpty());
+		MapLabels.Label town = new MapLabels.Label(java.util.Collections.singletonList("Lumbridge"), 3222, 3218,
+			MapLabels.TOWN, java.awt.Color.WHITE);
+		labels.set(java.util.Collections.singletonList(town));
 		MapLabels.Label twin = labels.all().stream().filter(l -> l.getLines().equals(
 			java.util.Collections.singletonList("Evil Twin"))).findFirst().orElse(null);
 		assertEquals(new MapLabels.Label(java.util.Collections.singletonList("Evil Twin"), 1867, 5131, MapLabels.PLACE,
 			MapLabels.PLACE_COLOR), twin);
 		// all thirteen random event areas, after the game's labels, and none of them taken for a rename
-		assertEquals(13, labels.all().size());
+		assertEquals(14, labels.all().size());
+		// an added name is a place of its own, not what the places near it are called: the Blast Furnace's shops, 34
+		// tiles from "Gravedigger", are not "near Gravedigger"
+		assertTrue(MapLabels.isAdded(twin));
+		assertEquals("1936, 4966", SearchSpots.name(new net.runelite.api.coords.WorldPoint(1936, 4966, 0), labels.all()));
+		assertEquals(null, DungeonPreview.name(MapSpot.icon(3100, 3200, 0, 1, IconGroup.DUNGEON),
+			new net.runelite.api.coords.WorldPoint(1930, 5005, 0), java.util.Collections.emptyList(), labels.all()));
 		MapLabels.Label lower = new MapLabels.Label(java.util.Collections.singletonList("Lower level"), 3745, 5698,
 			MapLabels.PLACE, java.awt.Color.YELLOW);
 		labels.set(java.util.Collections.singletonList(lower));

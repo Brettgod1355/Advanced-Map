@@ -61,6 +61,12 @@ public class ShopsTest
 		// an icon of another kind a few tiles off is not the shop's; a shop icon that far still is
 		assertNull(Shops.of(MapSpot.icon(2849, 10188, 0, 1, IconGroup.QUEST + 1000)));
 		assertEquals("Keldagrim Stonemason", Shops.of(MapSpot.icon(2849, 10188, 0, 1, 1049)).getName());
+		// a teleport's mark is where it lands, never a shop's icon: the Fishing Guild's lands beside the Master fisher
+		// (deep scan, 2026-11-15)
+		for (Teleport teleport : Teleport.values())
+		{
+			assertNull(String.valueOf(teleport.getDestination()), Shops.of(MapSpot.teleport(teleport)));
+		}
 		// "Ore seller", not the wiki's "Ore seller.&#91;sic&#93;" left encoded
 		assertEquals("Ore seller", Shops.near(1936, 4966, 0).getName());
 	}

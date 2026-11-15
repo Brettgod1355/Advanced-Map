@@ -156,7 +156,8 @@ final class Shops
 	 */
 	static Shop of(MapSpot spot)
 	{
-		Shop shop = near(spot.getX(), spot.getY(), spot.getPlane());
+		// a teleport's mark is where it lands, not a shop's icon (the Fishing Guild's lands beside the Master fisher)
+		Shop shop = spot.getTeleport() != null ? null : near(spot.getX(), spot.getY(), spot.getPlane());
 		if (shop == null || spot.getGroup() == IconGroup.SHOPS)
 		{
 			return shop;

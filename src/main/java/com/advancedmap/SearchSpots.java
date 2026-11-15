@@ -202,7 +202,7 @@ final class SearchSpots
 		MapArea area = MapArea.of(at.getY());
 		for (MapLabels.Label label : labels)
 		{
-			if (MapArea.of(label.getY()) != area)
+			if (MapArea.of(label.getY()) != area || MapLabels.isAdded(label))
 			{
 				continue;
 			}

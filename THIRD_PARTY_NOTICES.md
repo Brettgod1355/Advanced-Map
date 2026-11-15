@@ -221,7 +221,7 @@ the rest of the project under the BSD 2-Clause License. So are the pictures a pl
 
 ## Monster pictures (Jagex's artwork, from the Old School RuneScape Wiki)
 
-`src/main/resources/com/advancedmap/monsters/` holds one picture for each monster the map shows (822). They are
+`src/main/resources/com/advancedmap/monsters/` holds one picture for each monster the map shows (821). They are
 the monster images from the [Old School RuneScape Wiki](https://oldschool.runescape.wiki/), each the main image of
 the monster's page there, downloaded once on 2026-11-14 (Nex's on 2026-11-15). The images are Jagex's artwork, which the wiki uses with
 Jagex's permission; they are not covered by the wiki's CC BY-NC-SA licence and are not under this project's BSD

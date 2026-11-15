@@ -679,7 +679,7 @@ final class DungeonPreview
 		for (MapLabels.Label label : labels)
 		{
 			int d = Math.max(Math.abs(label.getX() - to.getX()), Math.abs(label.getY() - to.getY()));
-			if (MapArea.of(label.getY()) == area && d < bestDistance)
+			if (MapArea.of(label.getY()) == area && d < bestDistance && !MapLabels.isAdded(label))
 			{
 				best = String.join(" ", label.getLines());
 				bestDistance = d;

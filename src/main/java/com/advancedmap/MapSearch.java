@@ -738,7 +738,8 @@ final class MapSearch
 		{
 			return Collections.singletonList(new Entry(Kind.TILE, tile.getX() + ", " + tile.getY()
 				+ (tile.getPlane() > 0 ? ", floor " + tile.getPlane() : ""), Kind.TILE.label,
-				Collections.singletonList(tile), Collections.emptyList(), null));
+				// a tile inside Prifddinas as the game numbers it is shown where the map draws the city
+				Collections.singletonList(Prifddinas.toSurface(tile)), Collections.emptyList(), null));
 		}
 		java.util.Set<String> nicknamed = nicknames.getOrDefault(wanted, Collections.emptySet());
 		List<Ranked> ranked = new ArrayList<>();

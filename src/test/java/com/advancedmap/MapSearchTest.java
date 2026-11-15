@@ -616,6 +616,11 @@ public class MapSearchTest
 		assertEquals(new WorldPoint(3205, 3209, 1), MapSearch.search(Collections.emptyList(), "3205 3209 1").get(0)
 			.getPoints().get(0));
 		assertEquals("3205, 3209, floor 1", MapSearch.search(Collections.emptyList(), "3205,3209,1").get(0).getName());
+		// a tile inside Prifddinas as the game numbers it goes where the map draws the city (deep scan, 2026-11-15)
+		WorldPoint city = new WorldPoint(3263, 6065, 0);
+		assertFalse(city.equals(Prifddinas.toSurface(city)));
+		assertEquals(Prifddinas.toSurface(city), MapSearch.search(Collections.emptyList(), "3263 6065").get(0)
+			.getPoints().get(0));
 		// not coordinates: too short, out of the world, a fourth number, words
 		for (String no : new String[]{"300 20", "99999 3218", "3222 3218 4", "3222 3218 0 1", "rune 2000"})
 		{

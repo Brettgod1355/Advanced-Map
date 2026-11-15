@@ -369,7 +369,9 @@ public class MapIconsTest
 		names.put(1053, "Platebody shop");
 		Progress kinds = new Progress(true, new int[Skill.values().length], new EnumMap<>(Quest.class),
 			Collections.emptyMap(), names, Collections.emptyMap());
-		Map<Integer, Integer> areas = new java.util.HashMap<>();
+		// a kind with no name comes first: the others' icons must not wait on its name (deep scan, 2026-11-15)
+		Map<Integer, Integer> areas = new java.util.LinkedHashMap<>();
+		areas.put(1, 9000);
 		areas.put(1049, 9001);
 		areas.put(1052, 9002);
 		areas.put(1053, 9003);

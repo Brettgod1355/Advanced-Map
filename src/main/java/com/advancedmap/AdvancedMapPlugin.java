@@ -2846,7 +2846,8 @@ public class AdvancedMapPlugin extends Plugin
 			{
 				selection = null;
 				// a hidden icon is to be unhidden: close enough in for it to be drawn, a monster or ground item too
-				goTo(row.getPoint(), row.getTarget() == HIDDEN_LIST ? SpawnMarks.ZOOM : 0);
+				goTo(row.getPoint(), row.getTarget() == HIDDEN_LIST
+					? Math.max(SpawnMarks.ZOOM, MapIcons.ICON_ZOOM) : 0);
 			}
 			if (row.getTarget() instanceof Shops.Shop)
 			{
