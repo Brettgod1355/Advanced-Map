@@ -232,6 +232,17 @@ final class MapWatch
 		return MapArea.of(a.getY()) == MapArea.of(b.getY()) && flat(a, b) <= reach;
 	}
 
+	/**
+	 * True for a game state that ends what the watch was following (the tile last stood on, the thing last used): a
+	 * login, a logout, a world hop. Not the game loading a scene: Elkoy's walk through the Tree Gnome Village maze
+	 * loads one as it moves the player, and with the tile forgotten there its trips were never judged (owner,
+	 * 2026-11-15: three of them, none in the log).
+	 */
+	static boolean forgets(net.runelite.api.GameState state)
+	{
+		return state != net.runelite.api.GameState.LOGGED_IN && state != net.runelite.api.GameState.LOADING;
+	}
+
 	/** True when a tick's move is no walk: onto the other map, or farther than {@link #JUMP}. */
 	static boolean jumped(WorldPoint from, WorldPoint to)
 	{

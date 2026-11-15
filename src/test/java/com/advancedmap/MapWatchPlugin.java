@@ -186,7 +186,7 @@ public class MapWatchPlugin extends Plugin
 	@Subscribe
 	public void onGameStateChanged(GameStateChanged event)
 	{
-		if (event.getGameState() != GameState.LOGGED_IN)
+		if (MapWatch.forgets(event.getGameState()))
 		{
 			// a login or a world hop is no jump
 			last = null;
@@ -339,7 +339,10 @@ public class MapWatchPlugin extends Plugin
 		AdvancedMapPlugin map = map();
 		if (map == null || client.getGameState() != GameState.LOGGED_IN)
 		{
-			last = null;
+			if (map == null || MapWatch.forgets(client.getGameState()))
+			{
+				last = null;
+			}
 			return;
 		}
 		takeLists();

@@ -275,4 +275,19 @@ public class MapWatchTest
 		assertNull(MapWatch.monster("Outlaw", 32, new WorldPoint(3218, 3246, 0),
 			Collections.singletonMap("outlaw", Collections.singletonList(new WorldPoint(3118, 3474, 0)))));
 	}
+
+	@Test
+	public void aSceneLoadDoesNotEndATripButALoginOrAHopDoes()
+	{
+		// owner, 2026-11-15: followed Elkoy through the Tree Gnome Village maze three times; each loaded the scene
+		// as it moved the player, the tile stood on was forgotten there, and no trip was logged
+		assertFalse(MapWatch.forgets(net.runelite.api.GameState.LOADING));
+		assertFalse(MapWatch.forgets(net.runelite.api.GameState.LOGGED_IN));
+		for (net.runelite.api.GameState state : new net.runelite.api.GameState[]{
+			net.runelite.api.GameState.LOGIN_SCREEN, net.runelite.api.GameState.LOGGING_IN,
+			net.runelite.api.GameState.HOPPING, net.runelite.api.GameState.CONNECTION_LOST})
+		{
+			assertTrue(state.name(), MapWatch.forgets(state));
+		}
+	}
 }
