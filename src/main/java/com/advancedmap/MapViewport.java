@@ -48,7 +48,8 @@ final class MapViewport
 	static void apply(AdvancedMapConfig config)
 	{
 		MapIcons.ICON_ZOOM = fromLevel(config.zoomIcons());
-		SpawnMarks.ZOOM = fromLevel(config.zoomSpawns());
+		// a level saved before the setting had its furthest
+		SpawnMarks.ZOOM = fromLevel(Math.max(SpawnMarks.MIN_LEVEL, config.zoomSpawns()));
 		MapLabels.TOWN_ZOOM = fromLevel(config.zoomTowns());
 		MapLabels.PLACE_ZOOM = fromLevel(config.zoomPlaces());
 		MapLabels.KINGDOM_ZOOM_MAX = fromLevel(config.zoomKingdoms());

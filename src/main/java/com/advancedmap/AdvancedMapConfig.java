@@ -77,9 +77,10 @@ public interface AdvancedMapConfig extends Config
 		return 8;
 	}
 
-	@Range(min = 1, max = MapViewport.LEVELS)
+	@Range(min = SpawnMarks.MIN_LEVEL, max = MapViewport.LEVELS)
 	@ConfigItem(keyName = "zoomSpawns", name = "Monsters and items from", description = "Monsters and ground items"
-		+ " show from this zoom level in.", section = ZOOM, position = 2)
+		+ " show from this zoom level in: " + SpawnMarks.MIN_LEVEL + " at the furthest, there are thousands of them.",
+		section = ZOOM, position = 2)
 	default int zoomSpawns()
 	{
 		return 16;

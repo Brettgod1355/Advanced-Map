@@ -240,7 +240,7 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 		{
 			plugin.pressButton(button, false);
 		}
-		else if (!plugin.pressMenu(x, y, w, h) && SwingUtilities.isLeftMouseButton(e))
+		else if (SwingUtilities.isLeftMouseButton(e) && !plugin.pressMenu(x, y, w, h))
 		{
 			dragging = true;
 			plugin.setDragging(true);

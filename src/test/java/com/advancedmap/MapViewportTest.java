@@ -150,4 +150,46 @@ public class MapViewportTest
 		// level 1 is every zoom there is
 		assertTrue(MapViewport.fromLevel(1) < MapViewport.MIN_ZOOM);
 	}
+
+	@Test
+	public void monstersAndItemsNeverShowFurtherOutThanTheirFurthestLevel() throws Exception
+	{
+		// the stress test, 2026-11-15: set to 1, every paint of the map zoomed out drew every mark of the floor
+		double[] before = {MapIcons.ICON_ZOOM, SpawnMarks.ZOOM, MapLabels.TOWN_ZOOM, MapLabels.PLACE_ZOOM,
+			MapLabels.KINGDOM_ZOOM_MAX, MapPainter.WILDERNESS_ZOOM};
+		try
+		{
+			for (int saved : new int[]{1, SpawnMarks.MIN_LEVEL - 1, SpawnMarks.MIN_LEVEL})
+			{
+				MapViewport.apply(new AdvancedMapConfig()
+				{
+					@Override
+					public int zoomSpawns()
+					{
+						return saved;
+					}
+				});
+				assertEquals(MapViewport.fromLevel(SpawnMarks.MIN_LEVEL), SpawnMarks.ZOOM, 0);
+			}
+			MapViewport.apply(new AdvancedMapConfig()
+			{
+			});
+			assertEquals("the default, closer in, is as set", MapViewport.fromLevel(16), SpawnMarks.ZOOM, 0);
+			// and the setting's own box goes no further out, nor starts there
+			String config = new String(java.nio.file.Files.readAllBytes(java.nio.file.Paths.get(
+				"src/main/java/com/advancedmap/AdvancedMapConfig.java")), java.nio.charset.StandardCharsets.UTF_8);
+			assertTrue(config.contains("@Range(min = SpawnMarks.MIN_LEVEL, max = MapViewport.LEVELS)"
+				+ "\n\t@ConfigItem(keyName = \"zoomSpawns\""));
+			assertTrue(SpawnMarks.MIN_LEVEL > 1 && SpawnMarks.MIN_LEVEL <= 16);
+		}
+		finally
+		{
+			MapIcons.ICON_ZOOM = before[0];
+			SpawnMarks.ZOOM = before[1];
+			MapLabels.TOWN_ZOOM = before[2];
+			MapLabels.PLACE_ZOOM = before[3];
+			MapLabels.KINGDOM_ZOOM_MAX = before[4];
+			MapPainter.WILDERNESS_ZOOM = before[5];
+		}
+	}
 }

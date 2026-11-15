@@ -38,6 +38,11 @@ final class SpawnMarks
 	/** Shown from this zoom in (pixels a tile): near the closest, where a town fills the map. */
 	static volatile double ZOOM = MapViewport.fromLevel(16);
 	/**
+	 * The furthest out "Monsters and items from" goes. Further out one screen holds most of the map's marks, all
+	 * drawn by every paint: 3,350 on a 1920 by 1080 map at level 1, 1,461 at 8, 408 here, 101 at 16.
+	 */
+	static final int MIN_LEVEL = 12;
+	/**
 	 * A monster's icon and an item's picture, in pixels, at Monster size and Ground item size 100%: the game's own map
 	 * icons' size (owner, 2026-11-09: 24 looked "quite a bit larger than the default icons").
 	 */

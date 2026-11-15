@@ -295,8 +295,8 @@ final class MapWindow extends JFrame
 					{
 						plugin.pressButton(button, true);
 					}
-					else if (!plugin.pressMenu(x(e), y(e), width(), height())
-						&& SwingUtilities.isLeftMouseButton(e))
+					else if (SwingUtilities.isLeftMouseButton(e)
+						&& !plugin.pressMenu(x(e), y(e), width(), height()))
 					{
 						dragFrom = point(e);
 						pressedAt = point(e);

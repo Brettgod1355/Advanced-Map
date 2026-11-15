@@ -70,10 +70,14 @@ public class MapInputTest
 			return false;
 		}
 
+		int menuPresses;
+		boolean onMenu;
+
 		@Override
 		boolean pressMenu(int x, int y, int width, int height)
 		{
-			return false;
+			menuPresses++;
+			return onMenu;
 		}
 
 		@Override
@@ -512,6 +516,25 @@ public class MapInputTest
 		MouseEvent release = releaseWith(10, 10, MouseEvent.BUTTON1);
 		input.mouseReleased(release);
 		assertFalse("a release the map has no press for is the game's", release.isConsumed());
+	}
+
+	@Test
+	public void onlyTheLeftButtonPicksFromTheRightClickMenu()
+	{
+		// the stress test, 2026-11-15: the middle button (the game's camera button) pressed on "Remove marker" ran
+		// it, the press being handed to the menu before its button was looked at
+		Stub plugin = new Stub();
+		plugin.onMenu = true;
+		MapInput input = new MapInput(plugin, () -> 1280, () -> 800, at -> at);
+		MouseEvent middle = pressWith(400, 300, MouseEvent.BUTTON2, MouseEvent.BUTTON2_DOWN_MASK);
+		input.mousePressed(middle);
+		assertTrue("on the map: the map's, not the game's camera", middle.isConsumed());
+		assertEquals("and not the menu's", 0, plugin.menuPresses);
+		input.mouseReleased(releaseWith(400, 300, MouseEvent.BUTTON2));
+		input.mousePressed(pressWith(400, 300, MouseEvent.BUTTON1, MouseEvent.BUTTON1_DOWN_MASK));
+		assertEquals("the left button's is", 1, plugin.menuPresses);
+		assertFalse("and a press on the menu drags nothing", plugin.drag);
+		input.mouseReleased(releaseWith(400, 300, MouseEvent.BUTTON1));
 	}
 
 	@Test
