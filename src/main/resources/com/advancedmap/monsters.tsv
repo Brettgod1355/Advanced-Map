@@ -269,7 +269,6 @@ Frog	8	1	Crush				Earth spells 40%
 Frost Crab	60	1	Crush	Aggressive		Mazchna, Vannaka, Chaeldar	Fire spells 100%
 Frost Nagua	120	12 total, 6+6	Magic	Aggressive	48	Chaeldar, Konar	Fire spells 50%
 Frost dragon	230	16 (Stab)50 (Dragonfire)	Melee, Dragonfire	Aggressive		Nieve, Duradel	Fire spells 100%
-Gadderanks	20	3	Crush				
 Galina	60	2	Crush				
 Gardener	7	1	Stab				
 Gargoyle	105	11	Slash	Aggressive	75	Vannaka, Chaeldar, Konar, Nieve, Duradel, Mortimer	Earth spells 40%
@@ -505,6 +504,7 @@ Narwhal	187	7	Slash
 Nechryael	105	11	Crush		80	Vannaka, Chaeldar, Konar, Nieve, Duradel, Krystilia, Mortimer	
 Necromancer	40	3	Crush, Curse	Aggressive			
 Necromancer (Great Kourend)	80	7	Magic	Aggressive			
+Nex	3400	33 (Magic), 60 (Ranged), 27 (Melee), 50 (Smoke Dash), 50 (Shadow Smash), 80 (Blood Sacrifice), 60 (Containment), 75 (Ice Prison)	Magic, Ranged, Crush	Aggressive Poisonous			
 Nikita	60	2	Crush				
 Nikolai	60	2	Crush				
 Obelisk (Tombs of Amascut)	260	0					
