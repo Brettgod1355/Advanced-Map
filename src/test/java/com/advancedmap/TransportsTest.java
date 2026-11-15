@@ -140,6 +140,21 @@ public class TransportsTest
 	}
 
 	@Test
+	public void theLogRaftAboveBaxtorianFallsGoesOneWayToItsIsland() throws Exception
+	{
+		// owner, 2026-11-15: "add the log raft to the map"; seen in game 2510, 3494 to 2512, 3481, with no way back by raft
+		List<Transports.Destination> to = Transports.from(MapSpot.icon(2509, 3493, 0, 1, 1104));
+		assertEquals(1, to.size());
+		assertEquals(new WorldPoint(2512, 3481, 0), to.get(0).getPoint());
+		assertEquals("Log raft", to.get(0).label());
+		assertTrue(Transports.from(2512, 3481, 0).isEmpty());
+		// the icon is Advanced Map's own (added-icons.tsv), named for the raft with the falls' wiki page
+		assertEquals("Log raft", NamedIcons.at(2509, 3493, 0).getName());
+		assertTrue(new String(MapIcons.class.getResourceAsStream("added-icons.tsv").readAllBytes(),
+			java.nio.charset.StandardCharsets.UTF_8).contains("\n2509\t3493\t0\tTransportation\t"));
+	}
+
+	@Test
 	public void theEdgevilleCanoeShowsOnlyCanoeTrips()
 	{
 		List<Transports.Destination> to = Transports.from(3131, 3509, 0);
