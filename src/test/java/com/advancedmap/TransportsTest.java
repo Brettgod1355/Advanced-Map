@@ -147,11 +147,33 @@ public class TransportsTest
 		assertEquals(1, to.size());
 		assertEquals(new WorldPoint(2512, 3481, 0), to.get(0).getPoint());
 		assertEquals("Log raft", to.get(0).label());
-		assertTrue(Transports.from(2512, 3481, 0).isEmpty());
-		// the icon is Advanced Map's own (added-icons.tsv), named for the raft with the falls' wiki page
+		// one way: the island has no place to board (its tile is 12 from the raft's, within an icon's reach of it,
+		// so it is the places to board that are asked, not an icon that is not there)
+		for (WorldPoint boarding : Transports.boardingSpots())
+		{
+			assertTrue(boarding.toString(), boarding.distanceTo2D(new WorldPoint(2512, 3481, 0)) > Transports.NAME_REACH);
+		}
+		// named for the raft with the falls' wiki page
 		assertEquals("Log raft", NamedIcons.at(2509, 3493, 0).getName());
-		assertTrue(new String(MapIcons.class.getResourceAsStream("added-icons.tsv").readAllBytes(),
-			java.nio.charset.StandardCharsets.UTF_8).contains("\n2509\t3493\t0\tTransportation\t"));
+		// one icon, not two a tile apart (owner, 2026-11-15: "two log raft icons? delete the first one 2510 3494"):
+		// a place to board gets its icon by itself where the game's map shows none near, so the raft has no row of
+		// its own in added-icons.tsv, and it boards at the tile the icon is wanted on
+		assertTrue(Transports.boardingSpots().contains(new WorldPoint(2509, 3493, 0)));
+		assertFalse(Transports.boardingSpots().contains(new WorldPoint(2510, 3494, 0)));
+		String added = new String(MapIcons.class.getResourceAsStream("added-icons.tsv").readAllBytes(),
+			java.nio.charset.StandardCharsets.UTF_8);
+		for (String row : added.split("\n"))
+		{
+			String[] cells = row.split("\t");
+			if (row.startsWith("#") || cells.length < 4)
+			{
+				continue;
+			}
+			WorldPoint at = new WorldPoint(Integer.parseInt(cells[0].trim()), Integer.parseInt(cells[1].trim()),
+				Integer.parseInt(cells[2].trim()));
+			assertTrue("a second icon at the raft: " + row,
+				at.distanceTo2D(new WorldPoint(2509, 3493, 0)) > Transports.NAME_REACH);
+		}
 	}
 
 	@Test

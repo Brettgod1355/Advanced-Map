@@ -838,5 +838,7 @@ P	Gemstone Crab cave	1350	3123	0	1237	3042	0	South mine
 P	Gemstone Crab cave	1245	3035	0	1275	3160	0	North mine
 P	Gemstone Crab cave	1245	3035	0	1351	3110	0	East mine
 # The log raft above Baxtorian Falls, one way to the island below it: seen in game by the owner (2026-11-15), not in
-# Shortest Path's lists. Its icon is in added-icons.tsv.
-P	Log raft	2510	3494	0	2512	3481	0	
+# Shortest Path's lists. Its icon is the one every place to board gets where the game's map shows none: at this
+# row's first tile, so no row in added-icons.tsv (with one there were two icons, a tile apart; owner, 2026-11-15:
+# "delete the first one 2510 3494").
+P	Log raft	2509	3493	0	2512	3481	0	
