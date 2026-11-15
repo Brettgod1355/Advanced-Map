@@ -39,7 +39,8 @@ final class SpawnMarks
 	static volatile double ZOOM = MapViewport.fromLevel(16);
 	/**
 	 * The furthest out "Monsters and items from" goes. Further out one screen holds most of the map's marks, all
-	 * drawn by every paint: 3,350 on a 1920 by 1080 map at level 1, 1,461 at 8, 408 here, 101 at 16.
+	 * drawn by every paint. The most on a 1920 by 1080 map, at the zoom each level shows from: 3,350 at level 1,
+	 * 1,773 at 8, 997 at 10, 489 here, 126 at 16 (1,311 here on a 3840 by 2160 map).
 	 */
 	static final int MIN_LEVEL = 12;
 	/**
