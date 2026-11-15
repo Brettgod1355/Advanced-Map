@@ -53,3 +53,6 @@ Rellekka Rooftop Course	2625	3677	0	Rellekka_Rooftop_Course	Agility 80
 Ardougne Rooftop Course	2674	3298	0	Ardougne_Rooftop_Course	Agility 90
 # no level to go in: each obstacle has its own
 Brimhaven Agility Arena	2807	3193	0	Brimhaven_Agility_Arena
+# the rubble shortcuts in the Temple of the Eye, 56 Agility (owner, 2026-11-15; their icons are in added-icons.tsv)
+Guardians of the Rift rubble	3595	9503	0	Guardians_of_the_Rift	Agility 56
+Guardians of the Rift rubble	3635	9503	0	Guardians_of_the_Rift	Agility 56
