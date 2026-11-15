@@ -3170,16 +3170,17 @@ public class AdvancedMapPlugin extends Plugin
 	/**
 	 * Where an opening looks: a place to show, else the player. But a map that was moved off the player (dragged, sent
 	 * to a search result, another floor) opens where it was left, until the locate button takes it back to them
-	 * (owner, 2026-11-12, issue #3: "retain its last known position upon closing").
+	 * (owner, 2026-11-12, issue #3: "retain its last known position upon closing"). Not with "Open where you left it"
+	 * off ({@code whereLeft}): then every opening without a place to show is on the player (owner, 2026-11-15).
 	 */
-	void lookAt(WorldPoint at)
+	void lookAt(WorldPoint at, boolean whereLeft)
 	{
 		if (at != null)
 		{
 			// a place to show (another plugin's, a search's): following the player would move straight off it
 			setFollowing(false);
 		}
-		else if (moved)
+		else if (moved && whereLeft)
 		{
 			return;
 		}
@@ -3212,7 +3213,7 @@ public class AdvancedMapPlugin extends Plugin
 			progressDue = true;
 			listRegions();
 			loadLabels();
-			lookAt(at);
+			lookAt(at, config.openWhereLeft());
 			MapViewport viewport = viewports.get(area);
 			if (zoom != null)
 			{

@@ -178,11 +178,23 @@ public interface AdvancedMapConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "openWhereLeft",
+		name = "Open where you left it",
+		description = "Once you have moved the map, it opens where you left it, until the round button at the bottom"
+			+ " right takes it back to you. Off: the map always opens on you.",
+		position = 3
+	)
+	default boolean openWhereLeft()
+	{
+		return true;
+	}
+
+	@ConfigItem(
 		keyName = INFO_ON_HOVER,
 		name = "Info on hover",
 		description = "Show an icon's info box when the mouse rests on it, without a click; a click keeps it open. A"
 			+ " dungeon's entrance shows the dungeon: a small map of it and the monsters inside. Off: click for info.",
-		position = 3
+		position = 4
 	)
 	default boolean infoOnHover()
 	{
@@ -193,7 +205,7 @@ public interface AdvancedMapConfig extends Config
 		keyName = "monsterOrder",
 		name = "Dungeon monsters",
 		description = "The order a dungeon's preview (point at its entrance) lists the monsters inside in.",
-		position = 4
+		position = 5
 	)
 	default MonsterOrder monsterOrder()
 	{
@@ -205,7 +217,7 @@ public interface AdvancedMapConfig extends Config
 		name = "Arrow to you",
 		description = "When you are off the part of the map in view, an arrow at its edge points to where you are, with"
 			+ " how far; click it to go back to you.",
-		position = 5
+		position = 6
 	)
 	default boolean playerArrow()
 	{
@@ -217,7 +229,7 @@ public interface AdvancedMapConfig extends Config
 		name = "Wilderness teleport limits",
 		description = "When zoomed in, show red dashed lines where the Wilderness passes level 20 and level 30, the levels"
 			+ " most teleports (and a few more) stop working above.",
-		position = 6
+		position = 7
 	)
 	default boolean wildernessLines()
 	{

@@ -174,7 +174,7 @@ public class JumpHistoryTest
 		AdvancedMapPlugin plugin = new AdvancedMapPlugin();
 		plugin.newViews();
 		// never moved: an opening is on the player (Lumbridge while there is none)
-		plugin.lookAt(null);
+		plugin.lookAt(null, true);
 		MapViewport.View home = plugin.viewport().view(1, 1);
 		assertEquals(3222.5, home.centerX, 0);
 		// dragged away, as the map's input does it: the next opening stays there
@@ -182,16 +182,37 @@ public class JumpHistoryTest
 		plugin.viewport().drag(400, 0);
 		MapViewport.View dragged = plugin.viewport().view(1, 1);
 		assertTrue(dragged.centerX != home.centerX);
-		plugin.lookAt(null);
+		plugin.lookAt(null, true);
 		assertEquals(dragged.centerX, plugin.viewport().view(1, 1).centerX, 0);
 		// a place to show (a search, another plugin) is shown, and kept at the next opening
-		plugin.lookAt(new net.runelite.api.coords.WorldPoint(2965, 3380, 0));
+		plugin.lookAt(new net.runelite.api.coords.WorldPoint(2965, 3380, 0), true);
 		assertEquals(2965.5, plugin.viewport().view(1, 1).centerX, 0);
-		plugin.lookAt(null);
+		plugin.lookAt(null, true);
 		assertEquals(2965.5, plugin.viewport().view(1, 1).centerX, 0);
 		// the locate button: on the player again, at this opening and the next
 		plugin.setFollowing(true);
-		plugin.lookAt(null);
+		plugin.lookAt(null, true);
+		assertEquals(home.centerX, plugin.viewport().view(1, 1).centerX, 0);
+	}
+
+	@Test
+	public void withOpenWhereYouLeftItOffAMovedMapOpensOnThePlayer()
+	{
+		// owner, 2026-11-15: a setting between opening where it was left (the default) and on you
+		AdvancedMapPlugin plugin = new AdvancedMapPlugin();
+		plugin.newViews();
+		plugin.lookAt(null, false);
+		MapViewport.View home = plugin.viewport().view(1, 1);
+		// dragged away: the next opening is back on the player (Lumbridge while there is none), on their floor
+		plugin.setFollowing(false);
+		plugin.viewport().drag(400, 0);
+		assertTrue(plugin.viewport().view(1, 1).centerX != home.centerX);
+		plugin.lookAt(null, false);
+		assertEquals(home.centerX, plugin.viewport().view(1, 1).centerX, 0);
+		// a place to show is still shown; the opening after it is on the player again
+		plugin.lookAt(new net.runelite.api.coords.WorldPoint(2965, 3380, 0), false);
+		assertEquals(2965.5, plugin.viewport().view(1, 1).centerX, 0);
+		plugin.lookAt(null, false);
 		assertEquals(home.centerX, plugin.viewport().view(1, 1).centerX, 0);
 	}
 }

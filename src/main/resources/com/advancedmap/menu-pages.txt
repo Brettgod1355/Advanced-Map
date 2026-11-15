@@ -80,6 +80,7 @@ Game updates need nothing from you. The map, its place names and the game's own 
 # no "- " lines, so the page does not open by itself.
 ## Version 1.2 - 11/15/26
 - The map opens where you left it; the round button at the bottom right takes it back to you
+- "Open where you left it" in the settings: turn it off to have the map always open on you
 - The floor arrows moved to the top: click the floor's name between them to switch between surface and underground
 - Your marker's look, color and size, in the Icons settings: crosshair, dot, pin or X
 - Monsters and ground items show on the map when zoomed in, each as its own picture

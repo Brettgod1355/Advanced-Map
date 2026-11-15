@@ -196,6 +196,7 @@ choose with Filters on the map itself.
 | World map orb opens Advanced Map | On | A left click on the orb opens this map; the game's own map stays in the orb's menu |
 | Sidebar button | On | The sidebar tab with the open button and the saving progress |
 | Open in its own window | Off | Opens the map popped out instead of over the game |
+| Open where you left it | On | Once moved, the map opens where you left it until the round button takes it back to you; off, it always opens on you |
 | Info on hover | On | Shows an icon's details when the pointer rests on it; off, a click shows them |
 | Dungeon monsters | Highest level first | The order a dungeon preview lists its monsters in |
 | Arrow to you | On | The arrow at the edge pointing to you when you are out of view |
