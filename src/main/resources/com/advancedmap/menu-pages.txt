@@ -83,8 +83,7 @@ Game updates need nothing from you. The map, its place names and the game's own 
 - Hover over an Agility course to see the Agility level it needs: green once you have it, red until
 - Search for an Agility course by name, like "seers rooftop" or "prifddinas agility"
 - Right-click any icon to open its wiki page
-- Monsters and ground items show on the map when zoomed in, each item as its picture
-- Each monster shows as its own picture
+- Monsters and ground items show on the map when zoomed in, each as its own picture
 - The Blast Furnace's ore seller and armour store have shop icons, which the game's map leaves out
 - Monster size and Ground item size settings, apart from Icon size
 - Right-click a monster or ground item to hide it or open its wiki page
