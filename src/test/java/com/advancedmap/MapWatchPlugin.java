@@ -247,14 +247,14 @@ public class MapWatchPlugin extends Plugin
 
 	/**
 	 * Sends a missing way to the reports' receiver, once a session: what was used, its tile, where the player stood
-	 * and arrived. Only a jump the receiver takes (onto the other map, or over its 24 tiles): a short trip is logged
-	 * here and not sent. The answer is logged ("map watch report: 204").
+	 * and arrived. Only a trip the receiver takes (onto the other map, or over its 3 tiles): short ones too, like the
+	 * Baxtorian Falls log raft's 13 tiles (owner, 2026-11-15). The answer is logged ("map watch report: 204").
 	 */
 	private void send(WorldPoint at, WorldPoint from, WorldPoint to)
 	{
 		String what = usedReport;
 		if (what == null || at == null || from == null || to == null
-			|| MapArea.of(from.getY()) == MapArea.of(to.getY()) && MapWatch.flat(from, to) <= MapWatch.JUMP
+			|| MapArea.of(from.getY()) == MapArea.of(to.getY()) && MapWatch.flat(from, to) <= MapWatch.STEP
 			|| !sent.add(what + tile(at) + (to.getX() >> 3) + "," + (to.getY() >> 3)))
 		{
 			return;
