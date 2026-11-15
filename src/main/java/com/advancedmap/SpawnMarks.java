@@ -84,16 +84,37 @@ final class SpawnMarks
 	private static volatile Map<Integer, List<Mark>> index = Collections.emptyMap();
 	/** Monsters' pictures by name: empty when the plugin has none, and while one is being read. */
 	private static final Map<String, Optional<BufferedImage>> pictures = new ConcurrentHashMap<>();
+	/** False from {@link #forget} until {@link #started}: what a reader still at work brings then is dropped. */
+	private static boolean kept = true;
 
 	private SpawnMarks()
 	{
 	}
 
-	/** Lets go of the marks and the pictures read so far: the plugin has stopped ({@link #load} brings the marks back). */
-	static void forget()
+	/** The plugin has started: what is read from now on is kept. */
+	static synchronized void started()
 	{
+		kept = true;
+	}
+
+	/**
+	 * Lets go of the marks and the pictures read so far: the plugin has stopped. A read still running then (the
+	 * tables' own, a picture's) finishes after this and would put back what was let go, kept for as long as the
+	 * plugin is off (the PR audit, 2026-11-15): it is dropped.
+	 */
+	static synchronized void forget()
+	{
+		kept = false;
 		index = Collections.emptyMap();
 		pictures.clear();
+	}
+
+	private static synchronized void keep(Runnable read)
+	{
+		if (kept)
+		{
+			read.run();
+		}
 	}
 
 	/** Builds the marks from what {@link Spawns} read and {@code item-ids.tsv}. Off the client thread. */
@@ -112,7 +133,8 @@ final class SpawnMarks
 				log.debug("item-ids.tsv: skipped {}", (Object) row);
 			}
 		}
-		index = build(Spawns.all(), ids);
+		Map<Integer, List<Mark>> built = build(Spawns.all(), ids);
+		keep(() -> index = built);
 	}
 
 	static Map<Integer, List<Mark>> build(List<Spawns.Creature> creatures, Map<String, Integer> itemIds)
@@ -296,7 +318,11 @@ final class SpawnMarks
 		{
 			try
 			{
-				reader.execute(() -> pictures.put(name, read(name)));
+				reader.execute(() ->
+				{
+					Optional<BufferedImage> read = read(name);
+					keep(() -> pictures.put(name, read));
+				});
 			}
 			catch (RejectedExecutionException e)
 			{

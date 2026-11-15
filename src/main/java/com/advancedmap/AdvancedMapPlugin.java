@@ -242,6 +242,7 @@ public class AdvancedMapPlugin extends Plugin
 		forgetWhatWasShown();
 		// RuneLite starts a plugin on the Swing thread: the bundled tables (845 KB, a quarter second) are read off it;
 		// everything reads them through fields that are empty until then, so a map opened at once shows them a moment late
+		SpawnMarks.started();
 		executor.execute(this::loadTables);
 		reader = new CacheReader(GameCache.of(client));
 		shortestPathRoute = new ShortestPathRoute();

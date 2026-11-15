@@ -246,6 +246,7 @@ public class SpawnMarksTest
 	{
 		// the PR audit, 2026-11-15: read inside the paint on the client thread, kept by index, never let go
 		SpawnMarks.forget();
+		SpawnMarks.started();
 		try
 		{
 			List<Runnable> asked = new java.util.ArrayList<>();
@@ -264,16 +265,29 @@ public class SpawnMarksTest
 			};
 			assertNull(SpawnMarks.picture("Cow", stopped));
 			assertTrue(SpawnMarks.picture("Cow", Runnable::run) != null);
-			// stopped: nothing is kept, the marks neither
+			// stopped: nothing is kept, the marks neither. The PR audit again: turned off a moment after being turned
+			// on, the tables' read and a picture's are still running and finish after the stop
+			assertNull(SpawnMarks.picture("Chicken", asked::add));
 			SpawnMarks.forget();
 			assertTrue(SpawnMarks.spots().isEmpty());
-			assertNull(SpawnMarks.picture("Goblin", asked::add));
-			assertEquals(2, asked.size());
+			SpawnMarks.load();
+			asked.get(1).run();
+			assertTrue("the marks read after the stop are dropped", SpawnMarks.spots().isEmpty());
+			// turned on again: nothing was kept, so both pictures are asked for again, and what is read now is kept
+			SpawnMarks.started();
+			assertNull("read after the stop: dropped", SpawnMarks.picture("Chicken", asked::add));
+			assertNull("read before it: let go", SpawnMarks.picture("Goblin", asked::add));
+			assertEquals(4, asked.size());
+			SpawnMarks.load();
+			asked.get(2).run();
+			assertFalse(SpawnMarks.spots().isEmpty());
+			assertTrue(SpawnMarks.picture("Chicken", asked::add) != null);
 		}
 		finally
 		{
 			// as the class began, for the tests after this one
 			SpawnMarks.forget();
+			SpawnMarks.started();
 			SpawnMarks.load();
 		}
 		assertFalse(SpawnMarks.spots().isEmpty());
