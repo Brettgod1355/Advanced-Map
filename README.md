@@ -214,7 +214,7 @@ The **Icons** section holds "Hide completed quests", "Mark what you can't use ye
 "Ground item size", "Transport names" and your marker's look (crosshair, dot, pin or X), color and size;
 the sizes scale monsters, ground items and your marker on their own. The **Zoom** section sets the zoom level (1, the
 furthest out, to 22, the closest) that icons, town and place names, monsters and ground items, and the Wilderness and
-multi-combat overlays show from, and "Show zoom level" puts the level you are at beside the coordinates. Which kinds of icon show, your Slayer task and the multi-combat areas are ticked in Filters on the map.
+multi-combat overlays show from (monsters and ground items from 12 at the furthest), and "Show zoom level" puts the level you are at beside the coordinates. Which kinds of icon show, your Slayer task and the multi-combat areas are ticked in Filters on the map.
 
 ## Privacy and what it uses
 
