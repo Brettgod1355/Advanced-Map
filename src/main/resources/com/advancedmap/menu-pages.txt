@@ -78,28 +78,25 @@ Game updates need nothing from you. The map, its place names and the game's own 
 # review ("TBD" until the owner says it is ready to go), then one change a line, no full stops. The first section is
 # the version being run: its "- " lines are WhatsNew.CHANGES. A release of fixes only says so in a plain line and has
 # no "- " lines, so the page does not open by itself.
-## Version 1.2 - TBD
-- Agility course icons show the course's name instead of "Agility training"
-- Hover over an Agility course to see the Agility level it needs: green once you have it, red until
-- Search for an Agility course by name, like "seers rooftop" or "prifddinas agility"
-- Right-click any icon to open its wiki page
+## Version 1.2 - 11/15/26
+- The map opens where you left it; the round button at the bottom right takes it back to you
+- The floor arrows moved to the top: click the floor's name between them to switch between surface and underground
+- Your marker's look, color and size, in the Icons settings: crosshair, dot, pin or X
 - Monsters and ground items show on the map when zoomed in, each as its own picture
-- The Blast Furnace's ore seller and armour store have shop icons, which the game's map leaves out
 - Monster size and Ground item size settings, apart from Icon size
 - Right-click a monster or ground item to hide it or open its wiki page
-- Every drop of a monster with its rate: what it always drops first, then its own rare drops, then the rest
-- All spots and Wiki buttons under a monster's details: see everywhere it lives, then Back
-- Your marker's look, color and size, in the Icons settings: crosshair, dot, pin or X
+- All monster drops and their rates
+- Type coordinates in the search, like 3222, 3218, to go to that tile (works without comma)
 - Zoom settings: choose the zoom level icons, names, monsters and ground items show from, and show the level you are at
-- Monsters and ground items show only when zoomed in closer than the map opens
 - One more notch of zoom at the close end
+- The Blast Furnace's ore seller and armour store have shop icons
+- Agility course icons show the course's name instead of "Agility training"
+- Search for an Agility course by name, like "seers rooftop" or "prifddinas agility"
+- Hover over an Agility course to see the Agility level it needs: green once you have it, red until
+- Right-click any icon to open its wiki page
 - Clicks on the map no longer go to another plugin's buttons hidden under it
 - The random event areas are named on the map and found in search
-- A teleport item's Wiki link opens that item's own page
-- Type coordinates in the search, like 3222, 3218, to go to that tile
 - A ring marks where a search result takes the map, until you move the map
-- The floor arrows are on the top row; click the floor's name between them to switch surface and underground
-- The map opens where you left it; the round button at the bottom right takes it back to you
 ## Version 1.1 - 11/8/26
 - Hover over a shop to see what it sells
 - Hover over a transport to see where it goes and the fares
