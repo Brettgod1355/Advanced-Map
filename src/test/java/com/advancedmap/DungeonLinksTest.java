@@ -18,7 +18,7 @@ public class DungeonLinksTest
 	public void theEntrancesTheGameLeavesOutLeadIntoTheirDungeons()
 	{
 		Map<Integer, Integer> extra = DungeonLinks.extra();
-		assertEquals(51, extra.size());
+		assertEquals(53, extra.size());
 		// Tonali Cavern's two entrances, from the wiki
 		int cavern = MapLinks.pack(1311, 9382, 0);
 		assertEquals(cavern, MapLinks.destinationNear(extra, 1306, 3035, 0, RegionImages.LINK_REACH));
@@ -82,6 +82,14 @@ public class DungeonLinksTest
 			RegionImages.LINK_REACH));
 		assertEquals("Blast Furnace", DungeonLinks.name(2931, 10196, 0));
 		assertEquals("Keldagrim", DungeonLinks.name(1940, 4956, 0));
+		// the Tree Gnome Village's dungeon icon and the room its ladder lands in, and back up (owner, 2026-11-15:
+		// "link these two", 2533, 3155 and 2533, 9556; the map watch had the icon leading nowhere)
+		assertEquals(MapLinks.pack(2533, 9556, 0), MapLinks.destinationNear(extra, 2533, 3155, 0,
+			RegionImages.LINK_REACH));
+		assertEquals(MapLinks.pack(2533, 3155, 0), MapLinks.destinationNear(extra, 2533, 9556, 0,
+			RegionImages.LINK_REACH));
+		assertEquals("Tree Gnome Village Dungeon", DungeonLinks.name(2533, 3155, 0));
+		assertEquals("Tree Gnome Village", DungeonLinks.name(2533, 9556, 0));
 	}
 
 	@Test
