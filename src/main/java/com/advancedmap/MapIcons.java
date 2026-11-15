@@ -153,19 +153,15 @@ final class MapIcons
 		return TELEPORTS;
 	}
 
-	/** Every icon found so far, on every map and floor (not the teleports), the added ones once made. */
-	List<MapSpot> allSpots()
+	/** Every icon found so far, on every map and floor (not the teleports), and the added ones, made here if not yet. */
+	List<MapSpot> allSpots(Progress progress)
 	{
 		List<MapSpot> out = new ArrayList<>();
 		for (List<MapSpot> spots : byRegion.values())
 		{
 			out.addAll(spots);
 		}
-		List<MapSpot> made = added;
-		if (made != null)
-		{
-			out.addAll(made);
-		}
+		out.addAll(added(progress));
 		return out;
 	}
 

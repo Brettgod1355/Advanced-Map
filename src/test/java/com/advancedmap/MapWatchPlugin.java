@@ -399,7 +399,7 @@ public class MapWatchPlugin extends Plugin
 				? "no object or NPC used near, just before" : instanced() ? "an instance" : "the map's links not read yet");
 			return;
 		}
-		MapSpot icon = MapWatch.dungeonIconNear(icons.allSpots(), from);
+		MapSpot icon = MapWatch.dungeonIconNear(icons.allSpots(map.progress()), from);
 		WorldPoint leads = icon == null ? null : map.leadsTo(icon);
 		boolean known = known(source.knownMapLinks(), from, to);
 		String[] finding = MapWatch.jump(from, to, with, icon, leads, known);

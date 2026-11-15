@@ -2380,7 +2380,7 @@ public class AdvancedMapPlugin extends Plugin
 	{
 		MapIcons known = icons;
 		List<MapPins.Marker> markers = pins.shown();
-		List<MapSpot> spots = known == null ? Collections.emptyList() : known.allSpots();
+		List<MapSpot> spots = known == null ? Collections.emptyList() : known.allSpots(progress);
 		Map<String, WorldPoint> maps = gameMaps;
 		Object key = Arrays.asList(markers, spots.size(), progress, maps);
 		if (key.equals(extraKey))
@@ -2470,7 +2470,7 @@ public class AdvancedMapPlugin extends Plugin
 			case ICON:
 				MapIcons current = icons;
 				sideList.open("Nearest: " + entry.getName(), nearestRows(entry.getPoints(), from, entry.getName(),
-					current == null ? Collections.emptyList() : current.allSpots(), progress, labelsNow()), entry);
+					current == null ? Collections.emptyList() : current.allSpots(progress), progress, labelsNow()), entry);
 				break;
 			case MONSTER:
 			case NPC:
@@ -2678,7 +2678,7 @@ public class AdvancedMapPlugin extends Plugin
 	{
 		Set<String> hidden = settings.getHidden();
 		WorldPoint from = player != null ? player : center();
-		List<MapSpot> candidates = new ArrayList<>(icons.allSpots());
+		List<MapSpot> candidates = new ArrayList<>(icons.allSpots(progress));
 		candidates.addAll(MapIcons.teleports());
 		candidates.addAll(SpawnMarks.spots());
 		sideList.open("Hidden icons (" + hidden.size() + "), nearest first", hiddenRows(hidden, candidates, from,

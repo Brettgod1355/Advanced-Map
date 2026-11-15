@@ -129,7 +129,7 @@ public class MapCheckPlugin extends Plugin
 				status.setText("Log in, open the map, wait, try again");
 				return;
 			}
-			List<MapSpot> spots = found.allSpots();
+			List<MapSpot> spots = found.allSpots(map.progress());
 			MapLabels names = map.labels;
 			List<MapLabels.Label> labels = names == null ? Collections.emptyList() : names.all();
 			List<MapSearch.Entry> places = map.search().places();

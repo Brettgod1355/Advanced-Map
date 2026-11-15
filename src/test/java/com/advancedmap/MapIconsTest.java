@@ -215,7 +215,7 @@ public class MapIconsTest
 		assertFalse(MapIcons.removed(kept));
 		assertFalse("another floor of the tile is another icon", MapIcons.removed(MapSpot.icon(2309, 5422, 0, 0, 1)));
 		icons.addRegion(1, java.util.Arrays.asList(copy, kept));
-		assertEquals(Collections.singletonList(kept), icons.allSpots());
+		assertEquals(Collections.singletonList(kept), icons.allSpots(Progress.NONE));
 	}
 
 	@Test
@@ -392,6 +392,22 @@ public class MapIconsTest
 		assertEquals(1052, ore.getCategory());
 		assertEquals(IconGroup.SHOPS, ore.getGroup());
 		// and the map's other lists see them too (the map check, the search's icons)
-		assertEquals(2, icons.allSpots().size());
+		assertEquals(2, icons.allSpots(kinds).size());
+	}
+
+	@Test
+	public void theAddedIconsAreListedBeforeTheMapHasDrawnThem()
+	{
+		// deep scan, 2026-11-15: a search before the first drawing with icons missed them (owner: "add these")
+		Progress kinds = new Progress(true, new int[Skill.values().length], new EnumMap<>(Quest.class),
+			Collections.emptyMap(), Collections.singletonMap(1052, "Mining shop"), Collections.emptyMap());
+		MapIcons icons = new MapIcons();
+		assertTrue(icons.allSpots(kinds).isEmpty());
+		icons.setKindAreas(Collections.singletonMap(1052, 9002));
+		assertTrue("not before the kinds' names are read", icons.allSpots(Progress.NONE).isEmpty());
+		List<MapSpot> spots = icons.allSpots(kinds);
+		assertEquals(1, spots.size());
+		assertEquals(1936, spots.get(0).getX());
+		assertEquals(9002, spots.get(0).getAreaId());
 	}
 }
