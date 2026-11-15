@@ -241,4 +241,16 @@ public class MapWatchTest
 		assertTrue(MapWatch.agility("Jump") && MapWatch.agility("Cross") && MapWatch.agility("Climb-over")
 			&& MapWatch.agility("Balance-across"));
 	}
+
+	@Test
+	public void aMonsterOfTheIgnoreListIsNoFinding()
+	{
+		// owner, 2026-11-15: the Witch's experiment, a one-time quest fight, was reported once for each of its forms
+		WorldPoint shed = new WorldPoint(2936, 3463, 0);
+		java.util.Map<String, List<WorldPoint>> listed = java.util.Collections.emptyMap();
+		assertNull(MapWatch.monster("Witch's experiment", 19, shed, listed));
+		assertNull(MapWatch.monster("Witch's experiment (second form)", 30, shed, listed));
+		// a monster on neither list is still one
+		assertEquals("monster-unlisted", MapWatch.monster("Made-up beast", 5, shed, listed)[0]);
+	}
 }

@@ -343,13 +343,31 @@ final class MapWatch
 		return best;
 	}
 
+	/**
+	 * The monsters of {@code watch-ignore.tsv} (the test folder's), by {@link #base} name: left off the map on purpose,
+	 * so seeing one is no finding (owner, 2026-11-15: the Witch's experiment's four forms, each reported in turn).
+	 */
+	static final java.util.Set<String> IGNORED = ignored();
+
+	private static java.util.Set<String> ignored()
+	{
+		java.util.Set<String> out = new java.util.HashSet<>();
+		for (String[] row : DataFiles.rows("watch-ignore.tsv"))
+		{
+			out.add(base(row[0]));
+		}
+		return out;
+	}
+
 	/** A monster seen in game: not on the map's lists at all, or farther than {@link #AWAY} from every listed spot. */
 	static String[] monster(String name, int level, WorldPoint at, Map<String, List<WorldPoint>> listed)
 	{
 		List<WorldPoint> tiles = listed.get(base(name));
 		if (tiles == null)
 		{
-			return finding("monster-unlisted", name, "level " + level + ", seen at " + tile(at));
+			// a monster the map leaves out on purpose (a one-time quest fight) is no finding
+			return IGNORED.contains(base(name)) ? null
+				: finding("monster-unlisted", name, "level " + level + ", seen at " + tile(at));
 		}
 		int distance = nearest(tiles, at);
 		return distance <= AWAY ? null : finding("monster-away", name + " in region " + at.getRegionID(),
