@@ -785,6 +785,12 @@ final class MapSearch
 			}
 		}
 		List<Entry> out = new ArrayList<>();
+		// the group of what was named in full, by its name or a nickname, first: "bandos" is General Graardor before any
+		// place with those letters in it (owner, 2026-11-15)
+		if (!ranked.isEmpty() && ranked.get(0).group == 0)
+		{
+			out.addAll(byGroup.remove(groupOf(ranked.get(0).entry)));
+		}
 		byGroup.values().forEach(out::addAll);
 		return out;
 	}

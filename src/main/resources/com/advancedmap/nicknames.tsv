@@ -1,4 +1,4 @@
-# Nicknames players use for places, found as the place itself when typed in full. Only names whose start is not
+# Nicknames players use for places and bosses, found as the place or boss itself when typed in full. Only names whose start is not
 # already the place's start ("tav", "civ" and "seers" find their places anyway). nickname, place names (;-separated),
 # as the game's own map writes them.
 ardy	East Ardougne;West Ardougne
@@ -18,3 +18,13 @@ gotr	Guardians of the Rift
 tfa	The Fractured Archive
 fred	The Fractured Archive
 raid	Chambers of Xeric;Theatre of Blood;Tombs of Amascut;The Fractured Archive
+# Bosses by the names players call them, their god's among them (owner, 2026-11-15); a monster is named as the map
+# names it. "kril" needs no row: it is the start of the name.
+arma	Kree'arra
+armadyl	Kree'arra
+bandos	General Graardor
+zil	Commander Zilyana
+sara	Commander Zilyana
+saradomin	Commander Zilyana
+zammy	K'ril Tsutsaroth
+zamorak	K'ril Tsutsaroth

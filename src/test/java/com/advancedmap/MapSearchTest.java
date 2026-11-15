@@ -466,6 +466,16 @@ public class MapSearchTest
 		assertEquals("The Fractured Archive", names("tfa").get(0));
 		assertEquals("The Fractured Archive", names("fractured archive").get(0));
 		assertEquals("The Fractured Archive", names("fred").get(0));
+		// the God Wars bosses by what players call them, and Nex, who the wiki gives no tile (owner, 2026-11-15)
+		assertEquals("Kree'arra", names("arma").get(0));
+		assertEquals("Kree'arra", names("armadyl").get(0));
+		assertEquals("General Graardor", names("bandos").get(0));
+		assertEquals("Commander Zilyana", names("zil").get(0));
+		assertEquals("Commander Zilyana", names("sara").get(0));
+		assertEquals("K'ril Tsutsaroth", names("zammy").get(0));
+		assertEquals("K'ril Tsutsaroth", names("zamorak").get(0));
+		assertEquals("K'ril Tsutsaroth", names("kril").get(0));
+		assertEquals("Nex", names("nex").get(0));
 		// "raid" finds all four raids first
 		List<String> raids = names("raid");
 		for (String raid : Arrays.asList("Chambers of Xeric", "Theatre of Blood", "Tombs of Amascut",
