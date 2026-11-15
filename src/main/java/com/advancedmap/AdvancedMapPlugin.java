@@ -482,6 +482,7 @@ public class AdvancedMapPlugin extends Plugin
 		icons = null;
 		labels = null;
 		YourPlaces.forget();
+		SpawnMarks.forget();
 		yourPlaces = Collections.emptyList();
 		// RuneLite keeps the plugin object while it is off: let go of pictures and other plugins' pins
 		itemDiscs.clear();

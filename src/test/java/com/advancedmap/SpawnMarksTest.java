@@ -242,9 +242,47 @@ public class SpawnMarksTest
 	}
 
 	@Test
+	public void aMonstersPictureIsReadOffThePaintAndLetGoWhenThePluginStops()
+	{
+		// the PR audit, 2026-11-15: read inside the paint on the client thread, kept by index, never let go
+		SpawnMarks.forget();
+		try
+		{
+			List<Runnable> asked = new java.util.ArrayList<>();
+			assertNull("not read by the paint that first wants it", SpawnMarks.picture("Goblin", asked::add));
+			assertNull(SpawnMarks.picture("Goblin", asked::add));
+			assertEquals("asked for once", 1, asked.size());
+			asked.get(0).run();
+			BufferedImage goblin = SpawnMarks.picture("Goblin", asked::add);
+			assertEquals("packed, which draws fast", BufferedImage.TYPE_INT_ARGB, goblin.getType());
+			assertTrue(goblin.getWidth() > 8 && goblin == SpawnMarks.picture("Goblin", asked::add));
+			assertEquals(1, asked.size());
+			// a reader that is shutting down takes nothing: asked again the next time
+			java.util.concurrent.Executor stopped = task ->
+			{
+				throw new java.util.concurrent.RejectedExecutionException();
+			};
+			assertNull(SpawnMarks.picture("Cow", stopped));
+			assertTrue(SpawnMarks.picture("Cow", Runnable::run) != null);
+			// stopped: nothing is kept, the marks neither
+			SpawnMarks.forget();
+			assertTrue(SpawnMarks.spots().isEmpty());
+			assertNull(SpawnMarks.picture("Goblin", asked::add));
+			assertEquals(2, asked.size());
+		}
+		finally
+		{
+			// as the class began, for the tests after this one
+			SpawnMarks.forget();
+			SpawnMarks.load();
+		}
+		assertFalse(SpawnMarks.spots().isEmpty());
+	}
+
+	@Test
 	public void aMonsterWithoutAPictureHasNone()
 	{
-		assertNull(SpawnMarks.picture("No such monster at all"));
+		assertNull(SpawnMarks.picture("No such monster at all", Runnable::run));
 		assertEquals("Monster_ what_", SpawnMarks.fileName("Monster: what?"));
 	}
 

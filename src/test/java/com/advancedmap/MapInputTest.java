@@ -600,5 +600,22 @@ public class MapInputTest
 		input.mousePressed(beside);
 		assertFalse("the game's", beside.isConsumed());
 		assertEquals(1, plugin.outsideClicks);
+		// a move on the map is read where the game has it, and goes on as it came
+		MouseEvent over = move(1000, 600);
+		assertTrue(input.mouseMoved(over) == over);
+		assertEquals(new java.awt.Point(500, 300), input.mouse());
+		assertTrue(over.isConsumed());
+		// the map closed: still where the game has the mouse (the map may open under it), and nothing is kept from
+		// the game (the PR audit, 2026-11-15: no event of the map's own is made for a move it does not read)
+		plugin.open = false;
+		MouseEvent closed = move(1200, 700);
+		assertTrue(input.mouseMoved(closed) == closed);
+		assertEquals(new java.awt.Point(600, 350), input.mouse());
+		assertFalse(closed.isConsumed());
+		MouseEvent click = press(1000, 600);
+		input.mousePressed(click);
+		input.mouseReleased(releaseWith(1000, 600, MouseEvent.BUTTON1));
+		assertFalse(click.isConsumed());
+		assertEquals("a click is no move", new java.awt.Point(600, 350), input.mouse());
 	}
 }

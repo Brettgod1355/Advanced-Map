@@ -227,9 +227,13 @@ final class MapPainter
 		this.preview = new DungeonPreview(images);
 	}
 
-	/** Where a dungeon preview's looks run, off the client thread. */
+	/** Reads monsters' pictures; until the plugin gives its own, at once (the tests). */
+	private volatile java.util.concurrent.Executor executor = Runnable::run;
+
+	/** Where a dungeon preview's looks run and monsters' pictures are read, off the client thread. */
 	void setExecutor(java.util.concurrent.Executor executor)
 	{
+		this.executor = executor;
 		preview.setExecutor(executor);
 	}
 
@@ -516,7 +520,7 @@ final class MapPainter
 			drawLabels(g, view, area, labels.all(), taken);
 		}
 		List<SpawnMarks.Shown> spawns = SpawnMarks.visible(view, area, plane, settings);
-		SpawnMarks.draw(g, spawns, itemPictures);
+		SpawnMarks.draw(g, spawns, itemPictures, executor);
 		drawIcons(g, shown, selection);
 		Map<Farming.Site, List<Farming.Reading>> farms = farming;
 		if (farms != null)

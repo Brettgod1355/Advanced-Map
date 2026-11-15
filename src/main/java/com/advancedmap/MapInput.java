@@ -81,11 +81,19 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 			(int) (at.y / (stretched.height / real.getHeight())));
 	}
 
-	/** The event where the game has it: the map reads this one, and the one it was given goes on as it came. */
+	/**
+	 * The event where the game has it: the map reads this one, and the one it was given goes on as it came. While the
+	 * map is not up and holds no button it reads nothing of an event but where the mouse is, so none is made for it
+	 * (the PR audit, 2026-11-15: one for every move under Stretched Mode, map open or not).
+	 */
 	private MouseEvent inGame(MouseEvent e)
 	{
 		Point at = toGame.apply(e.getPoint());
-		if (at.x == e.getX() && at.y == e.getY())
+		if (e.getID() == MouseEvent.MOUSE_MOVED || e.getID() == MouseEvent.MOUSE_DRAGGED)
+		{
+			mouse = at;
+		}
+		if (at.x == e.getX() && at.y == e.getY() || !plugin.mapTakesInput() && heldButtons == 0)
 		{
 			return e;
 		}
@@ -246,7 +254,6 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 
 	private MouseEvent dragged(MouseEvent e)
 	{
-		mouse = e.getPoint();
 		if (!plugin.mapTakesInput() || heldButtons == 0)
 		{
 			return e;
@@ -330,7 +337,6 @@ class MapInput implements MouseListener, MouseWheelListener, KeyListener
 	 */
 	private MouseEvent moved(MouseEvent e)
 	{
-		mouse = e.getPoint();
 		if (heldButtons == 0 && plugin.gameMenuOpen())
 		{
 			return e;

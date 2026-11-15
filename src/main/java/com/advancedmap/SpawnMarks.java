@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executor;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.function.IntFunction;
 import javax.imageio.ImageIO;
 import lombok.Value;
@@ -80,11 +82,18 @@ final class SpawnMarks
 
 	/** The marks by the floor and region of their point: {@code plane << 16 | region id}. */
 	private static volatile Map<Integer, List<Mark>> index = Collections.emptyMap();
-	/** Monsters' pictures by name, empty when the plugin has none; painter thread. */
+	/** Monsters' pictures by name: empty when the plugin has none, and while one is being read. */
 	private static final Map<String, Optional<BufferedImage>> pictures = new ConcurrentHashMap<>();
 
 	private SpawnMarks()
 	{
+	}
+
+	/** Lets go of the marks and the pictures read so far: the plugin has stopped ({@link #load} brings the marks back). */
+	static void forget()
+	{
+		index = Collections.emptyMap();
+		pictures.clear();
 	}
 
 	/** Builds the marks from what {@link Spawns} read and {@code item-ids.tsv}. Off the client thread. */
@@ -201,8 +210,11 @@ final class SpawnMarks
 		return null;
 	}
 
-	/** Draws the marks: items' pictures (a dot while one loads or the game has none), monsters' icons. */
-	static void draw(Graphics2D g, List<Shown> shown, IntFunction<BufferedImage> itemPictures)
+	/**
+	 * Draws the marks: items' pictures (a dot while one loads or the game has none), monsters' icons (the plain marker
+	 * while one is read by {@code reader}, or the plugin has none).
+	 */
+	static void draw(Graphics2D g, List<Shown> shown, IntFunction<BufferedImage> itemPictures, Executor reader)
 	{
 		Object interpolation = g.getRenderingHint(RenderingHints.KEY_INTERPOLATION);
 		java.awt.Stroke stroke = g.getStroke();
@@ -214,7 +226,7 @@ final class SpawnMarks
 			Rectangle at = each.getBounds();
 			g.setComposite(each.isHidden() ? java.awt.AlphaComposite.getInstance(java.awt.AlphaComposite.SRC_OVER, 0.35f)
 				: composite);
-			BufferedImage image = mark.isMonster() ? picture(mark.getName())
+			BufferedImage image = mark.isMonster() ? picture(mark.getName(), reader)
 				: mark.getItemId() >= 0 ? itemPictures.apply(mark.getItemId()) : null;
 			if (image != null)
 			{
@@ -273,21 +285,49 @@ final class SpawnMarks
 		return out;
 	}
 
-	/** A monster's own picture from the plugin's resources, read once; null when it has none. */
-	static BufferedImage picture(String name)
+	/**
+	 * A monster's own picture from the plugin's resources; null when it has none, and until it is read. The first paint
+	 * that wants one asks {@code reader} for it and draws the plain marker meanwhile: read inside the paint, dozens of
+	 * them held up one frame on zooming into a dungeon (the PR audit, 2026-11-15).
+	 */
+	static BufferedImage picture(String name, Executor reader)
 	{
-		return pictures.computeIfAbsent(name, n ->
+		if (pictures.putIfAbsent(name, Optional.empty()) == null)
 		{
-			try (InputStream in = SpawnMarks.class.getResourceAsStream("monsters/" + fileName(n) + ".png"))
+			try
 			{
-				return Optional.ofNullable(in == null ? null : ImageIO.read(in));
+				reader.execute(() -> pictures.put(name, read(name)));
 			}
-			catch (Exception e)
+			catch (RejectedExecutionException e)
 			{
-				log.debug("could not read the picture of {}", n, e);
+				// the plugin is stopping: asked for again once it runs
+				pictures.remove(name);
+			}
+		}
+		return pictures.getOrDefault(name, Optional.empty()).orElse(null);
+	}
+
+	private static Optional<BufferedImage> read(String name)
+	{
+		try (InputStream in = SpawnMarks.class.getResourceAsStream("monsters/" + fileName(name) + ".png"))
+		{
+			if (in == null)
+			{
 				return Optional.empty();
 			}
-		}).orElse(null);
+			// packed ints, as the map's other pictures: the files' 128 colours by index are slow to draw scaled
+			BufferedImage read = ImageIO.read(in);
+			BufferedImage packed = new BufferedImage(read.getWidth(), read.getHeight(), BufferedImage.TYPE_INT_ARGB);
+			Graphics2D g = packed.createGraphics();
+			g.drawImage(read, 0, 0, null);
+			g.dispose();
+			return Optional.of(packed);
+		}
+		catch (Exception e)
+		{
+			log.debug("could not read the picture of {}", name, e);
+			return Optional.empty();
+		}
 	}
 
 	/** A monster's name as its picture's file is named: characters a file name can't have become "_". */
