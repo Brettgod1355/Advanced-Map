@@ -7,3 +7,5 @@
 2855	10145	0	Transportation	The Dwarven Ferryman's one-way ferry across the River Kelda in Keldagrim, to 2863, 10133 (owner, 2026-11-14: the game's map has no icon there); its line comes from transports.tsv
 3595	9503	0	Agility shortcut	The west rubble in Guardians of the Rift, 56 Agility, to the guardian remains past it (owner, 2026-11-15: the game's map has no icon there)
 3635	9503	0	Agility shortcut	The east rubble in Guardians of the Rift, the same (owner, 2026-11-15)
+2504	3192	0	Transportation	Elkoy outside the Tree Gnome Village maze, who leads through it to 2515, 3159 (owner, 2026-11-15: seen in game to have no icon, the canoe station's being within 24 tiles); its line comes from transports.tsv
+2515	3159	0	Transportation	Elkoy inside the Tree Gnome Village maze, who leads back out to 2504, 3192 (owner, 2026-11-15: seen in game to have no icon, the spirit tree's being within 24 tiles); its line comes from transports.tsv

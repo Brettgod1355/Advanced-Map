@@ -58,7 +58,6 @@ Guardians of the Rift rubble	3595	9503	0	Guardians_of_the_Rift	Agility 56
 Guardians of the Rift rubble	3635	9503	0	Guardians_of_the_Rift	Agility 56
 # the log raft above Baxtorian Falls (owner, 2026-11-15; its icon comes with its row in transports.tsv)
 Log raft	2509	3493	0	Baxtorian_Falls
-# Elkoy at each end of the Tree Gnome Village maze (owner, 2026-11-15; the icons come with his rows in
-# transports.tsv)
+# Elkoy at each end of the Tree Gnome Village maze (owner, 2026-11-15; both icons are in added-icons.tsv)
 Elkoy	2504	3192	0	Elkoy
 Elkoy	2515	3159	0	Elkoy

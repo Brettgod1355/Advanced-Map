@@ -193,24 +193,15 @@ public class TransportsTest
 		assertEquals("Outside the maze", out.get(0).label());
 		assertEquals("Elkoy", NamedIcons.at(outside.getX(), outside.getY(), 0).getName());
 		assertEquals("Elkoy", NamedIcons.at(inside.getX(), inside.getY(), 0).getName());
-		// a place to board gets its icon by itself unless a transport icon of the game's map is within the reach.
-		// No other place to board is that near the inside end. The outside end has the canoe station, in the next
-		// region: whether the game's map marks that is not known here, so neither end has a row in added-icons.tsv
-		// until one is seen in game to have no icon (a row on top of an icon made by itself is a second icon)
-		int nearInside = 0;
-		int nearOutside = 0;
-		for (WorldPoint boarding : Transports.boardingSpots())
-		{
-			nearInside += !boarding.equals(inside) && boarding.getPlane() == 0
-				&& boarding.distanceTo2D(inside) <= RegionImages.TRANSPORT_REACH ? 1 : 0;
-			nearOutside += !boarding.equals(outside) && boarding.getPlane() == 0
-				&& boarding.distanceTo2D(outside) <= RegionImages.TRANSPORT_REACH ? 1 : 0;
-		}
-		assertEquals(0, nearInside);
-		assertEquals("the canoe station", 1, nearOutside);
+		// a place to board gets its icon by itself unless a transport icon of the game's map is within 24 tiles.
+		// Seen in game by the owner, neither end got one ("neither are showing"): the canoe station's icon is that
+		// near the outside end and the spirit tree's that near the inside one. So both are added icons, one each
 		String added = new String(MapIcons.class.getResourceAsStream("added-icons.tsv").readAllBytes(),
 			java.nio.charset.StandardCharsets.UTF_8);
-		assertFalse(added.contains("\n2515\t3159\t0\t"));
+		for (String end : new String[]{"\n2504\t3192\t0\tTransportation\t", "\n2515\t3159\t0\tTransportation\t"})
+		{
+			assertEquals(end.trim(), 2, added.split(java.util.regex.Pattern.quote(end), -1).length);
+		}
 	}
 
 	@Test

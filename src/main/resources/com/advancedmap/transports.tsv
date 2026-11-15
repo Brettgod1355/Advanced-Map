@@ -845,9 +845,8 @@ P	Log raft	2509	3493	0	2512	3481	0
 # Elkoy's walk through the Tree Gnome Village maze, both ways ("Follow"): followed out and back in by the owner
 # for the map watch (2026-11-15: "a true transport that works both ways"), not in Shortest Path's lists. Elkoy
 # wanders a few tiles at each end, so both ends are the tiles the player arrived on, the same on every trip.
-# Each end gets its icon by itself where the game's map shows no transport icon within 24 tiles. The outside
-# end has the canoe station 19 tiles west, in the next region: if the game's map marks that with an icon of
-# its own, this end gets none and needs a row in added-icons.tsv (not added until seen in game to be missing:
-# on top of an icon made by itself it would be a second one on the same tile, as the log raft's was).
+# Neither end gets an icon by itself: the game's map has a transport icon within 24 tiles of each (the canoe
+# station's of the outside end, the spirit tree's of the inside one), seen in game by the owner ("neither are
+# showing"). Both icons are in added-icons.tsv.
 P	Elkoy	2504	3192	0	2515	3159	0	Tree Gnome Village
 P	Elkoy	2515	3159	0	2504	3192	0	Outside the maze
