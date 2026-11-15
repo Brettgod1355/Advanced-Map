@@ -40,8 +40,11 @@ final class MapWatch
 	static final int ARRIVE = 40;
 	/** A monster this far from every spot the map lists for it is somewhere the map does not know. */
 	static final int AWAY = 48;
-	/** An item on the ground this near a listed spawn of it is that spawn. */
-	static final int ITEM_REACH = 3;
+	/**
+	 * An item on the ground this near a listed spawn of it is that spawn: the wiki's tiles are often a few off (the
+	 * Lumbridge farms' eggs by 4 and 5; owner, 2026-11-15), and a spawn off its listed tile is noted as "item-off".
+	 */
+	static final int ITEM_REACH = 6;
 
 	private static final DateTimeFormatter TIME = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 	static final String HEADER = "# kind\ttimes seen\tfirst seen\tlast seen\twhat\tdetail";
@@ -362,12 +365,16 @@ final class MapWatch
 	/** A monster seen in game: not on the map's lists at all, or farther than {@link #AWAY} from every listed spot. */
 	static String[] monster(String name, int level, WorldPoint at, Map<String, List<WorldPoint>> listed)
 	{
+		// a monster the map leaves out on purpose (a one-time quest fight), or one a quest sends after the player far
+		// from where it lives (the Outlaw), is no finding
+		if (IGNORED.contains(base(name)))
+		{
+			return null;
+		}
 		List<WorldPoint> tiles = listed.get(base(name));
 		if (tiles == null)
 		{
-			// a monster the map leaves out on purpose (a one-time quest fight) is no finding
-			return IGNORED.contains(base(name)) ? null
-				: finding("monster-unlisted", name, "level " + level + ", seen at " + tile(at));
+			return finding("monster-unlisted", name, "level " + level + ", seen at " + tile(at));
 		}
 		int distance = nearest(tiles, at);
 		return distance <= AWAY ? null : finding("monster-away", name + " in region " + at.getRegionID(),
@@ -376,15 +383,35 @@ final class MapWatch
 	}
 
 	/**
-	 * An item on the ground with no timer to vanish by, where the map lists no spawn of it. The game puts a timer on
+	 * An item on the ground with no timer to vanish by: "item-unlisted" where the map lists no spawn of it within
+	 * {@link #ITEM_REACH}, "item-off" where it lists one a few tiles from the real tile. The game puts a timer on
 	 * everything a player or a monster drops and none on what it sets out itself, so a drop never comes here.
 	 */
 	static String[] groundItem(String name, WorldPoint at, Map<String, List<WorldPoint>> listed)
 	{
 		List<WorldPoint> tiles = listed.get(base(name));
-		return tiles != null && nearest(tiles, at) <= ITEM_REACH ? null
-			: finding("item-unlisted", name + " at " + tile(at), "no timer to vanish by, so the game set it out; "
-				+ (tiles == null ? "the map lists no spawn of it anywhere" : "the map lists none here"));
+		int distance = tiles == null ? Integer.MAX_VALUE : nearest(tiles, at);
+		if (distance == 0)
+		{
+			return null;
+		}
+		if (distance <= ITEM_REACH)
+		{
+			// the spawn the map has, drawn off its real tile: the exact one, for moving the map's dot onto it
+			WorldPoint listedAt = null;
+			for (WorldPoint tile : tiles)
+			{
+				if (MapArea.of(tile.getY()) == MapArea.of(at.getY()) && flat(tile, at) == distance)
+				{
+					listedAt = tile;
+					break;
+				}
+			}
+			return finding("item-off", name + " at " + tile(at), "the map has it at " + tile(listedAt) + ", " + distance
+				+ (distance == 1 ? " tile" : " tiles") + " off");
+		}
+		return finding("item-unlisted", name + " at " + tile(at), "no timer to vanish by, so the game set it out; "
+			+ (tiles == null ? "the map lists no spawn of it anywhere" : "the map lists none here"));
 	}
 
 	/** The shop among those near whose stock on the map has the most of what the window shows: the nearest of equals. */

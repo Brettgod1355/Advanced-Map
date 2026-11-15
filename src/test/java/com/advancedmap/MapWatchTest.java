@@ -113,7 +113,8 @@ public class MapWatchTest
 		assertEquals("monster-unlisted", unlisted[0]);
 		assertEquals("Imp", unlisted[1]);
 
-		assertNull(MapWatch.groundItem("Bronze dagger", new WorldPoint(3224, 3220, 0), items));
+		// beside its listed tile: the same spawn, noted as off its tile (no longer nothing; owner, 2026-11-15)
+		assertEquals("item-off", MapWatch.groundItem("Bronze dagger", new WorldPoint(3224, 3220, 0), items)[0]);
 		assertEquals("item-unlisted", MapWatch.groundItem("Bronze dagger", new WorldPoint(3240, 3218, 0), items)[0]);
 		String[] bones = MapWatch.groundItem("Bones", LUMBRIDGE, items);
 		assertEquals("Bones at 3222, 3218, 0", bones[1]);
@@ -252,5 +253,26 @@ public class MapWatchTest
 		assertNull(MapWatch.monster("Witch's experiment (second form)", 30, shed, listed));
 		// a monster on neither list is still one
 		assertEquals("monster-unlisted", MapWatch.monster("Made-up beast", 5, shed, listed)[0]);
+	}
+
+	@Test
+	public void anItemNearItsListedSpawnIsThatSpawnAndItsRealTileIsNoted()
+	{
+		// owner, 2026-11-15: the Lumbridge farms' eggs lie 4 and 5 tiles from where the wiki puts them
+		java.util.Map<String, List<WorldPoint>> listed = Collections.singletonMap("egg",
+			Arrays.asList(new WorldPoint(3229, 3299, 0), new WorldPoint(3175, 3305, 0)));
+		// on its tile: nothing
+		assertNull(MapWatch.groundItem("Egg", new WorldPoint(3229, 3299, 0), listed));
+		// a few tiles off: the same spawn, with the tile it is really on
+		String[] off = MapWatch.groundItem("Egg", new WorldPoint(3233, 3300, 0), listed);
+		assertEquals("item-off", off[0]);
+		assertEquals("Egg at 3233, 3300, 0", off[1]);
+		assertTrue(off[2], off[2].contains("3229, 3299, 0") && off[2].contains("4 tiles off"));
+		// far from every listed one, or of no list at all: a spawn the map lacks
+		assertEquals("item-unlisted", MapWatch.groundItem("Egg", new WorldPoint(3185, 3278, 0), listed)[0]);
+		assertEquals("item-unlisted", MapWatch.groundItem("Hammer", new WorldPoint(3223, 3252, 0), listed)[0]);
+		// the quest's Outlaw, far from the camp, is no finding
+		assertNull(MapWatch.monster("Outlaw", 32, new WorldPoint(3218, 3246, 0),
+			Collections.singletonMap("outlaw", Collections.singletonList(new WorldPoint(3118, 3474, 0)))));
 	}
 }
