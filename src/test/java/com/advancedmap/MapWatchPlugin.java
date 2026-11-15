@@ -491,7 +491,7 @@ public class MapWatchPlugin extends Plugin
 		if (!names.isEmpty())
 		{
 			// the shop near whose stock is most like the window's: two shops may stand side by side
-			Shops.Shop shop = MapWatch.shopFor(Shops.within(at.getX(), at.getY(), at.getPlane()), names);
+			Shops.Shop shop = MapWatch.shopFor(MapWatch.shopsNear(at), names);
 			for (String[] finding : MapWatch.shop(shop, at, names))
 			{
 				if (found.note(finding, client.getWorld(), System.currentTimeMillis()))

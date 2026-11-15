@@ -290,4 +290,23 @@ public class MapWatchTest
 			assertTrue(state.name(), MapWatch.forgets(state));
 		}
 	}
+
+	@Test
+	public void aShopShownAFloorBelowIsFoundFromTheFloorItIsReallyOn()
+	{
+		// owner, 2026-11-15, upstairs in the Tree Gnome Village: "think i found a missing store thats not on the
+		// map"; the watch said so too, twice. The map has Bolkoy's Village Shop, on the ground floor under its
+		// general store icon, since the game's map draws no ground on the first floor there
+		Shops.load();
+		List<Shops.Shop> upstairs = MapWatch.shopsNear(new WorldPoint(2528, 3160, 1));
+		assertEquals(1, upstairs.size());
+		assertEquals("Bolkoy's Village Shop", upstairs.get(0).getName());
+		assertEquals(1, upstairs.get(0).getFloor());
+		assertEquals("and from the ground floor, where it is shown", 1,
+			MapWatch.shopsNear(new WorldPoint(2528, 3160, 0)).size());
+		assertTrue("not from a floor it is not on", MapWatch.shopsNear(new WorldPoint(2528, 3160, 2)).isEmpty());
+		// a shop on the ground floor is not found from the floor above it
+		assertFalse(MapWatch.shopsNear(new WorldPoint(2670, 3435, 0)).isEmpty());
+		assertTrue(MapWatch.shopsNear(new WorldPoint(2670, 3435, 1)).isEmpty());
+	}
 }

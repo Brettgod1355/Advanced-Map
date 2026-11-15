@@ -425,6 +425,27 @@ final class MapWatch
 			+ (tiles == null ? "the map lists no spawn of it anywhere" : "the map lists none here"));
 	}
 
+	/**
+	 * The shops the map has near a tile: those on its floor, and those it shows a floor below because the game's
+	 * map draws no ground on their own (the last field of a shop's row). Bolkoy's Village Shop, upstairs in the
+	 * Tree Gnome Village, was told "no shop on the map near" from the floor it is really on (owner, 2026-11-15).
+	 */
+	static List<Shops.Shop> shopsNear(WorldPoint at)
+	{
+		List<Shops.Shop> out = new ArrayList<>(Shops.within(at.getX(), at.getY(), at.getPlane()));
+		for (int below = 0; below < at.getPlane(); below++)
+		{
+			for (Shops.Shop shop : Shops.within(at.getX(), at.getY(), below))
+			{
+				if (shop.getFloor() == at.getPlane())
+				{
+					out.add(shop);
+				}
+			}
+		}
+		return out;
+	}
+
 	/** The shop among those near whose stock on the map has the most of what the window shows: the nearest of equals. */
 	static Shops.Shop shopFor(List<Shops.Shop> near, Collection<String> inGame)
 	{
